@@ -1,8 +1,9 @@
-import Back from "./back.js";
-import RightArrow from "./rightArrow.js";
-import Close from "./close.js";
-import Search from "./search.js";
+import BackSvg from "./back.js";
+import RightArrowSvg from "./rightArrow.js";
+import CloseSvg from "./close.js";
+import SearchSvg from "./search.js";
+import CheckSvg from "./check.js";
 
 export {
-  Back, RightArrow, Close, Search,
+  BackSvg, RightArrowSvg, CloseSvg, SearchSvg, CheckSvg,
 };

@@ -1,12 +1,12 @@
-import ArrowDownUp from "./arrowDownUp.js";
-import Bills from "./bills.js";
-import Call from "./call.js";
-import Extension from "./extension.js";
-import Help from "./help.js";
-import Invoice from "./invoice.js";
-import Statements from "./statements.js";
-import Hello from "./hello.js";
+import ArrowDownUpSvg from "./arrowDownUp.js";
+import BillsSvg from "./bills.js";
+import CallSvg from "./call.js";
+import ExtensionSvg from "./extension.js";
+import HelpSvg from "./help.js";
+import InvoiceSvg from "./invoice.js";
+import StatementsSvg from "./statements.js";
+import HelloSvg from "./hello.js";
 
 export {
-  ArrowDownUp, Bills, Call, Extension, Help, Invoice, Statements, Hello,
+  ArrowDownUpSvg, BillsSvg, CallSvg, ExtensionSvg, HelpSvg, InvoiceSvg, StatementsSvg, HelloSvg,
 };
