@@ -1,6 +1,6 @@
-import Explore from "./explore.js";
-import Home from "./home.js";
-import More from "./more.js";
-import Notifications from "./notifications.js";
+import ExploreSvg from "./explore.js";
+import HomeSvg from "./home.js";
+import MoreSvg from "./more.js";
+import NotificationsSvg from "./notifications.js";
 
-export { Explore, Home, More, Notifications };
+export { ExploreSvg, HomeSvg, MoreSvg, NotificationsSvg };
