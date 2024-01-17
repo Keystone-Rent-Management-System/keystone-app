@@ -1,8 +1,8 @@
-import {COLORS} from './src/constants/Theme';
+import { COLORS } from "./src/constants/Theme";
 
 /** @type {import("tailwindcss").Config} */
 module.exports = {
-  content: ['./App.{js,jsx,ts,tsx}', './<custom-folder>/**/*.{js,jsx,ts,tsx}'],
+  content: ["./App.{js,jsx,ts,tsx}", "./<custom-folder>/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
       colors: {
@@ -15,6 +15,13 @@ module.exports = {
         c_green_bg: COLORS.c_green_bg,
         border_grey: COLORS.border_grey,
         bg_pale: COLORS.bg_pale,
+      },
+      fontFamily: {
+        inter: ["Inter-Regular"],
+        "inter-bold": ["Inter-Bold"],
+        "inter-semibold": ["Inter-SemiBold"],
+        "inter-medium": ["Inter-Mesium"],
+        "sometypemono": ["SometypeMono-Medium"],
       },
     },
   },
