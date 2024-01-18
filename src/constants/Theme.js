@@ -1,4 +1,4 @@
-export const COLORS = {
+const COLORS = {
   primary: '#022374',
   inactive_text: '#8E8E8E',
   active_text: '#022374',
@@ -9,3 +9,5 @@ export const COLORS = {
   border_grey: '#E8E8E8',
   bg_pale: '#ECF2FF',
 };
+
+module.exports = COLORS;
