@@ -1,11 +1,14 @@
 import React from 'react';
-import {ExploreHeader, Layout} from '../../components';
+import {ExploreFilters, ExploreHeader, Layout} from '../../components';
 
 const Explore = () => {
   return (
     <Layout>
       {/*Header*/}
       <ExploreHeader />
+
+      {/*  Filters  */}
+      <ExploreFilters />
     </Layout>
   );
 };
