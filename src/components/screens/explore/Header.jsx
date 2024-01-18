@@ -7,7 +7,7 @@ import COLORS from '../../../constants/Theme';
 
 const Header = () => {
   return (
-    <View className={'flex flex-row w-full space-x-2'}>
+    <View className={'flex flex-row w-full space-x-2 px-4 pt-5'}>
       {/*  search input*/}
       <CInput
         ClassName={'rounded-full flex-1 overflow-hidden border-border_grey'}
