@@ -25,7 +25,7 @@ const Header = () => {
       {/*  filter Button */}
       <TouchableOpacity
         className={
-          'flex border border-border_grey justify-center items-center rounded-full h-12 w-12'
+          'flex border border-border_grey justify-center items-center rounded-full m-auto h-11 w-11'
         }>
         <FilterSvg />
       </TouchableOpacity>
