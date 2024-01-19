@@ -1,7 +1,12 @@
 import React from 'react';
 import {FlashList} from '@shopify/flash-list';
 
-import {ExploreFilters, ExploreHeader, Layout} from '../../components';
+import {
+  ExploreFilters,
+  ExploreHeader,
+  ExplorerMapBtn,
+  Layout,
+} from '../../components';
 import listings from '../../provider/listings';
 import ListingItem from '../../components/screens/explore/ListingItem';
 
@@ -31,7 +36,7 @@ const Explore = () => {
   ];
 
   return (
-    <Layout>
+    <Layout ClassName={'relative'}>
       {/*Header*/}
       <ExploreHeader />
 
@@ -48,6 +53,8 @@ const Explore = () => {
         keyExtractor={(_, ind) => ind.toString()}
         estimatedItemSize={300}
       />
+
+      <ExplorerMapBtn />
     </Layout>
   );
 };
