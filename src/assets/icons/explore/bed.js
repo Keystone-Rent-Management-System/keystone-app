@@ -1,12 +1,12 @@
 import React from 'react';
 import Svg, {Path} from 'react-native-svg';
 
-const Bed = ({color = '#8E8E8E'}) => {
+const Bed = ({color = '#8E8E8E', size = 20}) => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="19"
+      width={size}
+      height={size - 1}
       viewBox="0 0 18 17"
       fill="none">
       <Path
