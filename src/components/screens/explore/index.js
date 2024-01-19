@@ -1,4 +1,5 @@
 import ExploreHeader from './Header';
 import ExploreFilters from './Filters';
+import ExploreListingItem from './ListingItem';
 
-export {ExploreHeader, ExploreFilters};
+export {ExploreHeader, ExploreFilters, ExploreListingItem};
