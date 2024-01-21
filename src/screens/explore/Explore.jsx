@@ -9,13 +9,17 @@ import {
 } from '@/components';
 import listings from '@/provider/listings';
 import ListingItem from '@/components/screens/explore/ListingItem';
-import {CustomBottomSheet} from '../../components/modals';
+import {ExplorerFilterModal} from '@/components/modals';
 
 const Explore = () => {
-  const bottomSheetRef = useRef(null);
+  const filterModalRef = useRef(null);
 
   const handleFilter = () => {
-    bottomSheetRef.current?.expand();
+    filterModalRef.current?.expand();
+  };
+
+  const handleCloseFilter = () => {
+    filterModalRef.current?.close();
   };
 
   const renderListingItem = ({
@@ -64,9 +68,9 @@ const Explore = () => {
 
       <ExplorerMapBtn />
 
-      <CustomBottomSheet
-        snapPoints={['25%', '50%', '95%']}
-        ref={bottomSheetRef}
+      <ExplorerFilterModal
+        handleCloseFilter={handleCloseFilter}
+        ref={filterModalRef}
       />
     </Layout>
   );
