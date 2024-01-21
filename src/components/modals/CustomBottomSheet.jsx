@@ -21,7 +21,8 @@ const CustomBottomSheet = forwardRef((props, ref) => {
       snapPoints={snapPoints}
       backdropComponent={renderBackdrop}
       enablePanDownToClose={true}
-      handleIndicatorStyle={{backgroundColor: COLORS.white}}>
+      handleIndicatorStyle={{backgroundColor: COLORS.white}}
+      {...props}>
       {props?.children}
     </BottomSheet>
   );
