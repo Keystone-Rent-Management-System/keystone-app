@@ -4,6 +4,7 @@ import ExploreListingItem from './ListingItem';
 import ExplorerMapBtn from './MapBtn';
 import ExploreRoomSelector from './RoomSelector';
 import ExploreAmenity from './Amenity';
+import ExploreHouseTypeItem from './HouseTypeItem';
 
 export {
   ExploreHeader,
@@ -12,4 +13,5 @@ export {
   ExplorerMapBtn,
   ExploreRoomSelector,
   ExploreAmenity,
+  ExploreHouseTypeItem,
 };
