@@ -10,9 +10,11 @@ import {
 import listings from '@/provider/listings';
 import ListingItem from '@/components/screens/explore/ListingItem';
 import {ExplorerFilterModal} from '@/components/modals';
+import {useNavigation} from '@react-navigation/native';
 
 const Explore = () => {
   const filterModalRef = useRef(null);
+  const navigation = useNavigation();
 
   const handleFilter = () => {
     filterModalRef.current?.expand();
@@ -20,6 +22,10 @@ const Explore = () => {
 
   const handleCloseFilter = () => {
     filterModalRef.current?.close();
+  };
+
+  const handleViewApartment = id => {
+    navigation.navigate('apartment_view', {apartment: id});
   };
 
   const renderListingItem = ({
@@ -37,6 +43,7 @@ const Explore = () => {
         bedrooms={properties.bedrooms}
         bathrooms={properties.bathrooms}
         id={id}
+        handlePress={() => handleViewApartment(id)}
       />
     );
   };
