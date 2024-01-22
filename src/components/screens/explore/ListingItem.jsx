@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 import COLORS from "../../../constants/Theme";
 import { styled } from "nativewind";
 import Badge from "./Badge";
@@ -20,7 +20,7 @@ const ListingItem = props => {
   const handleLike = () => setLiked(prev => !prev);
 
   return (
-    <View className={'mb-5 mx-1'}>
+    <Pressable className={'mb-5 mx-1'} onPress={props.handlePress}>
       {/*  image   */}
       <StyledView className={'bg-bg shadow-xl rounded-xl relative'}>
         <Image
@@ -110,7 +110,7 @@ const ListingItem = props => {
           </Text>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
@@ -136,5 +136,6 @@ const IconLabel = ({icon, text}) => (
  *   bedrooms:number,
  *   bathrooms:number,
  *   id:number
+ *   handlePress:Function
  * }} ListingProperty
  */
