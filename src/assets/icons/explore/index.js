@@ -23,6 +23,7 @@ import VirtualTourSvg from './virtualTour.js';
 import WaterBillSvg from './waterBill.js';
 import WifiSvg from './wifi.js';
 import WaterAvailableSvg from './WaterAvailable.js';
+import ApartmentSvg from './apartment';
 
 export {
   AgentSvg,
@@ -50,4 +51,5 @@ export {
   WaterBillSvg,
   WifiSvg,
   WaterAvailableSvg,
+  ApartmentSvg,
 };
