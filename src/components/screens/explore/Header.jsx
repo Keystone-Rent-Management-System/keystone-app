@@ -1,11 +1,16 @@
-import React from 'react';
+import React from "react";
+import { TouchableOpacity, View } from "react-native";
 
-import {TouchableOpacity, View} from 'react-native';
-import CInput from '../../general/CInput';
-import {FilterSvg, SearchSvg} from '../../../assets/icons';
-import COLORS from '../../../constants/Theme';
+import { FilterSvg, SearchSvg } from "@/assets/icons";
+import COLORS from "@/constants/Theme";
+import { CInput } from "@/components";
 
-const Header = () => {
+/**
+ *
+ * @param {{handleFilter:Function}} props
+ * @returns
+ */
+const Header = props => {
   return (
     <View className={'flex flex-row w-full space-x-2 px-4 pt-5'}>
       {/*  search input*/}
@@ -14,10 +19,12 @@ const Header = () => {
         icon={
           <View
             className={'px-3 black my-auto flex items-center justify-center'}>
-            <SearchSvg size={'23'} />
+            <SearchSvg size={'20'} />
           </View>
         }
-        InputClassName={'placeholder-grey_1 flex-1 p-2 px-0 font-inter text-13'}
+        InputClassName={
+          'placeholder-grey_1 flex-1 p-1.5 px-0 font-inter text-13'
+        }
         placeHolder={'what are you looking for?'}
         placeholderTextColor={COLORS.inactive_text}
       />
@@ -26,7 +33,8 @@ const Header = () => {
       <TouchableOpacity
         className={
           'flex border border-border_grey justify-center items-center rounded-full m-auto h-11 w-11'
-        }>
+        }
+        onPress={props.handleFilter}>
         <FilterSvg />
       </TouchableOpacity>
     </View>

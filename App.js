@@ -7,9 +7,21 @@
 
 import React from 'react';
 import Main from './src/Main';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {StyleSheet} from 'react-native';
 
 function App() {
-  return <Main />;
+  return (
+    <GestureHandlerRootView style={styles.gestureProvider}>
+      <Main />
+    </GestureHandlerRootView>
+  );
 }
 
 export default App;
+
+const styles = StyleSheet.create({
+  gestureProvider: {
+    flex: 1,
+  },
+});

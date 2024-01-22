@@ -1,12 +1,17 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import Nav from '../constants/nav';
-import {BottomTabBtn} from '../components';
-import {BottomNavScreens} from '../constants';
+
+import Nav from '@/constants/nav';
+import {BottomTabBtn} from '@/components';
+import {BottomNavScreens} from '@/constants';
 
 const Tab = createBottomTabNavigator();
+
+const renderTab = ({focused, scr}) => (
+  <BottomTabBtn icon={scr.tab.icon} text={scr.tab.title} isCurrent={focused} />
+);
+
 const BottomNav = () => {
-  // console.log(BottomNavScreens);
   return (
     <Tab.Navigator screenOptions={Nav.BottomNavOptions}>
       {BottomNavScreens.map((scr, ind) => (
@@ -15,13 +20,7 @@ const BottomNav = () => {
           name={scr.title}
           component={scr.component}
           options={{
-            tabBarIcon: ({focused}) => (
-              <BottomTabBtn
-                icon={scr.tab.icon}
-                text={scr.tab.title}
-                isCurrent={focused}
-              />
-            ),
+            tabBarIcon: ({focused}) => renderTab({focused, scr}),
           }}
         />
       ))}

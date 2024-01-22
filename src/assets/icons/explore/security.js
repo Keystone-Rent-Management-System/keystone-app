@@ -1,12 +1,20 @@
-import React from "react";
-import Svg, { Path } from "react-native-svg";
+import React from 'react';
+import Svg, {Path} from 'react-native-svg';
 
 const Security = () => {
   return (
-    <Svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none">
       <Path
         d="M10.7715 17.1928C12.5266 16.3984 16.6667 13.9444 16.6667 8.47087V5.16409C16.6667 4.2325 16.6667 3.766 16.4852 3.40983C16.3254 3.09623 16.0698 2.84144 15.7562 2.68166C15.3996 2.5 14.9336 2.5 14.0002 2.5H6.00016C5.06674 2.5 4.59968 2.5 4.24316 2.68166C3.92956 2.84144 3.67477 3.09623 3.51498 3.40983C3.33333 3.76635 3.33333 4.23341 3.33333 5.16683V8.47087C3.33333 13.9444 7.47316 16.3984 9.22829 17.1928C9.41435 17.2771 9.50785 17.3191 9.71844 17.3552C9.85128 17.378 10.1495 17.378 10.2824 17.3552C10.4923 17.3192 10.5848 17.2773 10.7696 17.1937L10.7715 17.1928Z"
-        stroke="#14142B" stroke-linecap="round" stroke-linejoin="round" />
+        stroke="#14142B"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </Svg>
   );
 };

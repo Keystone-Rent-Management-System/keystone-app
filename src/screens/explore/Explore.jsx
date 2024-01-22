@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {FlashList} from '@shopify/flash-list';
 
 import {
@@ -6,11 +6,22 @@ import {
   ExploreHeader,
   ExplorerMapBtn,
   Layout,
-} from '../../components';
-import listings from '../../provider/listings';
-import ListingItem from '../../components/screens/explore/ListingItem';
+} from '@/components';
+import listings from '@/provider/listings';
+import ListingItem from '@/components/screens/explore/ListingItem';
+import {ExplorerFilterModal} from '@/components/modals';
 
 const Explore = () => {
+  const filterModalRef = useRef(null);
+
+  const handleFilter = () => {
+    filterModalRef.current?.expand();
+  };
+
+  const handleCloseFilter = () => {
+    filterModalRef.current?.close();
+  };
+
   const renderListingItem = ({
     item: {category, image, user, location, price, properties, title, id},
   }) => {
@@ -38,13 +49,14 @@ const Explore = () => {
   return (
     <Layout ClassName={'relative'}>
       {/*Header*/}
-      <ExploreHeader />
+      <ExploreHeader handleFilter={handleFilter} />
 
       {/*  Filters  */}
       <ExploreFilters />
 
       {/*  list  */}
       <FlashList
+        // eslint-disable-next-line react-native/no-inline-styles
         contentContainerStyle={{
           padding: 16,
         }}
@@ -55,6 +67,11 @@ const Explore = () => {
       />
 
       <ExplorerMapBtn />
+
+      <ExplorerFilterModal
+        handleCloseFilter={handleCloseFilter}
+        ref={filterModalRef}
+      />
     </Layout>
   );
 };
