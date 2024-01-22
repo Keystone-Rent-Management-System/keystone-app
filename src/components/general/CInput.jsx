@@ -1,6 +1,7 @@
 import React from 'react';
 
 import {Text, TextInput, View} from 'react-native';
+import COLORS from '../../constants/Theme';
 
 const CInput = ({
   icon,
@@ -12,6 +13,7 @@ const CInput = ({
   ClassName,
   InputClassName,
   rightElement,
+  placeholderTextColor = COLORS.inactive_text,
   ...rest
 }) => {
   return (
@@ -25,6 +27,7 @@ const CInput = ({
         onChange={handleChange}
         maxLength={maxL}
         placeholder={placeHolder}
+        placeholderTextColor={placeholderTextColor}
         className={` font-inter flex-1 text-black ${InputClassName}`}
         {...rest}
       />
