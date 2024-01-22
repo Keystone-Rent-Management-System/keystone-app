@@ -5,7 +5,7 @@ import COLORS from '@/constants/Theme';
 
 const CustomBottomSheet = forwardRef((props, ref) => {
   const snapPoints = useMemo(
-    () => (props?.snapPoints ? props.snapPoints : ['25%', '50%', '95%']),
+    () => (props?.snapPoints ? props.snapPoints : ['50%']),
     [props.snapPoints],
   );
 
@@ -21,6 +21,7 @@ const CustomBottomSheet = forwardRef((props, ref) => {
       snapPoints={snapPoints}
       backdropComponent={renderBackdrop}
       enablePanDownToClose={true}
+      enableContentPanningGesture={false}
       handleIndicatorStyle={{backgroundColor: COLORS.white}}
       {...props}>
       {props?.children}
