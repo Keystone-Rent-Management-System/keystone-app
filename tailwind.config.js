@@ -7,6 +7,7 @@ module.exports = {
     extend: {
       colors: {
         primary: COLORS.primary,
+        primaryBg: COLORS.primary_bg,
         inactive_text: COLORS.inactive_text,
         active_text: COLORS.active_text,
         bg: COLORS.bg,
