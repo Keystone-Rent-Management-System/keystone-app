@@ -1,9 +1,9 @@
-import React from 'react';
-import {TouchableOpacity, View} from 'react-native';
+import React from "react";
+import { TouchableOpacity, View } from "react-native";
 
-import {FilterSvg, SearchSvg} from '@/assets/icons';
-import COLORS from '@/constants/Theme';
-import {CInput} from '@/components';
+import { FilterSvg, SearchSvg } from "@/assets/icons";
+import COLORS from "@/constants/Theme";
+import { CInput } from "@/components";
 
 /**
  *
@@ -19,10 +19,12 @@ const Header = props => {
         icon={
           <View
             className={'px-3 black my-auto flex items-center justify-center'}>
-            <SearchSvg size={'23'} />
+            <SearchSvg size={'20'} />
           </View>
         }
-        InputClassName={'placeholder-grey_1 flex-1 p-2 px-0 font-inter text-13'}
+        InputClassName={
+          'placeholder-grey_1 flex-1 p-1.5 px-0 font-inter text-13'
+        }
         placeHolder={'what are you looking for?'}
         placeholderTextColor={COLORS.inactive_text}
       />
