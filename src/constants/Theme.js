@@ -11,6 +11,7 @@ const COLORS = {
   active_text: '#022374',
   text_color: '#14142B',
   white: '#fff',
+  bg_grey: '#f5f5f5',
 };
 
 module.exports = COLORS;

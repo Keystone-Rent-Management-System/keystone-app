@@ -17,6 +17,7 @@ module.exports = {
         border_grey: COLORS.border_grey,
         bg_pale: COLORS.bg_pale,
         ctext: COLORS.text_color,
+        bg_grey: COLORS.bg_grey,
       },
       fontFamily: {
         inter: ['Inter-Regular'],
