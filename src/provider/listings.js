@@ -1,6 +1,22 @@
+import React from 'react';
+
 /**
  * @type {Listing[]}
  */
+
+import {
+  AgreementSvg,
+  BabyCareSvg,
+  BuildingSvg,
+  CarSvg,
+  GymSvg,
+  SecuritySvg,
+  SwimmingPoolSvg,
+  TrashSvg,
+  WaterAvailableSvg,
+  WaterBillSvg,
+  WifiSvg,
+} from '../assets/icons';
 
 const listings = [
   {
@@ -17,6 +33,58 @@ const listings = [
       bathrooms: '3',
       balconies: '2',
     },
+    charges: {
+      deposit: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      rent: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      agreement: {
+        amount: '2,000',
+        icon: <AgreementSvg />,
+      },
+      'water bill': {
+        amount: '150/unit',
+        icon: <WaterBillSvg />,
+      },
+      trash: {
+        amount: '150/month',
+        icon: <TrashSvg />,
+      },
+    },
+    amenities: [
+      {
+        icon: <WaterAvailableSvg />,
+        text: 'Available Water 24/7',
+      },
+      {
+        icon: <WifiSvg />,
+        text: 'Wifi',
+      },
+      {
+        icon: <CarSvg />,
+        text: 'Parking',
+      },
+      {
+        icon: <SecuritySvg />,
+        text: 'Security',
+      },
+      {
+        icon: <GymSvg />,
+        text: 'Gym',
+      },
+      {
+        icon: <SwimmingPoolSvg />,
+        text: 'Swimming Pool',
+      },
+      {
+        icon: <BabyCareSvg />,
+        text: 'Baby Care',
+      },
+    ],
   },
   {
     id: 2,
@@ -32,6 +100,58 @@ const listings = [
       bathrooms: '1',
       balconies: '1',
     },
+    charges: {
+      deposit: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      rent: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      agreement: {
+        amount: '2,000',
+        icon: <AgreementSvg />,
+      },
+      'water bill': {
+        amount: '150/unit',
+        icon: <WaterBillSvg />,
+      },
+      trash: {
+        amount: '150/month',
+        icon: <TrashSvg />,
+      },
+    },
+    amenities: [
+      {
+        icon: <WaterAvailableSvg />,
+        text: 'Available Water 24/7',
+      },
+      {
+        icon: <WifiSvg />,
+        text: 'Wifi',
+      },
+      {
+        icon: <CarSvg />,
+        text: 'Parking',
+      },
+      {
+        icon: <SecuritySvg />,
+        text: 'Security',
+      },
+      {
+        icon: <GymSvg />,
+        text: 'Gym',
+      },
+      {
+        icon: <SwimmingPoolSvg />,
+        text: 'Swimming Pool',
+      },
+      {
+        icon: <BabyCareSvg />,
+        text: 'Baby Care',
+      },
+    ],
   },
   {
     id: 3,
@@ -47,6 +167,58 @@ const listings = [
       bathrooms: '3',
       balconies: '3',
     },
+    charges: {
+      deposit: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      rent: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      agreement: {
+        amount: '2,000',
+        icon: <AgreementSvg />,
+      },
+      'water bill': {
+        amount: '150/unit',
+        icon: <WaterBillSvg />,
+      },
+      trash: {
+        amount: '150/month',
+        icon: <TrashSvg />,
+      },
+    },
+    amenities: [
+      {
+        icon: <WaterAvailableSvg />,
+        text: 'Available Water 24/7',
+      },
+      {
+        icon: <WifiSvg />,
+        text: 'Wifi',
+      },
+      {
+        icon: <CarSvg />,
+        text: 'Parking',
+      },
+      {
+        icon: <SecuritySvg />,
+        text: 'Security',
+      },
+      {
+        icon: <GymSvg />,
+        text: 'Gym',
+      },
+      {
+        icon: <SwimmingPoolSvg />,
+        text: 'Swimming Pool',
+      },
+      {
+        icon: <BabyCareSvg />,
+        text: 'Baby Care',
+      },
+    ],
   },
   {
     id: 4,
@@ -62,6 +234,58 @@ const listings = [
       bathrooms: '2',
       balconies: '0',
     },
+    charges: {
+      deposit: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      rent: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      agreement: {
+        amount: '2,000',
+        icon: <AgreementSvg />,
+      },
+      'water bill': {
+        amount: '150/unit',
+        icon: <WaterBillSvg />,
+      },
+      trash: {
+        amount: '150/month',
+        icon: <TrashSvg />,
+      },
+    },
+    amenities: [
+      {
+        icon: <WaterAvailableSvg />,
+        text: 'Available Water 24/7',
+      },
+      {
+        icon: <WifiSvg />,
+        text: 'Wifi',
+      },
+      {
+        icon: <CarSvg />,
+        text: 'Parking',
+      },
+      {
+        icon: <SecuritySvg />,
+        text: 'Security',
+      },
+      {
+        icon: <GymSvg />,
+        text: 'Gym',
+      },
+      {
+        icon: <SwimmingPoolSvg />,
+        text: 'Swimming Pool',
+      },
+      {
+        icon: <BabyCareSvg />,
+        text: 'Baby Care',
+      },
+    ],
   },
   {
     id: 5,
@@ -77,6 +301,58 @@ const listings = [
       bathrooms: '5',
       balconies: '3',
     },
+    charges: {
+      deposit: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      rent: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      agreement: {
+        amount: '2,000',
+        icon: <AgreementSvg />,
+      },
+      'water bill': {
+        amount: '150/unit',
+        icon: <WaterBillSvg />,
+      },
+      trash: {
+        amount: '150/month',
+        icon: <TrashSvg />,
+      },
+    },
+    amenities: [
+      {
+        icon: <WaterAvailableSvg />,
+        text: 'Available Water 24/7',
+      },
+      {
+        icon: <WifiSvg />,
+        text: 'Wifi',
+      },
+      {
+        icon: <CarSvg />,
+        text: 'Parking',
+      },
+      {
+        icon: <SecuritySvg />,
+        text: 'Security',
+      },
+      {
+        icon: <GymSvg />,
+        text: 'Gym',
+      },
+      {
+        icon: <SwimmingPoolSvg />,
+        text: 'Swimming Pool',
+      },
+      {
+        icon: <BabyCareSvg />,
+        text: 'Baby Care',
+      },
+    ],
   },
   {
     id: 6,
@@ -92,6 +368,58 @@ const listings = [
       bathrooms: '1',
       balconies: '1',
     },
+    charges: {
+      deposit: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      rent: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      agreement: {
+        amount: '2,000',
+        icon: <AgreementSvg />,
+      },
+      'water bill': {
+        amount: '150/unit',
+        icon: <WaterBillSvg />,
+      },
+      trash: {
+        amount: '150/month',
+        icon: <TrashSvg />,
+      },
+    },
+    amenities: [
+      {
+        icon: <WaterAvailableSvg />,
+        text: 'Available Water 24/7',
+      },
+      {
+        icon: <WifiSvg />,
+        text: 'Wifi',
+      },
+      {
+        icon: <CarSvg />,
+        text: 'Parking',
+      },
+      {
+        icon: <SecuritySvg />,
+        text: 'Security',
+      },
+      {
+        icon: <GymSvg />,
+        text: 'Gym',
+      },
+      {
+        icon: <SwimmingPoolSvg />,
+        text: 'Swimming Pool',
+      },
+      {
+        icon: <BabyCareSvg />,
+        text: 'Baby Care',
+      },
+    ],
   },
   {
     id: 7,
@@ -107,6 +435,58 @@ const listings = [
       bathrooms: '2',
       balconies: '1',
     },
+    charges: {
+      deposit: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      rent: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      agreement: {
+        amount: '2,000',
+        icon: <AgreementSvg />,
+      },
+      'water bill': {
+        amount: '150/unit',
+        icon: <WaterBillSvg />,
+      },
+      trash: {
+        amount: '150/month',
+        icon: <TrashSvg />,
+      },
+    },
+    amenities: [
+      {
+        icon: <WaterAvailableSvg />,
+        text: 'Available Water 24/7',
+      },
+      {
+        icon: <WifiSvg />,
+        text: 'Wifi',
+      },
+      {
+        icon: <CarSvg />,
+        text: 'Parking',
+      },
+      {
+        icon: <SecuritySvg />,
+        text: 'Security',
+      },
+      {
+        icon: <GymSvg />,
+        text: 'Gym',
+      },
+      {
+        icon: <SwimmingPoolSvg />,
+        text: 'Swimming Pool',
+      },
+      {
+        icon: <BabyCareSvg />,
+        text: 'Baby Care',
+      },
+    ],
   },
   {
     id: 8,
@@ -122,6 +502,58 @@ const listings = [
       bathrooms: '4',
       balconies: '2',
     },
+    charges: {
+      deposit: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      rent: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      agreement: {
+        amount: '2,000',
+        icon: <AgreementSvg />,
+      },
+      'water bill': {
+        amount: '150/unit',
+        icon: <WaterBillSvg />,
+      },
+      trash: {
+        amount: '150/month',
+        icon: <TrashSvg />,
+      },
+    },
+    amenities: [
+      {
+        icon: <WaterAvailableSvg />,
+        text: 'Available Water 24/7',
+      },
+      {
+        icon: <WifiSvg />,
+        text: 'Wifi',
+      },
+      {
+        icon: <CarSvg />,
+        text: 'Parking',
+      },
+      {
+        icon: <SecuritySvg />,
+        text: 'Security',
+      },
+      {
+        icon: <GymSvg />,
+        text: 'Gym',
+      },
+      {
+        icon: <SwimmingPoolSvg />,
+        text: 'Swimming Pool',
+      },
+      {
+        icon: <BabyCareSvg />,
+        text: 'Baby Care',
+      },
+    ],
   },
   {
     id: 9,
@@ -137,6 +569,58 @@ const listings = [
       bathrooms: '1',
       balconies: '1',
     },
+    charges: {
+      deposit: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      rent: {
+        amount: '30,000',
+        icon: <BuildingSvg />,
+      },
+      agreement: {
+        amount: '2,000',
+        icon: <AgreementSvg />,
+      },
+      'water bill': {
+        amount: '150/unit',
+        icon: <WaterBillSvg />,
+      },
+      trash: {
+        amount: '150/month',
+        icon: <TrashSvg />,
+      },
+    },
+    amenities: [
+      {
+        icon: <WaterAvailableSvg />,
+        text: 'Available Water 24/7',
+      },
+      {
+        icon: <WifiSvg />,
+        text: 'Wifi',
+      },
+      {
+        icon: <CarSvg />,
+        text: 'Parking',
+      },
+      {
+        icon: <SecuritySvg />,
+        text: 'Security',
+      },
+      {
+        icon: <GymSvg />,
+        text: 'Gym',
+      },
+      {
+        icon: <SwimmingPoolSvg />,
+        text: 'Swimming Pool',
+      },
+      {
+        icon: <BabyCareSvg />,
+        text: 'Baby Care',
+      },
+    ],
   },
 ];
 
