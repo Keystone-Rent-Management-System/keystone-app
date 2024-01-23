@@ -24,7 +24,7 @@ import WaterBillSvg from './waterBill.js';
 import WifiSvg from './wifi.js';
 import WaterAvailableSvg from './WaterAvailable.js';
 import ApartmentSvg from './apartment';
-import PhoneSvg from './phone.js';
+import UploadSvg from './upload.js';
 
 export {
   AgentSvg,
@@ -53,5 +53,6 @@ export {
   WifiSvg,
   WaterAvailableSvg,
   ApartmentSvg,
-  PhoneSvg,
+  UploadSvg,
+  s,
 };
