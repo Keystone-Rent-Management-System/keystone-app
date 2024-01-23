@@ -14,10 +14,13 @@ import {BedSvg} from '@/assets/icons';
 import Helper from '@/utils/Helper';
 import {IconLabel} from '@/components/screens/explore/ListingItem';
 import {
+  BackSvg,
   BalconySvg,
   BathroomSvg,
+  LikeSvg,
   MessageSvg,
   PhoneSvg,
+  UploadSvg,
   VirtualTourSvg,
 } from '../../assets/icons';
 import COLORS from '../../constants/Theme';
@@ -31,12 +34,46 @@ const ApartmentView = ({route: {params}}) => {
   return (
     <Layout>
       {/* image */}
-      <View className={'h-60'}>
+      <View className={'h-60 relative'}>
+        {/* floating action buttons */}
+        <View
+          className={
+            'absolute inset-x-0 top-0 bg-none px-4 py-3 z-20 flex-row'
+          }>
+          <View className={'flex-1 flex-row'}>
+            <ActionBtn
+              ClassName={'bg-white h-9 w-9 items-center justify-center'}
+              icon={<BackSvg size="16" />}
+            />
+          </View>
+
+          <View
+            style={styles.actionButtonWrapper}
+            className={'flex-1 flex-row justify-end shadow-xl'}>
+            <ActionBtn ClassName={'bg-white'} icon={<UploadSvg />} />
+            <ActionBtn
+              ClassName={'bg-white'}
+              icon={<LikeSvg strokeColor={COLORS.text_color} size="24" />}
+            />
+          </View>
+        </View>
+
         <Image
           source={{uri: currentApartmentDetails.image}}
           alt={'apartment'}
           className={'object-cover h-full'}
         />
+
+        {/* virtual tour image */}
+        <TouchableOpacity
+          style={styles.floatingVirtualButton}
+          className={
+            'flex-row py-1.5 px-2 border-[0.4px] border-white rounded-md items-center absolute bottom-3 right-3'
+          }>
+          <VirtualTourSvg color={COLORS.white} />
+
+          <Text className={'text-white text-11 font-inter'}>Virtual Tour</Text>
+        </TouchableOpacity>
       </View>
 
       <ScrollView>
@@ -192,9 +229,9 @@ const ProfileView = ({image}) => (
   />
 );
 
-const ActionBtn = ({icon, handlePress}) => (
+const ActionBtn = ({icon, handlePress, ClassName}) => (
   <TouchableOpacity
-    className={'p-2 bg-bg_grey rounded-full'}
+    className={`p-2 bg-bg_grey rounded-full h-9 w-9 items-center justify-center ${ClassName}`}
     onPress={handlePress}>
     {icon}
   </TouchableOpacity>
@@ -211,5 +248,9 @@ const styles = StyleSheet.create({
   },
   chargeList: {
     gap: 12,
+  },
+  floatingVirtualButton: {
+    backgroundColor: COLORS.primary + '60',
+    gap: 8,
   },
 });
