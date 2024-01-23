@@ -1,11 +1,18 @@
-import React, { useState } from "react";
+import React, {useState} from 'react';
 
-import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
-import COLORS from "../../../constants/Theme";
-import { styled } from "nativewind";
-import Badge from "./Badge";
-import { AgentSvg, BalconySvg, BathroomSvg, BedSvg, LikeSvg, MapPinSvg } from "../../../assets/icons";
-import Helper from "../../../utils/Helper";
+import {Image, Pressable, Text, TouchableOpacity, View} from 'react-native';
+import COLORS from '@/constants/Theme';
+import {styled} from 'nativewind';
+import Badge from './Badge';
+import {
+  AgentSvg,
+  BalconySvg,
+  BathroomSvg,
+  BedSvg,
+  LikeSvg,
+  MapPinSvg,
+} from '@/assets/icons';
+import Helper from '@/utils/Helper';
 
 /**
  * Returns property item for listing
@@ -116,7 +123,7 @@ const ListingItem = props => {
 
 export default ListingItem;
 
-const IconLabel = ({icon, text}) => (
+export const IconLabel = ({icon, text}) => (
   <View className={'flex-row space-x-2 mr-3'}>
     {icon}
 

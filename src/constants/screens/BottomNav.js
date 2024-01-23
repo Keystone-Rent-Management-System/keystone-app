@@ -1,4 +1,4 @@
-import {Explore, Home, More, Notifications} from '../../screens';
+import {Home, More, Notifications} from '../../screens';
 import {
   ExploreSvg,
   HomeSvg,
@@ -6,11 +6,12 @@ import {
   NotificationsSvg,
 } from '../../assets/icons';
 import COLORS from '../../constants/Theme';
+import ExploreStack from '../../navigation/ExploreStack';
 
 const screens = [
   {
-    title: 'explore',
-    component: Explore,
+    title: 'explore_stack',
+    component: ExploreStack,
     tab: {
       title: 'Explore',
       icon: isCurrent => (

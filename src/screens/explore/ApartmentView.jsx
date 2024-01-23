@@ -1,13 +1,238 @@
-import React from 'react';
+import React, {useMemo} from 'react';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-import {Text, View} from 'react-native';
+import listings from '@/provider/listings';
+import {Layout} from '@/components';
+import {BedSvg} from '@/assets/icons';
+import Helper from '@/utils/Helper';
+import {IconLabel} from '@/components/screens/explore/ListingItem';
+import {
+  BalconySvg,
+  BathroomSvg,
+  MessageSvg,
+  PhoneSvg,
+  VirtualTourSvg,
+} from '../../assets/icons';
+import COLORS from '../../constants/Theme';
+import {ExploreAmenity} from '../../components';
+import Animated, {
+  Easing,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
-const ApartmentView = () => {
+const INIT_IMG_HEIGHT = 290;
+
+const ApartmentView = ({route: {params}, ...props}) => {
+  const imgHeight = useSharedValue(INIT_IMG_HEIGHT);
+
+  const currentApartmentDetails = useMemo(() => {
+    return listings.find(item => item.id === params?.apartment);
+  }, [params?.apartment]);
+
+  const handleScrolling = event => {
+    if (event.nativeEvent.velocity.y < 0) {
+      imgHeight.value = withTiming(INIT_IMG_HEIGHT, {
+        duration: 100,
+        easing: Easing.inOut(Easing.ease),
+      });
+    } else if (event.nativeEvent.velocity.y > 0) {
+      imgHeight.value = withTiming(INIT_IMG_HEIGHT * 0.7, {
+        duration: 100,
+        easing: Easing.inOut(Easing.ease),
+      });
+    }
+  };
+
   return (
-    <View>
-      <Text>Apartment</Text>
-    </View>
+    <Layout>
+      {/* image */}
+      <Animated.View style={{height: imgHeight}}>
+        <Image
+          source={{uri: currentApartmentDetails.image}}
+          alt={'apartment'}
+          className={'object-cover h-full'}
+        />
+      </Animated.View>
+
+      <ScrollView onScroll={handleScrolling}>
+        {/* apartment primary details  */}
+        <View className={'p-4 border-b border-border_grey'}>
+          <Text className={'text-black font-inter-semibold'}>
+            {currentApartmentDetails?.title}
+          </Text>
+
+          <View className={'flex-row mt-2'}>
+            {currentApartmentDetails.properties?.bedrooms > 0 && (
+              <IconLabel
+                icon={<BedSvg size={17} />}
+                text={
+                  currentApartmentDetails.properties?.bedrooms +
+                  ` Bedroom${Helper.renderSingularPlural(
+                    currentApartmentDetails.properties?.bedrooms,
+                    's',
+                  )}`
+                }
+              />
+            )}
+
+            {currentApartmentDetails.properties?.bedrooms > 0 && (
+              <IconLabel
+                icon={<BathroomSvg />}
+                text={
+                  currentApartmentDetails?.properties?.bathrooms + 'Bathroom'
+                }
+              />
+            )}
+
+            {currentApartmentDetails.properties?.balconies > 0 && (
+              <IconLabel
+                icon={<BalconySvg />}
+                text={
+                  currentApartmentDetails.properties?.balconies +
+                  ` Balcon${Helper.renderSingularPlural(
+                    currentApartmentDetails.properties?.bathrooms,
+                    'ies',
+                    'y',
+                  )}`
+                }
+              />
+            )}
+          </View>
+        </View>
+
+        {/*  landlord details  */}
+        <View className={'p-4 border-b border-border_grey flex-row'}>
+          <ProfileView
+            image={
+              'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg'
+            }
+          />
+
+          <View className={'mx-3 flex-1'}>
+            <Text className={'font-inter text-black'}>Tom Cruise</Text>
+            <Text className={'font-inter capitalize text-13 text-grey_1'}>
+              {currentApartmentDetails?.user}
+            </Text>
+          </View>
+
+          <View
+            className={'flex-row items-center'}
+            style={styles.actionButtonWrapper}>
+            {/* message button */}
+            <ActionBtn icon={<MessageSvg />} />
+
+            {/* call button */}
+            <ActionBtn icon={<PhoneSvg />} />
+          </View>
+        </View>
+
+        {/* Location details */}
+        <View className={'px-4 py-6 border-b border-border_grey'}>
+          <Text className={'text-sm font-inter-medium text-black'}>
+            Where is the unit located
+          </Text>
+
+          <Text className={'text-grey_1 font-inter my-1.5'}>
+            {currentApartmentDetails.location}
+          </Text>
+
+          <View className={'h-32 my-3 bg-bg_grey'}>
+            <View />
+          </View>
+
+          {/* Virtual tour button */}
+          <View className={'flex-row justify-center '}>
+            <TouchableOpacity
+              style={styles.virtualButton}
+              className={
+                'flex-row py-3.5 px-6 border border-primary rounded-md items-center'
+              }>
+              <VirtualTourSvg color={COLORS.primary} />
+
+              <Text className={'text-primary text-xs font-inter'}>
+                Virtual Tour
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Charges */}
+        <View className={'px-4 py-5 border-b border-border_grey'}>
+          <Text className={'text-black font-inter-medium'}>Charges</Text>
+
+          <View className={'mt-3'} style={styles.chargeList}>
+            {Object.keys(currentApartmentDetails.charges)?.map(
+              (charge, ind) => (
+                <ExploreAmenity
+                  key={ind}
+                  showCheckBox={false}
+                  icon={currentApartmentDetails.charges[charge]?.icon}
+                  title={charge}
+                  value={`KES. ${currentApartmentDetails.charges[charge]?.amount}`}
+                />
+              ),
+            )}
+          </View>
+        </View>
+
+        {/* amenities */}
+        <View className={'px-4 py-5'}>
+          <Text className={'text-black font-inter-medium'}>
+            Amenities Available
+          </Text>
+
+          <View className={'mt-3'} style={styles.chargeList}>
+            {currentApartmentDetails.amenities?.map((amenity, ind) => (
+              <ExploreAmenity
+                key={ind}
+                showCheckBox={false}
+                icon={amenity.icon}
+                title={amenity.text}
+              />
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+    </Layout>
   );
 };
 
+const ProfileView = ({image}) => (
+  <Image
+    className={'h-12 w-12 rounded-full'}
+    source={{
+      uri: image,
+    }}
+    alt="profile"
+  />
+);
+
+const ActionBtn = ({icon, handlePress}) => (
+  <TouchableOpacity
+    className={'p-2 bg-bg_grey rounded-full'}
+    onPress={handlePress}>
+    {icon}
+  </TouchableOpacity>
+);
+
 export default ApartmentView;
+
+const styles = StyleSheet.create({
+  actionButtonWrapper: {
+    gap: 15,
+  },
+  virtualButton: {
+    gap: 6,
+  },
+  chargeList: {
+    gap: 12,
+  },
+});
