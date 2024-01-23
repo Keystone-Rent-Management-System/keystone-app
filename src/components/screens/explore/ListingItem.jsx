@@ -54,7 +54,7 @@ const ListingItem = props => {
         <View className={'flex-row justify-between'}>
           <Text
             style={{color: COLORS.text_color}}
-            className={`font-inter-semibold`}>
+            className={'font-inter-semibold'}>
             {props.title}
           </Text>
 
