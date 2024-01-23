@@ -22,47 +22,24 @@ import {
 } from '../../assets/icons';
 import COLORS from '../../constants/Theme';
 import {ExploreAmenity} from '../../components';
-import Animated, {
-  Easing,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
 
-const INIT_IMG_HEIGHT = 290;
-
-const ApartmentView = ({route: {params}, ...props}) => {
-  const imgHeight = useSharedValue(INIT_IMG_HEIGHT);
-
+const ApartmentView = ({route: {params}}) => {
   const currentApartmentDetails = useMemo(() => {
     return listings.find(item => item.id === params?.apartment);
   }, [params?.apartment]);
 
-  const handleScrolling = event => {
-    if (event.nativeEvent.velocity.y < 0) {
-      imgHeight.value = withTiming(INIT_IMG_HEIGHT, {
-        duration: 100,
-        easing: Easing.inOut(Easing.ease),
-      });
-    } else if (event.nativeEvent.velocity.y > 0) {
-      imgHeight.value = withTiming(INIT_IMG_HEIGHT * 0.7, {
-        duration: 100,
-        easing: Easing.inOut(Easing.ease),
-      });
-    }
-  };
-
   return (
     <Layout>
       {/* image */}
-      <Animated.View style={{height: imgHeight}}>
+      <View className={'h-60'}>
         <Image
           source={{uri: currentApartmentDetails.image}}
           alt={'apartment'}
           className={'object-cover h-full'}
         />
-      </Animated.View>
+      </View>
 
-      <ScrollView onScroll={handleScrolling}>
+      <ScrollView>
         {/* apartment primary details  */}
         <View className={'p-4 border-b border-border_grey'}>
           <Text className={'text-black font-inter-semibold'}>
