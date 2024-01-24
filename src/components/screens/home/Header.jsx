@@ -7,7 +7,7 @@ import {WavingSvg} from '@/assets/icons';
 
 const Header = () => {
   return (
-    <View className={'p-4 flex-row items-center mb-3'}>
+    <View className={'py-4 flex-row items-center mb-2'}>
       <ProfileView
         image={
           'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg'
