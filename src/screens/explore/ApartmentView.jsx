@@ -26,9 +26,12 @@ import {
 import COLORS from '@/constants/Theme';
 import {ExploreAmenity} from '@/components';
 import {CustomBottomSheet} from '@/components/modals';
+import {useNavigation} from '@react-navigation/native';
 
 const ApartmentView = ({route: {params}}) => {
   const bottomSheetRef = useRef();
+  const navigation = useNavigation();
+
   const [modalState, setModalState] = useState(false);
 
   const currentApartmentDetails = useMemo(() => {
@@ -54,6 +57,10 @@ const ApartmentView = ({route: {params}}) => {
     }
   };
 
+  const handleGoBack = () => {
+    navigation.goBack();
+  };
+
   return (
     <Layout>
       {/* image */}
@@ -68,6 +75,7 @@ const ApartmentView = ({route: {params}}) => {
               <ActionBtn
                 ClassName={'bg-white h-9 w-9 items-center justify-center'}
                 icon={<BackSvg size="16" />}
+                handlePress={handleGoBack}
               />
             </View>
 
