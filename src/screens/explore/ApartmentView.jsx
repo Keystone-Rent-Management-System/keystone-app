@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -22,41 +22,66 @@ import {
   PhoneSvg,
   UploadSvg,
   VirtualTourSvg,
-} from '../../assets/icons';
-import COLORS from '../../constants/Theme';
-import {ExploreAmenity} from '../../components';
+} from '@/assets/icons';
+import COLORS from '@/constants/Theme';
+import {ExploreAmenity} from '@/components';
+import {CustomBottomSheet} from '@/components/modals';
 
 const ApartmentView = ({route: {params}}) => {
+  const bottomSheetRef = useRef();
+  const [modalState, setModalState] = useState(false);
+
   const currentApartmentDetails = useMemo(() => {
     return listings.find(item => item.id === params?.apartment);
   }, [params?.apartment]);
+
+  const handleViewTour = () => {
+    // setModalState(true);
+    bottomSheetRef.current?.expand();
+  };
+
+  const handleCloseTour = () => {
+    bottomSheetRef.current?.close();
+  };
+
+  const handleSheetChanges = changes => {
+    if (changes < 0) {
+      setModalState(false);
+    } else {
+      if (!modalState) {
+        setModalState(true);
+      }
+    }
+  };
 
   return (
     <Layout>
       {/* image */}
       <View className={'h-60 relative'}>
         {/* floating action buttons */}
-        <View
-          className={
-            'absolute inset-x-0 top-0 bg-none px-4 py-3 z-20 flex-row'
-          }>
-          <View className={'flex-1 flex-row'}>
-            <ActionBtn
-              ClassName={'bg-white h-9 w-9 items-center justify-center'}
-              icon={<BackSvg size="16" />}
-            />
-          </View>
-
+        {!modalState && (
           <View
-            style={styles.actionButtonWrapper}
-            className={'flex-1 flex-row justify-end shadow-xl'}>
-            <ActionBtn ClassName={'bg-white'} icon={<UploadSvg />} />
-            <ActionBtn
-              ClassName={'bg-white'}
-              icon={<LikeSvg strokeColor={COLORS.text_color} size="24" />}
-            />
+            className={
+              'absolute inset-x-0 top-0 bg-none px-4 py-3 z-20 flex-row '
+            }>
+            <View className={'flex-1 flex-row'}>
+              <ActionBtn
+                ClassName={'bg-white h-9 w-9 items-center justify-center'}
+                icon={<BackSvg size="16" />}
+              />
+            </View>
+
+            <View
+              style={styles.actionButtonWrapper}
+              className={'flex-1 flex-row justify-end shadow-xl'}>
+              <ActionBtn ClassName={'bg-white'} icon={<UploadSvg />} />
+              <ActionBtn
+                ClassName={'bg-white'}
+                icon={<LikeSvg strokeColor={COLORS.text_color} size="24" />}
+              />
+            </View>
           </View>
-        </View>
+        )}
 
         <Image
           source={{uri: currentApartmentDetails.image}}
@@ -69,7 +94,8 @@ const ApartmentView = ({route: {params}}) => {
           style={styles.floatingVirtualButton}
           className={
             'flex-row py-1.5 px-2 border-[0.4px] border-white rounded-md items-center absolute bottom-3 right-3'
-          }>
+          }
+          onPress={handleViewTour}>
           <VirtualTourSvg color={COLORS.white} />
 
           <Text className={'text-white text-11 font-inter'}>Virtual Tour</Text>
@@ -213,8 +239,21 @@ const ApartmentView = ({route: {params}}) => {
               />
             ))}
           </View>
+
+          {/* custom modal */}
         </View>
       </ScrollView>
+      <CustomBottomSheet
+        snapPoints={['100%']}
+        ref={bottomSheetRef}
+        handleComponent={() => renderSheetHeader(handleCloseTour)}
+        onChange={handleSheetChanges}>
+        <Image
+          source={{uri: currentApartmentDetails?.image}}
+          className={'flex-1'}
+          alt={'virtual-tour'}
+        />
+      </CustomBottomSheet>
     </Layout>
   );
 };
@@ -235,6 +274,22 @@ const ActionBtn = ({icon, handlePress, ClassName}) => (
     onPress={handlePress}>
     {icon}
   </TouchableOpacity>
+);
+
+const renderSheetHeader = handleClose => (
+  <View className={'absolute inset-x-0 top-0 bg-none px-4 py-3 z-50  flex-row'}>
+    <ActionBtn
+      ClassName={'bg-white h-9 w-9 items-center justify-center z-10'}
+      icon={<BackSvg size="16" />}
+      handlePress={handleClose}
+    />
+
+    <View
+      style={styles.actionButtonWrapper}
+      className={'flex-1 flex-row justify-end shadow-xl'}>
+      <ActionBtn ClassName={'bg-white'} icon={<UploadSvg />} />
+    </View>
+  </View>
 );
 
 export default ApartmentView;
