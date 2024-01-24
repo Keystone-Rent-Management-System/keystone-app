@@ -1,4 +1,5 @@
 import CustomBottomSheet from './CustomBottomSheet';
 import ExplorerFilterModal from './FilterModal';
+import VirtualTourModal from './VirtualTour';
 
-export {CustomBottomSheet, ExplorerFilterModal};
+export {CustomBottomSheet, ExplorerFilterModal, VirtualTourModal};
