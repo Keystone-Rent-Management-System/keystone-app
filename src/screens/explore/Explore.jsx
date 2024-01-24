@@ -1,38 +1,46 @@
-import React, {useRef} from 'react';
+import React, {useCallback, useRef} from 'react';
 import {FlashList} from '@shopify/flash-list';
 
 import {
   ExploreFilters,
   ExploreHeader,
+  ExploreListingItem,
   ExplorerMapBtn,
   Layout,
 } from '@/components';
 import listings from '@/provider/listings';
-import ListingItem from '@/components/screens/explore/ListingItem';
 import {ExplorerFilterModal} from '@/components/modals';
 import {useNavigation} from '@react-navigation/native';
 
 const Explore = () => {
-  const filterModalRef = useRef(null);
   const navigation = useNavigation();
 
-  const handleFilter = () => {
+  const filterModalRef = useRef(null);
+
+  const handleFilter = useCallback(() => {
     filterModalRef.current?.expand();
-  };
+  }, []);
 
-  const handleCloseFilter = () => {
+  const handleCloseFilter = useCallback(() => {
     filterModalRef.current?.close();
-  };
+  }, []);
 
-  const handleViewApartment = id => {
-    navigation.navigate('apartment_view', {apartment: id});
-  };
+  const handleSearch = useCallback(() => {
+    navigation.navigate('apartment-search');
+  }, [navigation]);
+
+  const handleViewApartment = useCallback(
+    id => {
+      navigation.navigate('apartment_view', {apartment: id});
+    },
+    [navigation],
+  );
 
   const renderListingItem = ({
     item: {category, image, user, location, price, properties, title, id},
   }) => {
     return (
-      <ListingItem
+      <ExploreListingItem
         image={image}
         title={title}
         userType={user}
@@ -56,7 +64,10 @@ const Explore = () => {
   return (
     <Layout ClassName={'relative'}>
       {/*Header*/}
-      <ExploreHeader handleFilter={handleFilter} />
+      <ExploreHeader
+        handleFilter={handleFilter}
+        handleSearchFocus={handleSearch}
+      />
 
       {/*  Filters  */}
       <ExploreFilters />
