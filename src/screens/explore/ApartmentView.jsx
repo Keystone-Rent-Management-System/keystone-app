@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -28,15 +28,12 @@ import {
   ExploreActionBtn,
   Layout,
   ApartmentViewFloatingActionBar,
+  ProfileView,
 } from '@/components';
 import {useNavigation} from '@react-navigation/native';
 import {VirtualTourModal} from '@/components/modals';
 
 const ApartmentView = ({route: {params}}) => {
-  useEffect(() => {
-    navigation.getParent()?.setOptions({tabBarStyle: {display: 'none'}});
-  }, [navigation]);
-
   const bottomSheetRef = useRef();
   const navigation = useNavigation();
 
@@ -273,16 +270,6 @@ const ApartmentView = ({route: {params}}) => {
     </Layout>
   );
 };
-
-const ProfileView = ({image}) => (
-  <Image
-    className={'h-12 w-12 rounded-full'}
-    source={{
-      uri: image,
-    }}
-    alt="profile"
-  />
-);
 
 export default ApartmentView;
 
