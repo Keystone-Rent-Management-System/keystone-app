@@ -1,11 +1,18 @@
-import React, { useState } from "react";
+import React, {useState} from 'react';
 
-import { Image, Text, TouchableOpacity, View } from "react-native";
-import COLORS from "../../../constants/Theme";
-import { styled } from "nativewind";
-import Badge from "./Badge";
-import { AgentSvg, BalconySvg, BathroomSvg, BedSvg, LikeSvg, MapPinSvg } from "../../../assets/icons";
-import Helper from "../../../utils/Helper";
+import {Image, Pressable, Text, TouchableOpacity, View} from 'react-native';
+import COLORS from '@/constants/Theme';
+import {styled} from 'nativewind';
+import Badge from './Badge';
+import {
+  AgentSvg,
+  BalconySvg,
+  BathroomSvg,
+  BedSvg,
+  LikeSvg,
+  MapPinSvg,
+} from '@/assets/icons';
+import Helper from '@/utils/Helper';
 
 /**
  * Returns property item for listing
@@ -20,7 +27,7 @@ const ListingItem = props => {
   const handleLike = () => setLiked(prev => !prev);
 
   return (
-    <View className={'mb-5 mx-1'}>
+    <Pressable className={'mb-5 mx-1'} onPress={props.handlePress}>
       {/*  image   */}
       <StyledView className={'bg-bg shadow-xl rounded-xl relative'}>
         <Image
@@ -47,7 +54,7 @@ const ListingItem = props => {
         <View className={'flex-row justify-between'}>
           <Text
             style={{color: COLORS.text_color}}
-            className={`font-inter-semibold`}>
+            className={'font-inter-semibold'}>
             {props.title}
           </Text>
 
@@ -110,13 +117,13 @@ const ListingItem = props => {
           </Text>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
 export default ListingItem;
 
-const IconLabel = ({icon, text}) => (
+export const IconLabel = ({icon, text}) => (
   <View className={'flex-row space-x-2 mr-3'}>
     {icon}
 
@@ -136,5 +143,6 @@ const IconLabel = ({icon, text}) => (
  *   bedrooms:number,
  *   bathrooms:number,
  *   id:number
+ *   handlePress:Function
  * }} ListingProperty
  */

@@ -1,3 +1,4 @@
 import Explore from './Explore';
+import ApartmentView from './ApartmentView';
 
-export {Explore};
+export {Explore, ApartmentView};
