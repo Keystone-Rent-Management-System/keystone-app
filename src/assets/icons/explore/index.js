@@ -26,6 +26,7 @@ import WaterAvailableSvg from './WaterAvailable.js';
 import ApartmentSvg from './apartment';
 import PhoneSvg from './phone.js';
 import UploadSvg from './upload.js';
+import HistorySvg from './History.js';
 
 export {
   AgentSvg,
@@ -56,4 +57,5 @@ export {
   ApartmentSvg,
   PhoneSvg,
   UploadSvg,
+  HistorySvg,
 };

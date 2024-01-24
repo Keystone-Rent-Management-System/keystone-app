@@ -1,4 +1,4 @@
-import React, {useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -9,8 +9,6 @@ import {
 } from 'react-native';
 
 import listings from '@/provider/listings';
-import {Layout} from '@/components';
-import {BedSvg} from '@/assets/icons';
 import Helper from '@/utils/Helper';
 import {IconLabel} from '@/components/screens/explore/ListingItem';
 import {
@@ -22,13 +20,26 @@ import {
   PhoneSvg,
   UploadSvg,
   VirtualTourSvg,
+  BedSvg,
 } from '@/assets/icons';
 import COLORS from '@/constants/Theme';
-import {ExploreAmenity} from '@/components';
-import {CustomBottomSheet} from '@/components/modals';
+import {
+  ExploreAmenity,
+  ExploreActionBtn,
+  Layout,
+  ApartmentViewFloatingActionBar,
+} from '@/components';
+import {useNavigation} from '@react-navigation/native';
+import {VirtualTourModal} from '@/components/modals';
 
 const ApartmentView = ({route: {params}}) => {
+  useEffect(() => {
+    navigation.getParent()?.setOptions({tabBarStyle: {display: 'none'}});
+  }, [navigation]);
+
   const bottomSheetRef = useRef();
+  const navigation = useNavigation();
+
   const [modalState, setModalState] = useState(false);
 
   const currentApartmentDetails = useMemo(() => {
@@ -54,6 +65,10 @@ const ApartmentView = ({route: {params}}) => {
     }
   };
 
+  const handleGoBack = () => {
+    navigation.goBack();
+  };
+
   return (
     <Layout>
       {/* image */}
@@ -65,17 +80,18 @@ const ApartmentView = ({route: {params}}) => {
               'absolute inset-x-0 top-0 bg-none px-4 py-3 z-20 flex-row '
             }>
             <View className={'flex-1 flex-row'}>
-              <ActionBtn
+              <ExploreActionBtn
                 ClassName={'bg-white h-9 w-9 items-center justify-center'}
                 icon={<BackSvg size="16" />}
+                handlePress={handleGoBack}
               />
             </View>
 
             <View
               style={styles.actionButtonWrapper}
               className={'flex-1 flex-row justify-end shadow-xl'}>
-              <ActionBtn ClassName={'bg-white'} icon={<UploadSvg />} />
-              <ActionBtn
+              <ExploreActionBtn ClassName={'bg-white'} icon={<UploadSvg />} />
+              <ExploreActionBtn
                 ClassName={'bg-white'}
                 icon={<LikeSvg strokeColor={COLORS.text_color} size="24" />}
               />
@@ -167,10 +183,10 @@ const ApartmentView = ({route: {params}}) => {
             className={'flex-row items-center'}
             style={styles.actionButtonWrapper}>
             {/* message button */}
-            <ActionBtn icon={<MessageSvg />} />
+            <ExploreActionBtn icon={<MessageSvg />} />
 
             {/* call button */}
-            <ActionBtn icon={<PhoneSvg />} />
+            <ExploreActionBtn icon={<PhoneSvg />} />
           </View>
         </View>
 
@@ -242,18 +258,18 @@ const ApartmentView = ({route: {params}}) => {
 
           {/* custom modal */}
         </View>
+
+        <View className={'h-16'} />
       </ScrollView>
-      <CustomBottomSheet
-        snapPoints={['100%']}
+
+      <ApartmentViewFloatingActionBar />
+
+      <VirtualTourModal
         ref={bottomSheetRef}
-        handleComponent={() => renderSheetHeader(handleCloseTour)}
-        onChange={handleSheetChanges}>
-        <Image
-          source={{uri: currentApartmentDetails?.image}}
-          className={'flex-1'}
-          alt={'virtual-tour'}
-        />
-      </CustomBottomSheet>
+        handleSheetChanges={handleSheetChanges}
+        handleCloseTour={handleCloseTour}
+        source={{uri: currentApartmentDetails?.image}}
+      />
     </Layout>
   );
 };
@@ -266,30 +282,6 @@ const ProfileView = ({image}) => (
     }}
     alt="profile"
   />
-);
-
-const ActionBtn = ({icon, handlePress, ClassName}) => (
-  <TouchableOpacity
-    className={`p-2 bg-bg_grey rounded-full h-9 w-9 items-center justify-center ${ClassName}`}
-    onPress={handlePress}>
-    {icon}
-  </TouchableOpacity>
-);
-
-const renderSheetHeader = handleClose => (
-  <View className={'absolute inset-x-0 top-0 bg-none px-4 py-3 z-50  flex-row'}>
-    <ActionBtn
-      ClassName={'bg-white h-9 w-9 items-center justify-center z-10'}
-      icon={<BackSvg size="16" />}
-      handlePress={handleClose}
-    />
-
-    <View
-      style={styles.actionButtonWrapper}
-      className={'flex-1 flex-row justify-end shadow-xl'}>
-      <ActionBtn ClassName={'bg-white'} icon={<UploadSvg />} />
-    </View>
-  </View>
 );
 
 export default ApartmentView;
