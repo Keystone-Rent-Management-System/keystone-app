@@ -7,7 +7,7 @@ import { CInput } from "@/components";
 
 /**
  *
- * @param {{handleFilter:Function}} props
+ * @param {{handleFilter:Function,handleSearchFocus:Function}} props
  * @returns
  */
 const Header = props => {
@@ -27,6 +27,8 @@ const Header = props => {
         }
         placeHolder={'what are you looking for?'}
         placeholderTextColor={COLORS.inactive_text}
+        showSoftInputOnFocus={false}
+        onFocus={props.handleSearchFocus}
       />
 
       {/*  filter Button */}
