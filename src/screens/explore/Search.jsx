@@ -51,7 +51,7 @@ const renderSuggestionItem = ({item}) => (
     {/* icon */}
     <HistorySvg />
 
-    <Text className={'text-black font-inter text-13'}>{item}</Text>
+    <Text className={'text-black font-inter text-xs'}>{item}</Text>
   </View>
 );
 
