@@ -1,4 +1,5 @@
 import HomeHeader from './Header';
 import HomeApartmentTitle from './ApartmentTitle';
+import HomeStatsCard from './StatsCard';
 
-export {HomeHeader, HomeApartmentTitle};
+export {HomeHeader, HomeApartmentTitle, HomeStatsCard};

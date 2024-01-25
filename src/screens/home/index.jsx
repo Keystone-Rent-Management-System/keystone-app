@@ -1,6 +1,11 @@
 import React from 'react';
 
-import {HomeHeader, HomeApartmentTitle, Layout} from '@/components';
+import {
+  HomeHeader,
+  HomeApartmentTitle,
+  Layout,
+  HomeStatsCard,
+} from '@/components';
 
 const Home = () => {
   return (
@@ -10,6 +15,9 @@ const Home = () => {
 
       {/*apartment title */}
       <HomeApartmentTitle />
+
+      {/* stats card */}
+      <HomeStatsCard />
     </Layout>
   );
 };
