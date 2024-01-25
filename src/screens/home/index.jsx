@@ -1,12 +1,16 @@
 import React from 'react';
 
-import {Text, View} from 'react-native';
+import {HomeHeader, HomeApartmentTitle, Layout} from '@/components';
 
 const Home = () => {
   return (
-    <View className={'bg-bg flex-1'}>
-      <Text className={'font-inter'}>This is the Home screen</Text>
-    </View>
+    <Layout ClassName={'px-4'}>
+      {/* Header */}
+      <HomeHeader />
+
+      {/*apartment title */}
+      <HomeApartmentTitle />
+    </Layout>
   );
 };
 
