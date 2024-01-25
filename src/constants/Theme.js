@@ -10,8 +10,9 @@ const COLORS = {
   inactive_text: '#8E8E8E',
   active_text: '#022374',
   text_color: '#14142B',
-  white: '#fff',
+  white: '#ffffff',
   bg_grey: '#f5f5f5',
+  bg_green: '#D8F5DF',
 };
 
 module.exports = COLORS;
