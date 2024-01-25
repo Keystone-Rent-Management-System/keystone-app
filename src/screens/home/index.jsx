@@ -5,6 +5,7 @@ import {
   HomeApartmentTitle,
   Layout,
   HomeStatsCard,
+  HomeMenu,
 } from '@/components';
 
 const Home = () => {
@@ -18,6 +19,9 @@ const Home = () => {
 
       {/* stats card */}
       <HomeStatsCard />
+
+      {/* Finance & payments */}
+      <HomeMenu />
     </Layout>
   );
 };
