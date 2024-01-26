@@ -3,6 +3,8 @@ import React from 'react';
 import {Explore, Home, More, Notifications} from '@/screens';
 import {ExploreSvg, HomeSvg, MoreSvg, NotificationsSvg} from '@/assets/icons';
 import COLORS from '@/constants/Theme';
+import NavOptions from '@/navigation/options';
+import {Text, View} from 'react-native';
 
 const screens = [
   {
@@ -32,7 +34,7 @@ const screens = [
     },
   },
   {
-    title: 'notifications',
+    title: 'Notifications',
     component: Notifications,
     tab: {
       title: 'Notifications',
@@ -42,6 +44,10 @@ const screens = [
           strokeWidth={isCurrent ? '1.5' : '0.8'}
         />
       ),
+    },
+    options: {
+      ...NavOptions.defaultOptions,
+      header: () => <CustomHeader title={'Notifications'} />,
     },
   },
   {
@@ -57,3 +63,9 @@ const screens = [
 ];
 
 export default screens;
+
+const CustomHeader = ({title}) => (
+  <View className={'shadow-xl p-4 bg-bg border-b border-slate-50'}>
+    <Text className={'font-inter-semibold text-lg text-black '}>{title}</Text>
+  </View>
+);
