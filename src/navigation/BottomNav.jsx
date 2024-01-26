@@ -21,6 +21,8 @@ const BottomNav = () => {
           component={scr.component}
           options={{
             tabBarIcon: ({focused}) => renderTab({focused, scr}),
+
+            ...scr.options,
           }}
         />
       ))}
