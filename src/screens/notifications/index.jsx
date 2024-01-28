@@ -150,6 +150,38 @@ const notifications = [
         time: date.clone().subtract(24 * 90, 'hours'),
         read: true,
       },
+      {
+        category: 'invoice',
+        message: 'You have received your month of March Invoice, View to Pay',
+        time: date.clone().subtract(24 * 30, 'hours'),
+        read: true,
+      },
+      {
+        category: 'invoice',
+        message:
+          'You have payment invoice #2456588 has been accepted and confirmed.',
+        time: date.clone().subtract(24 * 28, 'hours'),
+        read: true,
+      },
+      {
+        category: 'extension',
+        message: 'Rent extension request accepted.',
+        time: date.clone().subtract(24 * 60, 'hours'),
+        read: true,
+      },
+      {
+        category: 'invoice',
+        message:
+          'You have received your month of February Invoice, View to Pay',
+        time: date.clone().subtract(24 * 90, 'hours'),
+        read: true,
+      },
+      {
+        category: 'extension',
+        message: 'You have received your month of January Invoice, View to Pay',
+        time: date.clone().subtract(24 * 90, 'hours'),
+        read: true,
+      },
     ],
   },
 ];
