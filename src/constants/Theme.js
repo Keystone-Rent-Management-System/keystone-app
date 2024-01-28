@@ -13,6 +13,7 @@ const COLORS = {
   white: '#ffffff',
   bg_grey: '#f5f5f5',
   bg_green: '#D8F5DF',
+  gradient_2: '#1659FD',
 };
 
 module.exports = COLORS;
