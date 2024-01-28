@@ -1,10 +1,11 @@
 import React from 'react';
 
-import {Explore, Home, More, Notifications} from '@/screens';
+import {Explore, More, Notifications} from '@/screens';
 import {ExploreSvg, HomeSvg, MoreSvg, NotificationsSvg} from '@/assets/icons';
 import COLORS from '@/constants/Theme';
 import NavOptions from '@/navigation/options';
 import {Text, View} from 'react-native';
+import {HomeStack} from '@/navigation';
 
 const screens = [
   {
@@ -21,8 +22,8 @@ const screens = [
     },
   },
   {
-    title: 'home',
-    component: Home,
+    title: 'home_stack',
+    component: HomeStack,
     tab: {
       title: 'Home',
       icon: isCurrent => (
@@ -34,7 +35,7 @@ const screens = [
     },
   },
   {
-    title: 'Notifications',
+    title: 'notifications',
     component: Notifications,
     tab: {
       title: 'Notifications',
