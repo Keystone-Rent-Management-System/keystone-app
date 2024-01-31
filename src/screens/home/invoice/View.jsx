@@ -1,12 +1,12 @@
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import React, {useMemo} from 'react';
-import invoiceData from '@/provider/invoice';
-import {Layout} from '@/components';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+
+import invoiceData from '@/provider/invoice';
+import {CButton, Layout} from '@/components';
 import COLORS from '@/constants/Theme';
 import {RightArrowSvg} from '@/assets/icons';
 import {Indicator} from '../../notifications';
-import CButton from '../../../components/general/CButton';
 
 const InvoiceView = ({route: {params}}) => {
   const currentInvoice = useMemo(
