@@ -10,7 +10,7 @@ const PendingApproval = () => {
       <FlashList
         contentContainerStyle={invoiceStyles.list}
         data={invoiceData.pending}
-        renderItem={renderInvoiceItem}
+        renderItem={({item}) => renderInvoiceItem(item)}
         keyExtractor={(_, ind) => ind.toString()}
         estimatedItemSize={300}
       />
