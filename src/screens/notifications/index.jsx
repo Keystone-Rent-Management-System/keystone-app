@@ -55,16 +55,18 @@ const renderItem = ({item}) => (
 
     {/* dot */}
     <View className={'justify-center px-1'}>
-      <View
-        className={`h-2 w-2  rounded-full ${
-          item.read ? 'bg-none' : 'bg-red-600'
-        }`}
-      />
+      <Indicator isRead={item.read} />
     </View>
   </View>
 );
 
 export default Notifications;
+
+export const Indicator = ({isRead = false}) => (
+  <View
+    className={`h-2 w-2  rounded-full ${isRead ? 'bg-none' : 'bg-red-600'}`}
+  />
+);
 
 const styles = StyleSheet.create({
   notificationContainer: {
