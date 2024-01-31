@@ -219,4 +219,24 @@ const invoiceData = {
     },
   ],
 };
+
+export const bills = [
+  {
+    title: 'rent',
+    amount: '35,000',
+  },
+  {
+    title: 'water',
+    amount: '3,500',
+  },
+  {
+    title: 'trash/garbage',
+    amount: '1,500',
+  },
+  {
+    title: 'security',
+    amount: '2,000',
+  },
+];
+
 export default invoiceData;
