@@ -1,7 +1,8 @@
 import React from 'react';
-import {CButton, Layout} from '../../../components';
 import {Text, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+
+import {CButton, Layout} from '@/components';
 
 const MakePayment = () => {
   const navigation = useNavigation();
