@@ -7,12 +7,19 @@ import {CButton, Layout} from '@/components';
 import COLORS from '@/constants/Theme';
 import {RightArrowSvg} from '@/assets/icons';
 import {Indicator} from '../../notifications';
+import {useNavigation} from '@react-navigation/native';
 
 const InvoiceView = ({route: {params}}) => {
+  const navigation = useNavigation();
+
   const currentInvoice = useMemo(
     () => invoiceData[params?.type]?.find(item => item.id === params?.id),
     [params?.id, params?.type],
   );
+
+  const handleNavigate = screen => {
+    navigation.navigate(screen);
+  };
 
   return (
     <Layout ClassName={'relative'}>
@@ -56,7 +63,10 @@ const InvoiceView = ({route: {params}}) => {
 
         <View className={'h-20 w-full'} />
       </ScrollView>
-      <Footer />
+      <Footer
+        handleManual={() => handleNavigate('')}
+        handlePrompt={() => handleNavigate('invoice_make_payment')}
+      />
     </Layout>
   );
 };
@@ -148,18 +158,20 @@ const DetailsPane = ({title, unit, amount}) => (
   </View>
 );
 
-const Footer = () => (
+const Footer = ({handleManual, handlePrompt}) => (
   <View className={'h-16 p-2 px-4 flex-row w-full bg-bg shadow-xl space-x-4'}>
     <CButton
       ClassName={'bg-none border border-primary flex-1 mr-5'}
       textClassName={'text-primary font-inter text-xs'}
       text={'Pay Manually'}
+      onPress={handleManual}
     />
 
     <CButton
       ClassName={'bg-primary flex-1'}
       textClassName={'text-white font-inter text-xs'}
       text={'Pay Now'}
+      onPress={handlePrompt}
     />
   </View>
 );
