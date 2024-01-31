@@ -2,7 +2,7 @@ import React, {useMemo} from 'react';
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-import invoiceData from '@/provider/invoice';
+import invoiceData, {bills} from '@/provider/invoice';
 import {CButton, Layout} from '@/components';
 import COLORS from '@/constants/Theme';
 import {RightArrowSvg} from '@/assets/icons';
@@ -17,8 +17,8 @@ const InvoiceView = ({route: {params}}) => {
     [params?.id, params?.type],
   );
 
-  const handleNavigate = screen => {
-    navigation.navigate(screen);
+  const handleNavigate = (screen, options) => {
+    navigation.navigate(screen, options);
   };
 
   return (
@@ -64,14 +64,18 @@ const InvoiceView = ({route: {params}}) => {
         <View className={'h-20 w-full'} />
       </ScrollView>
       <Footer
-        handleManual={() => handleNavigate('')}
+        handleManual={() =>
+          handleNavigate('home_stack', {
+            screen: 'invoice_receipt',
+          })
+        }
         handlePrompt={() => handleNavigate('invoice_make_payment')}
       />
     </Layout>
   );
 };
 
-const BillItem = ({amt, title, txtClassName, containerClassName}) => (
+export const BillItem = ({amt, title, txtClassName, containerClassName}) => (
   <View className={`flex-row justify-between py-2.5 ${containerClassName}`}>
     <Text
       className={`font-inter text-black text-xs capitalize ${txtClassName}`}>
@@ -176,22 +180,3 @@ const Footer = ({handleManual, handlePrompt}) => (
   </View>
 );
 export default InvoiceView;
-
-const bills = [
-  {
-    title: 'rent',
-    amount: '35,000',
-  },
-  {
-    title: 'water',
-    amount: '3,500',
-  },
-  {
-    title: 'trash/garbage',
-    amount: '1,500',
-  },
-  {
-    title: 'security',
-    amount: '2,000',
-  },
-];
