@@ -1,18 +1,20 @@
 import React from 'react';
 import {Text, View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import LottieView from 'lottie-react-native';
 
 import {CButton, Layout} from '@/components';
+import Processing from '@/assets/gif/processing.json';
 
 const MakePayment = () => {
-  const navigation = useNavigation();
   return (
     <Layout ClassName={'justify-center items-center px-10 relative'}>
-      <View
-        className={
-          'border-t-4 border-l-4 rounded-full h-14 w-14 mb-5 border-purple-700'
-        }
+      <LottieView
+        source={Processing}
+        autoPlay
+        loop
+        className={'h-20 w-20 mb-5'}
       />
+
       <Text className={'text-2xl font-inter-semibold text-black'}>
         Processing Payment
       </Text>
