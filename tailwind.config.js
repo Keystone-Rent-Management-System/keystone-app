@@ -8,6 +8,7 @@ module.exports = {
       colors: {
         primary: COLORS.primary,
         primaryBg: COLORS.primary_bg,
+        primary_bg_pale: COLORS.primary_bg_pale,
         inactive_text: COLORS.inactive_text,
         active_text: COLORS.active_text,
         bg: COLORS.bg,

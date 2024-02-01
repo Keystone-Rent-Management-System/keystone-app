@@ -10,7 +10,12 @@ const CustomBottomSheet = forwardRef((props, ref) => {
   );
 
   const renderBackdrop = useCallback(
-    backdropProps => <BottomSheetBackdrop {...backdropProps} />,
+    backdropProps => (
+      <BottomSheetBackdrop
+        opacity={props?.backdropOpacity ? props?.backdropOpacity : 0.5}
+        {...backdropProps}
+      />
+    ),
     [],
   );
 
