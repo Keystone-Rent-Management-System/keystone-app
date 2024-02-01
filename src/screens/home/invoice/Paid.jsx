@@ -2,14 +2,19 @@ import React from 'react';
 import {View} from 'react-native';
 import {FlashList} from '@shopify/flash-list';
 
-import {Layout} from '@/components';
+import {CInput, Layout} from '@/components';
 import invoiceData from '@/provider/invoice';
-import {CInput} from '@/components';
 import {SearchSvg} from '@/assets/icons';
 import COLORS from '@/constants/Theme';
 import {invoiceStyles, renderInvoiceItem} from './Unpaid';
+import {useNavigation} from '@react-navigation/native';
 
-const Paid = props => {
+const Paid = () => {
+  const navigation = useNavigation();
+
+  const handleNavigate = id => {
+    navigation.navigate('invoice_view', {id, type: 'paid'});
+  };
   return (
     <Layout>
       {/*  search input*/}
@@ -18,7 +23,7 @@ const Paid = props => {
         ListHeaderComponent={<Header />}
         contentContainerStyle={invoiceStyles.list}
         data={invoiceData.paid}
-        renderItem={renderInvoiceItem}
+        renderItem={({item}) => renderInvoiceItem(item, handleNavigate)}
         keyExtractor={(_, ind) => ind.toString()}
         estimatedItemSize={300}
       />
@@ -38,7 +43,6 @@ const Header = () => (
     placeHolder={'Search Apartment, Month'}
     placeholderTextColor={COLORS.inactive_text}
     showSoftInputOnFocus={false}
-    // onFocus={props.handleSearchFocus}
   />
 );
 
