@@ -49,7 +49,8 @@ const InvoiceView = ({route: {params}}) => {
   };
 
   const hasConcern = useMemo(() => !!concern, [concern]);
-  const isStatusPaid = useMemo(() => params?.type === 'paid', [params?.t]);
+  const isUnpaid = useMemo(() => params?.type === 'unpaid', [params?.t]);
+  const isPending = useMemo(() => params?.type === 'pending', [params?.t]);
   return (
     <>
       <Layout ClassName={'relative'}>
@@ -79,7 +80,7 @@ const InvoiceView = ({route: {params}}) => {
             amt={'42,000'}
           />
 
-          {!hasConcern && (
+          {!hasConcern && isUnpaid && (
             <View>
               <Text className={'text-sm font-inter-semibold text-black mt-4'}>
                 Does this invoice have an issue?
@@ -100,18 +101,21 @@ const InvoiceView = ({route: {params}}) => {
           )}
           <View className={'h-20 w-full'} />
         </ScrollView>
-        <InvoiceFooter
-          handleManual={() =>
-            handleNavigate('home_stack', {
-              screen: 'invoice_receipt',
-            })
-          }
-          handlePrompt={() => handleNavigate('invoice_make_payment')}
-          hasConcern={hasConcern}
-          handleResolve={() => setConcern(null)}
-          status={params?.type}
-          handleViewReceipt={handleOpenReceiptModal}
-        />
+
+        {!isPending && (
+          <InvoiceFooter
+            handleManual={() =>
+              handleNavigate('home_stack', {
+                screen: 'invoice_receipt',
+              })
+            }
+            handlePrompt={() => handleNavigate('invoice_make_payment')}
+            hasConcern={hasConcern}
+            handleResolve={() => setConcern(null)}
+            status={params?.type}
+            handleViewReceipt={handleOpenReceiptModal}
+          />
+        )}
       </Layout>
 
       <InvoiceConcernModal
