@@ -1,12 +1,11 @@
 import React from 'react';
 import {Text, View} from 'react-native';
 import LottieView from 'lottie-react-native';
+import moment from 'moment';
 
-import {Layout, ReceiptTemplate} from '@/components';
+import {InvoiceBillItem, Layout, ReceiptTemplate} from '@/components';
 import Success from '@/assets/gif/success.json';
 import {bills} from '@/provider/invoice';
-import {BillItem} from './View';
-import moment from 'moment';
 
 const Receipt = () => {
   return (
@@ -14,14 +13,14 @@ const Receipt = () => {
       <LottieView source={Success} autoPlay loop className={'h-24 w-24 mb-3'} />
 
       <ReceiptTemplate footer={renderFooter()}>
-        <BillItem
+        <InvoiceBillItem
           txtClassName={'font-sometypemono uppercase text-inactive_text'}
           title={'Bill'}
           amt={'Total'}
         />
 
         {bills.map((bill, ind) => (
-          <BillItem
+          <InvoiceBillItem
             txtClassName={'font-sometypemono text-13'}
             key={ind}
             title={bill.title}
@@ -29,7 +28,7 @@ const Receipt = () => {
           />
         ))}
 
-        <BillItem
+        <InvoiceBillItem
           containerClassName={'mt-3 border-t border-grey_1 py-4 pb-6'}
           txtClassName={'font-sometypemono text-black text-13'}
           title={'Total'}
