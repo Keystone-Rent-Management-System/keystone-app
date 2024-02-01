@@ -4,7 +4,7 @@ import COLORS from '../../constants/Theme';
 import {CButton} from './index';
 import {CloseSvg} from '../../assets/icons';
 
-const noOfEllipse = Array(20).fill('_');
+const noOfEllipse = Array(35).fill('_');
 const ReceiptTemplate = ({
   children,
   footer,
@@ -49,7 +49,8 @@ const ReceiptTemplate = ({
 };
 
 const BorderPattern = ({ClassName, color = COLORS.bg}) => (
-  <View className={`flex-row space-x-1 absolute inset-x-0.5 ${ClassName}`}>
+  <View
+    className={`flex-row space-x-1 absolute inset-x-0.5 overflow-x-hidden ${ClassName}`}>
     {noOfEllipse.map((_, ind) => (
       <View
         style={{backgroundColor: color}}
