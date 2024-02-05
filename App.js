@@ -6,9 +6,13 @@
  */
 
 import React from 'react';
-import Main from './src/Main';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {StyleSheet} from 'react-native';
+import {enableLatestRenderer} from 'react-native-maps';
+
+import Main from './src/Main';
+
+enableLatestRenderer();
 
 function App() {
   return (
