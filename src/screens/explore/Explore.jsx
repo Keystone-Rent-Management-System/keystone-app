@@ -1,10 +1,11 @@
-import React, {useCallback, useRef} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {FlashList} from '@shopify/flash-list';
 
 import {
   ExploreFilters,
   ExploreHeader,
   ExploreListingItem,
+  ExploreMapView,
   ExplorerMapBtn,
   Layout,
 } from '@/components';
@@ -16,6 +17,8 @@ const Explore = () => {
   const navigation = useNavigation();
 
   const filterModalRef = useRef(null);
+
+  const [mode, setMode] = useState('map');
 
   const handleFilter = useCallback(() => {
     filterModalRef.current?.expand();
@@ -71,19 +74,9 @@ const Explore = () => {
 
       {/*  Filters  */}
       <ExploreFilters />
-
-      {/*  list  */}
-      <FlashList
-        // eslint-disable-next-line react-native/no-inline-styles
-        contentContainerStyle={{
-          padding: 16,
-        }}
-        data={list}
-        renderItem={renderListingItem}
-        keyExtractor={(_, ind) => ind.toString()}
-        estimatedItemSize={300}
-      />
-
+      {mode === 'map'
+        ? renderMapView()
+        : renderListView(list, renderListingItem)}
       <ExplorerMapBtn />
 
       <ExplorerFilterModal
@@ -93,5 +86,24 @@ const Explore = () => {
     </Layout>
   );
 };
+
+function renderListView(list, renderListingItem) {
+  return (
+    <FlashList
+      // eslint-disable-next-line react-native/no-inline-styles
+      contentContainerStyle={{
+        padding: 16,
+      }}
+      data={list}
+      renderItem={renderListingItem}
+      keyExtractor={(_, ind) => ind.toString()}
+      estimatedItemSize={300}
+    />
+  );
+}
+
+function renderMapView() {
+  return <ExploreMapView />;
+}
 
 export default Explore;
