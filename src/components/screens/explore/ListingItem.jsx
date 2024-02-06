@@ -1,18 +1,12 @@
-import React, {useState} from 'react';
+import React, { useState } from "react";
 
-import {Image, Pressable, Text, TouchableOpacity, View} from 'react-native';
-import COLORS from '@/constants/Theme';
-import {styled} from 'nativewind';
-import Badge from './Badge';
-import {
-  AgentSvg,
-  BalconySvg,
-  BathroomSvg,
-  BedSvg,
-  LikeSvg,
-  MapPinSvg,
-} from '@/assets/icons';
-import Helper from '@/utils/Helper';
+import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
+import COLORS from "@/constants/Theme";
+import { styled } from "nativewind";
+import Badge from "./Badge";
+import { AgentSvg, BalconySvg, BathroomSvg, BedSvg, LikeSvg, MapPinSvg } from "@/assets/icons";
+import Helper from "@/utils/Helper";
+import { RightArrowSvg } from "../../../assets/icons";
 
 /**
  * Returns property item for listing
@@ -21,24 +15,47 @@ import Helper from '@/utils/Helper';
  * @constructor
  */
 const ListingItem = props => {
+  const {
+    imgClassName = 'h-60',
+    containerClassName = 'mb-5',
+    textContainerClassName = 'px-0',
+    showBack = false,
+  } = props;
   const StyledView = styled(View);
   const [liked, setLiked] = useState(false);
 
   const handleLike = () => setLiked(prev => !prev);
 
   return (
-    <Pressable className={'mb-5 mx-1'} onPress={props.handlePress}>
+    <Pressable
+      className={`mx-1 ${containerClassName}`}
+      onPress={props.handlePress}>
       {/*  image   */}
       <StyledView className={'bg-bg shadow-xl rounded-xl relative'}>
         <Image
-          className={'w-full h-60 rounded-xl'}
+          className={`w-full rounded-xl ${imgClassName}`}
           source={{uri: props.image}}
           alt={'property_img'}
         />
 
-        {/*  like button  */}
+        {/*  close button  */}
+        {showBack && (
+          <TouchableOpacity
+            hitSlop={{top: 20, bottom: 20, left: 20}}
+            onPress={props?.handleClose}
+            className={
+              'absolute z-10 top-2 left-2 -rotate-180 bg-white p-1.5 rounded-full'
+            }>
+            <RightArrowSvg
+              color={liked ? COLORS.white : COLORS.text_color}
+              opacity={liked ? '1' : '0.45'}
+              size={'18'}
+            />
+          </TouchableOpacity>
+        )}
+
         <TouchableOpacity
-          hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}
+          hitSlop={{top: 20, bottom: 20, right: 20}}
           onPress={handleLike}
           className={'absolute z-10 top-2 right-2'}>
           <LikeSvg
@@ -49,7 +66,7 @@ const ListingItem = props => {
       </StyledView>
 
       {/*details*/}
-      <View className={'py-2 flex-col space-y-1'}>
+      <View className={`py-2 flex-col space-y-1 ${textContainerClassName}`}>
         {/*  title & user type*/}
         <View className={'flex-row justify-between'}>
           <Text
