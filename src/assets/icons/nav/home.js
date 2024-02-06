@@ -1,0 +1,23 @@
+import React from 'react';
+import Svg, {Path} from 'react-native-svg';
+
+const Home = ({strokeWidth, color = '#000'}) => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="21"
+      viewBox="0 0 22 21"
+      fill={'none'}>
+      <Path
+        d="M4.12378 8.8236C4.12378 8.15302 4.44257 7.52237 4.98256 7.12474L11.1563 2.57861L17.3301 7.12474C17.8701 7.52237 18.1888 8.15302 18.1888 8.8236V16.2921C18.1888 17.263 17.4017 18.0502 16.4307 18.0502H13.9693C13.5809 18.0502 13.2661 17.7353 13.2661 17.3469V13.1274C13.2661 12.9332 13.1086 12.7758 12.9144 12.7758H9.39818C9.20398 12.7758 9.04655 12.9332 9.04655 13.1274V17.3469C9.04655 17.7353 8.7317 18.0502 8.3433 18.0502H5.88191C4.91092 18.0502 4.12378 17.263 4.12378 16.2921V8.8236Z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={strokeWidth}
+        stroke={color}
+      />
+    </Svg>
+  );
+};
+
+export default Home;

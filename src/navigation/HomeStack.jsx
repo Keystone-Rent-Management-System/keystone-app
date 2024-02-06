@@ -1,0 +1,60 @@
+import React from 'react';
+import {createStackNavigator} from '@react-navigation/stack';
+
+import {Home, InvoiceReceipt} from '@/screens';
+import InvoiceTopTabNav from './InvoiceTopTabNav';
+import COLORS from '../constants/Theme';
+import {View} from 'react-native';
+
+const Stack = createStackNavigator();
+
+const HomeStack = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        animationEnabled: true,
+        animationTypeForReplace: 'push',
+      }}
+      initialRouteName="home">
+      <Stack.Screen name={'home'} component={Home} />
+      <Stack.Screen
+        name={'invoice_top_tabs'}
+        component={InvoiceTopTabNav}
+        options={{
+          headerShown: true,
+          title: 'Invoices',
+          headerTitleStyle: {
+            color: COLORS.primary,
+            fontSize: 18,
+            fontFamily: 'Inter-SemiBold',
+          },
+        }}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerLeft: renderEmpty,
+          title: 'Receipt',
+          headerTitleContainerStyle: {
+            alignItems: 'center',
+            width: '100%',
+          },
+          headerTitleStyle: {
+            color: COLORS.primary,
+            fontSize: 18,
+            fontFamily: 'Inter-SemiBold',
+            marginHorizontal: 'auto',
+            marginLeft: 30,
+          },
+        }}
+        name={'invoice_receipt'}
+        component={InvoiceReceipt}
+      />
+    </Stack.Navigator>
+  );
+};
+
+export default HomeStack;
+
+const renderEmpty = () => <View />;
