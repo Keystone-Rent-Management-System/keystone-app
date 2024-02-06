@@ -15,23 +15,25 @@ import {
   BackSvg,
   BalconySvg,
   BathroomSvg,
+  BedSvg,
   LikeSvg,
   MessageSvg,
   PhoneSvg,
   UploadSvg,
   VirtualTourSvg,
-  BedSvg,
 } from '@/assets/icons';
 import COLORS from '@/constants/Theme';
 import {
-  ExploreAmenity,
-  ExploreActionBtn,
-  Layout,
   ApartmentViewFloatingActionBar,
+  ExploreActionBtn,
+  ExploreAmenity,
+  Layout,
   ProfileView,
 } from '@/components';
 import {useNavigation} from '@react-navigation/native';
 import {VirtualTourModal} from '@/components/modals';
+import MapView, {Marker} from 'react-native-maps';
+import {HouseMapMarker} from '../../assets/icons';
 
 const ApartmentView = ({route: {params}}) => {
   const bottomSheetRef = useRef();
@@ -42,6 +44,18 @@ const ApartmentView = ({route: {params}}) => {
   const currentApartmentDetails = useMemo(() => {
     return listings.find(item => item.id === params?.apartment);
   }, [params?.apartment]);
+
+  const region = useMemo(
+    () => ({
+      latitude:
+        currentApartmentDetails?.coordinates?.latitude ?? -1.2881012218277417,
+      longitude:
+        currentApartmentDetails?.coordinates?.longitude ?? 36.82609607136736,
+      latitudeDelta: 0.015,
+      longitudeDelta: 0.015,
+    }),
+    [],
+  );
 
   const handleViewTour = () => {
     // setModalState(true);
@@ -198,7 +212,11 @@ const ApartmentView = ({route: {params}}) => {
           </Text>
 
           <View className={'h-32 my-3 bg-bg_grey'}>
-            <View />
+            <MapView className={'flex-1'} region={region}>
+              <Marker coordinate={region}>
+                <HouseMapMarker />
+              </Marker>
+            </MapView>
           </View>
 
           {/* Virtual tour button */}
