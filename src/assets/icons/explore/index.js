@@ -28,6 +28,7 @@ import PhoneSvg from './phone.js';
 import UploadSvg from './upload.js';
 import HistorySvg from './History.js';
 import WavingSvg from './Waving.js';
+import HouseMapMarker from './house-map-marker';
 
 export {
   AgentSvg,
@@ -60,4 +61,5 @@ export {
   UploadSvg,
   HistorySvg,
   WavingSvg,
+  HouseMapMarker,
 };
