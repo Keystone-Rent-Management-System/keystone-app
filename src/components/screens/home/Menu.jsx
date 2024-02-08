@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 import {BillsSvg, InvoiceSvg, StatementsSvg} from '@/assets/icons';
 import {CallSvg, ExtensionSvg, HelpSvg} from '../../../assets/icons';
@@ -87,6 +87,9 @@ const financeOptions = [
   {
     icon: <StatementsSvg />,
     text: 'Statements',
+    screen: {
+      name: 'statements',
+    },
   },
   {
     icon: <BillsSvg />,
