@@ -1,8 +1,11 @@
 import React from 'react';
-import {Text, View} from 'react-native';
-import COLORS from '../../constants/Theme';
+import {Image, Text, View} from 'react-native';
+
+import COLORS from '@/constants/Theme';
 import {CButton} from './index';
-import {CloseSvg} from '../../assets/icons';
+import {CloseSvg} from '@/assets/icons';
+import {DownloadSvg} from '@/assets/icons/receipt';
+import logo from '@/assets/images/logo.png';
 
 const noOfEllipse = Array(35).fill('_');
 const ReceiptTemplate = ({
@@ -13,7 +16,7 @@ const ReceiptTemplate = ({
   handleClose,
 }) => {
   return (
-    <View className={'bg-bg_pale w-full relative pt-8 overflow-x-hidden'}>
+    <View className={'bg-bg_pale w-full relative pt-3 overflow-x-hidden'}>
       {hasCloseBtn && (
         <CButton
           ClassName={
@@ -26,15 +29,40 @@ const ReceiptTemplate = ({
       {/*ellipses*/}
       <BorderPattern color={color} ClassName={'-top-[7px]'} />
 
-      {/*title*/}
-      <View className={'px-8'}>
+      <View className={'px-8 flex-row pt-2 items-center justify-between'}>
+        <Text className={'text-black font-sometypemono text-xs'}>
+          Receipt No: 243566
+        </Text>
+
+        <CButton
+          ClassName={'bg-white px-2 py-1 text-xs flex-row space-x-1'}
+          textClassName={'text-2xs text-black'}>
+          <DownloadSvg />
+          <Text className={'font-sometypemono text-black text-xs'}>
+            Download
+          </Text>
+        </CButton>
+      </View>
+
+      <Image
+        className={'h-16 w-28 object-cover mx-auto'}
+        source={logo}
+        alt={'logo'}
+      />
+
+      <Text className={'font-sometypemono text-black text-xl mx-auto'}>
+        KES. 30,000
+      </Text>
+
+      <Text className={'text-black font-sometypemono text-xs mt-2 text-center'}>
+        For Invoice:{' '}
         <Text
           className={
-            'text-black font-sometypemono text-lg mt-2 mb-5 text-center uppercase'
+            'font-sometypemono text-xs mt-2 text-center underline text-blue-700'
           }>
-          Invoice #254668
+          #235668
         </Text>
-      </View>
+      </Text>
 
       {/*body*/}
       <View className={'min-h-[150px] px-8'}>{children}</View>
