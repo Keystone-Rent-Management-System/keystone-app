@@ -4,6 +4,7 @@ import VirtualTourModal from './VirtualTour';
 import InvoiceConcernModal from './InvoiceConcernModal';
 import InvoiceReceiptModal from './InvoiceReceiptModal';
 import InvoicePaymentMethodModal from './PaymentMethod';
+import InvoicePartialPaymentModal from './PartialPayment';
 
 export {
   CustomBottomSheet,
@@ -12,4 +13,5 @@ export {
   InvoiceConcernModal,
   InvoiceReceiptModal,
   InvoicePaymentMethodModal,
+  InvoicePartialPaymentModal,
 };
