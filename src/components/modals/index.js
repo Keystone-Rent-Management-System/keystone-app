@@ -3,6 +3,7 @@ import ExplorerFilterModal from './FilterModal';
 import VirtualTourModal from './VirtualTour';
 import InvoiceConcernModal from './InvoiceConcernModal';
 import InvoiceReceiptModal from './InvoiceReceiptModal';
+import InvoicePaymentMethodModal from './PaymentMethod';
 
 export {
   CustomBottomSheet,
@@ -10,4 +11,5 @@ export {
   VirtualTourModal,
   InvoiceConcernModal,
   InvoiceReceiptModal,
+  InvoicePaymentMethodModal,
 };

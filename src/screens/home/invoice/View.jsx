@@ -9,12 +9,17 @@ import {
   Layout,
 } from '@/components';
 import {useNavigation} from '@react-navigation/native';
-import {InvoiceConcernModal, InvoiceReceiptModal} from '@/components/modals';
+import {
+  InvoiceConcernModal,
+  InvoicePaymentMethodModal,
+  InvoiceReceiptModal,
+} from '@/components/modals';
 
 const InvoiceView = ({route: {params}}) => {
   const navigation = useNavigation();
   const concernModalRef = useRef();
   const receiptModalRef = useRef();
+  const paymentMethodRef = useRef();
 
   const [concern, setConcern] = useState(null);
 
@@ -32,6 +37,14 @@ const InvoiceView = ({route: {params}}) => {
 
   const handleCloseReceiptModal = useCallback(() => {
     receiptModalRef.current?.close();
+  }, []);
+
+  const handleOpenPaymentModal = useCallback(() => {
+    paymentMethodRef.current?.expand();
+  }, []);
+
+  const handleClosePaymentModal = useCallback(() => {
+    paymentMethodRef.current?.close();
   }, []);
 
   const currentInvoice = useMemo(
@@ -109,7 +122,8 @@ const InvoiceView = ({route: {params}}) => {
                 screen: 'invoice_receipt',
               })
             }
-            handlePrompt={() => handleNavigate('invoice_make_payment')}
+            // handlePrompt={() => handleNavigate('invoice_make_payment')}
+            handlePrompt={handleOpenPaymentModal}
             hasConcern={hasConcern}
             handleResolve={() => setConcern(null)}
             status={params?.type}
@@ -127,6 +141,11 @@ const InvoiceView = ({route: {params}}) => {
       <InvoiceReceiptModal
         ref={receiptModalRef}
         handleCloseModal={handleCloseReceiptModal}
+      />
+
+      <InvoicePaymentMethodModal
+        ref={paymentMethodRef}
+        handleCloseModal={handleClosePaymentModal}
       />
     </>
   );
