@@ -39,14 +39,19 @@ const RoomSelector = ({label, filter, containerClassName, labelClassName}) => {
 const renderFilterItem = ({item, index: ind, isActive, handlePress}) => (
   <SelectorButton isActive={isActive} text={item} handlePress={handlePress} />
 );
-export const SelectorButton = ({text = '3', isActive, handlePress}) => (
+export const SelectorButton = ({
+  text = '3',
+  isActive,
+  handlePress,
+  ClassName,
+}) => (
   <TouchableOpacity
-    className={`bg-white  border border-border_grey mr-3 py-1.5 px-4 rounded-full ${
+    className={`bg-white flex-row items-center  border border-border_grey mr-3 py-1.5 px-4 rounded-full ${
       isActive ? 'bg-primary' : 'bg-white'
-    }`}
+    } ${ClassName}`}
     onPress={handlePress}>
     <Text
-      className={`text-13 ${
+      className={`text-xs ${
         isActive ? 'text-white' : 'text-black'
       } font-inter`}>
       {text}
