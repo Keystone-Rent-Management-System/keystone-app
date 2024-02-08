@@ -5,7 +5,6 @@ import moment from 'moment';
 
 import {InvoiceBillItem, Layout, ReceiptTemplate} from '@/components';
 import Success from '@/assets/gif/success.json';
-import {bills} from '@/provider/invoice';
 
 const Receipt = () => {
   return (
@@ -14,25 +13,27 @@ const Receipt = () => {
 
       <ReceiptTemplate footer={renderFooter()}>
         <InvoiceBillItem
-          txtClassName={'font-sometypemono uppercase text-inactive_text'}
-          title={'Bill'}
-          amt={'Total'}
+          txtClassName={'font-sometypemono text-inactive_text'}
+          title={'From'}
+          amt={'To'}
         />
 
-        {bills.map((bill, ind) => (
-          <InvoiceBillItem
-            txtClassName={'font-sometypemono text-13'}
-            key={ind}
-            title={bill.title}
-            amt={`KES.${bill.amount}`}
-          />
-        ))}
+        <InvoiceBillItem
+          txtClassName={'font-sometypemono text-13'}
+          title={'Evans Mutambuki'}
+          amt={`Purple Haze\n Apartment`}
+        />
 
         <InvoiceBillItem
-          containerClassName={'mt-3 border-t border-grey_1 py-4 pb-6'}
-          txtClassName={'font-sometypemono text-black text-13'}
-          title={'Total'}
-          amt={'KES.42,000'}
+          txtClassName={'font-sometypemono text-inactive_text'}
+          title={'Payment Method'}
+          amt={'Code'}
+        />
+
+        <InvoiceBillItem
+          txtClassName={'font-sometypemono text-13'}
+          title={'Mpesa Paybill'}
+          amt={`3245632`}
         />
       </ReceiptTemplate>
     </Layout>
@@ -42,13 +43,20 @@ const Receipt = () => {
 export default Receipt;
 
 const renderFooter = () => (
-  <View className={'h-12 px-8 py-3 flex-row justify-between'}>
-    <Text className={'text-black font-sometypemono text-15'}>
-      {moment().format('hh:mm A')}
-    </Text>
+  <>
+    <InvoiceBillItem
+      txtClassName={'font-sometypemono text-13 ml-8 text-inactive_text mb-0'}
+      title={'Transaction Date'}
+      amt={``}
+    />
+    <View className={'h-12 px-8 py-1 flex-row justify-between'}>
+      <Text className={'text-black font-sometypemono text-15'}>
+        {moment().format('hh:mm A')}
+      </Text>
 
-    <Text className={'text-black font-sometypemono text-15'}>
-      {moment().format('DD MMM YYYY')}
-    </Text>
-  </View>
+      <Text className={'text-black font-sometypemono text-15'}>
+        {moment().format('DD MMM YYYY')}
+      </Text>
+    </View>
+  </>
 );
