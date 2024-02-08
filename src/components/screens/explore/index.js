@@ -6,7 +6,7 @@ import ExploreRoomSelector from './RoomSelector';
 import ExploreAmenity from './Amenity';
 import ExploreHouseTypeItem from './HouseTypeItem';
 import ExploreActionBtn from './ActionBtn';
-
+import ExploreMapView from './MapView';
 import ApartmentViewFloatingActionBar from './FloatingActionBar';
 
 export {
@@ -19,4 +19,5 @@ export {
   ExploreHouseTypeItem,
   ExploreActionBtn,
   ApartmentViewFloatingActionBar,
+  ExploreMapView,
 };

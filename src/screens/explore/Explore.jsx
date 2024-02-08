@@ -1,21 +1,34 @@
-import React, {useCallback, useRef} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {FlashList} from '@shopify/flash-list';
 
 import {
   ExploreFilters,
   ExploreHeader,
   ExploreListingItem,
+  ExploreMapView,
   ExplorerMapBtn,
   Layout,
 } from '@/components';
 import listings from '@/provider/listings';
 import {ExplorerFilterModal} from '@/components/modals';
 import {useNavigation} from '@react-navigation/native';
+import {View} from 'react-native';
 
 const Explore = () => {
   const navigation = useNavigation();
 
   const filterModalRef = useRef(null);
+
+  const [current, setCurrent] = useState(null);
+  const [mode, setMode] = useState('list');
+
+  const currentProperty = useMemo(() => {
+    if (current) {
+      return listings.find(item => item?.id === current);
+    } else {
+      return null;
+    }
+  }, [current]);
 
   const handleFilter = useCallback(() => {
     filterModalRef.current?.expand();
@@ -35,6 +48,10 @@ const Explore = () => {
     },
     [navigation],
   );
+
+  const handleSwitchMode = () => {
+    setMode(prev => (prev === 'map' ? 'list' : 'map'));
+  };
 
   const renderListingItem = ({
     item: {category, image, user, location, price, properties, title, id},
@@ -71,27 +88,60 @@ const Explore = () => {
 
       {/*  Filters  */}
       <ExploreFilters />
+      {mode === 'map' ? (
+        <ExploreMapView current={current} setCurrent={setCurrent} />
+      ) : (
+        renderListView(list, renderListingItem)
+      )}
 
-      {/*  list  */}
-      <FlashList
-        // eslint-disable-next-line react-native/no-inline-styles
-        contentContainerStyle={{
-          padding: 16,
-        }}
-        data={list}
-        renderItem={renderListingItem}
-        keyExtractor={(_, ind) => ind.toString()}
-        estimatedItemSize={300}
-      />
-
-      <ExplorerMapBtn />
+      <ExplorerMapBtn handlePress={handleSwitchMode} mode={mode} />
 
       <ExplorerFilterModal
         handleCloseFilter={handleCloseFilter}
         ref={filterModalRef}
       />
+
+      {!!currentProperty && (
+        <View
+          style={{elevation: 50}}
+          className={'absolute z-50 inset-x-0 bottom-0 px-3 py-2'}>
+          <ExploreListingItem
+            image={currentProperty?.image}
+            title={currentProperty?.title}
+            userType={currentProperty?.user}
+            category={currentProperty?.category}
+            location={currentProperty?.location}
+            price={currentProperty?.price}
+            balconies={currentProperty?.properties.balconies}
+            bedrooms={currentProperty?.properties.bedrooms}
+            bathrooms={currentProperty?.properties.bathrooms}
+            id={currentProperty?.id}
+            showBack
+            imgClassName={'h-24 rounded-none'}
+            containerClassName={'mb-0 bg-white rounded-xl overflow-hidden'}
+            textContainerClassName={'px-3'}
+            handlePress={() => handleViewApartment(currentProperty?.id)}
+            handleClose={() => setCurrent(null)}
+          />
+        </View>
+      )}
     </Layout>
   );
 };
+
+function renderListView(list, renderListingItem) {
+  return (
+    <FlashList
+      // eslint-disable-next-line react-native/no-inline-styles
+      contentContainerStyle={{
+        padding: 16,
+      }}
+      data={list}
+      renderItem={renderListingItem}
+      keyExtractor={(_, ind) => ind.toString()}
+      estimatedItemSize={300}
+    />
+  );
+}
 
 export default Explore;

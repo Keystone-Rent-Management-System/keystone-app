@@ -4,7 +4,7 @@ import {View} from 'react-native';
 import {CButton} from '../../general';
 
 const Footer = ({
-  handleManual,
+  handlePartial,
   handlePrompt,
   hasConcern,
   handleResolve,
@@ -33,8 +33,8 @@ const Footer = ({
             <CButton
               ClassName={'bg-none border border-primary flex-1 mr-5'}
               textClassName={'text-primary font-inter text-xs'}
-              text={'Pay Manually'}
-              onPress={handleManual}
+              text={'Partial Payment'}
+              onPress={handlePartial}
             />
 
             <CButton

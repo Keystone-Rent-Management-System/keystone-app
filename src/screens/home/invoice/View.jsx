@@ -9,12 +9,19 @@ import {
   Layout,
 } from '@/components';
 import {useNavigation} from '@react-navigation/native';
-import {InvoiceConcernModal, InvoiceReceiptModal} from '@/components/modals';
+import {
+  InvoiceConcernModal,
+  InvoicePartialPaymentModal,
+  InvoicePaymentMethodModal,
+  InvoiceReceiptModal,
+} from '@/components/modals';
 
 const InvoiceView = ({route: {params}}) => {
   const navigation = useNavigation();
   const concernModalRef = useRef();
   const receiptModalRef = useRef();
+  const paymentMethodRef = useRef();
+  const partialPaymentRef = useRef();
 
   const [concern, setConcern] = useState(null);
 
@@ -32,6 +39,22 @@ const InvoiceView = ({route: {params}}) => {
 
   const handleCloseReceiptModal = useCallback(() => {
     receiptModalRef.current?.close();
+  }, []);
+
+  const handleOpenPaymentModal = useCallback(() => {
+    paymentMethodRef.current?.expand();
+  }, []);
+
+  const handleClosePaymentModal = useCallback(() => {
+    paymentMethodRef.current?.close();
+  }, []);
+
+  const handleOpenPartialPaymentModal = useCallback(() => {
+    partialPaymentRef.current?.expand();
+  }, []);
+
+  const handleClosePartialPaymentModal = useCallback(() => {
+    partialPaymentRef.current?.close();
   }, []);
 
   const currentInvoice = useMemo(
@@ -104,12 +127,14 @@ const InvoiceView = ({route: {params}}) => {
 
         {!isPending && (
           <InvoiceFooter
-            handleManual={() =>
-              handleNavigate('home_stack', {
-                screen: 'invoice_receipt',
-              })
-            }
-            handlePrompt={() => handleNavigate('invoice_make_payment')}
+            // handleManual={() =>
+            //   handleNavigate('home_stack', {
+            //     screen: 'invoice_receipt',
+            //   })
+            // }
+            handlePartial={handleOpenPartialPaymentModal}
+            // handlePrompt={() => handleNavigate('invoice_make_payment')}
+            handlePrompt={handleOpenPaymentModal}
             hasConcern={hasConcern}
             handleResolve={() => setConcern(null)}
             status={params?.type}
@@ -127,6 +152,20 @@ const InvoiceView = ({route: {params}}) => {
       <InvoiceReceiptModal
         ref={receiptModalRef}
         handleCloseModal={handleCloseReceiptModal}
+      />
+
+      <InvoicePaymentMethodModal
+        ref={paymentMethodRef}
+        handleCloseModal={handleClosePaymentModal}
+      />
+
+      <InvoicePartialPaymentModal
+        ref={partialPaymentRef}
+        handleCloseModal={handleClosePartialPaymentModal}
+        handleProceed={() => {
+          handleClosePartialPaymentModal();
+          handleOpenPaymentModal();
+        }}
       />
     </>
   );

@@ -3,7 +3,6 @@ import React from 'react';
 /**
  * @type {Listing[]}
  */
-
 import {
   AgreementSvg,
   BabyCareSvg,
@@ -25,6 +24,10 @@ const listings = [
       'https://cdn.pixabay.com/photo/2016/11/23/14/29/living-room-1853203_1280.jpg',
     title: 'Blissful Retreats',
     location: 'Karen, Kiambu',
+    coordinates: {
+      latitude: -1.3082267348831669,
+      longitude: 36.689035416536356,
+    },
     user: 'landlord', // agent,landlord
     price: '62,000',
     category: 'bedroom',
@@ -95,6 +98,10 @@ const listings = [
     user: 'agent', // agent,landlord
     price: '50,000',
     category: 'bedroom',
+    coordinates: {
+      latitude: -1.142932449633917,
+      longitude: 36.987845509501284,
+    },
     properties: {
       bedrooms: '2',
       bathrooms: '1',
@@ -159,6 +166,10 @@ const listings = [
       'https://cdn.pixabay.com/photo/2018/01/26/08/15/dining-room-3108037_1280.jpg',
     title: 'Discovery Point',
     location: 'Ruaka, Kiambu',
+    coordinates: {
+      latitude: -1.2062954731235718,
+      longitude: 36.77367447769135,
+    },
     user: 'agent', // agent,landlord
     price: '74,000',
     category: 'bedroom',
@@ -226,6 +237,10 @@ const listings = [
       'https://cdn.pixabay.com/photo/2015/11/07/21/29/living-1032732_1280.jpg',
     title: 'Harmony Estates',
     location: 'Ngara, Nairobi',
+    coordinates: {
+      latitude: -1.2757009333559883,
+      longitude: 36.82789897171097,
+    },
     user: 'landlord', // agent,landlord
     price: '30,000',
     category: 'bedroom',
@@ -293,6 +308,10 @@ const listings = [
       'https://cdn.pixabay.com/photo/2016/11/30/08/46/living-room-1872191_1280.jpg',
     title: 'Maplewood Apartments',
     location: 'Karen, Kiambu',
+    coordinates: {
+      latitude: -1.3196964970431557,
+      longitude: 36.664080066691305,
+    },
     user: 'landlord', // agent,landlord
     price: '100,000',
     category: 'bedroom',
@@ -360,6 +379,10 @@ const listings = [
       'https://cdn.pixabay.com/photo/2015/04/18/13/23/living-room-728736_1280.jpg',
     title: 'Astra Heights',
     location: 'Ruaka, Kiambu',
+    coordinates: {
+      latitude: -1.204232152472298,
+      longitude: 36.76742870319201,
+    },
     user: 'agent', // agent,landlord
     price: '50,000',
     category: 'bedroom',
@@ -427,6 +450,10 @@ const listings = [
       'https://cdn.pixabay.com/photo/2015/04/18/13/23/living-room-728731_1280.jpg',
     title: 'Gallery Gardens',
     location: "Kenol, Murang'a",
+    coordinates: {
+      latitude: -0.9520639921056704,
+      longitude: 37.10865041093279,
+    },
     user: 'agent', // agent,landlord
     price: '40,000',
     category: 'bedroom',
@@ -494,6 +521,10 @@ const listings = [
       'https://cdn.pixabay.com/photo/2020/02/02/17/06/living-room-modern-tv-4813589_1280.jpg',
     title: 'Regal Residence',
     location: "Kenol, Murang'a",
+    coordinates: {
+      latitude: -0.9595431020464211,
+      longitude: 37.11866961513062,
+    },
     user: 'agent', // agent,landlord
     price: '80,000',
     category: 'villa',
@@ -561,6 +592,10 @@ const listings = [
       'https://assets-global.website-files.com/61d451660d7f41e5024d0b9d/628252b20fc0dd528331c5ee_ourdomain-rotterdam-blaak-standard-studio-rotterdam-living-bedroom.jpg',
     title: 'Furnished Studio',
     location: "Kenol, Murang'a",
+    coordinates: {
+      latitude: -0.9442056254416549,
+      longitude: 37.12792992309176,
+    },
     user: 'agent', // agent,landlord
     price: '20,000',
     category: 'studio',
@@ -632,6 +667,7 @@ export default listings;
  *     image: string,
  *     price: string,
  *     location: string,
+ *     coordinates:{latitude:float,longitude:float}
  *     title: string,
  *     category: string,
  *     user: string,
