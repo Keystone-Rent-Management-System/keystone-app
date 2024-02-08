@@ -20,7 +20,7 @@ const Explore = () => {
   const filterModalRef = useRef(null);
 
   const [current, setCurrent] = useState(null);
-  const [mode, setMode] = useState('map');
+  const [mode, setMode] = useState('list');
 
   const currentProperty = useMemo(() => {
     if (current) {
