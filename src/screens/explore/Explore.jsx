@@ -52,7 +52,7 @@ const Explore = () => {
   const handleSwitchMode = () => {
     setMode(prev => (prev === 'map' ? 'list' : 'map'));
   };
-  console.log(current);
+
   const renderListingItem = ({
     item: {category, image, user, location, price, properties, title, id},
   }) => {
