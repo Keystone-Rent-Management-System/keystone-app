@@ -1,7 +1,7 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 
-import {Home, InvoiceReceipt} from '@/screens';
+import {Home, InvoiceReceipt, Statements} from '@/screens';
 import InvoiceTopTabNav from './InvoiceTopTabNav';
 import COLORS from '../constants/Theme';
 import {View} from 'react-native';
@@ -50,6 +50,19 @@ const HomeStack = () => {
         }}
         name={'invoice_receipt'}
         component={InvoiceReceipt}
+      />
+      <Stack.Screen
+        name={'statements'}
+        component={Statements}
+        options={{
+          headerShown: true,
+          title: 'Statements',
+          headerTitleStyle: {
+            color: COLORS.primary,
+            fontSize: 18,
+            fontFamily: 'Inter-SemiBold',
+          },
+        }}
       />
     </Stack.Navigator>
   );

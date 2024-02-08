@@ -1,4 +1,5 @@
 import Home from './home';
+import Statements from './Statements';
 
-export {Home};
+export {Home, Statements};
 export * from './invoice';
