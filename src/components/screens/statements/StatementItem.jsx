@@ -1,11 +1,13 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {Pressable, Text, View} from 'react-native';
 
 import {StatementListSvg} from '@/assets/icons';
 
 const StatementItem = props => {
   return (
-    <View className={'flex-row space-x-2 py-3.5 border-b border-border_grey'}>
+    <Pressable
+      className={'flex-row space-x-2 py-3.5 border-b border-border_grey'}
+      onPress={props.handlePress}>
       {/*  icon */}
       <View
         className={
@@ -17,7 +19,8 @@ const StatementItem = props => {
       {/*  text  */}
       <View className={'flex-1'}>
         <View className={'flex-row justify-between flex-1'}>
-          <Text className={'text-primary text-13 font-inter-medium'}>
+          <Text
+            className={'text-primary capitalize text-xs font-inter-semibold'}>
             {/*Invoice #123455*/}
             {props.title}
           </Text>
@@ -38,7 +41,7 @@ const StatementItem = props => {
           </Text>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
