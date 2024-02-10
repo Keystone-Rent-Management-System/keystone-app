@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {Layout} from '@/components';
 import {CButton, StatementItem} from '../../components';
 import {FlatList, SectionList, Text, View} from 'react-native';
@@ -6,57 +6,94 @@ import moment from 'moment';
 import {SelectorButton} from '../../components/screens/explore/RoomSelector';
 import {StatementListSvg} from '../../assets/icons';
 import COLORS from '../../constants/Theme';
+import {
+  ExportStatementModal,
+  InvoiceReceiptModal,
+} from '../../components/modals';
 
 const Statements = () => {
+  const receiptModalRef = useRef();
+  const exportModalRef = useRef();
+
   const [active] = useState(0);
+
+  const handleOpenReceiptModal = useCallback(() => {
+    receiptModalRef.current?.expand();
+  }, []);
+
+  const handleCloseReceiptModal = useCallback(() => {
+    receiptModalRef.current?.close();
+  }, []);
+
+  const handleOpenExportModal = useCallback(() => {
+    receiptModalRef.current?.expand();
+  }, []);
+
+  const handleCloseExportModal = useCallback(() => {
+    receiptModalRef.current?.close();
+  }, []);
+
   const renderYears = ({item, index, isActive}) => {
     return (
       <SelectorButton ClassName={'py-0'} isActive={isActive} text={item} />
     );
   };
   return (
-    <Layout ClassName={'p-4 relative'}>
-      <FlatList
-        className={'h-8'}
-        data={years}
-        renderItem={({item, index}) =>
-          renderYears({
-            item,
-            index,
-            isActive: active === index,
-          })
-        }
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
+    <>
+      <Layout ClassName={'p-4 relative'}>
+        <FlatList
+          className={'h-8'}
+          data={years}
+          renderItem={({item, index}) =>
+            renderYears({
+              item,
+              index,
+              isActive: active === index,
+            })
+          }
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+        />
+
+        <SectionList
+          sections={statements}
+          renderItem={({item}) => renderItem(item, handleOpenReceiptModal)}
+          renderSectionHeader={renderHeader}
+        />
+
+        <CButton
+          style={{elevation: 2}}
+          ClassName={
+            'absolute bg-primary_bg_pale rounded-full flex-row space-x-1 shadow-md bottom-3 right-3'
+          }
+          onPress={handleOpenExportModal}>
+          <StatementListSvg h={'20'} color={COLORS.primary} />
+
+          <Text className={'text-primary text-xs font-inter-medium'}>
+            Export Statement
+          </Text>
+        </CButton>
+      </Layout>
+
+      <InvoiceReceiptModal
+        ref={receiptModalRef}
+        handleCloseModal={handleCloseReceiptModal}
       />
-
-      <SectionList
-        sections={statements}
-        renderItem={renderItem}
-        renderSectionHeader={renderHeader}
+      <ExportStatementModal
+        ref={receiptModalRef}
+        handleCloseModal={handleCloseReceiptModal}
       />
-
-      <CButton
-        style={{elevation: 2}}
-        ClassName={
-          'absolute bg-primary_bg_pale rounded-full flex-row space-x-1 shadow-md bottom-3 right-3'
-        }>
-        <StatementListSvg h={'20'} color={COLORS.primary} />
-
-        <Text className={'text-primary text-xs font-inter-medium'}>
-          Export Statement
-        </Text>
-      </CButton>
-    </Layout>
+    </>
   );
 };
 
-const renderItem = ({item}) => (
+const renderItem = (item, handlePress) => (
   <StatementItem
     title={item?.title}
     date={item?.date}
     paymentMethod={item?.paymentMethod}
     amount={item.amount}
+    handlePress={handlePress}
   />
 );
 
