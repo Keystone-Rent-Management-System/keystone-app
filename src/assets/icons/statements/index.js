@@ -1,3 +1,4 @@
 import StatementListSvg from './list';
+import CalendarSvg from './calendar';
 
-export {StatementListSvg};
+export {StatementListSvg, CalendarSvg};

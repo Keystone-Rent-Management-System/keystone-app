@@ -5,6 +5,7 @@ import InvoiceConcernModal from './InvoiceConcernModal';
 import InvoiceReceiptModal from './InvoiceReceiptModal';
 import InvoicePaymentMethodModal from './PaymentMethod';
 import InvoicePartialPaymentModal from './PartialPayment';
+import ExportStatementModal from './ExportStatement';
 
 export {
   CustomBottomSheet,
@@ -14,4 +15,5 @@ export {
   InvoiceReceiptModal,
   InvoicePaymentMethodModal,
   InvoicePartialPaymentModal,
+  ExportStatementModal,
 };
