@@ -3,11 +3,9 @@ import React, {forwardRef} from 'react';
 import {CustomBottomSheet} from '.';
 import {CButton} from '../general';
 import {CheckSvg, CloseSvg, RightArrowSvg} from '../../assets/icons';
-import {useNavigation} from '@react-navigation/native';
 import {LabelledCInput} from '../general/CInput';
 
 const PartialPayment = forwardRef((props, ref) => {
-  const navigation = useNavigation();
   return (
     <CustomBottomSheet
       snapPoints={['5%', '50%']}
