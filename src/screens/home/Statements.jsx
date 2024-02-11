@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {Layout} from '@/components';
 import {CButton, StatementItem} from '../../components';
 import {FlatList, SectionList, Text, View} from 'react-native';
@@ -55,11 +55,11 @@ const Statements = () => {
           showsHorizontalScrollIndicator={false}
         />
 
-      <SectionList
-        sections={statements}
-        renderItem={renderItem}
-        renderSectionHeader={renderHeader}
-      />
+        <SectionList
+          sections={statements}
+          renderItem={renderItem}
+          renderSectionHeader={renderHeader}
+        />
 
         <CButton
           style={{elevation: 2}}
@@ -87,7 +87,7 @@ const Statements = () => {
   );
 };
 
-const renderItem = (item, handlePress) => (
+const renderItem = ({item}, handlePress) => (
   <StatementItem
     title={item?.title}
     date={item?.date}
