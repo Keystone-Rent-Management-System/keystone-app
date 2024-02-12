@@ -1,9 +1,10 @@
 import React, {forwardRef} from 'react';
 
-import {ScrollView, Text, View} from 'react-native';
+import {ScrollView, Text, TextInput, View} from 'react-native';
 import {CustomBottomSheet} from '../index';
 import {CButton} from '../../general';
 import {CloseSvg} from '@/assets/icons';
+import COLORS from '../../../constants/Theme';
 
 const RequestRepair = forwardRef((props, ref) => {
   return (
@@ -17,7 +18,30 @@ const RequestRepair = forwardRef((props, ref) => {
           Report or request for repair. The management will receive the
           notification.
         </Text>
+
+        <View className={'flex-col items-start w-full py-3'}>
+          <Text className={'text-black my-1.5 font-inter text-xs'}>
+            What would you like to repair ?
+          </Text>
+
+          <TextInput
+            className={
+              'border border-border_grey w-full rounded-xl font-inter text-xs px-3'
+            }
+            numberOfLines={5}
+            placeholder={'List of repairs'}
+            placeholderTextColor={COLORS.border_grey}
+            style={{
+              textAlignVertical: 'top',
+            }}
+          />
+        </View>
       </ScrollView>
+      <CButton
+        ClassName={'bg-primary text-white py-3.5 mx-5 mb-3'}
+        onPress={props.handleCloseModal}>
+        <Text className={'text-white font-inter text-13 '}>Submit</Text>
+      </CButton>
     </CustomBottomSheet>
   );
 });
