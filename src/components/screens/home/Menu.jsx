@@ -4,9 +4,34 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {BillsSvg, InvoiceSvg, StatementsSvg} from '@/assets/icons';
 import {CallSvg, ExtensionSvg, HelpSvg} from '../../../assets/icons';
 import {useNavigation} from '@react-navigation/native';
+import {
+  GeneralRepairsModal,
+  GetHelpModal,
+  MakeComplaintModal,
+  MovingOutModal,
+  RequestRepairModal,
+} from '../../modals';
+import {useHelp} from '../../../hooks';
 
 const Menu = () => {
   const navigation = useNavigation();
+  const {
+    getHelpRef,
+    movingOutRef,
+    makeComplaintRef,
+    requestRepairRef,
+    generalAssistanceRef,
+    handleCloseHelpModal,
+    handleOpenHelpModal,
+    handleMovingOut,
+    handleMakeComplaint,
+    handleRequestRepair,
+    handleGeneralAssistance,
+    handleCloseMovingOutModal,
+    handleCloseMakeComplaintModal,
+    handleCloseRequestRepairModal,
+    handleCloseGeneralAssistanceModal,
+  } = useHelp();
 
   const handleNavigate = screen => {
     if (screen?.name) {
@@ -14,42 +39,81 @@ const Menu = () => {
     }
   };
 
+  const handleHelp = () => {
+    handleOpenHelpModal();
+  };
+
   return (
-    <View className={'py-8 px-4'}>
-      <View>
-        <Text className={'font-inter-medium text-13 text-ctext mb-3'}>
-          Finance & Payments
-        </Text>
+    <>
+      <View className={'py-8 px-4'}>
+        <View>
+          <Text className={'font-inter-medium text-13 text-ctext mb-3'}>
+            Finance & Payments
+          </Text>
 
-        <View className={'flex-row w-full justify-between'}>
-          {financeOptions.map((opt, ind) => (
-            <MenuBtn
-              key={ind}
-              icon={opt.icon}
-              text={opt.text}
-              handlePress={() => handleNavigate(opt?.screen)}
-            />
-          ))}
+          <View className={'flex-row w-full justify-between'}>
+            {financeOptions.map((opt, ind) => (
+              <MenuBtn
+                key={ind}
+                icon={opt.icon}
+                text={opt.text}
+                handlePress={() => handleNavigate(opt?.screen)}
+              />
+            ))}
+          </View>
+        </View>
+
+        <View className={'mt-8'}>
+          <Text className={'font-inter-medium text-13 text-ctext mb-3'}>
+            Assistance
+          </Text>
+
+          <View className={'flex-row w-full justify-between'}>
+            {assistance.map((opt, ind) => (
+              <MenuBtn
+                key={ind}
+                icon={opt.icon}
+                text={opt.text}
+                handlePress={
+                  opt.text === 'Help'
+                    ? handleHelp
+                    : () => handleNavigate(opt?.screen)
+                }
+              />
+            ))}
+          </View>
         </View>
       </View>
 
-      <View className={'mt-8'}>
-        <Text className={'font-inter-medium text-13 text-ctext mb-3'}>
-          Assistance
-        </Text>
+      <GetHelpModal
+        ref={getHelpRef}
+        handleCloseModal={handleCloseHelpModal}
+        handleMakeComplaint={handleMakeComplaint}
+        handleRequestRepair={handleRequestRepair}
+        handleGeneralAssistance={handleGeneralAssistance}
+        handleMovingOut={handleMovingOut}
+      />
 
-        <View className={'flex-row w-full justify-between'}>
-          {assistance.map((opt, ind) => (
-            <MenuBtn
-              key={ind}
-              icon={opt.icon}
-              text={opt.text}
-              handlePress={() => handleNavigate(opt?.screen)}
-            />
-          ))}
-        </View>
-      </View>
-    </View>
+      <MovingOutModal
+        ref={movingOutRef}
+        handleCloseModal={handleCloseMovingOutModal}
+      />
+
+      <MakeComplaintModal
+        ref={makeComplaintRef}
+        handleCloseModal={handleCloseMakeComplaintModal}
+      />
+
+      <RequestRepairModal
+        ref={requestRepairRef}
+        handleCloseModal={handleCloseRequestRepairModal}
+      />
+
+      <GeneralRepairsModal
+        ref={generalAssistanceRef}
+        handleCloseModal={handleCloseGeneralAssistanceModal}
+      />
+    </>
   );
 };
 

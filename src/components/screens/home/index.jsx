@@ -4,3 +4,4 @@ import HomeStatsCard from './StatsCard';
 import HomeMenu from './Menu';
 
 export {HomeHeader, HomeApartmentTitle, HomeStatsCard, HomeMenu};
+export * from './help';

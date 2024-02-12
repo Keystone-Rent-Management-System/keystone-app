@@ -17,3 +17,4 @@ export {
   InvoicePartialPaymentModal,
   ExportStatementModal,
 };
+export * from './help';
