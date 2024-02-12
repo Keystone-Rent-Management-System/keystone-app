@@ -4,7 +4,12 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {BillsSvg, InvoiceSvg, StatementsSvg} from '@/assets/icons';
 import {CallSvg, ExtensionSvg, HelpSvg} from '../../../assets/icons';
 import {useNavigation} from '@react-navigation/native';
-import {GetHelpModal, MakeComplaintModal, MovingOutModal} from '../../modals';
+import {
+  GetHelpModal,
+  MakeComplaintModal,
+  MovingOutModal,
+  RequestRepairModal,
+} from '../../modals';
 import {useHelp} from '../../../hooks';
 
 const Menu = () => {
@@ -13,6 +18,7 @@ const Menu = () => {
     getHelpRef,
     movingOutRef,
     makeComplaintRef,
+    requestRepairRef,
     handleCloseHelpModal,
     handleOpenHelpModal,
     handleMovingOut,
@@ -21,6 +27,7 @@ const Menu = () => {
     handleGeneralAssistance,
     handleCloseMovingOutModal,
     handleCloseMakeComplaintModal,
+    handleCloseRequestRepairModal,
   } = useHelp();
 
   const handleNavigate = screen => {
@@ -92,6 +99,11 @@ const Menu = () => {
       <MakeComplaintModal
         ref={makeComplaintRef}
         handleCloseModal={handleCloseMakeComplaintModal}
+      />
+
+      <RequestRepairModal
+        ref={requestRepairRef}
+        handleCloseModal={handleCloseRequestRepairModal}
       />
     </>
   );

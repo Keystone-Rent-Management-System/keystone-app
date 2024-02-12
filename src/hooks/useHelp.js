@@ -4,7 +4,7 @@ const useHelp = () => {
   const getHelpRef = useRef();
   const movingOutRef = useRef();
   const makeComplaintRef = useRef();
-  // const getHelpRef = useRef();
+  const requestRepairRef = useRef();
 
   const handleOpenHelpModal = useCallback(() => {
     getHelpRef.current?.expand();
@@ -30,6 +30,14 @@ const useHelp = () => {
     makeComplaintRef.current?.close();
   }, []);
 
+  const handleOpenRequestRepairModal = useCallback(() => {
+    requestRepairRef.current?.expand();
+  }, []);
+
+  const handleCloseRequestRepairModal = useCallback(() => {
+    requestRepairRef.current?.close();
+  }, []);
+
   const handleMovingOut = () => {
     handleCloseHelpModal();
     handleOpenMovingOutModal();
@@ -39,7 +47,8 @@ const useHelp = () => {
     handleOpenMakeComplaintModal();
   };
   const handleRequestRepair = () => {
-    console.log('Request Repair');
+    handleCloseHelpModal();
+    handleOpenRequestRepairModal();
   };
   const handleGeneralAssistance = () => {
     console.log('Request assistance');
@@ -49,6 +58,7 @@ const useHelp = () => {
     getHelpRef,
     movingOutRef,
     makeComplaintRef,
+    requestRepairRef,
     // help modal methods
     handleOpenHelpModal,
     handleCloseHelpModal,
@@ -62,6 +72,9 @@ const useHelp = () => {
     //   make complaint
     handleOpenMakeComplaintModal,
     handleCloseMakeComplaintModal,
+    //   request repair
+    handleOpenRequestRepairModal,
+    handleCloseRequestRepairModal,
   };
 };
 
