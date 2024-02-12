@@ -5,6 +5,7 @@ import {BillsSvg, InvoiceSvg, StatementsSvg} from '@/assets/icons';
 import {CallSvg, ExtensionSvg, HelpSvg} from '../../../assets/icons';
 import {useNavigation} from '@react-navigation/native';
 import {
+  GeneralRepairsModal,
   GetHelpModal,
   MakeComplaintModal,
   MovingOutModal,
@@ -19,6 +20,7 @@ const Menu = () => {
     movingOutRef,
     makeComplaintRef,
     requestRepairRef,
+    generalAssistanceRef,
     handleCloseHelpModal,
     handleOpenHelpModal,
     handleMovingOut,
@@ -28,6 +30,7 @@ const Menu = () => {
     handleCloseMovingOutModal,
     handleCloseMakeComplaintModal,
     handleCloseRequestRepairModal,
+    handleCloseGeneralAssistanceModal,
   } = useHelp();
 
   const handleNavigate = screen => {
@@ -104,6 +107,11 @@ const Menu = () => {
       <RequestRepairModal
         ref={requestRepairRef}
         handleCloseModal={handleCloseRequestRepairModal}
+      />
+
+      <GeneralRepairsModal
+        ref={generalAssistanceRef}
+        handleCloseModal={handleCloseGeneralAssistanceModal}
       />
     </>
   );
