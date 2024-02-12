@@ -4,7 +4,7 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {BillsSvg, InvoiceSvg, StatementsSvg} from '@/assets/icons';
 import {CallSvg, ExtensionSvg, HelpSvg} from '../../../assets/icons';
 import {useNavigation} from '@react-navigation/native';
-import {GetHelpModal, MovingOutModal} from '../../modals';
+import {GetHelpModal, MakeComplaintModal, MovingOutModal} from '../../modals';
 import {useHelp} from '../../../hooks';
 
 const Menu = () => {
@@ -12,13 +12,13 @@ const Menu = () => {
   const {
     getHelpRef,
     movingOutRef,
+    makeComplaintRef,
     handleCloseHelpModal,
     handleOpenHelpModal,
     handleMovingOut,
     handleMakeComplaint,
     handleRequestRepair,
     handleGeneralAssistance,
-    handleOpenMovingOutModal,
     handleCloseMovingOutModal,
   } = useHelp();
 
@@ -85,6 +85,11 @@ const Menu = () => {
 
       <MovingOutModal
         ref={movingOutRef}
+        handleCloseModal={handleCloseMovingOutModal}
+      />
+
+      <MakeComplaintModal
+        ref={makeComplaintRef}
         handleCloseModal={handleCloseMovingOutModal}
       />
     </>
