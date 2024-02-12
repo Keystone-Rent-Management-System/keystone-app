@@ -3,7 +3,6 @@ import {CustomBottomSheet} from './index';
 import {Text, View} from 'react-native';
 import moment from 'moment/moment';
 import {InvoiceBillItem} from '../screens';
-import {bills} from '../../provider/invoice';
 import {ReceiptTemplate} from '../general';
 
 const InvoiceReceiptModal = forwardRef((props, ref) => {
@@ -24,26 +23,29 @@ const InvoiceReceiptModal = forwardRef((props, ref) => {
           hasCloseBtn
           handleClose={props.handleCloseModal}>
           <InvoiceBillItem
-            txtClassName={'font-sometypemono uppercase text-inactive_text'}
-            title={'Bill'}
-            amt={'Total'}
+            txtClassName={'font-sometypemono text-inactive_text mt-3'}
+            title={'From'}
+            amt={'To'}
           />
-
-          {bills.map((bill, ind) => (
-            <InvoiceBillItem
-              txtClassName={'font-sometypemono text-13'}
-              key={ind}
-              title={bill.title}
-              amt={`KES.${bill.amount}`}
-            />
-          ))}
 
           <InvoiceBillItem
-            containerClassName={'mt-3 border-t border-grey_1 py-4 pb-6'}
-            txtClassName={'font-sometypemono text-black text-13'}
-            title={'Total'}
-            amt={'KES.42,000'}
+            txtClassName={'font-sometypemono text-13'}
+            title={'Evans Mutambuki'}
+            amt={`Purple Haze\n Apartment`}
           />
+
+          <InvoiceBillItem
+            txtClassName={'font-sometypemono text-inactive_text'}
+            title={'Payment Method'}
+            amt={'Code'}
+          />
+
+          <InvoiceBillItem
+            txtClassName={'font-sometypemono text-13'}
+            title={'Mpesa Paybill'}
+            amt={`3245632`}
+          />
+          <View className={'h-10'} />
         </ReceiptTemplate>
       </View>
     </CustomBottomSheet>

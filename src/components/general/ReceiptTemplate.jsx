@@ -17,31 +17,31 @@ const ReceiptTemplate = ({
 }) => {
   return (
     <View className={'bg-bg_pale w-full relative pt-3 overflow-x-hidden'}>
-      {hasCloseBtn && (
-        <CButton
-          ClassName={
-            'rounded-full bg-slate-300 h-8 w-8 p-0 absolute top-2 right-2'
-          }
-          onPress={handleClose}>
-          <CloseSvg />
-        </CButton>
-      )}
       {/*ellipses*/}
       <BorderPattern color={color} ClassName={'-top-[7px]'} />
 
-      <View className={'px-8 flex-row pt-2 items-center justify-between'}>
+      <View className={'px-6 flex-row pt-2 items-center justify-between'}>
         <Text className={'text-black font-sometypemono text-xs'}>
           Receipt No: 243566
         </Text>
 
-        <CButton
-          ClassName={'bg-white px-2 py-1 text-xs flex-row space-x-1'}
-          textClassName={'text-2xs text-black'}>
-          <DownloadSvg />
-          <Text className={'font-sometypemono text-black text-xs'}>
-            Download
-          </Text>
-        </CButton>
+        <View className={'flex-row space-x-2 items-center'}>
+          <CButton
+            ClassName={'bg-slate-200 px-2 h-6 py-0 text-xs flex-row space-x-1'}
+            textClassName={'text-2xs text-black'}>
+            <DownloadSvg />
+            <Text className={'font-sometypemono text-black text-xs'}>
+              Download
+            </Text>
+          </CButton>
+          {hasCloseBtn && (
+            <CButton
+              ClassName={'rounded-full bg-slate-300 h-8 w-8 p-0 -mr-5'}
+              onPress={handleClose}>
+              <CloseSvg />
+            </CButton>
+          )}
+        </View>
       </View>
 
       <Image

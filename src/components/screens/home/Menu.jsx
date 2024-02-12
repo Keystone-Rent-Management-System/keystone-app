@@ -94,6 +94,9 @@ const financeOptions = [
   {
     icon: <BillsSvg />,
     text: 'Bills',
+    screen: {
+      name: 'bills',
+    },
   },
 ];
 

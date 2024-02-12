@@ -57,7 +57,7 @@ const Statements = () => {
 
         <SectionList
           sections={statements}
-          renderItem={({item}) => renderItem(item, handleOpenReceiptModal)}
+          renderItem={renderItem}
           renderSectionHeader={renderHeader}
         />
 
@@ -87,7 +87,7 @@ const Statements = () => {
   );
 };
 
-const renderItem = (item, handlePress) => (
+const renderItem = ({item}, handlePress) => (
   <StatementItem
     title={item?.title}
     date={item?.date}
