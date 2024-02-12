@@ -3,7 +3,7 @@ import {useCallback, useRef} from 'react';
 const useHelp = () => {
   const getHelpRef = useRef();
   const movingOutRef = useRef();
-  // const getHelpRef = useRef();
+  const makeComplaintRef = useRef();
   // const getHelpRef = useRef();
 
   const handleOpenHelpModal = useCallback(() => {
@@ -22,12 +22,21 @@ const useHelp = () => {
     movingOutRef.current?.close();
   }, []);
 
+  const handleOpenMakeComplaintModal = useCallback(() => {
+    makeComplaintRef.current?.expand();
+  }, []);
+
+  const handleCloseMakeComplaintModal = useCallback(() => {
+    makeComplaintRef.current?.close();
+  }, []);
+
   const handleMovingOut = () => {
     handleCloseHelpModal();
     handleOpenMovingOutModal();
   };
   const handleMakeComplaint = () => {
-    console.log('Make COmplaiinnttt');
+    handleCloseHelpModal();
+    handleOpenMakeComplaintModal();
   };
   const handleRequestRepair = () => {
     console.log('Request Repairr');
@@ -39,6 +48,7 @@ const useHelp = () => {
   return {
     getHelpRef,
     movingOutRef,
+    makeComplaintRef,
     // help modal methods
     handleOpenHelpModal,
     handleCloseHelpModal,
@@ -49,6 +59,9 @@ const useHelp = () => {
     //   moving out
     handleOpenMovingOutModal,
     handleCloseMovingOutModal,
+    //   make complaint
+    handleOpenMakeComplaintModal,
+    handleCloseMakeComplaintModal,
   };
 };
 
