@@ -21,8 +21,8 @@ const Bills = () => {
         Bill Categories
       </Text>
 
-      {bills?.map(({icon, value, title}) => (
-        <BillItem icon={icon} title={title} amount={value} />
+      {bills?.map(({icon, value, title}, ind) => (
+        <BillItem icon={icon} title={title} amount={value} key={ind} />
       ))}
 
       <View className={'w-full h-10'} />
