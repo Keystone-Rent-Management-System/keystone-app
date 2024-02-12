@@ -39,7 +39,7 @@ const useHelp = () => {
     handleOpenMakeComplaintModal();
   };
   const handleRequestRepair = () => {
-    console.log('Request Repairr');
+    console.log('Request Repair');
   };
   const handleGeneralAssistance = () => {
     console.log('Request assistance');

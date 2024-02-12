@@ -20,6 +20,7 @@ const Menu = () => {
     handleRequestRepair,
     handleGeneralAssistance,
     handleCloseMovingOutModal,
+    handleCloseMakeComplaintModal,
   } = useHelp();
 
   const handleNavigate = screen => {
@@ -90,7 +91,7 @@ const Menu = () => {
 
       <MakeComplaintModal
         ref={makeComplaintRef}
-        handleCloseModal={handleCloseMovingOutModal}
+        handleCloseModal={handleCloseMakeComplaintModal}
       />
     </>
   );
