@@ -22,7 +22,7 @@ const ListingItem = props => {
     showBack = false,
   } = props;
   const StyledView = styled(View);
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(props?.isSaved ?? false);
 
   const handleLike = () => setLiked(prev => !prev);
 
@@ -59,7 +59,7 @@ const ListingItem = props => {
           onPress={handleLike}
           className={'absolute z-10 top-2 right-2'}>
           <LikeSvg
-            color={liked ? COLORS.white : COLORS.text_color}
+            color={liked ? COLORS.likeRed : COLORS.text_color}
             opacity={liked ? '1' : '0.45'}
           />
         </TouchableOpacity>
