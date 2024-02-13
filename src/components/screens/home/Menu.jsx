@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback, useRef} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 import {BillsSvg, InvoiceSvg, StatementsSvg} from '@/assets/icons';
@@ -9,12 +9,15 @@ import {
   GetHelpModal,
   MakeComplaintModal,
   MovingOutModal,
+  RequestExtensionModal,
   RequestRepairModal,
 } from '../../modals';
 import {useHelp} from '../../../hooks';
 
 const Menu = () => {
   const navigation = useNavigation();
+
+  const extensionModalRef = useRef();
   const {
     getHelpRef,
     movingOutRef,
@@ -32,6 +35,14 @@ const Menu = () => {
     handleCloseRequestRepairModal,
     handleCloseGeneralAssistanceModal,
   } = useHelp();
+
+  const handleOpenExtensionModal = useCallback(() => {
+    extensionModalRef.current?.expand();
+  }, []);
+
+  const handleCloseExtensionModal = useCallback(() => {
+    extensionModalRef.current?.close();
+  }, []);
 
   const handleNavigate = screen => {
     if (screen?.name) {
@@ -77,6 +88,8 @@ const Menu = () => {
                 handlePress={
                   opt.text === 'Help'
                     ? handleHelp
+                    : opt.text === 'Extension'
+                    ? handleOpenExtensionModal
                     : () => handleNavigate(opt?.screen)
                 }
               />
@@ -112,6 +125,11 @@ const Menu = () => {
       <GeneralRepairsModal
         ref={generalAssistanceRef}
         handleCloseModal={handleCloseGeneralAssistanceModal}
+      />
+
+      <RequestExtensionModal
+        ref={extensionModalRef}
+        handleCloseModal={handleCloseExtensionModal}
       />
     </>
   );
