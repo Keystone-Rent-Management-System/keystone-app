@@ -15,8 +15,14 @@ import {
   WavingSvg,
 } from '@/assets/icons';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {useNavigation} from '@react-navigation/native';
 
 const More = () => {
+  const navigation = useNavigation();
+
+  const handleNavigate = screen => {
+    navigation.navigate(screen);
+  };
   return (
     <Layout className={''}>
       <LinearGradient
@@ -50,19 +56,24 @@ const More = () => {
         className={'py-4'}
         style={styles.listStyle}
         data={navList}
-        renderItem={renderNavItem}
+        renderItem={({item}) => renderNavItem({item}, handleNavigate)}
       />
     </Layout>
   );
 };
 
-const renderNavItem = ({item: {icon, title}}) => (
-  <TouchableOpacity className={'flex-row my-3 px-5 items-center space-x-3'}>
-    <View className={'items-center justify-center h-6 w-6'}>{icon}</View>
+const renderNavItem = ({item}, handleNavigate) => {
+  const {icon, title} = item;
+  return (
+    <TouchableOpacity
+      className={'flex-row my-3 px-5 items-center space-x-3'}
+      onPress={() => handleNavigate(item?.screen ?? '')}>
+      <View className={'items-center justify-center h-6 w-6'}>{icon}</View>
 
-    <Text className={'text-black font-inter text-13'}>{title}</Text>
-  </TouchableOpacity>
-);
+      <Text className={'text-black font-inter text-13'}>{title}</Text>
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   profileStyle: {
@@ -85,6 +96,7 @@ const navList = [
   {
     icon: <LikeSvg strokeColor={COLORS.primary} size={24} />,
     title: 'Saved Units',
+    screen: 'more__saved_units',
   },
   {
     icon: <AgreementSvg color={COLORS.primary} size={22} />,

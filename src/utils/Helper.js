@@ -4,7 +4,6 @@ const renderSingularPlural = (num, render, nullRender = '') =>
 const getGreetings = () => {
   const date = new Date();
   const hours = date.getHours();
-  console.log('HOURS', hours < 12);
 
   if (hours < 12) {
     return 'Good Morning!';

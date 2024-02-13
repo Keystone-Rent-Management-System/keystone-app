@@ -3,8 +3,9 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 import BottomNav from './BottomNav';
 import {ApartmentSearch, ApartmentView, InvoiceView} from '@/screens';
-import {InvoiceMakePayment} from '../screens';
+import {InvoiceMakePayment, SavedUnits} from '../screens';
 import NavOptions from './options';
+import COLORS from '../constants/Theme';
 
 const Stack = createStackNavigator();
 const MainNav = () => {
@@ -20,6 +21,21 @@ const MainNav = () => {
         name={'invoice_make_payment'}
         component={InvoiceMakePayment}
         options={NavOptions.withBackBarOptions}
+      />
+      <Stack.Screen
+        name={'more__saved_units'}
+        component={SavedUnits}
+        options={{
+          ...NavOptions.withBackBarOptions,
+          title: 'Saved Units',
+
+          headerTitleStyle: {
+            color: COLORS.primary,
+            fontSize: 17,
+            fontFamily: 'Inter-SemiBold',
+            marginHorizontal: 'auto',
+          },
+        }}
       />
     </Stack.Navigator>
   );
