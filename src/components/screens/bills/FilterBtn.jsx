@@ -32,7 +32,6 @@ const FilterBtn = () => {
 };
 
 const renderItem = item => {
-  console.log('ITEM ISS', item);
   return (
     <View className={'py-2'}>
       <Text style={styles.itemTextStyle}>{item?.label}</Text>
