@@ -88,6 +88,7 @@ const listings = [
         text: 'Baby Care',
       },
     ],
+    isFavorite: true,
   },
   {
     id: 2,
@@ -159,6 +160,7 @@ const listings = [
         text: 'Baby Care',
       },
     ],
+    isFavorite: true,
   },
   {
     id: 3,
@@ -230,6 +232,7 @@ const listings = [
         text: 'Baby Care',
       },
     ],
+    isFavorite: true,
   },
   {
     id: 4,
