@@ -3,7 +3,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 import BottomNav from './BottomNav';
 import {ApartmentSearch, ApartmentView, InvoiceView} from '@/screens';
-import {InvoiceMakePayment} from '../screens';
+import {InvoiceMakePayment, SavedUnits} from '../screens';
 import NavOptions from './options';
 
 const Stack = createStackNavigator();
@@ -19,6 +19,11 @@ const MainNav = () => {
       <Stack.Screen
         name={'invoice_make_payment'}
         component={InvoiceMakePayment}
+        options={NavOptions.withBackBarOptions}
+      />
+      <Stack.Screen
+        name={'more__saved_units'}
+        component={SavedUnits}
         options={NavOptions.withBackBarOptions}
       />
     </Stack.Navigator>
