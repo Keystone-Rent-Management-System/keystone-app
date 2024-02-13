@@ -15,6 +15,7 @@ const COLORS = {
   bg_grey: '#f5f5f5',
   bg_green: '#D8F5DF',
   gradient_2: '#1659FD',
+  likeRed: '#A61606',
 };
 
 module.exports = COLORS;
