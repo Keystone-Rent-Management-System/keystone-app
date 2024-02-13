@@ -4,14 +4,14 @@ const renderSingularPlural = (num, render, nullRender = '') =>
 const getGreetings = () => {
   const date = new Date();
   const hours = date.getHours();
+  console.log('HOURS', hours < 12);
 
-  switch (hours) {
-    case hours < 12:
-      return 'Good Morning!';
-    case hours < 16:
-      return 'Good Afternoon!';
-    default:
-      return 'Good Evening!';
+  if (hours < 12) {
+    return 'Good Morning!';
+  } else if (hours < 16) {
+    return 'Good Afternoon!';
+  } else {
+    return 'Good Evening!';
   }
 };
 
