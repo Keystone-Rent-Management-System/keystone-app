@@ -1,11 +1,12 @@
 import React from 'react';
 
-import {Explore, More, Notifications} from '@/screens';
+import {Explore, Notifications} from '@/screens';
 import {ExploreSvg, HomeSvg, MoreSvg, NotificationsSvg} from '@/assets/icons';
 import COLORS from '@/constants/Theme';
 import NavOptions from '@/navigation/options';
 import {Text, View} from 'react-native';
 import {HomeStack} from '@/navigation';
+import MoreStack from '../../navigation/MoreStack';
 
 const screens = [
   {
@@ -53,7 +54,7 @@ const screens = [
   },
   {
     title: 'more',
-    component: More,
+    component: MoreStack,
     tab: {
       title: 'More',
       icon: isCurrent => (

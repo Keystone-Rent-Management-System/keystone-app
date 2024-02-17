@@ -88,6 +88,7 @@ const navList = [
   {
     icon: <UserSvg />,
     title: 'Account Information',
+    screen: 'more__account_details',
   },
   {
     icon: <ApartmentSvg size={'24'} color={COLORS.primary} />,

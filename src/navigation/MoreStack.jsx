@@ -1,15 +1,29 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-
-import {Explore} from '@/screens';
+import {More, MoreAccountDetails} from '../screens';
+import COLORS from '../constants/Theme';
 
 const Stack = createStackNavigator();
 const MoreStack = () => {
   return (
     <Stack.Navigator
       screenOptions={{headerShown: false}}
-      initialRouteName="explore">
-      <Stack.Screen name={'explore'} component={Explore} />
+      initialRouteName="default">
+      <Stack.Screen name={'default'} component={More} />
+      <Stack.Screen
+        name={'more__account_details'}
+        component={MoreAccountDetails}
+        options={{
+          headerShown: true,
+          title: '',
+          headerTitleStyle: {
+            color: COLORS.primary,
+            fontSize: 18,
+            fontFamily: 'Inter-SemiBold',
+            marginHorizontal: 'auto',
+          },
+        }}
+      />
     </Stack.Navigator>
   );
 };

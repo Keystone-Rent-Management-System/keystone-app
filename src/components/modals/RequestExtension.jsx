@@ -1,9 +1,9 @@
 import React, {forwardRef} from 'react';
-
 import {ScrollView, Text, View} from 'react-native';
+
 import {CustomBottomSheet} from './index';
 import {CButton} from '../general';
-import {CloseSvg} from '../../assets/icons';
+import {CloseSvg} from '@/assets/icons';
 import {ExtensionDropDown} from '../screens';
 
 const RequestExtension = forwardRef((props, ref) => {
