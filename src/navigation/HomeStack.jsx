@@ -83,4 +83,4 @@ const HomeStack = () => {
 
 export default HomeStack;
 
-const renderEmpty = () => <View />;
+export const renderEmpty = () => <View />;
