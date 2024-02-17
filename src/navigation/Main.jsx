@@ -3,7 +3,11 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 import BottomNav from './BottomNav';
 import {ApartmentSearch, ApartmentView, InvoiceView} from '@/screens';
-import {InvoiceMakePayment, SavedUnits} from '../screens';
+import {
+  AccountChangePassword,
+  InvoiceMakePayment,
+  SavedUnits,
+} from '../screens';
 import NavOptions from './options';
 import COLORS from '../constants/Theme';
 
@@ -28,6 +32,21 @@ const MainNav = () => {
         options={{
           ...NavOptions.withBackBarOptions,
           title: 'Saved Units',
+
+          headerTitleStyle: {
+            color: COLORS.primary,
+            fontSize: 17,
+            fontFamily: 'Inter-SemiBold',
+            marginHorizontal: 'auto',
+          },
+        }}
+      />
+      <Stack.Screen
+        name={'more__account_password'}
+        component={AccountChangePassword}
+        options={{
+          ...NavOptions.withBackBarOptions,
+          title: 'Change Password',
 
           headerTitleStyle: {
             color: COLORS.primary,
