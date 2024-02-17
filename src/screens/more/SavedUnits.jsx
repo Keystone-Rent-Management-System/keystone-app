@@ -2,8 +2,8 @@ import React, {useCallback, useMemo} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {FlashList} from '@shopify/flash-list';
 
-import {ExploreListingItem, Layout} from '../../components';
-import listings from '../../provider/listings';
+import {ExploreListingItem, Layout} from '@/components';
+import listings from '@/provider/listings';
 
 const SavedUnits = () => {
   const navigation = useNavigation();
