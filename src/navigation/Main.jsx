@@ -10,6 +10,7 @@ import {
 } from '../screens';
 import NavOptions from './options';
 import COLORS from '../constants/Theme';
+import MyUnitsStack from './MyUnitsStack';
 
 const Stack = createStackNavigator();
 const MainNav = () => {
@@ -54,6 +55,13 @@ const MainNav = () => {
             fontFamily: 'Inter-SemiBold',
             marginHorizontal: 'auto',
           },
+        }}
+      />
+      <Stack.Screen
+        name={'my_units'}
+        component={MyUnitsStack}
+        options={{
+          headerShown: false,
         }}
       />
     </Stack.Navigator>
