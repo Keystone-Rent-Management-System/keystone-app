@@ -1,11 +1,12 @@
 import React from 'react';
-import {Layout, ListingItem} from '../../../components';
+import {useNavigation} from '@react-navigation/native';
 import moment from 'moment/moment';
 import {FlashList} from '@shopify/flash-list';
+
+import {Layout, ListingItem} from '@/components';
 import {invoiceStyles} from '../../home/invoice/Unpaid';
-import {useNavigation} from '@react-navigation/native';
-import {HomeSvg} from '../../../assets/icons';
-import COLORS from '../../../constants/Theme';
+import {HomeSvg} from '@/assets/icons';
+import COLORS from '@/constants/Theme';
 
 const Current = () => {
   const navigation = useNavigation();
@@ -19,7 +20,7 @@ const Current = () => {
       <FlashList
         contentContainerStyle={invoiceStyles.list}
         data={currentUnits}
-        renderItem={({item}) => renderListItem(item, handleNavigate)}
+        renderItem={({item}) => renderUnitListItem(item, handleNavigate)}
         keyExtractor={(_, ind) => ind.toString()}
         estimatedItemSize={300}
       />
@@ -27,7 +28,7 @@ const Current = () => {
   );
 };
 
-const renderListItem = (item, handlePress = () => {}) => {
+export const renderUnitListItem = (item, handlePress = () => {}) => {
   return (
     <ListingItem
       icon={<HomeSvg color={COLORS.primary} size={'24'} />}
