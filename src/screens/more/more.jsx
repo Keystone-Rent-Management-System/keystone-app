@@ -61,7 +61,7 @@ const More = () => {
       />
 
       <View className={'flex-row justify-center p-3'}>
-        <Text className={'text-gray-300 font-inter'}>
+        <Text className={'text-gray-300 font-inter text-13'}>
           Version {VersionCheck.getCurrentVersion()}
         </Text>
       </View>
