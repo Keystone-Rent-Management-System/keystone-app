@@ -11,7 +11,7 @@ const Current = () => {
   const navigation = useNavigation();
 
   const handleNavigate = id => {
-    navigation.navigate('invoice_view', {id, type: 'unpaid'});
+    navigation.navigate('my_units__view');
   };
 
   return (
