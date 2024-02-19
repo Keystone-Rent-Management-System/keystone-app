@@ -1,6 +1,6 @@
 {
   "name": "pallax_app",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -35,6 +35,7 @@
     "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "^14.1.0",
     "react-native-tab-view": "^3.5.2",
+    "react-native-version-check": "^3.4.7",
     "rn-range-slider": "^2.2.2"
   },
   "devDependencies": {

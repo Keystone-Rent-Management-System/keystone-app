@@ -8,6 +8,7 @@ import ExploreHouseTypeItem from './HouseTypeItem';
 import ExploreActionBtn from './ActionBtn';
 import ExploreMapView from './MapView';
 import ApartmentViewFloatingActionBar from './FloatingActionBar';
+import LandlordItem from './LandlordItem';
 
 export {
   ExploreHeader,
@@ -20,4 +21,5 @@ export {
   ExploreActionBtn,
   ApartmentViewFloatingActionBar,
   ExploreMapView,
+  LandlordItem,
 };

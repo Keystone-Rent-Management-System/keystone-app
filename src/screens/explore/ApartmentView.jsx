@@ -17,8 +17,6 @@ import {
   BathroomSvg,
   BedSvg,
   LikeSvg,
-  MessageSvg,
-  PhoneSvg,
   UploadSvg,
   VirtualTourSvg,
 } from '@/assets/icons';
@@ -28,12 +26,12 @@ import {
   ExploreActionBtn,
   ExploreAmenity,
   Layout,
-  ProfileView,
 } from '@/components';
 import {useNavigation} from '@react-navigation/native';
 import {VirtualTourModal} from '@/components/modals';
 import MapView, {Marker} from 'react-native-maps';
 import {HouseMapMarker} from '../../assets/icons';
+import {LandlordItem} from '../../components';
 
 const ApartmentView = ({route: {params}}) => {
   const bottomSheetRef = useRef();
@@ -175,31 +173,7 @@ const ApartmentView = ({route: {params}}) => {
           </View>
         </View>
 
-        {/*  landlord details  */}
-        <View className={'p-4 border-b border-border_grey flex-row'}>
-          <ProfileView
-            image={
-              'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg'
-            }
-          />
-
-          <View className={'mx-3 flex-1'}>
-            <Text className={'font-inter text-black'}>Tom Cruise</Text>
-            <Text className={'font-inter capitalize text-13 text-grey_1'}>
-              {currentApartmentDetails?.user}
-            </Text>
-          </View>
-
-          <View
-            className={'flex-row items-center'}
-            style={styles.actionButtonWrapper}>
-            {/* message button */}
-            <ExploreActionBtn icon={<MessageSvg />} />
-
-            {/* call button */}
-            <ExploreActionBtn icon={<PhoneSvg />} />
-          </View>
-        </View>
+        <LandlordItem userName={currentApartmentDetails?.user} />
 
         {/* Location details */}
         <View className={'px-4 py-6 border-b border-border_grey'}>

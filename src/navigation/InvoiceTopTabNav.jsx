@@ -4,8 +4,8 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 import {InvoicePaid, InvoicePendingApproval, InvoiceUnpaid} from '@/screens';
 import COLORS from '../constants/Theme';
 
+const TopTab = createMaterialTopTabNavigator();
 const InvoiceTopTabNav = () => {
-  const TopTab = createMaterialTopTabNavigator();
   return (
     <TopTab.Navigator
       screenOptions={{

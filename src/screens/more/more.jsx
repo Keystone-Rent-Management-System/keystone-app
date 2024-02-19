@@ -1,6 +1,7 @@
 import React from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import VersionCheck from 'react-native-version-check';
 
 import {Layout, ProfileView} from '@/components';
 import COLORS from '@/constants/Theme';
@@ -58,6 +59,12 @@ const More = () => {
         data={navList}
         renderItem={({item}) => renderNavItem({item}, handleNavigate)}
       />
+
+      <View className={'flex-row justify-center p-3'}>
+        <Text className={'text-gray-300 font-inter text-13'}>
+          Version {VersionCheck.getCurrentVersion()}
+        </Text>
+      </View>
     </Layout>
   );
 };
@@ -93,6 +100,7 @@ const navList = [
   {
     icon: <ApartmentSvg size={'24'} color={COLORS.primary} />,
     title: 'My Unit',
+    screen: 'my_units',
   },
   {
     icon: <LikeSvg strokeColor={COLORS.primary} size={24} />,
