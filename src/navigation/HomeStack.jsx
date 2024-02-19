@@ -5,6 +5,7 @@ import {Bills, Home, InvoiceReceipt, Statements} from '@/screens';
 import InvoiceTopTabNav from './InvoiceTopTabNav';
 import COLORS from '../constants/Theme';
 import {View} from 'react-native';
+import MyUnitsStack from './MyUnitsStack';
 
 const Stack = createStackNavigator();
 
@@ -75,6 +76,14 @@ const HomeStack = () => {
             fontSize: 18,
             fontFamily: 'Inter-SemiBold',
           },
+        }}
+      />
+
+      <Stack.Screen
+        name={'my_units'}
+        component={MyUnitsStack}
+        options={{
+          headerShown: false,
         }}
       />
     </Stack.Navigator>

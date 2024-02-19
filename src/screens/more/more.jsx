@@ -93,6 +93,7 @@ const navList = [
   {
     icon: <ApartmentSvg size={'24'} color={COLORS.primary} />,
     title: 'My Unit',
+    screen: 'my_units',
   },
   {
     icon: <LikeSvg strokeColor={COLORS.primary} size={24} />,
