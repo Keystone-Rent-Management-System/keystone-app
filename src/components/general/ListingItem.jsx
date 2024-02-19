@@ -15,7 +15,9 @@ const ListingItem = ({
 }) => {
   return (
     <TouchableOpacity
-      className={'mb-4 flex-row space-x-3 pb-2 border-b border-b-border_grey'}
+      className={
+        'mb-4 flex-row space-x-3 pt-2 pb-3 border-b border-b-border_grey'
+      }
       onPress={() => handlePress(id)}>
       <View
         className={
