@@ -1,8 +1,8 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 
-import {CurrentUnit} from '../screens';
-import COLORS from '../constants/Theme';
+import {UnitView} from '@/screens';
+import COLORS from '@/constants/Theme';
 import MyUnitsTopTabNav from './MyUnitsTopTabNav';
 
 const Stack = createStackNavigator();
@@ -27,7 +27,7 @@ const MyUnitsStack = () => {
       />
       <Stack.Screen
         name={'my_units__view'}
-        component={CurrentUnit}
+        component={UnitView}
         options={{
           headerShown: true,
           title: 'Unit',
