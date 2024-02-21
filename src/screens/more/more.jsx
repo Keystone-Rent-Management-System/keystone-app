@@ -110,6 +110,7 @@ const navList = [
   {
     icon: <AgreementSvg color={COLORS.primary} size={22} />,
     title: 'Agreements',
+    screen: 'more__agreements',
   },
   {
     icon: <InfoSvg />,

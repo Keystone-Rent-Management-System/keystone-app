@@ -7,6 +7,7 @@ import InvoicePaymentMethodModal from './PaymentMethod';
 import InvoicePartialPaymentModal from './PartialPayment';
 import ExportStatementModal from './ExportStatement';
 import RequestExtensionModal from './RequestExtension';
+import AgreementModal from './Agreement';
 
 export {
   CustomBottomSheet,
@@ -18,5 +19,6 @@ export {
   InvoicePartialPaymentModal,
   ExportStatementModal,
   RequestExtensionModal,
+  AgreementModal,
 };
 export * from './help';
