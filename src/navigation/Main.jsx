@@ -11,6 +11,7 @@ import {
 import NavOptions from './options';
 import COLORS from '../constants/Theme';
 import MyUnitsStack from './MyUnitsStack';
+import AgreementsTopTabNav from './AgreementsTopNav';
 
 const Stack = createStackNavigator();
 const MainNav = () => {
@@ -62,6 +63,20 @@ const MainNav = () => {
         component={MyUnitsStack}
         options={{
           headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name={'more__agreements'}
+        component={AgreementsTopTabNav}
+        options={{
+          ...NavOptions.withBackBarOptions,
+          title: 'Agreements',
+          headerTitleStyle: {
+            color: COLORS.primary,
+            fontSize: 17,
+            fontFamily: 'Inter-SemiBold',
+            marginHorizontal: 'auto',
+          },
         }}
       />
     </Stack.Navigator>
