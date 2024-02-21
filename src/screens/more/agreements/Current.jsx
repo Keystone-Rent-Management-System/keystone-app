@@ -1,34 +1,53 @@
-import React, {useRef} from 'react';
-import moment from 'moment';
-import {FlashList} from '@shopify/flash-list';
+import React, { useRef } from "react";
+import moment from "moment";
+import { FlashList } from "@shopify/flash-list";
 
-import {Layout, ListingItem} from '../../../components';
-import {AgreementSvg} from '../../../assets/icons';
-import COLORS from '../../../constants/Theme';
-import {invoiceStyles} from '../../home/invoice/Unpaid';
-import AgreementModalSheet from '../../../components/modals/Agreement';
+import { Layout, ListingItem } from "../../../components";
+import { AgreementSvg } from "../../../assets/icons";
+import COLORS from "../../../constants/Theme";
+import { invoiceStyles } from "../../home/invoice/Unpaid";
+import AgreementModalSheet from "../../../components/modals/Agreement";
+import { MovingOutModal } from "../../../components/modals";
+import { useHelp } from "../../../hooks";
+import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 
 const Current = () => {
   const agreementModalRef = useRef();
+  const { dismiss } = useBottomSheetModal();
+  const { movingOutRef, handleOpenMovingOutModal, handleCloseMovingOutModal } =
+    useHelp();
 
   const handleOpenAgreement = () => {
     agreementModalRef?.current?.present();
   };
 
+  const handleIssueTermination = () => {
+    dismiss();
+    handleOpenMovingOutModal();
+  };
+
   return (
     <>
-      <AgreementModalSheet ref={agreementModalRef} />
+      <AgreementModalSheet
+        ref={agreementModalRef}
+        handleIssueTermination={handleIssueTermination}
+      />
       <Layout>
         <FlashList
           contentContainerStyle={invoiceStyles.list}
           data={currentAgreements}
-          renderItem={({item}) =>
+          renderItem={({ item }) =>
             renderAgreementListItem(item, handleOpenAgreement)
           }
           keyExtractor={(_, ind) => ind.toString()}
           estimatedItemSize={300}
         />
       </Layout>
+
+      <MovingOutModal
+        ref={movingOutRef}
+        handleCloseModal={handleCloseMovingOutModal}
+      />
     </>
   );
 };
@@ -36,10 +55,10 @@ const Current = () => {
 export const renderAgreementListItem = (item, handlePress = () => {}) => {
   return (
     <ListingItem
-      icon={<AgreementSvg color={COLORS.primary} size={'24'} />}
+      icon={<AgreementSvg color={COLORS.primary} size={"24"} />}
       id={item?.id}
       title={item?.title}
-      customDate={item?.fromDate + ' - ' + item?.toDate}
+      customDate={item?.fromDate + " - " + item?.toDate}
       unit={item?.unitName}
       amount={item?.amount}
       handlePress={handlePress}
@@ -50,19 +69,19 @@ export const renderAgreementListItem = (item, handlePress = () => {}) => {
 const currentAgreements = [
   {
     id: 1,
-    title: 'Purple HazeApartment',
-    fromDate: moment().subtract(2, 'M').format('MMM YY'),
-    toDate: moment().format('MMM YY'),
-    unitName: 'unit 04',
-    amount: '30,000',
+    title: "Purple HazeApartment",
+    fromDate: moment().subtract(2, "M").format("MMM YY"),
+    toDate: moment().format("MMM YY"),
+    unitName: "unit 04",
+    amount: "30,000",
   },
   {
     id: 2,
-    title: 'Ruaka Arcade Homes',
-    fromDate: moment().subtract(10, 'M').format('MMM YY'),
-    toDate: moment().format('MMM YY'),
-    unitName: 'unit 512',
-    amount: '20,000',
+    title: "Ruaka Arcade Homes",
+    fromDate: moment().subtract(10, "M").format("MMM YY"),
+    toDate: moment().format("MMM YY"),
+    unitName: "unit 512",
+    amount: "20,000",
   },
 ];
 
