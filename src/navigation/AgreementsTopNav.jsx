@@ -28,14 +28,14 @@ const AgreementsTopTabNav = () => {
         tabBarPressColor: 'none',
       }}>
       <TopTab.Screen
-        name={'Current'}
+        name={'agreements_current'}
         component={CurrentAgreements}
         options={{
-          title: 'Unpaid',
+          title: 'Current',
         }}
       />
       <TopTab.Screen
-        name={'invoice_pending'}
+        name={'agreements_previous'}
         component={PreviousAgreements}
         options={{
           title: 'Previous',
