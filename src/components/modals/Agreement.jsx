@@ -1,23 +1,23 @@
 import React, {forwardRef} from 'react';
 
 import {ScrollView, Text, View} from 'react-native';
-import {CustomBottomSheet} from './index';
+import CustomBottomSheetModal from './CustomBottomSheetModal';
 import {CButton} from '../general';
 import {CloseSvg} from '../../assets/icons';
 
-const Agreement = forwardRef((props, ref) => {
+const AgreementModalSheet = forwardRef((props, ref) => {
   return (
-    <CustomBottomSheet
-      snapPoints={['5%', '80%']}
+    <CustomBottomSheetModal
       ref={ref}
-      handleComponent={() => renderSheetHeader(props.handleCloseModal)}
-      onChange={props.handleSheetChanges}>
+      snapPoints={['50%', '95%']}
+      handleComponent={() => renderSheetHeader(props.handleCloseModal)}>
       <ScrollView className={'px-4 flex-col '}>
         <Text className={'text-black'}>Hellow world</Text>
       </ScrollView>
-    </CustomBottomSheet>
+    </CustomBottomSheetModal>
   );
 });
+export default AgreementModalSheet;
 
 const renderSheetHeader = handleClose => (
   <View
@@ -37,5 +37,3 @@ const renderSheetHeader = handleClose => (
     </CButton>
   </View>
 );
-
-export default Agreement;

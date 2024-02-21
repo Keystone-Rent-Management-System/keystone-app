@@ -1,26 +1,35 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import moment from 'moment';
+import {FlashList} from '@shopify/flash-list';
+
 import {Layout, ListingItem} from '../../../components';
 import {AgreementSvg} from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
-import {FlashList} from '@shopify/flash-list';
 import {invoiceStyles} from '../../home/invoice/Unpaid';
+import AgreementModalSheet from '../../../components/modals/Agreement';
 
 const Current = () => {
-  const handleViewAgreement = () => {};
+  const agreementModalRef = useRef();
+
+  const handleOpenAgreement = () => {
+    agreementModalRef?.current?.present();
+  };
 
   return (
-    <Layout>
-      <FlashList
-        contentContainerStyle={invoiceStyles.list}
-        data={currentAgreements}
-        renderItem={({item}) =>
-          renderAgreementListItem(item, handleViewAgreement)
-        }
-        keyExtractor={(_, ind) => ind.toString()}
-        estimatedItemSize={300}
-      />
-    </Layout>
+    <>
+      <AgreementModalSheet ref={agreementModalRef} />
+      <Layout>
+        <FlashList
+          contentContainerStyle={invoiceStyles.list}
+          data={currentAgreements}
+          renderItem={({item}) =>
+            renderAgreementListItem(item, handleOpenAgreement)
+          }
+          keyExtractor={(_, ind) => ind.toString()}
+          estimatedItemSize={300}
+        />
+      </Layout>
+    </>
   );
 };
 
