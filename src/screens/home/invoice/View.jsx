@@ -1,22 +1,23 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
-import invoiceData, {bills} from '@/provider/invoice';
+import invoiceData, { bills } from "@/provider/invoice";
 import {
   InvoiceBillItem,
   InvoiceFooter,
   InvoiceHeader,
   Layout,
-} from '@/components';
-import {useNavigation} from '@react-navigation/native';
+} from "@/components";
+import { useNavigation } from "@react-navigation/native";
 import {
   InvoiceConcernModal,
   InvoicePartialPaymentModal,
   InvoicePaymentMethodModal,
   InvoiceReceiptModal,
-} from '@/components/modals';
+} from "@/components/modals";
+import moment from "moment";
 
-const InvoiceView = ({route: {params}}) => {
+const InvoiceView = ({ route: { params } }) => {
   const navigation = useNavigation();
   const concernModalRef = useRef();
   const receiptModalRef = useRef();
@@ -58,38 +59,39 @@ const InvoiceView = ({route: {params}}) => {
   }, []);
 
   const currentInvoice = useMemo(
-    () => invoiceData[params?.type]?.find(item => item.id === params?.id),
-    [params?.id, params?.type],
+    () => invoiceData[params?.type]?.find((item) => item.id === params?.id),
+    [params?.id, params?.type]
   );
 
   const handleNavigate = (screen, options) => {
     navigation.navigate(screen, options);
   };
 
-  const handleRaiseConcern = text => {
+  const handleRaiseConcern = (text) => {
     setConcern(text);
     handleCloseConcernModal();
   };
 
   const hasConcern = useMemo(() => !!concern, [concern]);
-  const isUnpaid = useMemo(() => params?.type === 'unpaid', [params?.t]);
-  const isPending = useMemo(() => params?.type === 'pending', [params?.t]);
+  const isUnpaid = useMemo(() => params?.type === "unpaid", [params?.t]);
+  const isPending = useMemo(() => params?.type === "pending", [params?.t]);
   return (
     <>
-      <Layout ClassName={'relative'}>
+      <Layout ClassName={"relative"}>
         <InvoiceHeader
           invoiceAmount={currentInvoice.amount}
           invoiceTitle={currentInvoice.title}
           invoiceUnit={currentInvoice.unit}
           hasConcern={hasConcern}
+          isPartial={currentInvoice?.isPartial}
         />
 
         {/*  Scroll section*/}
-        <ScrollView className={'pt-20 px-4 z-0'} style={{elevation: 0}}>
+        <ScrollView className={"pt-20 px-4 z-0"} style={{ elevation: 0 }}>
           <InvoiceBillItem
-            txtClassName={'font-inter text-inactive_text'}
-            title={'Bill'}
-            amt={'Total'}
+            txtClassName={"font-inter text-inactive_text"}
+            title={"Bill"}
+            amt={"Total"}
           />
 
           {bills.map((bill, ind) => (
@@ -97,32 +99,54 @@ const InvoiceView = ({route: {params}}) => {
           ))}
 
           <InvoiceBillItem
-            containerClassName={'mt-3 border-t border-gray-200 py-2'}
-            txtClassName={'font-inter-semibold text-black text-13'}
-            title={'Total'}
-            amt={'42,000'}
+            containerClassName={"mt-3 border-t border-gray-200 py-5"}
+            txtClassName={"font-inter-semibold text-black text-13"}
+            title={"Total"}
+            amt={"42,000"}
           />
+
+          {currentInvoice?.isPartial && (
+            <InvoiceBillItem
+              containerClassName={"py-3 border-y border-border_grey"}
+              txtClassName={"font-inter"}
+              title={"Partially Paid"}
+              customAmt={
+                <View className={"items-center"}>
+                  <Text className={"text-11 font-inter text-inactive_text "}>
+                    {moment().format("HH:MMA, MMM YYYY")}
+                  </Text>
+
+                  <Text
+                    className={"text-13 font-inter-semibold text-black mt-2"}
+                  >
+                    KES. 15,000
+                  </Text>
+                </View>
+              }
+            />
+          )}
 
           {!hasConcern && isUnpaid && (
             <View>
-              <Text className={'text-sm font-inter-semibold text-black mt-4'}>
+              <Text className={"text-sm font-inter-semibold text-black mt-4"}>
                 Does this invoice have an issue?
               </Text>
 
-              <Text className={'font-inter text-xs leading-5 mt-1 text-grey_1'}>
-                The invoice has a discrepancy to what you expected,{' '}
+              <Text className={"font-inter text-xs leading-5 mt-1 text-grey_1"}>
+                The invoice has a discrepancy to what you expected,{" "}
                 <TouchableOpacity onPress={handleOpenConcernModal}>
                   <Text
                     className={
-                      'underline text-xs text-primary font-inter-semibold'
-                    }>
+                      "underline text-xs text-primary font-inter-semibold"
+                    }
+                  >
                     Raise Concern
                   </Text>
                 </TouchableOpacity>
               </Text>
             </View>
           )}
-          <View className={'h-20 w-full'} />
+          <View className={"h-20 w-full"} />
         </ScrollView>
 
         {!isPending && (
