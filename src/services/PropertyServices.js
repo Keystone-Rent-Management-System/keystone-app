@@ -14,8 +14,20 @@ const getProperties = async (page, size) => {
   return res;
 };
 
+/**
+ * fetches single property
+ * @param {number} propertyId
+ * @returns {Promise<Property>}
+ */
+const getProperty = async (propertyId) => {
+  const { data: res } = await AxiosUtility.get(`/property/${propertyId}`);
+
+  return res;
+};
+
 const PropertyServices = {
   getProperties,
+  getProperty,
 };
 
 export default PropertyServices;
