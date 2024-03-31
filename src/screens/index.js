@@ -1,6 +1,7 @@
-import Notifications from './notifications';
+import Notifications from "./notifications";
 
-export * from './explore';
-export * from './home';
-export * from './more';
-export {Notifications};
+export * from "./explore";
+export * from "./home";
+export * from "./more";
+export * from "./authentication";
+export { Notifications };

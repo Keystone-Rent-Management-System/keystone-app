@@ -1,14 +1,14 @@
-import React from 'react';
+import React from "react";
 
-import {Text, TextInput, View} from 'react-native';
-import COLORS from '../../constants/Theme';
+import { Text, TextInput, View } from "react-native";
+import COLORS from "../../constants/Theme";
 
 const CInput = ({
   icon,
   value,
   handleChange,
   maxL,
-  placeHolder = 'Hellow',
+  placeHolder = "Hellow",
   inputClassName,
   ClassName,
   InputClassName,
@@ -17,7 +17,7 @@ const CInput = ({
   ...rest
 }) => {
   return (
-    <View className={`flex-row rounded-xl border  ${ClassName}`}>
+    <View className={`flex-row rounded-xl border items-center ${ClassName}`}>
       {/*icon*/}
       {icon && icon}
 
@@ -35,6 +35,20 @@ const CInput = ({
     </View>
   );
 };
+
+export const PasswordCInput = ({
+  label,
+  labelClassName,
+  containerClassName,
+  ...props
+}) => (
+  <View className={` flex flex-col ${containerClassName}`}>
+    <Text className={`font-inter-medium text-black mb-2 -2 ${labelClassName}`}>
+      {label}
+    </Text>
+    <CInput {...props} secureTextEntry={true} textContentType={"password"} />
+  </View>
+);
 
 export const LabelledCInput = ({
   label,
