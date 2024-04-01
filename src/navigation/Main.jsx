@@ -15,6 +15,12 @@ import {
 import NavOptions from "./options";
 import MyUnitsStack from "./MyUnitsStack";
 import AgreementsTopTabNav from "./AgreementsTopNav";
+import {
+  RegistrationEmail,
+  RegistrationPassword,
+  RegistrationProfile,
+  RegistrationVerification,
+} from "../screens/authentication/registration";
 
 const Stack = createStackNavigator();
 const MainNav = () => {
@@ -32,6 +38,41 @@ const MainNav = () => {
           title: "Sign into your account.",
         }}
       />
+
+      {/*  Registration screens   */}
+      <Stack.Screen
+        name={"auth__registration_email"}
+        component={RegistrationEmail}
+        options={{
+          ...NavOptions.withBackBarOptions,
+          title: "Create an Account",
+        }}
+      />
+      <Stack.Screen
+        name={"auth__registration_verification"}
+        component={RegistrationVerification}
+        options={{
+          ...NavOptions.withBackBarOptions,
+          title: "Verify Your Email.",
+        }}
+      />
+      <Stack.Screen
+        name={"auth__registration_password"}
+        component={RegistrationPassword}
+        options={{
+          ...NavOptions.withBackBarOptions,
+          title: "Secure your account.",
+        }}
+      />
+      <Stack.Screen
+        name={"auth__registration_profile"}
+        component={RegistrationProfile}
+        options={{
+          ...NavOptions.withBackBarOptions,
+          title: "Create Profile.",
+        }}
+      />
+
       {/* Auth > recover password screens */}
       <Stack.Screen
         name={"auth__recovery_email"}
