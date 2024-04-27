@@ -1,16 +1,30 @@
 import React from 'react';
-import {Text, TouchableOpacity} from 'react-native';
+import {ActivityIndicator, Text, TouchableOpacity} from 'react-native';
 
-const CButtonFill = ({ClassName, textClassName, text, children, ...rest}) => {
+const CButtonFill = ({
+  ClassName,
+  textClassName,
+  text,
+  children,
+  isLoading,
+  disabled,
+  ...rest
+}) => {
   return (
     <TouchableOpacity
-      className={`justify-center items-center py-2.5 px-5 rounded-xl ${ClassName}`}
+      disabled={isLoading || disabled}
+      style={{gap: 6}}
+      className={`flex-row justify-center items-center py-2.5 px-5 rounded-xl ${ClassName} ${
+        isLoading || disabled ? 'opacity-60' : ''
+      }`}
       {...rest}>
-      {!!text ? (
+      {text ? (
         <Text className={`font-inter-medium ${textClassName}`}>{text}</Text>
       ) : (
         children
       )}
+
+      {isLoading && <ActivityIndicator size="small" color="#fff" />}
     </TouchableOpacity>
   );
 };

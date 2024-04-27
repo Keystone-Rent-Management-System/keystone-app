@@ -3,7 +3,7 @@ import React, {forwardRef} from 'react';
 import {CustomBottomSheet} from '.';
 import {CButton} from '../general';
 import {CheckSvg, CloseSvg, RightArrowSvg} from '../../assets/icons';
-import {LabelledCInput} from '../general/CInput';
+import {LabelledCInput} from '../general/input/CInput';
 
 const PartialPayment = forwardRef((props, ref) => {
   return (

@@ -10,7 +10,7 @@ import {
   LockSvg,
   RightArrowSvg,
 } from '@/assets/icons';
-import {LabelledCInput} from '@/components/general/CInput';
+import {LabelledCInput} from '@/components/general/input/CInput';
 
 const Details = () => {
   const navigation = useNavigation();

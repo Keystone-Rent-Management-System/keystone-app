@@ -1,4 +1,4 @@
-import CInput from './CInput';
+import CInput from './input/CInput';
 import CButton from './CButton';
 import ReceiptTemplate from './ReceiptTemplate';
 import AlertBar from './AlertBar';

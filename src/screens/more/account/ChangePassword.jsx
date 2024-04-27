@@ -3,7 +3,7 @@ import {Text} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
 import {CButton, Layout} from '@/components';
-import {LabelledCInput} from '@/components/general/CInput';
+import {LabelledCInput} from '@/components/general/input/CInput';
 
 const ChangePassword = () => {
   const navigation = useNavigation();

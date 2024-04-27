@@ -4,7 +4,7 @@ import React, {forwardRef, useState} from 'react';
 import {CustomBottomSheet} from '.';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {RightArrowSvg} from '@/assets/icons';
-import CInput, {LabelledCInput} from '../general/CInput';
+import CInput, {LabelledCInput} from '../general/input/CInput';
 import COLORS from '@/constants/Theme';
 import CRangeSlider from '../rangeSlider';
 import {ExploreAmenity, ExploreRoomSelector} from '..';
