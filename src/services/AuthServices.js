@@ -1,4 +1,4 @@
-import AxiosUtility from './AxiosServices';
+import AxiosUtility, {setAuthToken} from './AxiosServices';
 
 /**
  * Verifies registering tenant's email
@@ -36,10 +36,23 @@ const login = async data => {
   return res;
 };
 
+/**
+ * Gets tenant profile
+ * @returns {Promise<any>}
+ */
+const getProfile = async data => {
+  setAuthToken(AxiosUtility);
+
+  const {data: res} = await AxiosUtility.get('/manage-profile/me', data);
+
+  return res;
+};
+
 const AuthServices = {
   verifyRegisteringEmail,
   registerTenant,
   login,
+  getProfile,
 };
 
 export default AuthServices;

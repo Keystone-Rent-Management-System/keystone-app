@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {mmkvStorage} from '../provider/store/MMKV';
 
 export const ENDPOINT = 'http://185.203.116.253:8085/api/v1';
 
@@ -10,14 +11,12 @@ export const AxiosUtility = axios.create({
   },
 });
 
-export const setAuthToken = async instance => {
-  const {data} = await AxiosUtility.post('/login', {
-    username: 'gakungajacob7@gmail.com',
-    password: 'Gakunga123$',
-  });
+export const setAuthToken = instance => {
+  const storeData = mmkvStorage.getString('_state_auth');
+  const stateData = storeData ? JSON.parse(storeData) : null;
 
-  if (data?.access_token) {
-    instance.defaults.headers.common.Authorization = `Bearer ${data?.access_token}`;
+  if (stateData?.state?.state?.auth?.access_token) {
+    instance.defaults.headers.common.Authorization = `Bearer ${stateData?.state?.state?.auth?.access_token}`;
   } else {
     delete instance.defaults.headers.common.Authorization;
   }

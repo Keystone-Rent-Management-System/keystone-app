@@ -4,8 +4,11 @@ import {Text, View} from 'react-native';
 import Helper from '@/utils/Helper';
 import ProfileView from '../ProfileView';
 import {WavingSvg} from '@/assets/icons';
+import {useAuth} from '../../../hooks';
 
 const Header = () => {
+  const {data} = useAuth();
+
   return (
     <View className={'py-4 flex-row items-center mb-2'}>
       <ProfileView
@@ -24,7 +27,7 @@ const Header = () => {
 
         <Text className={'font-inter-semibold text-13 text-black'}>
           {' '}
-          Evans Mutambuki{' '}
+          {data?.data?.name}{' '}
         </Text>
       </View>
     </View>
