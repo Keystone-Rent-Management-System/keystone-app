@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Keyboard,
+  StyleSheet,
   Text,
   ToastAndroid,
   TouchableOpacity,
@@ -59,7 +60,7 @@ const Login = () => {
 
   return (
     <Layout ClassName={'px-4 py-4'}>
-      <View style={{gap: 5}}>
+      <View style={styles.container}>
         <ControlledInput
           label={'Email'}
           icon={<EmailSvg />}
@@ -110,8 +111,8 @@ const Login = () => {
         className={
           'font-inter text-[13px] absolute bottom-12 inset-x-0 text-center'
         }
-        style={{color: '#888'}}>
-        Don't have an accountsss?{' '}
+        style={styles.haveNoAccount}>
+        Don't have an accounts?{' '}
         <Text
           className={'font-inter-medium underline text-primary'}
           onPress={handleRegister}>
@@ -123,3 +124,12 @@ const Login = () => {
 };
 
 export default Login;
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 5,
+  },
+  haveNoAccount: {
+    color: '#888',
+  },
+});
