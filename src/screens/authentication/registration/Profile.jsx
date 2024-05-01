@@ -1,16 +1,7 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {CButton, Layout} from '../../../components';
 import {FlagSvg, UserSvg} from '../../../assets/icons';
-import {
-  Image,
-  Keyboard,
-  Text,
-  ToastAndroid,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {ImageSvg} from '../../../assets/icons/auth';
-import {launchImageLibrary} from 'react-native-image-picker';
+import {Keyboard, StyleSheet, Text, ToastAndroid, View} from 'react-native';
 import {string} from 'yup';
 import * as yup from 'yup';
 import {yupResolver} from '@hookform/resolvers/yup';
@@ -92,7 +83,7 @@ const Profile = () => {
 
   return (
     <Layout ClassName={'p-4'}>
-      <View className={'flex-col '} style={{gap: 15}}>
+      <View className={'flex-col '} style={styles.container}>
         {/* <Uploader /> */}
 
         <ControlledInput
@@ -148,64 +139,18 @@ const Profile = () => {
 export default Profile;
 
 const PrePhone = () => (
-  <View className={'flex-row items-center'} style={{gap: 3}}>
+  <View className={'flex-row items-center'} style={styles.prePhone}>
     <FlagSvg />
 
     <Text className={'text-neutral-500 font-inter text-[13px]'}>+254</Text>
   </View>
 );
 
-const Uploader = () => {
-  const [profileImage, setProfileImage] = useState({});
-  const handleUpload = async () => {
-    const {assets} = await launchImageLibrary({
-      mediaType: 'photo',
-      quality: 1,
-    });
-
-    setProfileImage(assets?.at(0));
-  };
-
-  return (
-    <TouchableOpacity
-      className={
-        'flex-row bg-[#7DA3FF10] p-3 border border-neutral-200 rounded-xl'
-      }
-      style={{
-        gap: 12,
-      }}
-      onPress={handleUpload}>
-      {profileImage?.uri ? (
-        <Image
-          className={'h-14 w-14 rounded-full object-cover'}
-          source={{
-            uri: profileImage?.uri,
-          }}
-        />
-      ) : (
-        <View
-          className={
-            'h-12 w-12 rounded-full bg-white items-center justify-center border border-neutral-100'
-          }>
-          <ImageSvg />
-        </View>
-      )}
-
-      <View className={'justify-center'} style={{gap: 4}}>
-        <Text className={'text-primary font-inter-medium text-sm'}>
-          Add profile photo
-        </Text>
-
-        <Text className={'text-neutral-500 font-inter text-xs'}>
-          upload or take new photo
-        </Text>
-      </View>
-
-      <TouchableOpacity
-        className={'rounded-full border border-neutral-100 px-3 m-auto'}
-        onPress={handleUpload}>
-        <Text className={'text-primary font-inter-medium text-xs'}>Add</Text>
-      </TouchableOpacity>
-    </TouchableOpacity>
-  );
-};
+const styles = StyleSheet.create({
+  container: {
+    gap: 15,
+  },
+  prePhone: {
+    gap: 3,
+  },
+});
