@@ -1,6 +1,13 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 
-import {Image, Pressable, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import COLORS from '@/constants/Theme';
 import {styled} from 'nativewind';
 import Badge from './Badge';
@@ -14,6 +21,7 @@ import {
 } from '@/assets/icons';
 import Helper from '@/utils/Helper';
 import {RightArrowSvg} from '../../../assets/icons';
+import WebView from 'react-native-webview';
 
 /**
  * Returns property item for listing
@@ -32,6 +40,18 @@ const ListingItem = props => {
   const [liked, setLiked] = useState(props?.isSaved ?? false);
 
   const handleLike = () => setLiked(prev => !prev);
+  console.log(props);
+
+  const htmlIframe = useMemo(() => {
+    const defaultLink = 'https://matterport.com/en-gb/media/2486 ';
+    return `<iframe
+    width="100%"
+    height="100%"
+    frameborder='0'
+    allowfullscreen
+    src=${props?.image || 'https://matterport.com/en-gb/media/5989'}
+/>`;
+  }, [props?.image]);
 
   return (
     <Pressable
@@ -39,12 +59,19 @@ const ListingItem = props => {
       onPress={props.handlePress}>
       {/*  image   */}
       <StyledView className={'bg-bg shadow-xl rounded-xl relative'}>
-        <Image
+        {/* <Image
           className={`w-full rounded-xl ${imgClassName}`}
           source={{uri: props.image}}
           alt={'property_img'}
-        />
-
+        /> */}
+        <View className="overflow-hidden border border-gray-100 rounded-xl">
+          <WebView
+            source={{
+              html: htmlIframe,
+            }}
+            style={styles.webview}
+          />
+        </View>
         {/*  close button  */}
         {showBack && (
           <TouchableOpacity
@@ -154,6 +181,15 @@ export const IconLabel = ({icon, text}) => (
     <Text className={'font-inter text-grey_1 text-xs'}>{text}</Text>
   </View>
 );
+
+const styles = StyleSheet.create({
+  webview: {
+    marginTop: 20,
+    height: 300,
+    width: '100%',
+    backgroundColor: 'transparent',
+  },
+});
 
 /**
  * @typedef {{

@@ -60,8 +60,9 @@ const Explore = () => {
     setMode(prev => (prev === 'map' ? 'list' : 'map'));
   };
 
-  const renderListingItem = ({
-    item: {
+  const renderListingItem = ({item}) => {
+    console.log(item);
+    const {
       houseType,
       matterportUrl,
       user,
@@ -72,8 +73,7 @@ const Explore = () => {
       numberOfBathrooms,
       unitName,
       id,
-    },
-  }) => {
+    } = item;
     return (
       <ExploreListingItem
         image={matterportUrl}
