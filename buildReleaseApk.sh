@@ -4,8 +4,6 @@
 BRANCH_NAME=$(git branch --show-current)
 #App name
 APP_TYPE="pallax-app"
-#Get current staging from BaseUrl.js
-CURRENT_STAGING=$(awk -F"[./]" '/export const url/ {print $3}' ./src/globals/BaseUrl.js)
 
 #Create app name
 APP_NAME="$APP_TYPE-$BRANCH_NAME"
