@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {mmkvStorage} from '../provider/store/MMKV';
 
-export const ENDPOINT = 'http://185.203.116.253:8085/api/v1';
+export const ENDPOINT = 'http://185.203.116.253:8085/api/v1/rms';
 
 export const AxiosUtility = axios.create({
   baseURL: `${ENDPOINT}`,
