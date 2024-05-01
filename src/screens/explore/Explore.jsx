@@ -12,7 +12,7 @@ import {
 // import listings from '@/provider/listings';
 import {ExplorerFilterModal} from '@/components/modals';
 import {useNavigation} from '@react-navigation/native';
-import {View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {usePropertyListing} from '../../hooks';
 
 const Explore = () => {
@@ -90,11 +90,6 @@ const Explore = () => {
       />
     );
   };
-  const list = [
-    ...listings?.sort(() => Math.random() - 0.5),
-    ...listings?.sort(() => Math.random() - 0.5),
-    ...listings?.sort(() => Math.random() - 0.5),
-  ];
 
   return (
     <Layout ClassName={'relative'}>
@@ -109,7 +104,7 @@ const Explore = () => {
       {mode === 'map' ? (
         <ExploreMapView current={current} setCurrent={setCurrent} />
       ) : (
-        renderListView(list, renderListingItem)
+        renderListView(listings, renderListingItem)
       )}
 
       <ExplorerMapBtn handlePress={handleSwitchMode} mode={mode} />
@@ -121,7 +116,7 @@ const Explore = () => {
 
       {!!currentProperty && (
         <View
-          style={{elevation: 50}}
+          style={styles.exploreView}
           className={'absolute z-50 inset-x-0 bottom-0 px-3 py-2'}>
           <ExploreListingItem
             image={currentProperty?.matterportUrl}
@@ -163,3 +158,9 @@ function renderListView(list, renderListingItem) {
 }
 
 export default Explore;
+
+const styles = StyleSheet.create({
+  exploreView: {
+    gap: 50,
+  },
+});
