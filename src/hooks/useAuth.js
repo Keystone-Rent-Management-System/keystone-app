@@ -3,7 +3,7 @@ import {useQuery} from '@tanstack/react-query';
 
 const useAuth = () => {
   const query = useQuery({
-    queryKey: ['user-profile'],
+    queryKey: ['user', 'profile'],
     queryFn: () => AuthServices.getProfile(),
   });
 

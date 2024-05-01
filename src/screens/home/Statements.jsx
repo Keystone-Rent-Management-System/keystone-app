@@ -1,8 +1,7 @@
 import React, {useCallback, useRef, useState} from 'react';
 import {Layout} from '@/components';
 import {CButton, StatementItem} from '../../components';
-import {FlatList, SectionList, Text, View} from 'react-native';
-import moment from 'moment';
+import {FlatList, Text, View} from 'react-native';
 import {SelectorButton} from '../../components/screens/explore/RoomSelector';
 import {StatementListSvg} from '../../assets/icons';
 import COLORS from '../../constants/Theme';
@@ -10,10 +9,19 @@ import {
   ExportStatementModal,
   InvoiceReceiptModal,
 } from '../../components/modals';
+import {useStatement} from '../../hooks/useStatement';
 
 const Statements = () => {
   const receiptModalRef = useRef();
   const exportModalRef = useRef();
+
+  const currentDate = new Date();
+
+  const endDate = `${currentDate.getFullYear()}-${
+    currentDate.getMonth() + 1
+  }-${currentDate.getDate()}`;
+
+  const {isPending, statements} = useStatement();
 
   const [active] = useState(0);
 
@@ -38,28 +46,33 @@ const Statements = () => {
       <SelectorButton ClassName={'py-0'} isActive={isActive} text={item} />
     );
   };
+  console.log();
   return (
     <>
       <Layout ClassName={'p-4 relative'}>
-        <FlatList
-          className={'h-8'}
-          data={years}
-          renderItem={({item, index}) =>
-            renderYears({
-              item,
-              index,
-              isActive: active === index,
-            })
-          }
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-        />
+        <View>
+          <FlatList
+            className={'h-8'}
+            data={years}
+            renderItem={({item, index}) =>
+              renderYears({
+                item,
+                index,
+                isActive: active === index,
+              })
+            }
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
 
-        <SectionList
-          sections={statements}
-          renderItem={renderItem}
-          renderSectionHeader={renderHeader}
-        />
+        {/* {!isPending && (
+          // <SectionList
+          //   sections={}
+          //   renderItem={renderItem}
+          //   renderSectionHeader={renderHeader}
+          // />
+        )} */}
 
         <CButton
           style={{elevation: 2}}
@@ -89,10 +102,10 @@ const Statements = () => {
 
 const renderItem = ({item}, handlePress) => (
   <StatementItem
-    title={item?.title}
-    date={item?.date}
-    paymentMethod={item?.paymentMethod}
-    amount={item.amount}
+    title={`invoice ${item?.transactionCode}`}
+    date={item?.createdAt}
+    paymentMethod={item?.methodOfPayment}
+    amount={item.amountDebited}
     handlePress={handlePress}
   />
 );
@@ -100,114 +113,128 @@ const renderItem = ({item}, handlePress) => (
 const renderHeader = ({section}) => (
   <View className={'pb-2 px-4 mt-3'}>
     <Text className={'font-inter-semibold text-grey_1 capitalize'}>
-      {section.month}
+      {months[new Date(section?.createdAt)?.getMonth()]}
     </Text>
   </View>
 );
 
 export default Statements;
 
-const years = ['All', '2024', '2023', '2022', '2021'];
-
-const statements = [
-  {
-    month: 'January',
-    data: [
-      {
-        title: 'invoice #1234567',
-        date: moment().format('MMM YYYY'),
-        paymentMethod: 'Mpesa',
-        amount: '30,000',
-      },
-    ],
-  },
-
-  {
-    month: 'December',
-    data: [
-      {
-        title: 'invoice #1234567',
-        date: moment().subtract('1', 'm').format('MMM YYYY'),
-        paymentMethod: 'Bank',
-        amount: '30,000',
-      },
-    ],
-  },
-  {
-    month: 'November',
-    data: [
-      {
-        title: 'invoice #1234567',
-        date: moment().subtract('1', 'm').format('MMM YYYY'),
-        paymentMethod: 'Bank',
-        amount: '30,000',
-      },
-    ],
-  },
-  {
-    month: 'October',
-    data: [
-      {
-        title: 'invoice #1234567',
-        date: moment().subtract('1', 'm').format('MMM YYYY'),
-        paymentMethod: 'Bank',
-        amount: '30,000',
-      },
-    ],
-  },
-  {
-    month: 'September',
-    data: [
-      {
-        title: 'invoice #1234567',
-        date: moment().subtract('1', 'm').format('MMM YYYY'),
-        paymentMethod: 'Bank',
-        amount: '30,000',
-      },
-    ],
-  },
-  {
-    month: 'August',
-    data: [
-      {
-        title: 'invoice #1234567',
-        date: moment().subtract('1', 'm').format('MMM YYYY'),
-        paymentMethod: 'Bank',
-        amount: '30,000',
-      },
-    ],
-  },
-  {
-    month: 'July',
-    data: [
-      {
-        title: 'invoice #1234567',
-        date: moment().subtract('1', 'm').format('MMM YYYY'),
-        paymentMethod: 'Bank',
-        amount: '30,000',
-      },
-    ],
-  },
-  {
-    month: 'June',
-    data: [
-      {
-        title: 'invoice #1234567',
-        date: moment().subtract('1', 'm').format('MMM YYYY'),
-        paymentMethod: 'Bank',
-        amount: '30,000',
-      },
-    ],
-  },
-  {
-    month: 'May',
-    data: [
-      {
-        title: 'invoice #1234567',
-        date: moment().subtract('1', 'm').format('MMM YYYY'),
-        paymentMethod: 'Bank',
-        amount: '30,000',
-      },
-    ],
-  },
+const years = ['All'];
+const months = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
+
+// const statements = [
+//   {
+//     month: 'January',
+//     data: [
+//       {
+//         title: 'invoice #1234567',
+//         date: moment().format('MMM YYYY'),
+//         paymentMethod: 'Mpesa',
+//         amount: '30,000',
+//       },
+//     ],
+//   },
+
+//   {
+//     month: 'December',
+//     data: [
+//       {
+//         title: 'invoice #1234567',
+//         date: moment().subtract('1', 'm').format('MMM YYYY'),
+//         paymentMethod: 'Bank',
+//         amount: '30,000',
+//       },
+//     ],
+//   },
+//   {
+//     month: 'November',
+//     data: [
+//       {
+//         title: 'invoice #1234567',
+//         date: moment().subtract('1', 'm').format('MMM YYYY'),
+//         paymentMethod: 'Bank',
+//         amount: '30,000',
+//       },
+//     ],
+//   },
+//   {
+//     month: 'October',
+//     data: [
+//       {
+//         title: 'invoice #1234567',
+//         date: moment().subtract('1', 'm').format('MMM YYYY'),
+//         paymentMethod: 'Bank',
+//         amount: '30,000',
+//       },
+//     ],
+//   },
+//   {
+//     month: 'September',
+//     data: [
+//       {
+//         title: 'invoice #1234567',
+//         date: moment().subtract('1', 'm').format('MMM YYYY'),
+//         paymentMethod: 'Bank',
+//         amount: '30,000',
+//       },
+//     ],
+//   },
+//   {
+//     month: 'August',
+//     data: [
+//       {
+//         title: 'invoice #1234567',
+//         date: moment().subtract('1', 'm').format('MMM YYYY'),
+//         paymentMethod: 'Bank',
+//         amount: '30,000',
+//       },
+//     ],
+//   },
+//   {
+//     month: 'July',
+//     data: [
+//       {
+//         title: 'invoice #1234567',
+//         date: moment().subtract('1', 'm').format('MMM YYYY'),
+//         paymentMethod: 'Bank',
+//         amount: '30,000',
+//       },
+//     ],
+//   },
+//   {
+//     month: 'June',
+//     data: [
+//       {
+//         title: 'invoice #1234567',
+//         date: moment().subtract('1', 'm').format('MMM YYYY'),
+//         paymentMethod: 'Bank',
+//         amount: '30,000',
+//       },
+//     ],
+//   },
+//   {
+//     month: 'May',
+//     data: [
+//       {
+//         title: 'invoice #1234567',
+//         date: moment().subtract('1', 'm').format('MMM YYYY'),
+//         paymentMethod: 'Bank',
+//         amount: '30,000',
+//       },
+//     ],
+//   },
+// ];
