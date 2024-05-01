@@ -24,6 +24,7 @@ import {
 } from '@/assets/icons';
 import {useNavigation} from '@react-navigation/native';
 import useGlobals from '../../provider/store/useGlobals';
+import {useAuth} from '../../hooks';
 
 const More = () => {
   const navigation = useNavigation();
@@ -31,6 +32,7 @@ const More = () => {
     state: {auth},
     resetState,
   } = useGlobals(state => state);
+  const {data} = useAuth();
 
   const handleNavigate = screen => {
     navigation.navigate(screen);
@@ -75,7 +77,7 @@ const More = () => {
             </Text>
 
             <Text className={'font-inter-semibold text-sm text-white'}>
-              Evans Mutambuki
+              {data?.data?.name}
             </Text>
           </View>
         </View>

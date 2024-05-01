@@ -29,9 +29,8 @@ import {
 } from '@/components';
 import {useNavigation} from '@react-navigation/native';
 import {VirtualTourModal} from '@/components/modals';
-import MapView, {Marker} from 'react-native-maps';
-import {HouseMapMarker} from '../../assets/icons';
 import {LandlordItem} from '../../components';
+import {useSpecificPropertyListing} from '../../hooks/usePropertyListing';
 
 const ApartmentView = ({route: {params}}) => {
   const bottomSheetRef = useRef();
@@ -39,21 +38,24 @@ const ApartmentView = ({route: {params}}) => {
 
   const [modalState, setModalState] = useState(false);
 
+  const {listing} = useSpecificPropertyListing(params?.apartment);
+
   const currentApartmentDetails = useMemo(() => {
     return listings.find(item => item.id === params?.apartment);
   }, [params?.apartment]);
 
-  const region = useMemo(
-    () => ({
-      latitude:
-        currentApartmentDetails?.coordinates?.latitude ?? -1.2881012218277417,
-      longitude:
-        currentApartmentDetails?.coordinates?.longitude ?? 36.82609607136736,
-      latitudeDelta: 0.015,
-      longitudeDelta: 0.015,
-    }),
-    [],
-  );
+  // const region = useMemo(
+  //   () => ({
+  //     latitude:
+  //       currentApartmentDetails?.coordinates?.latitude ?? -1.2881012218277417,
+  //     longitude:
+  //       currentApartmentDetails?.coordinates?.longitude ?? 36.82609607136736,
+  //     latitudeDelta: 0.015,
+  //     longitudeDelta: 0.015,
+  //   }),
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   [],
+  // );
 
   const handleViewTour = () => {
     // setModalState(true);
@@ -77,6 +79,8 @@ const ApartmentView = ({route: {params}}) => {
   const handleGoBack = () => {
     navigation.goBack();
   };
+
+  console.log('LISTING:', listing?.property);
 
   return (
     <Layout>
@@ -109,7 +113,7 @@ const ApartmentView = ({route: {params}}) => {
         )}
 
         <Image
-          source={{uri: currentApartmentDetails.image}}
+          source={{uri: listing?.matterportUrl}}
           alt={'apartment'}
           className={'object-cover h-full'}
         />
@@ -131,39 +135,43 @@ const ApartmentView = ({route: {params}}) => {
         {/* apartment primary details  */}
         <View className={'p-4 border-b border-border_grey'}>
           <Text className={'text-black font-inter-semibold'}>
-            {currentApartmentDetails?.title}
+            {listing?.unitName}
           </Text>
 
           <View className={'flex-row mt-2'}>
-            {currentApartmentDetails.properties?.bedrooms > 0 && (
+            {listing?.numberOfBedrooms > 0 && (
               <IconLabel
                 icon={<BedSvg size={17} />}
                 text={
-                  currentApartmentDetails.properties?.bedrooms +
+                  listing?.numberOfBedrooms +
                   ` Bedroom${Helper.renderSingularPlural(
-                    currentApartmentDetails.properties?.bedrooms,
+                    listing?.numberOfBedrooms,
                     's',
                   )}`
                 }
               />
             )}
 
-            {currentApartmentDetails.properties?.bedrooms > 0 && (
+            {listing?.numberOfBathrooms > 0 && (
               <IconLabel
                 icon={<BathroomSvg />}
                 text={
-                  currentApartmentDetails?.properties?.bathrooms + 'Bathroom'
+                  listing?.numberOfBathrooms +
+                  ` Bathroom${Helper.renderSingularPlural(
+                    listing?.numberOfBathrooms,
+                    's',
+                  )}`
                 }
               />
             )}
 
-            {currentApartmentDetails.properties?.balconies > 0 && (
+            {listing?.balcony > 0 && (
               <IconLabel
                 icon={<BalconySvg />}
                 text={
-                  currentApartmentDetails.properties?.balconies +
+                  listing?.numberOfBathrooms +
                   ` Balcon${Helper.renderSingularPlural(
-                    currentApartmentDetails.properties?.bathrooms,
+                    listing?.numberOfBathrooms,
                     'ies',
                     'y',
                   )}`
@@ -173,7 +181,11 @@ const ApartmentView = ({route: {params}}) => {
           </View>
         </View>
 
-        <LandlordItem userName={currentApartmentDetails?.user} />
+        <LandlordItem
+          unitName={listing?.unitName}
+          phoneNumber={listing?.property?.propertyContacts?.phoneNumber}
+          userName={listing?.property?.propertyContacts?.contactName}
+        />
 
         {/* Location details */}
         <View className={'px-4 py-6 border-b border-border_grey'}>
@@ -182,15 +194,15 @@ const ApartmentView = ({route: {params}}) => {
           </Text>
 
           <Text className={'text-grey_1 font-inter my-1.5'}>
-            {currentApartmentDetails.location}
+            {`${listing?.property?.country}, ${listing?.property?.county}, ${listing?.property?.neighborhood}`}
           </Text>
 
           <View className={'h-32 my-3 bg-bg_grey'}>
-            <MapView className={'flex-1'} region={region}>
+            {/* <MapView className={'flex-1'} region={region}>
               <Marker coordinate={region}>
                 <HouseMapMarker />
               </Marker>
-            </MapView>
+            </MapView> */}
           </View>
 
           {/* Virtual tour button */}
@@ -214,17 +226,17 @@ const ApartmentView = ({route: {params}}) => {
           <Text className={'text-black font-inter-medium'}>Charges</Text>
 
           <View className={'mt-3'} style={styles.chargeList}>
-            {Object.keys(currentApartmentDetails.charges)?.map(
+            {/* {Object?.keys(currentApartmentDetails?.charges)?.map(
               (charge, ind) => (
                 <ExploreAmenity
                   key={ind}
                   showCheckBox={false}
-                  icon={currentApartmentDetails.charges[charge]?.icon}
+                  icon={currentApartmentDetails?.charges[charge]?.icon}
                   title={charge}
-                  value={`KES. ${currentApartmentDetails.charges[charge]?.amount}`}
+                  value={`KES. ${currentApartmentDetails?.charges[charge]?.amount}`}
                 />
               ),
-            )}
+            )} */}
           </View>
         </View>
 
@@ -235,12 +247,12 @@ const ApartmentView = ({route: {params}}) => {
           </Text>
 
           <View className={'mt-3'} style={styles.chargeList}>
-            {currentApartmentDetails.amenities?.map((amenity, ind) => (
+            {listing?.amenities?.map((amenity, ind) => (
               <ExploreAmenity
                 key={ind}
                 showCheckBox={false}
                 icon={amenity.icon}
-                title={amenity.text}
+                title={amenity}
               />
             ))}
           </View>
@@ -251,13 +263,13 @@ const ApartmentView = ({route: {params}}) => {
         <View className={'h-16'} />
       </ScrollView>
 
-      <ApartmentViewFloatingActionBar />
+      <ApartmentViewFloatingActionBar amount={listing?.rent} />
 
       <VirtualTourModal
         ref={bottomSheetRef}
         handleSheetChanges={handleSheetChanges}
         handleCloseTour={handleCloseTour}
-        source={{uri: currentApartmentDetails?.image}}
+        source={{uri: currentApartmentDetails?.matterportUrl}}
       />
     </Layout>
   );

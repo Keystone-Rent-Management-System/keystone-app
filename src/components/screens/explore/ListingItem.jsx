@@ -1,12 +1,19 @@
-import React, { useState } from "react";
+import React, {useState} from 'react';
 
-import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
-import COLORS from "@/constants/Theme";
-import { styled } from "nativewind";
-import Badge from "./Badge";
-import { AgentSvg, BalconySvg, BathroomSvg, BedSvg, LikeSvg, MapPinSvg } from "@/assets/icons";
-import Helper from "@/utils/Helper";
-import { RightArrowSvg } from "../../../assets/icons";
+import {Image, Pressable, Text, TouchableOpacity, View} from 'react-native';
+import COLORS from '@/constants/Theme';
+import {styled} from 'nativewind';
+import Badge from './Badge';
+import {
+  AgentSvg,
+  BalconySvg,
+  BathroomSvg,
+  BedSvg,
+  LikeSvg,
+  MapPinSvg,
+} from '@/assets/icons';
+import Helper from '@/utils/Helper';
+import {RightArrowSvg} from '../../../assets/icons';
 
 /**
  * Returns property item for listing

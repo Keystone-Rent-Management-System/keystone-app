@@ -60,7 +60,7 @@ export default function Verification({navigation, route: {params}}) {
     // Keyboard?.emit;
   };
 
-  const fillCodeDigitInput = (value, index) => {
+  const fillCodeDigitInput = (_, index) => {
     const emptyChar = ' ';
 
     const digit = otp[index] || emptyChar;
@@ -101,7 +101,9 @@ export default function Verification({navigation, route: {params}}) {
       <View className={'flex-1'}>
         <Text className={'font-inter text-xs text-neutral-500 my-3'}>
           Enter the 5 digit PIN code sent to
-          <Text className={'text-black'}>&nbsp;youremail@gmail.com&nbsp;</Text>
+          <Text className={'text-black'}>
+            &nbsp;{registering_user?.email}&nbsp;
+          </Text>
           to verify your email
         </Text>
 

@@ -18,7 +18,7 @@ import {usePropertyListing} from '../../hooks';
 const Explore = () => {
   const navigation = useNavigation();
 
-  const {isPending, listings} = usePropertyListing();
+  const {isPending, refetch, listings} = usePropertyListing();
 
   const filterModalRef = useRef(null);
 
@@ -104,7 +104,7 @@ const Explore = () => {
       {mode === 'map' ? (
         <ExploreMapView current={current} setCurrent={setCurrent} />
       ) : (
-        renderListView(listings, renderListingItem)
+        renderListView(listings, renderListingItem, isPending, refetch)
       )}
 
       <ExplorerMapBtn handlePress={handleSwitchMode} mode={mode} />
@@ -142,7 +142,7 @@ const Explore = () => {
   );
 };
 
-function renderListView(list, renderListingItem) {
+function renderListView(list, renderListingItem, loading, handleRefresh) {
   return (
     <FlashList
       // eslint-disable-next-line react-native/no-inline-styles
@@ -153,6 +153,8 @@ function renderListView(list, renderListingItem) {
       renderItem={renderListingItem}
       keyExtractor={(_, ind) => ind.toString()}
       estimatedItemSize={300}
+      refreshing={loading}
+      onRefresh={handleRefresh}
     />
   );
 }
