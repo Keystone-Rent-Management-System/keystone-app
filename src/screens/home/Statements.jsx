@@ -23,7 +23,6 @@ const Statements = () => {
   }-${currentDate.getDate()}`;
 
   const {isPending, statements, refetch} = useStatement();
-  console.log(statements);
 
   const [active] = useState(0);
 
