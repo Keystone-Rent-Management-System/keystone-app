@@ -2,15 +2,23 @@ import React from 'react';
 import {Text} from 'react-native';
 
 import {CButton, Layout} from '../../../components';
-import {LabelledCInput} from '../../../components/general/input/CInput';
 import {EmailSvg} from '../../../assets/icons';
-import {useNavigation} from '@react-navigation/native';
+import * as yup from 'yup';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {useForm} from 'react-hook-form';
+import ControlledInput from '../../../components/general/input/ControlledInput';
+import {useRequestPasswordReset} from '../../../hooks';
 
 const Email = () => {
-  const navigation = useNavigation();
-  const handleNextStep = () => {
-    navigation.navigate('auth__recovery_verification');
-  };
+  const schema = yup.object({
+    email: yup.string().email().required().min(2),
+  });
+  const {handleSubmit, control} = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const {requestPasswordResetMutation, handleRequestPasswordReset} =
+    useRequestPasswordReset();
 
   return (
     <Layout ClassName={'px-4'}>
@@ -19,23 +27,29 @@ const Email = () => {
         your password
       </Text>
 
-      <LabelledCInput
-        label={'Confirm Email'}
+      <ControlledInput
+        label={'Email'}
         icon={<EmailSvg />}
-        placeholder={'youremail@mail.com'}
+        placeholder={'Enter email address'}
         labelClassName={'text-primary text-13'}
         ClassName={'border border-border_grey px-2'}
-        InputClassName={'text-xs px-2 text-gray-600 '}
-        containerClassName={'mt-4'}
+        InputClassName={'text-[13px] px-2 text-gray-600 '}
+        name={'email'}
+        control={control}
       />
 
       <CButton
         ClassName={
           'bg-primary text-white py-3.5 mb-3 absolute bottom-5 inset-x-0 mx-4'
         }
-        onPress={handleNextStep}
+        isLoading={requestPasswordResetMutation.isPending}
+        onPress={handleSubmit(handleRequestPasswordReset)}
         textClassName={'text-white font'}
-        text={'Request Pin'}
+        text={
+          requestPasswordResetMutation.isPending
+            ? 'Requesting Pin...'
+            : 'Request Pin'
+        }
       />
     </Layout>
   );

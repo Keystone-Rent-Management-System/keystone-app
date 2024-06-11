@@ -11,6 +11,7 @@ import {
   RightArrowSvg,
 } from '@/assets/icons';
 import {LabelledCInput} from '@/components/general/input/CInput';
+import {useAuth} from '../../../hooks';
 
 const Details = () => {
   const navigation = useNavigation();
@@ -19,12 +20,14 @@ const Details = () => {
     navigation.navigate('more__account_password');
   };
 
+  const {data} = useAuth();
+
   return (
     <Layout>
       <DetailsHeader />
 
       {/* body */}
-      <AvatarSection />
+      <AvatarSection data={data} />
 
       <View className="px-5">
         {/* name input */}
@@ -33,7 +36,7 @@ const Details = () => {
           labelClassName={'text-gray-600 text-13'}
           ClassName={'border border-border_grey px-2'}
           InputClassName={'px-2 text-gray-600 text-xs'}
-          value={'Evans Mutambuki'}
+          value={data?.data?.name}
         />
 
         {/* phone input */}
@@ -48,7 +51,7 @@ const Details = () => {
           ClassName={'border border-border_grey px-2'}
           InputClassName={'text-xs px-2 text-gray-600 '}
           containerClassName={'mt-4'}
-          value={'0712 444 555'}
+          value={data?.data?.phoneNumber}
           type={'number'}
         />
 
@@ -64,7 +67,7 @@ const Details = () => {
           ClassName={'border border-border_grey px-2'}
           InputClassName={'text-xs px-2 text-gray-600 '}
           containerClassName={'my-4'}
-          value={'evans@ymail.com'}
+          value={data?.data?.username}
           type={'email'}
         />
 
@@ -86,14 +89,19 @@ const Details = () => {
   );
 };
 
-const AvatarSection = () => (
+const AvatarSection = ({data}) => (
   <View className={'flex-row justify-center py-5 '}>
     {/* profile */}
     <View
       className={
         'h-16 w-16 bg-primary rounded-full justify-center items-center relative'
       }>
-      <Text className={'text-white font-inter-semibold text-lg'}>EM</Text>
+      <Text
+        className={
+          'text-white font-inter-semibold text-lg'
+        }>{`${data?.data?.name?.split(' ')[0]?.charAt(0)}${data?.data?.name
+        ?.split(' ')[1]
+        ?.charAt(0)}`}</Text>
       <TouchableOpacity
         className={
           'bg-bg_pale h-5 w-5 flex-row justify-center items-center rounded-full absolute bottom-1 -right-1'

@@ -11,13 +11,20 @@ import {
 } from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
 import {useNavigation} from '@react-navigation/native';
+import {useSpecificUnit} from '../../../hooks';
 
-const UnitView = () => {
+const UnitView = ({route}) => {
+  const {unitId} = route.params;
+
   const navigation = useNavigation();
 
   const handleViewPrevious = () => {
     navigation.navigate('my_units__top_nav', {screen: 'my_units__previous'});
   };
+
+  const {isPending, unit} = useSpecificUnit(unitId);
+
+  console.log(unit);
 
   return (
     <Layout isScrollable={true} ClassName={'p-5'}>

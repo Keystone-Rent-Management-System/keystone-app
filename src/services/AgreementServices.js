@@ -1,4 +1,4 @@
-import AxiosUtility from './AxiosServices';
+import AxiosUtility, {setAuthToken} from './AxiosServices';
 
 /**
  * Fetches all agreements
@@ -7,33 +7,42 @@ import AxiosUtility from './AxiosServices';
  * @returns {Promise<Agreement[]>}
  */
 const getAgreements = async (page, size) => {
-  try {
-    const {data: res} = await AxiosUtility.get(
-      `/agreements?page=${page}&size=${size}`,
-    );
-    return res;
-  } catch (error) {
-    throw new Error('Failed to fetch agreements');
-  }
+  setAuthToken(AxiosUtility);
+  const {data: res} = await AxiosUtility.get(
+    `/tenants/agreements?page=${page}&size=${size}`,
+  );
+
+  return res;
 };
 
 /**
- * Fetches single agreement
+ * Accept agreement
  * @param {number} id
  * @returns {Promise<Agreement>}
  */
-const getAgreement = async id => {
-  try {
-    const {data: res} = await AxiosUtility.get(`/agreements/${id}`);
-    return res;
-  } catch (error) {
-    throw new Error('Failed to fetch agreement');
-  }
+const acceptAgreement = async id => {
+  setAuthToken(AxiosUtility);
+  const {data: res} = await AxiosUtility.patch(`/agreements/${id}/acceptance`);
+
+  return res;
+};
+
+/**
+ * Terminate agreement
+ * @param {number} id
+ * @returns {Promise<Agreement>}
+ */
+const terminateAgreement = async id => {
+  setAuthToken(AxiosUtility);
+  const {data: res} = await AxiosUtility.patch(`/agreements/${id}/terminate`);
+
+  return res;
 };
 
 const AgreementServices = {
   getAgreements,
-  getAgreement,
+  acceptAgreement,
+  terminateAgreement,
 };
 
 /**

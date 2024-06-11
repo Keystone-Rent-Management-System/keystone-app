@@ -1,16 +1,14 @@
 import React from 'react';
 import {CButton, Layout} from '../../../components';
 import {FlagSvg, UserSvg} from '../../../assets/icons';
-import {Keyboard, StyleSheet, Text, ToastAndroid, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {string} from 'yup';
 import * as yup from 'yup';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {useForm} from 'react-hook-form';
 import useGlobals from '../../../provider/store/useGlobals';
-import {useMutation} from '@tanstack/react-query';
-import AuthServices from '../../../services/AuthServices';
 import ControlledInput from '../../../components/general/input/ControlledInput';
-import {useNavigation} from '@react-navigation/native';
+import {useRegister} from '../../../hooks';
 
 const schema = yup.object({
   name: string().required().min(2),
@@ -19,12 +17,10 @@ const schema = yup.object({
 });
 
 const Profile = () => {
-  const navigation = useNavigation();
   const {
     state: {registering_user},
-    updateRegisteringUser,
-    resetRegisteringUser,
   } = useGlobals(data => data);
+
   const {handleSubmit, control} = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -34,52 +30,7 @@ const Profile = () => {
     },
   });
 
-  const registerTenantMutation = useMutation({
-    mutationKey: ['register_tenant'],
-    mutationFn: AuthServices.registerTenant,
-    onSuccess: () => {
-      ToastAndroid.show(
-        'Registration successful. Signin to the created account',
-        ToastAndroid.SHORT,
-      );
-      navigation.navigate('auth__login');
-      resetRegisteringUser();
-    },
-    onError: err => {
-      ToastAndroid.show(
-        'Registration failed ' + err.response.data?.message,
-        ToastAndroid.SHORT,
-      );
-
-      if (
-        err.response?.data?.message
-          ?.toLowerCase()
-          ?.includes('invalid email or token')
-      ) {
-        navigation.navigate('auth__registration_verification');
-      }
-    },
-  });
-
-  const onSubmit = props => {
-    Keyboard.dismiss();
-    // update details to global state incase mutation is not successful
-    const {name, phoneNumber, identificationNumber} = props;
-    updateRegisteringUser({
-      name,
-      phoneNumber,
-      identificationNumber,
-    });
-
-    const {name: fullName, ...rest} = registering_user;
-
-    registerTenantMutation.mutate({
-      firstName: fullName.split(' ')?.at(0),
-      lastName: fullName.split(' ')?.at(1) || '',
-      identificationType: 'NATIONAL_ID',
-      ...rest,
-    });
-  };
+  const {registerTenantMutation, onSubmit} = useRegister();
 
   return (
     <Layout ClassName={'p-4'}>

@@ -2,26 +2,31 @@ import React from 'react';
 import {Layout} from '../../../components';
 import {FlashList} from '@shopify/flash-list';
 import {invoiceStyles, renderInvoiceItem} from './Unpaid';
-import invoiceData from '../../../provider/invoice';
 import {useNavigation} from '@react-navigation/native';
+import {useOverPaidInvoice} from '../../../hooks';
 
-const PendingApproval = () => {
+const OverPaid = () => {
   const navigation = useNavigation();
 
   const handleNavigate = id => {
-    navigation.navigate('invoice_view', {id, type: 'pending'});
+    navigation.navigate('invoice_view', {id});
   };
+
+  const {isPending, invoices, refetch} = useOverPaidInvoice();
+
   return (
     <Layout>
       <FlashList
         contentContainerStyle={invoiceStyles.list}
-        data={invoiceData.pending}
+        refreshing={isPending}
+        data={invoices}
         renderItem={({item}) => renderInvoiceItem(item, handleNavigate)}
         keyExtractor={(_, ind) => ind.toString()}
         estimatedItemSize={300}
+        onRefresh={refetch}
       />
     </Layout>
   );
 };
 
-export default PendingApproval;
+export default OverPaid;

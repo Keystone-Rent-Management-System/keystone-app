@@ -1,5 +1,4 @@
 import React from 'react';
-import {useNavigation} from '@react-navigation/native';
 import {Text} from 'react-native';
 import {useForm} from 'react-hook-form';
 import {string} from 'yup';
@@ -9,33 +8,18 @@ import * as yup from 'yup';
 import {CButton, Layout} from '../../../components';
 import {EmailSvg} from '../../../assets/icons';
 import ControlledInput from '../../../components/general/input/ControlledInput';
-import {useMutation} from '@tanstack/react-query';
-import AuthServices from '../../../services/AuthServices';
-import useGlobals from '../../../provider/store/useGlobals';
+import {useVerifyEmail} from '../../../hooks';
 
 const emailSchema = yup.object({
   email: string().email().required(),
 });
 
 const Email = () => {
-  const navigation = useNavigation();
-  const {updateRegisteringUser} = useGlobals(state => state);
   const {handleSubmit, control} = useForm({
     resolver: yupResolver(emailSchema),
   });
 
-  const verifyEmailMutation = useMutation({
-    mutationKey: ['verify_email'],
-    mutationFn: AuthServices.verifyRegisteringEmail,
-    onSuccess: (_, data) => {
-      updateRegisteringUser({email: data?.email});
-      navigation.navigate('auth__registration_verification');
-    },
-  });
-
-  const onSubmit = props => {
-    verifyEmailMutation.mutate({email: props.email});
-  };
+  const {verifyEmailMutation, onSubmit} = useVerifyEmail();
 
   return (
     <Layout ClassName={'px-4'}>

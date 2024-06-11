@@ -2,38 +2,65 @@ import React from 'react';
 
 import {CButton, Layout} from '../../../components';
 import {LockSvg} from '../../../assets/icons';
-import {PasswordCInput} from '../../../components/general/input/CInput';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {string} from 'yup';
+import {useForm} from 'react-hook-form';
+import * as yup from 'yup';
+import ControlledPasswordInput from '../../../components/general/input/ControlledPasswordInput';
+import {useResetPassword} from '../../../hooks';
 
 const Reset = () => {
+  const schema = yup.object({
+    password: string().required().min(6),
+    confirmPassword: string().required().min(6),
+  });
+  const {handleSubmit, control} = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      password: '',
+      confirmPassword: '',
+    },
+  });
+
+  const {resetPasswordMutation, handlePasswordReset} = useResetPassword();
+
   return (
     <Layout ClassName={'px-4'}>
-      <PasswordCInput
+      <ControlledPasswordInput
         label={'New Password'}
         icon={<LockSvg />}
-        placeholder={'Enter Password'}
+        placeholder={'Enter password'}
         labelClassName={'text-primary text-13'}
         ClassName={'border border-border_grey px-2'}
         InputClassName={'text-xs px-2 text-gray-600 '}
         containerClassName={'mt-4'}
+        required
+        name={'password'}
+        control={control}
       />
 
-      <PasswordCInput
+      <ControlledPasswordInput
         label={'Confirm Password'}
         icon={<LockSvg />}
-        placeholder={'Enter Password'}
+        placeholder={'Confirm password'}
         labelClassName={'text-primary text-13'}
         ClassName={'border border-border_grey px-2'}
         InputClassName={'text-xs px-2 text-gray-600 '}
         containerClassName={'mt-4'}
+        name={'confirmPassword'}
+        control={control}
       />
 
       <CButton
         ClassName={
           'bg-primary text-white py-3.5 mb-3 absolute bottom-5 inset-x-0 mx-4'
         }
-        // onPress={handleNextStep}
+        isLoading={resetPasswordMutation.isPending}
+        onPress={handleSubmit(handlePasswordReset)}
         textClassName={'text-white font'}
-        text={'Complete Reset'}
+        text={
+          resetPasswordMutation.isPending ? 'Reseting...' : 'Complete Reset'
+        }
       />
     </Layout>
   );

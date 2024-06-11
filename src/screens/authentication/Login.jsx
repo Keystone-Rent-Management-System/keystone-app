@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Keyboard,
-  StyleSheet,
-  Text,
-  ToastAndroid,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
 import {Layout} from '@/components';
@@ -17,9 +10,7 @@ import * as yup from 'yup';
 import {useForm} from 'react-hook-form';
 import ControlledInput from '../../components/general/input/ControlledInput';
 import ControlledPasswordInput from '../../components/general/input/ControlledPasswordInput';
-import AuthServices from '../../services/AuthServices';
-import {useMutation} from '@tanstack/react-query';
-import useGlobals from '../../provider/store/useGlobals';
+import {useLogin} from '../../hooks';
 
 const schema = yup.object({
   username: yup.string().email().required().min(2),
@@ -31,32 +22,16 @@ const Login = () => {
   const {handleSubmit, control} = useForm({
     resolver: yupResolver(schema),
   });
-  const {updateAuth} = useGlobals(data => data);
 
   const handleForgotPassword = () => {
     navigation.navigate('auth__recovery_email');
   };
 
-  const loginMutation = useMutation({
-    mutationKey: ['login'],
-    mutationFn: AuthServices.login,
-    onSuccess: res => {
-      updateAuth(res);
-      navigation.navigate('bottom-nav');
-    },
-    onError: err => {
-      ToastAndroid.show('Login failed ' + err.response.data?.message, 4000);
-    },
-  });
-
-  const handleSignin = props => {
-    Keyboard.dismiss();
-    loginMutation.mutate(props);
-  };
-
   const handleRegister = () => {
     navigation.navigate('auth__registration_email');
   };
+
+  const {loginMutation, handleSignin} = useLogin();
 
   return (
     <Layout ClassName={'px-4 py-4'}>

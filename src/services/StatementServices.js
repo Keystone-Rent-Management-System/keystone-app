@@ -1,4 +1,4 @@
-import AxiosUtility from './AxiosServices';
+import AxiosUtility, {setAuthToken} from './AxiosServices';
 
 /**
  * Fetches all statements
@@ -7,14 +7,12 @@ import AxiosUtility from './AxiosServices';
  * @returns {Promise<Statement[]>}
  */
 const getStatements = async (page, size) => {
-  try {
-    const {data: res} = await AxiosUtility.get(
-      `/transactions?page=${page}&size=${size}`,
-    );
-    return res;
-  } catch (error) {
-    throw new Error('Failed to fetch statments');
-  }
+  setAuthToken(AxiosUtility);
+  const {data: res} = await AxiosUtility.get(
+    `/transactional-reports?page=${page}&size=${size}`,
+  );
+
+  return res;
 };
 
 const StatementServices = {

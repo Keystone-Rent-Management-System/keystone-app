@@ -4,7 +4,14 @@ import {Text, View} from 'react-native';
 import {Indicator} from '../../../screens/notifications';
 import COLORS from '../../../constants/Theme';
 
-const DetailsPane = ({title, unit, amount, hasConcern}) => (
+const DetailsPane = ({
+  title,
+  unit,
+  amount,
+  hasConcern,
+  userInvoiced,
+  invoiceDate,
+}) => (
   <View
     style={{elevation: 10, zIndex: 100}}
     className={
@@ -20,7 +27,7 @@ const DetailsPane = ({title, unit, amount, hasConcern}) => (
       </View>
 
       <Text className={'text-base font-inter-semibold text-black'}>
-        Eric Pekmah
+        {userInvoiced}
       </Text>
 
       <View className={'mt-4'}>
@@ -48,7 +55,9 @@ const DetailsPane = ({title, unit, amount, hasConcern}) => (
       <View className={'flex-row space-x-2 items-center pt-4'}>
         <Indicator />
 
-        <Text className={'text-2xs font-inter text-black  '}>NOV 14, 2023</Text>
+        <Text className={'text-2xs font-inter text-black  '}>
+          {invoiceDate}
+        </Text>
       </View>
     </View>
   </View>

@@ -10,10 +10,11 @@ import {
   InvoiceReceiptModal,
 } from '../../components/modals';
 import {useStatement} from '../../hooks/useStatement';
+import {SectionList} from 'react-native';
+import moment from 'moment';
 
 const Statements = () => {
   const receiptModalRef = useRef();
-  const exportModalRef = useRef();
 
   const currentDate = new Date();
 
@@ -21,13 +22,10 @@ const Statements = () => {
     currentDate.getMonth() + 1
   }-${currentDate.getDate()}`;
 
-  const {isPending, statements} = useStatement();
+  const {isPending, statements, refetch} = useStatement();
+  console.log(statements);
 
   const [active] = useState(0);
-
-  const handleOpenReceiptModal = useCallback(() => {
-    receiptModalRef.current?.expand();
-  }, []);
 
   const handleCloseReceiptModal = useCallback(() => {
     receiptModalRef.current?.close();
@@ -37,16 +35,16 @@ const Statements = () => {
     receiptModalRef.current?.expand();
   }, []);
 
-  const handleCloseExportModal = useCallback(() => {
-    receiptModalRef.current?.close();
-  }, []);
-
   const renderYears = ({item, index, isActive}) => {
     return (
-      <SelectorButton ClassName={'py-0'} isActive={isActive} text={item} />
+      <SelectorButton
+        key={index}
+        ClassName={'py-0'}
+        isActive={isActive}
+        text={item}
+      />
     );
   };
-  console.log();
   return (
     <>
       <Layout ClassName={'p-4 relative'}>
@@ -66,13 +64,15 @@ const Statements = () => {
           />
         </View>
 
-        {/* {!isPending && (
-          // <SectionList
-          //   sections={}
-          //   renderItem={renderItem}
-          //   renderSectionHeader={renderHeader}
-          // />
-        )} */}
+        {!isPending && (
+          <SectionList
+            sections={statements}
+            renderItem={renderItem}
+            renderSectionHeader={renderHeader}
+            refreshing={isPending}
+            onRefresh={refetch}
+          />
+        )}
 
         <CButton
           style={{elevation: 2}}
@@ -103,9 +103,9 @@ const Statements = () => {
 const renderItem = ({item}, handlePress) => (
   <StatementItem
     title={`invoice ${item?.transactionCode}`}
-    date={item?.createdAt}
+    date={moment(item?.transactionDate).format('Do, MMM YYYY')}
     paymentMethod={item?.methodOfPayment}
-    amount={item.amountDebited}
+    amount={item?.amountDebited}
     handlePress={handlePress}
   />
 );
@@ -113,7 +113,7 @@ const renderItem = ({item}, handlePress) => (
 const renderHeader = ({section}) => (
   <View className={'pb-2 px-4 mt-3'}>
     <Text className={'font-inter-semibold text-grey_1 capitalize'}>
-      {months[new Date(section?.createdAt)?.getMonth()]}
+      {months[new Date(section?.transactionDate)?.getMonth()]}
     </Text>
   </View>
 );

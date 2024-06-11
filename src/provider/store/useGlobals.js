@@ -18,6 +18,10 @@ const initState = {
     access_token: '',
     refresh_token: '',
   },
+  reset_password: {
+    email: '',
+    token: '',
+  },
 };
 
 const useGlobals = create(
@@ -26,7 +30,21 @@ const useGlobals = create(
     set => ({
       state: initState,
 
-      //   updates registering user
+      // updates reset password state
+      updateResetPassword: newState => {
+        set(previousState => {
+          return {
+            state: {
+              ...previousState.state,
+              reset_password: {
+                ...previousState.state.reset_password,
+                ...newState,
+              },
+            },
+          };
+        });
+      },
+      // updates registering user
       updateRegisteringUser: newState => {
         set(previousState => {
           return {
@@ -53,6 +71,11 @@ const useGlobals = create(
           };
         });
       },
+      resetResetPassword: () =>
+        set(previousState => ({
+          ...previousState,
+          reset_password: initState.reset_password,
+        })),
       // reset registering user state
       resetRegisteringUser: () =>
         set(previousState => ({

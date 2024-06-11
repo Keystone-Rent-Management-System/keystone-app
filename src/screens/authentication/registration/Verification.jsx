@@ -100,7 +100,7 @@ export default function Verification({navigation, route: {params}}) {
 
       <View className={'flex-1'}>
         <Text className={'font-inter text-xs text-neutral-500 my-3'}>
-          Enter the 5 digit PIN code sent to
+          Enter the 6 digit PIN code sent to
           <Text className={'text-black'}>
             &nbsp;{registering_user?.email}&nbsp;
           </Text>

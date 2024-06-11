@@ -7,14 +7,11 @@ import AxiosUtility from './AxiosServices';
  * @returns {Promise<PropertyListing[]>}
  */
 const getPropertyListings = async (page, size) => {
-  try {
-    const {data: res} = await AxiosUtility.get(
-      `/public/property-listing?page=${page}&size=${size}`,
-    );
-    return res;
-  } catch (error) {
-    throw new Error('Failed to fetch property listings');
-  }
+  const {data: res} = await AxiosUtility.get(
+    `/public/property-listing?page=${page}&size=${size}`,
+  );
+
+  return res;
 };
 
 /**
@@ -23,14 +20,11 @@ const getPropertyListings = async (page, size) => {
  * @returns {Promise<PropertyListing>}
  */
 const getPropertyListing = async propertyId => {
-  try {
-    const {data: res} = await AxiosUtility.get(
-      `/public/property-listing/${propertyId}`,
-    );
-    return res;
-  } catch (error) {
-    throw new Error('Failed to fetch property listing');
-  }
+  const {data: res} = await AxiosUtility.get(
+    `/public/property-listing/${propertyId}`,
+  );
+
+  return res;
 };
 
 const PropertyListingServices = {

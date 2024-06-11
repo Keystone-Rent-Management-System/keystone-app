@@ -61,7 +61,6 @@ const Explore = () => {
   };
 
   const renderListingItem = ({item}) => {
-    console.log(item);
     const {
       houseType,
       matterportUrl,
@@ -102,7 +101,12 @@ const Explore = () => {
       {/*  Filters  */}
       <ExploreFilters />
       {mode === 'map' ? (
-        <ExploreMapView current={current} setCurrent={setCurrent} />
+        <ExploreMapView
+          current={current}
+          setCurrent={setCurrent}
+          listings={listings}
+          isPending={isPending}
+        />
       ) : (
         renderListView(listings, renderListingItem, isPending, refetch)
       )}

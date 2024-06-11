@@ -1,7 +1,7 @@
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import React from 'react';
 
-const FloatingActionBar = () => (
+const FloatingActionBar = ({amount}) => (
   <View
     style={styles.floatingBar}
     className={'absolute inset-x-0 bottom-0 bg-bg px-4 py-3 flex-row '}>
@@ -11,7 +11,7 @@ const FloatingActionBar = () => (
       </Text>
 
       <Text className={'text-lg font-inter text-black'}>
-        KES. <Text className={'font-inter-semibold '}>63000</Text>
+        KES. <Text className={'font-inter-semibold '}>{amount}</Text>
       </Text>
     </View>
 

@@ -37,6 +37,29 @@ const login = async data => {
 };
 
 /**
+ * get password reset token
+ * @param {Email} data
+ */
+const getResetPasswordToken = async data => {
+  const {data: res} = await AxiosUtility.post(
+    '/profile/reset-password-token',
+    data,
+  );
+
+  return res;
+};
+
+/**
+ * reset password
+ * @param {ResetPassword} data
+ */
+const resetPassword = async data => {
+  const {data: res} = await AxiosUtility.put('/profile/reset-password', data);
+
+  return res;
+};
+
+/**
  * Gets tenant profile
  * @returns {Promise<any>}
  */
@@ -48,11 +71,27 @@ const getProfile = async data => {
   return res;
 };
 
+/**
+ * Update logged in tenant password
+ * @returns {Promise<Object>}
+ */
+const updateUserPassword = async data => {
+  const {data: res} = await AxiosUtility.put(
+    '/manage-profile/change-password',
+    data,
+  );
+
+  return res;
+};
+
 const AuthServices = {
   verifyRegisteringEmail,
   registerTenant,
   login,
+  getResetPasswordToken,
+  resetPassword,
   getProfile,
+  updateUserPassword,
 };
 
 export default AuthServices;
@@ -75,4 +114,18 @@ export default AuthServices;
  * "email": "string",
  * "password": "string"
  * }} User signining in user
+ */
+
+/**
+ * @typedef {{
+ * "email": "string"
+ * }} Email
+ */
+
+/**
+ * @typedef {{
+ * "email": "string",
+ * "token": "string",
+ * "password": "string"
+ * }} ResetPassword
  */

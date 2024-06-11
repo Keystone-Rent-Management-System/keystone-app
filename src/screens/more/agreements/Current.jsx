@@ -1,23 +1,31 @@
-import React, { useRef } from "react";
-import moment from "moment";
-import { FlashList } from "@shopify/flash-list";
+import React, {useRef, useState} from 'react';
+// import moment from 'moment';
+import {FlashList} from '@shopify/flash-list';
 
-import { Layout, ListingItem } from "../../../components";
-import { AgreementSvg } from "../../../assets/icons";
-import COLORS from "../../../constants/Theme";
-import { invoiceStyles } from "../../home/invoice/Unpaid";
-import AgreementModalSheet from "../../../components/modals/Agreement";
-import { MovingOutModal } from "../../../components/modals";
-import { useHelp } from "../../../hooks";
-import { useBottomSheetModal } from "@gorhom/bottom-sheet";
+import {Layout, ListingItem} from '../../../components';
+import {AgreementSvg} from '../../../assets/icons';
+import COLORS from '../../../constants/Theme';
+import {invoiceStyles} from '../../home/invoice/Unpaid';
+import AgreementModalSheet from '../../../components/modals/Agreement';
+import {MovingOutModal} from '../../../components/modals';
+import {useHelp} from '../../../hooks';
+import {useBottomSheetModal} from '@gorhom/bottom-sheet';
+import {
+  useAcceptAgrement,
+  useAgrement,
+  useTerminateAgrement,
+} from '../../../hooks';
+import moment from 'moment';
 
 const Current = () => {
   const agreementModalRef = useRef();
-  const { dismiss } = useBottomSheetModal();
-  const { movingOutRef, handleOpenMovingOutModal, handleCloseMovingOutModal } =
+  const [agreement, setAgreement] = useState({});
+  const {dismiss} = useBottomSheetModal();
+  const {movingOutRef, handleOpenMovingOutModal, handleCloseMovingOutModal} =
     useHelp();
 
-  const handleOpenAgreement = () => {
+  const handleOpenAgreement = data => {
+    setAgreement(data);
     agreementModalRef?.current?.present();
   };
 
@@ -26,21 +34,42 @@ const Current = () => {
     handleOpenMovingOutModal();
   };
 
+  const {isPending, agreements, refetch} = useAgrement();
+
+  const currentAgreements =
+    !isPending &&
+    agreements?.filter(
+      currentAgreement =>
+        currentAgreement?.status?.toLowerCase() === 'active & agreed' ||
+        currentAgreement?.status?.toLowerCase() === 'pending',
+    );
+
+  const {handleAcceptAgreement} = useAcceptAgrement(dismiss, refetch);
+  const {handleTerminateAgreement} = useTerminateAgrement(dismiss, refetch);
+
   return (
     <>
       <AgreementModalSheet
+        agreement={agreement}
         ref={agreementModalRef}
+        type={
+          agreement?.status?.toLowerCase() === 'pending' ? 'pending' : 'agreed'
+        }
         handleIssueTermination={handleIssueTermination}
+        handleAcceptAgreement={handleAcceptAgreement}
+        handleTerminateAgreement={handleTerminateAgreement}
       />
       <Layout>
         <FlashList
           contentContainerStyle={invoiceStyles.list}
+          refreshing={isPending}
           data={currentAgreements}
-          renderItem={({ item }) =>
+          renderItem={({item}) =>
             renderAgreementListItem(item, handleOpenAgreement)
           }
           keyExtractor={(_, ind) => ind.toString()}
           estimatedItemSize={300}
+          onRefresh={refetch}
         />
       </Layout>
 
@@ -55,34 +84,19 @@ const Current = () => {
 export const renderAgreementListItem = (item, handlePress = () => {}) => {
   return (
     <ListingItem
-      icon={<AgreementSvg color={COLORS.primary} size={"24"} />}
+      icon={<AgreementSvg color={COLORS.primary} size={'24'} />}
       id={item?.id}
-      title={item?.title}
-      customDate={item?.fromDate + " - " + item?.toDate}
-      unit={item?.unitName}
-      amount={item?.amount}
-      handlePress={handlePress}
+      title={item?.propertyUnits?.property?.name}
+      customDate={
+        moment(item?.tenancyBeginningDate).format('Do MMM, YYYY') +
+        ' - ' +
+        'Current'
+      }
+      unit={item?.propertyUnits?.name}
+      amount={item?.propertyUnits?.rent}
+      handlePress={() => handlePress(item)}
     />
   );
 };
-
-const currentAgreements = [
-  {
-    id: 1,
-    title: "Purple HazeApartment",
-    fromDate: moment().subtract(2, "M").format("MMM YY"),
-    toDate: moment().format("MMM YY"),
-    unitName: "unit 04",
-    amount: "30,000",
-  },
-  {
-    id: 2,
-    title: "Ruaka Arcade Homes",
-    fromDate: moment().subtract(10, "M").format("MMM YY"),
-    toDate: moment().format("MMM YY"),
-    unitName: "unit 512",
-    amount: "20,000",
-  },
-];
 
 export default Current;

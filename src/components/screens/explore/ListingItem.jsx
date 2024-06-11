@@ -22,6 +22,7 @@ import {
 import Helper from '@/utils/Helper';
 import {RightArrowSvg} from '../../../assets/icons';
 import WebView from 'react-native-webview';
+import numberWithCommas from '../../../utils/numberWithCommas';
 
 /**
  * Returns property item for listing
@@ -40,7 +41,6 @@ const ListingItem = props => {
   const [liked, setLiked] = useState(props?.isSaved ?? false);
 
   const handleLike = () => setLiked(prev => !prev);
-  console.log(props);
 
   const htmlIframe = useMemo(() => {
     const defaultLink = 'https://matterport.com/en-gb/media/2486 ';
@@ -163,7 +163,7 @@ const ListingItem = props => {
           <Text
             style={{color: COLORS.text_color}}
             className={'font-inter-semibold text-xs'}>
-            KES. {props.price} /
+            KES. {numberWithCommas(Number(props.price))} /
             <Text className={'text-11 text-grey_1 font-inter'}> Month</Text>
           </Text>
         </View>

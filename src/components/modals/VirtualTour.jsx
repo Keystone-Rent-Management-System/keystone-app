@@ -1,8 +1,9 @@
-import {Image, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import React, {forwardRef} from 'react';
 import {CustomBottomSheet} from '.';
 import {BackSvg, UploadSvg} from '@/assets/icons';
 import {ExploreActionBtn} from '@/components';
+import WebView from 'react-native-webview';
 
 const VirtualTour = forwardRef((props, ref) => {
   return (
@@ -11,7 +12,12 @@ const VirtualTour = forwardRef((props, ref) => {
       ref={ref}
       handleComponent={() => renderSheetHeader(props.handleCloseTour)}
       onChange={props.handleSheetChanges}>
-      <Image source={props.source} className={'flex-1'} alt={'virtual-tour'} />
+      <WebView
+        source={{
+          html: props.htmlIframe,
+        }}
+        style={styles.webview}
+      />
     </CustomBottomSheet>
   );
 });
@@ -37,5 +43,10 @@ export default VirtualTour;
 const styles = StyleSheet.create({
   actionButtonWrapper: {
     gap: 15,
+  },
+  webview: {
+    height: '100%',
+    width: '100%',
+    backgroundColor: 'transparent',
   },
 });

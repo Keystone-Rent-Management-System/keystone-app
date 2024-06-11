@@ -63,7 +63,13 @@ const More = () => {
           className={'absolute px-4 inset-x-0 bottom-8 flex-row items-center'}
           style={styles.profileStyle}>
           <ProfileView
-            text={'EM'}
+            text={`${data?.data?.name
+              ?.split(' ')[0]
+              ?.charAt(0)
+              ?.toLowerCase()}${data?.data?.name
+              ?.split(' ')[1]
+              ?.charAt(0)
+              ?.toLowerCase()}`}
             textClassName={'text-primary'}
             containerClassName={'bg-white'}
           />

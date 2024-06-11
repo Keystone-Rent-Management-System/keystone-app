@@ -229,8 +229,8 @@ export const bills = [
     amount: "35,000",
   },
   {
-    title: "water",
-    amount: "3,500",
+    title: 'water',
+    amount: '3,500',
   },
   {
     title: "trash/garbage",

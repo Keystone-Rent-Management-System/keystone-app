@@ -7,6 +7,7 @@ import Nav from '@/constants/nav';
 import {BottomTabBtn} from '@/components';
 import {BottomNavScreens} from '@/constants';
 import useGlobals from '../provider/store/useGlobals';
+import {useRefreshToken} from '../hooks';
 
 const Tab = createBottomTabNavigator();
 
@@ -17,6 +18,8 @@ const renderTab = ({focused, scr}) => (
 const BottomNav = () => {
   const {auth} = useGlobals(state => state.state);
   const navigation = useNavigation();
+
+  useRefreshToken();
 
   return (
     <Tab.Navigator screenOptions={Nav.BottomNavOptions}>

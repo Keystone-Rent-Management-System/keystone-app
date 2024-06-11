@@ -2,17 +2,28 @@ import React from 'react';
 import moment from 'moment';
 import {FlashList} from '@shopify/flash-list';
 
-import {Layout} from '../../../components';
+import {Layout, ListingItem} from '@/components';
 import {invoiceStyles} from '../../home/invoice/Unpaid';
-import {renderUnitListItem} from './Current';
+import {HomeSvg} from '@/assets/icons';
+import COLORS from '@/constants/Theme';
 import {useNavigation} from '@react-navigation/native';
+import {useAgrement} from '../../../hooks';
 
 const Previous = () => {
   const navigation = useNavigation();
 
   const handleNavigate = id => {
-    navigation.navigate('my_units__view');
+    navigation.navigate('my_units__view', {unitId: id});
   };
+
+  const {isPending, agreements, refetch} = useAgrement();
+
+  const previousUnits =
+    !isPending &&
+    agreements?.filter(
+      previousAgreement =>
+        previousAgreement?.status?.toLowerCase() === 'terminated',
+    );
 
   return (
     <Layout>
@@ -22,27 +33,29 @@ const Previous = () => {
         renderItem={({item}) => renderUnitListItem(item, handleNavigate)}
         keyExtractor={(_, ind) => ind.toString()}
         estimatedItemSize={300}
+        refreshing={isPending}
+        onRefresh={refetch}
       />
     </Layout>
   );
 };
 
-const previousUnits = [
-  {
-    id: 1,
-    title: 'Purple HazeApartment',
-    fromDate: moment().subtract(3, 'M').format('MMM YY'),
-    toDate: moment().format('MMM YY'),
-    unitName: 'unit E304',
-    amount: '110,000',
-  },
-  {
-    id: 2,
-    title: 'Ruaka Arcade Homes',
-    fromDate: moment().subtract(12, 'M').format('MMM YY'),
-    toDate: moment().format('MMM YY'),
-    unitName: 'unit L202',
-    amount: '80,000',
-  },
-];
+export const renderUnitListItem = (item, handlePress = () => {}) => {
+  return (
+    <ListingItem
+      icon={<HomeSvg color={COLORS.primary} size={'24'} />}
+      id={item?.id}
+      title={item?.propertyUnits?.property?.name}
+      customDate={
+        moment(item?.tenancyBeginningDate).format('Do MMMM, YYYY') +
+        ' - ' +
+        moment(item?.terminatedOn).format('Do MMMM, YYYY')
+      }
+      unit={item?.propertyUnits?.name}
+      amount={item?.propertyUnits?.rent}
+      handlePress={() => handlePress(item?.propertyUnits?.id)}
+    />
+  );
+};
+
 export default Previous;

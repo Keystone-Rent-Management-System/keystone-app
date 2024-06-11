@@ -1,6 +1,5 @@
 import React, {useMemo, useRef, useState} from 'react';
 import {
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -8,7 +7,6 @@ import {
   View,
 } from 'react-native';
 
-import listings from '@/provider/listings';
 import Helper from '@/utils/Helper';
 import {IconLabel} from '@/components/screens/explore/ListingItem';
 import {
@@ -31,6 +29,10 @@ import {useNavigation} from '@react-navigation/native';
 import {VirtualTourModal} from '@/components/modals';
 import {LandlordItem} from '../../components';
 import {useSpecificPropertyListing} from '../../hooks/usePropertyListing';
+import numberWithCommas from '../../utils/numberWithCommas';
+import MapView, {Marker} from 'react-native-maps';
+import {HouseMapMarker} from '../../assets/icons';
+import WebView from 'react-native-webview';
 
 const ApartmentView = ({route: {params}}) => {
   const bottomSheetRef = useRef();
@@ -38,24 +40,17 @@ const ApartmentView = ({route: {params}}) => {
 
   const [modalState, setModalState] = useState(false);
 
-  const {listing} = useSpecificPropertyListing(params?.apartment);
+  const {isPending, listing} = useSpecificPropertyListing(params?.apartment);
 
-  const currentApartmentDetails = useMemo(() => {
-    return listings.find(item => item.id === params?.apartment);
-  }, [params?.apartment]);
-
-  // const region = useMemo(
-  //   () => ({
-  //     latitude:
-  //       currentApartmentDetails?.coordinates?.latitude ?? -1.2881012218277417,
-  //     longitude:
-  //       currentApartmentDetails?.coordinates?.longitude ?? 36.82609607136736,
-  //     latitudeDelta: 0.015,
-  //     longitudeDelta: 0.015,
-  //   }),
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   [],
-  // );
+  const region = useMemo(
+    () => ({
+      latitude: listing?.property?.latitude ?? -1.2881012218277417,
+      longitude: listing?.property?.longitude ?? 36.82609607136736,
+      latitudeDelta: 0.015,
+      longitudeDelta: 0.015,
+    }),
+    [listing?.property?.latitude, listing?.property?.longitude],
+  );
 
   const handleViewTour = () => {
     // setModalState(true);
@@ -80,7 +75,15 @@ const ApartmentView = ({route: {params}}) => {
     navigation.goBack();
   };
 
-  console.log('LISTING:', listing?.property);
+  const htmlIframe = useMemo(() => {
+    return `<iframe
+    width="100%"
+    height="100%"
+    frameborder='0'
+    allowfullscreen
+    src=${listing?.matterportUrl || 'https://matterport.com/en-gb/media/5989'}
+/>`;
+  }, [listing?.matterportUrl]);
 
   return (
     <Layout>
@@ -112,10 +115,11 @@ const ApartmentView = ({route: {params}}) => {
           </View>
         )}
 
-        <Image
-          source={{uri: listing?.matterportUrl}}
-          alt={'apartment'}
-          className={'object-cover h-full'}
+        <WebView
+          source={{
+            html: htmlIframe,
+          }}
+          style={styles.webview}
         />
 
         {/* virtual tour image */}
@@ -198,17 +202,26 @@ const ApartmentView = ({route: {params}}) => {
           </Text>
 
           <View className={'h-32 my-3 bg-bg_grey'}>
-            {/* <MapView className={'flex-1'} region={region}>
-              <Marker coordinate={region}>
-                <HouseMapMarker />
-              </Marker>
-            </MapView> */}
+            {!isPending && (
+              <MapView className={'flex-1'} region={region}>
+                <Marker
+                  coordinate={{
+                    latitude:
+                      listing?.property?.latitude ?? -1.2881012218277417,
+                    longitude:
+                      listing?.property?.longitude ?? 36.82609607136736,
+                  }}>
+                  <HouseMapMarker />
+                </Marker>
+              </MapView>
+            )}
           </View>
 
           {/* Virtual tour button */}
           <View className={'flex-row justify-center '}>
             <TouchableOpacity
               style={styles.virtualButton}
+              onPress={handleViewTour}
               className={
                 'flex-row py-3.5 px-6 border border-primary rounded-md items-center'
               }>
@@ -247,13 +260,8 @@ const ApartmentView = ({route: {params}}) => {
           </Text>
 
           <View className={'mt-3'} style={styles.chargeList}>
-            {listing?.amenities?.map((amenity, ind) => (
-              <ExploreAmenity
-                key={ind}
-                showCheckBox={false}
-                icon={amenity.icon}
-                title={amenity}
-              />
+            {listing?.property?.amenities?.map((amenity, ind) => (
+              <ExploreAmenity key={ind} showCheckBox={false} title={amenity} />
             ))}
           </View>
 
@@ -263,13 +271,15 @@ const ApartmentView = ({route: {params}}) => {
         <View className={'h-16'} />
       </ScrollView>
 
-      <ApartmentViewFloatingActionBar amount={listing?.rent} />
+      <ApartmentViewFloatingActionBar
+        amount={numberWithCommas(Number(listing?.rent + listing?.deposit))}
+      />
 
       <VirtualTourModal
         ref={bottomSheetRef}
         handleSheetChanges={handleSheetChanges}
         handleCloseTour={handleCloseTour}
-        source={{uri: currentApartmentDetails?.matterportUrl}}
+        htmlIframe={htmlIframe}
       />
     </Layout>
   );
@@ -290,5 +300,10 @@ const styles = StyleSheet.create({
   floatingVirtualButton: {
     backgroundColor: COLORS.primary + '60',
     gap: 8,
+  },
+  webview: {
+    height: 300,
+    width: '100%',
+    backgroundColor: 'transparent',
   },
 });

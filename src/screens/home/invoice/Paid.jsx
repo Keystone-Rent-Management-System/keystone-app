@@ -2,19 +2,25 @@ import React from 'react';
 import {View} from 'react-native';
 import {FlashList} from '@shopify/flash-list';
 
-import {CInput, Layout} from '@/components';
-import invoiceData from '@/provider/invoice';
+import {CInput, Layout, ListingItem} from '@/components';
 import {SearchSvg} from '@/assets/icons';
+import {InvoiceSvg} from '@/assets/icons';
 import COLORS from '@/constants/Theme';
-import {invoiceStyles, renderInvoiceItem} from './Unpaid';
+import {invoiceStyles} from './Unpaid';
 import {useNavigation} from '@react-navigation/native';
+import numberWithCommas from '../../../utils/numberWithCommas';
+import moment from 'moment';
+import {usePaidInvoice} from '../../../hooks';
 
 const Paid = () => {
   const navigation = useNavigation();
 
   const handleNavigate = id => {
-    navigation.navigate('invoice_view', {id, type: 'paid'});
+    navigation.navigate('invoice_view', {id});
   };
+
+  const {isPending, invoices, refetch} = usePaidInvoice();
+
   return (
     <Layout>
       {/*  search input*/}
@@ -22,12 +28,29 @@ const Paid = () => {
       <FlashList
         ListHeaderComponent={<Header />}
         contentContainerStyle={invoiceStyles.list}
-        data={invoiceData.paid}
+        refreshing={isPending}
+        data={invoices}
         renderItem={({item}) => renderInvoiceItem(item, handleNavigate)}
         keyExtractor={(_, ind) => ind.toString()}
         estimatedItemSize={300}
+        onRefresh={refetch}
       />
     </Layout>
+  );
+};
+
+export const renderInvoiceItem = (item, handlePress = () => {}) => {
+  return (
+    <ListingItem
+      icon={<InvoiceSvg size={'24'} />}
+      id={item?.id}
+      title={item?.propertyName?.split('-')[0]}
+      customDate={moment(item?.createdAt).format('Do MMM, YYYY')}
+      unit={item?.propertyName?.split('-')[1]}
+      amount={numberWithCommas(item?.paidAmount)}
+      isPartial={item?.paidAmount && item?.paidAmount < item?.totalAmount}
+      handlePress={() => handlePress(item?.id)}
+    />
   );
 };
 
