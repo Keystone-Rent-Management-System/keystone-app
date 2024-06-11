@@ -6,6 +6,7 @@ import {CButton} from './index';
 import {CloseSvg} from '@/assets/icons';
 import {DownloadSvg} from '@/assets/icons/receipt';
 import logo from '@/assets/images/logo.png';
+import numberWithCommas from '../../utils/numberWithCommas';
 
 const noOfEllipse = Array(35).fill('_');
 const ReceiptTemplate = ({
@@ -14,6 +15,7 @@ const ReceiptTemplate = ({
   color,
   hasCloseBtn = false,
   handleClose,
+  statement,
 }) => {
   return (
     <View className={'bg-bg_pale w-full relative pt-3 overflow-x-hidden'}>
@@ -51,7 +53,7 @@ const ReceiptTemplate = ({
       />
 
       <Text className={'font-sometypemono text-black text-xl mx-auto'}>
-        KES. 30,000
+        KES. {numberWithCommas(Number(statement?.amountDebited))}
       </Text>
 
       <Text className={'text-black font-sometypemono text-xs mt-2 text-center'}>

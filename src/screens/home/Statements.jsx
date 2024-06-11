@@ -12,9 +12,11 @@ import {
 import {useStatement} from '../../hooks/useStatement';
 import {SectionList} from 'react-native';
 import moment from 'moment';
+import numberWithCommas from '../../utils/numberWithCommas';
 
 const Statements = () => {
   const receiptModalRef = useRef();
+  const exportModalRef = useRef();
 
   const currentDate = new Date();
 
@@ -25,13 +27,24 @@ const Statements = () => {
   const {isPending, statements, refetch} = useStatement();
 
   const [active] = useState(0);
+  const [statement, setStatement] = useState(null);
+
+  const handleOpenReceiptModal = useCallback(current => {
+    setStatement(current);
+    receiptModalRef.current?.expand();
+  }, []);
 
   const handleCloseReceiptModal = useCallback(() => {
+    setStatement(null);
     receiptModalRef.current?.close();
   }, []);
 
   const handleOpenExportModal = useCallback(() => {
-    receiptModalRef.current?.expand();
+    exportModalRef.current?.expand();
+  }, []);
+
+  const handleCloseExportModal = useCallback(() => {
+    exportModalRef.current?.close();
   }, []);
 
   const renderYears = ({item, index, isActive}) => {
@@ -66,7 +79,15 @@ const Statements = () => {
         {!isPending && (
           <SectionList
             sections={statements}
-            renderItem={renderItem}
+            renderItem={({item}) => (
+              <StatementItem
+                title={'invoice'}
+                date={moment(item?.transactionDate).format('Do, MMMM YYYY')}
+                paymentMethod={item?.methodOfPayment}
+                amount={numberWithCommas(item?.amountDebited)}
+                handlePress={() => handleOpenReceiptModal(item)}
+              />
+            )}
             renderSectionHeader={renderHeader}
             refreshing={isPending}
             onRefresh={refetch}
@@ -88,31 +109,22 @@ const Statements = () => {
       </Layout>
 
       <InvoiceReceiptModal
+        statement={statement}
         ref={receiptModalRef}
         handleCloseModal={handleCloseReceiptModal}
       />
       <ExportStatementModal
-        ref={receiptModalRef}
-        handleCloseModal={handleCloseReceiptModal}
+        ref={exportModalRef}
+        handleCloseModal={handleCloseExportModal}
       />
     </>
   );
 };
 
-const renderItem = ({item}, handlePress) => (
-  <StatementItem
-    title={`invoice ${item?.transactionCode}`}
-    date={moment(item?.transactionDate).format('Do, MMM YYYY')}
-    paymentMethod={item?.methodOfPayment}
-    amount={item?.amountDebited}
-    handlePress={handlePress}
-  />
-);
-
 const renderHeader = ({section}) => (
   <View className={'pb-2 px-4 mt-3'}>
     <Text className={'font-inter-semibold text-grey_1 capitalize'}>
-      {months[new Date(section?.transactionDate)?.getMonth()]}
+      {section?.month}
     </Text>
   </View>
 );

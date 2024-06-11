@@ -16,7 +16,7 @@ const CustomBottomSheet = forwardRef((props, ref) => {
         {...backdropProps}
       />
     ),
-    [],
+    [props?.backdropOpacity],
   );
 
   return (
