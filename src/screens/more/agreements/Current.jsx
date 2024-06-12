@@ -67,7 +67,7 @@ const Current = () => {
           renderItem={({item}) =>
             renderAgreementListItem(item, handleOpenAgreement)
           }
-          keyExtractor={(_, ind) => ind.toString()}
+          keyExtractor={item => item?.id}
           estimatedItemSize={300}
           onRefresh={refetch}
         />

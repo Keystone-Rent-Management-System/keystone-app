@@ -31,7 +31,7 @@ const Previous = () => {
         contentContainerStyle={invoiceStyles.list}
         data={previousUnits}
         renderItem={({item}) => renderUnitListItem(item, handleNavigate)}
-        keyExtractor={(_, ind) => ind.toString()}
+        keyExtractor={item => item?.id}
         estimatedItemSize={300}
         refreshing={isPending}
         onRefresh={refetch}

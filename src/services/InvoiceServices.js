@@ -9,7 +9,7 @@ import AxiosUtility, {setAuthToken} from './AxiosServices';
 const getInvoices = async (page, size, status) => {
   setAuthToken(AxiosUtility);
   const {data: res} = await AxiosUtility.get(
-    `/invoices?status=${status}&page=${page}&size=${size}`,
+    `/analytics/invoice?status=${status}&page=${page}&size=${size}`,
   );
 
   return res;

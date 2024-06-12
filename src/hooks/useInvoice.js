@@ -5,10 +5,10 @@ import InvoiceServices from '../services/InvoiceServices';
 export const useUnPaidInvoice = () => {
   const {isPending, error, data, refetch} = useQuery({
     queryKey: ['invoice/unpaid'],
-    queryFn: () => InvoiceServices.getInvoices(0, 20, 'UNPAID'),
+    queryFn: () => InvoiceServices.getInvoices(0, 20, 'unpaid'),
   });
 
-  const invoices = data?.data || null;
+  const invoices = data || [];
 
   return {isPending, error, invoices, refetch};
 };
@@ -16,10 +16,10 @@ export const useUnPaidInvoice = () => {
 export const usePartiallyPaidInvoice = () => {
   const {isPending, error, data, refetch} = useQuery({
     queryKey: ['invoice/partially-paid'],
-    queryFn: () => InvoiceServices.getInvoices(0, 20, 'PartiallyPaid'),
+    queryFn: () => InvoiceServices.getInvoices(0, 20, 'paidPartial'),
   });
 
-  const invoices = data?.data || null;
+  const invoices = data || [];
 
   return {isPending, error, invoices, refetch};
 };
@@ -27,10 +27,10 @@ export const usePartiallyPaidInvoice = () => {
 export const usePaidInvoice = () => {
   const {isPending, error, data, refetch} = useQuery({
     queryKey: ['invoice/paid'],
-    queryFn: () => InvoiceServices.getInvoices(0, 20, 'PAID'),
+    queryFn: () => InvoiceServices.getInvoices(0, 20, 'paid'),
   });
 
-  const invoices = data?.data || null;
+  const invoices = data || null;
 
   return {isPending, error, invoices, refetch};
 };
@@ -38,10 +38,10 @@ export const usePaidInvoice = () => {
 export const useOverPaidInvoice = () => {
   const {isPending, error, data, refetch} = useQuery({
     queryKey: ['invoice/over-paid'],
-    queryFn: () => InvoiceServices.getInvoices(0, 20, 'OverPaid'),
+    queryFn: () => InvoiceServices.getInvoices(0, 20, 'overpaid'),
   });
 
-  const invoices = data?.data || null;
+  const invoices = data || [];
 
   return {isPending, error, invoices, refetch};
 };

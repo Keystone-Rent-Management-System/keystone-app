@@ -42,7 +42,7 @@ const Previous = () => {
         renderItem={({item}) =>
           renderAgreementListItem(item, handleViewAgreement)
         }
-        keyExtractor={(_, ind) => ind.toString()}
+        keyExtractor={item => item?.id}
         estimatedItemSize={300}
         onRefresh={refetch}
       />

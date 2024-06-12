@@ -31,7 +31,7 @@ const Paid = () => {
         refreshing={isPending}
         data={invoices}
         renderItem={({item}) => renderInvoiceItem(item, handleNavigate)}
-        keyExtractor={(_, ind) => ind.toString()}
+        keyExtractor={item => item?.id}
         estimatedItemSize={300}
         onRefresh={refetch}
       />

@@ -1,7 +1,7 @@
 import React, {useCallback, useRef, useState} from 'react';
 import {Layout} from '@/components';
 import {CButton, StatementItem} from '../../components';
-import {FlatList, Text, View} from 'react-native';
+import {FlatList, Text, View, ActivityIndicator} from 'react-native';
 import {SelectorButton} from '../../components/screens/explore/RoomSelector';
 import {StatementListSvg} from '../../assets/icons';
 import COLORS from '../../constants/Theme';
@@ -24,10 +24,18 @@ const Statements = () => {
     currentDate.getMonth() + 1
   }-${currentDate.getDate()}`;
 
-  const {isPending, statements, refetch} = useStatement();
-
   const [active] = useState(0);
   const [statement, setStatement] = useState(null);
+  const [page, setPage] = useState(0);
+
+  const {isPending, isRefetching, statements, totalPages, refetch} =
+    useStatement(page);
+  const handleLoadMore = () => {
+    if (!isPending && totalPages > page + 1) {
+      setPage(prev => prev + 1);
+      refetch();
+    }
+  };
 
   const handleOpenReceiptModal = useCallback(current => {
     setStatement(current);
@@ -75,10 +83,10 @@ const Statements = () => {
             showsHorizontalScrollIndicator={false}
           />
         </View>
-
         {!isPending && (
           <SectionList
             sections={statements}
+            keyExtractor={item => item?.id}
             renderItem={({item}) => (
               <StatementItem
                 title={'invoice'}
@@ -91,6 +99,13 @@ const Statements = () => {
             renderSectionHeader={renderHeader}
             refreshing={isPending}
             onRefresh={refetch}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={
+              isRefetching ? (
+                <ActivityIndicator color={'#02237405'} size="large" />
+              ) : null
+            }
           />
         )}
 

@@ -144,9 +144,8 @@ const InvoiceView = ({route: {params}}) => {
                 customAmt={
                   <View className={'items-center'}>
                     <Text className={'text-11 font-inter text-inactive_text '}>
-                      {moment().format('HH:MMA, MMM YYYY')}
+                      {moment(invoice?.updatedAt).format('HH:MMA, MMM YYYY')}
                     </Text>
-
                     <Text
                       className={'text-13 font-inter-semibold text-black mt-2'}>
                       KES. {numberWithCommas(Number(invoice?.paidAmount))}
@@ -203,6 +202,7 @@ const InvoiceView = ({route: {params}}) => {
       />
 
       <InvoiceReceiptModal
+        statement={null}
         ref={receiptModalRef}
         handleCloseModal={handleCloseReceiptModal}
       />

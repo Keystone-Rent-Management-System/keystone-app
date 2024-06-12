@@ -33,7 +33,7 @@ const ListingItem = ({
             {title}
           </Text>
           <Text className={'font-inter text-2xs text-inactive_text'}>
-            {!!customDate ? customDate : moment(date).format('MMM DD YYYY')}
+            {customDate ? customDate : moment(date).format('MMM DD YYYY')}
           </Text>
         </View>
 
