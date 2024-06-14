@@ -2,14 +2,11 @@ import React from 'react';
 import {View} from 'react-native';
 import {FlashList} from '@shopify/flash-list';
 
-import {CInput, Layout, ListingItem} from '@/components';
+import {CInput, Layout} from '@/components';
 import {SearchSvg} from '@/assets/icons';
-import {InvoiceSvg} from '@/assets/icons';
 import COLORS from '@/constants/Theme';
-import {invoiceStyles} from './Unpaid';
+import {invoiceStyles, renderInvoiceItem} from './Unpaid';
 import {useNavigation} from '@react-navigation/native';
-import numberWithCommas from '../../../utils/numberWithCommas';
-import moment from 'moment';
 import {usePaidInvoice} from '../../../hooks';
 
 const Paid = () => {
@@ -36,21 +33,6 @@ const Paid = () => {
         onRefresh={refetch}
       />
     </Layout>
-  );
-};
-
-export const renderInvoiceItem = (item, handlePress = () => {}) => {
-  return (
-    <ListingItem
-      icon={<InvoiceSvg size={'24'} />}
-      id={item?.id}
-      title={item?.propertyName?.split('-')[0]}
-      customDate={moment(item?.createdAt).format('Do MMM, YYYY')}
-      unit={item?.propertyName?.split('-')[1]}
-      amount={numberWithCommas(item?.paidAmount)}
-      isPartial={item?.paidAmount && item?.paidAmount < item?.totalAmount}
-      handlePress={() => handlePress(item?.id)}
-    />
   );
 };
 

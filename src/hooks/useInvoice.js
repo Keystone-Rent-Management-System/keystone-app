@@ -8,7 +8,7 @@ export const useUnPaidInvoice = () => {
     queryFn: () => InvoiceServices.getInvoices(0, 20, 'unpaid'),
   });
 
-  const invoices = data || [];
+  const invoices = data?.data || [];
 
   return {isPending, error, invoices, refetch};
 };
@@ -19,7 +19,7 @@ export const usePartiallyPaidInvoice = () => {
     queryFn: () => InvoiceServices.getInvoices(0, 20, 'paidPartial'),
   });
 
-  const invoices = data || [];
+  const invoices = data?.data || [];
 
   return {isPending, error, invoices, refetch};
 };
@@ -30,7 +30,7 @@ export const usePaidInvoice = () => {
     queryFn: () => InvoiceServices.getInvoices(0, 20, 'paid'),
   });
 
-  const invoices = data || null;
+  const invoices = data?.data || null;
 
   return {isPending, error, invoices, refetch};
 };
@@ -41,7 +41,7 @@ export const useOverPaidInvoice = () => {
     queryFn: () => InvoiceServices.getInvoices(0, 20, 'overpaid'),
   });
 
-  const invoices = data || [];
+  const invoices = data?.data || [];
 
   return {isPending, error, invoices, refetch};
 };
@@ -93,4 +93,15 @@ export const useGetConcerns = id => {
   const concerns = data?.data || null;
 
   return {concernsIsPending: isPending, error, concerns, refetch};
+};
+
+export const useActiveInvoices = () => {
+  const {isPending, error, data, refetch} = useQuery({
+    queryKey: ['invoice/active'],
+    queryFn: () => InvoiceServices.getActiveInvoices(0, 10, 'active', 'agreed'),
+  });
+
+  const activeInvoices = data?.data ?? [];
+
+  return {isPending, error, activeInvoices, refetch};
 };

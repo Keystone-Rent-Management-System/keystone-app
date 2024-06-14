@@ -4,7 +4,6 @@ import {View} from 'react-native';
 import {CButton} from '../../general';
 
 const Footer = ({
-  handlePartial,
   handlePrompt,
   hasConcern,
   handleResolve,
@@ -12,7 +11,7 @@ const Footer = ({
   handleViewReceipt,
 }) => (
   <View className={'h-16 p-2 px-4 flex-row w-full bg-bg shadow-xl space-x-4'}>
-    {status === 'paid' ? (
+    {status === 'paid' || status === 'overpaid' ? (
       <CButton
         ClassName={'bg-none border border-primary flex-1 mr-5 mx-auto'}
         textClassName={'text-primary font-inter text-xs'}
@@ -29,21 +28,12 @@ const Footer = ({
             onPress={handleResolve}
           />
         ) : (
-          <>
-            <CButton
-              ClassName={'bg-none border border-primary flex-1 mr-5'}
-              textClassName={'text-primary font-inter text-xs'}
-              text={'Partial Payment'}
-              onPress={handlePartial}
-            />
-
-            <CButton
-              ClassName={'bg-primary flex-1'}
-              textClassName={'text-white font-inter text-xs'}
-              text={'Pay Now'}
-              onPress={handlePrompt}
-            />
-          </>
+          <CButton
+            ClassName={'bg-primary flex-1'}
+            textClassName={'text-white font-inter text-xs'}
+            text={'View payment instructions'}
+            onPress={handlePrompt}
+          />
         )}
       </>
     )}

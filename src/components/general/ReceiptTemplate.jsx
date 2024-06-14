@@ -15,7 +15,7 @@ const ReceiptTemplate = ({
   color,
   hasCloseBtn = false,
   handleClose,
-  statement,
+  receipt,
 }) => {
   return (
     <View className={'bg-bg_pale w-full relative pt-3 overflow-x-hidden'}>
@@ -24,7 +24,7 @@ const ReceiptTemplate = ({
 
       <View className={'px-6 flex-row pt-2 items-center justify-between'}>
         <Text className={'text-black font-sometypemono text-xs'}>
-          Receipt No: 243566
+          Receipt No: {receipt?.invoiceNumber}
         </Text>
 
         <View className={'flex-row space-x-2 items-center'}>
@@ -53,7 +53,7 @@ const ReceiptTemplate = ({
       />
 
       <Text className={'font-sometypemono text-black text-xl mx-auto'}>
-        KES. {numberWithCommas(Number(statement?.amountDebited))}
+        KES. {numberWithCommas(Number(receipt?.paidAmount))}
       </Text>
 
       <Text className={'text-black font-sometypemono text-xs mt-2 text-center'}>
@@ -62,7 +62,7 @@ const ReceiptTemplate = ({
           className={
             'font-sometypemono text-xs mt-2 text-center underline text-blue-700'
           }>
-          #235668
+          {receipt?.invoiceNumber}
         </Text>
       </Text>
 

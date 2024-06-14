@@ -1,21 +1,17 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {memo, useCallback, useRef, useState} from 'react';
 import {Layout} from '@/components';
 import {CButton, StatementItem} from '../../components';
 import {FlatList, Text, View, ActivityIndicator} from 'react-native';
 import {SelectorButton} from '../../components/screens/explore/RoomSelector';
 import {StatementListSvg} from '../../assets/icons';
 import COLORS from '../../constants/Theme';
-import {
-  ExportStatementModal,
-  InvoiceReceiptModal,
-} from '../../components/modals';
+import {ExportStatementModal} from '../../components/modals';
 import {useStatement} from '../../hooks/useStatement';
 import {SectionList} from 'react-native';
 import moment from 'moment';
 import numberWithCommas from '../../utils/numberWithCommas';
 
 const Statements = () => {
-  const receiptModalRef = useRef();
   const exportModalRef = useRef();
 
   const currentDate = new Date();
@@ -25,27 +21,16 @@ const Statements = () => {
   }-${currentDate.getDate()}`;
 
   const [active] = useState(0);
-  const [statement, setStatement] = useState(null);
-  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(20);
 
-  const {isPending, isRefetching, statements, totalPages, refetch} =
-    useStatement(page);
+  const {isPending, isRefetching, statements, totalElements, refetch} =
+    useStatement(size);
   const handleLoadMore = () => {
-    if (!isPending && totalPages > page + 1) {
-      setPage(prev => prev + 1);
+    if (!isPending && totalElements > size) {
+      setSize(prev => prev + 10);
       refetch();
     }
   };
-
-  const handleOpenReceiptModal = useCallback(current => {
-    setStatement(current);
-    receiptModalRef.current?.expand();
-  }, []);
-
-  const handleCloseReceiptModal = useCallback(() => {
-    setStatement(null);
-    receiptModalRef.current?.close();
-  }, []);
 
   const handleOpenExportModal = useCallback(() => {
     exportModalRef.current?.expand();
@@ -87,15 +72,7 @@ const Statements = () => {
           <SectionList
             sections={statements}
             keyExtractor={item => item?.id}
-            renderItem={({item}) => (
-              <StatementItem
-                title={'invoice'}
-                date={moment(item?.transactionDate).format('Do, MMMM YYYY')}
-                paymentMethod={item?.methodOfPayment}
-                amount={numberWithCommas(item?.amountDebited)}
-                handlePress={() => handleOpenReceiptModal(item)}
-              />
-            )}
+            renderItem={renderItem}
             renderSectionHeader={renderHeader}
             refreshing={isPending}
             onRefresh={refetch}
@@ -103,7 +80,7 @@ const Statements = () => {
             onEndReachedThreshold={0.5}
             ListFooterComponent={
               isRefetching ? (
-                <ActivityIndicator color={'#02237405'} size="large" />
+                <ActivityIndicator color={'#022374'} size="large" />
               ) : null
             }
           />
@@ -123,11 +100,6 @@ const Statements = () => {
         </CButton>
       </Layout>
 
-      <InvoiceReceiptModal
-        statement={statement}
-        ref={receiptModalRef}
-        handleCloseModal={handleCloseReceiptModal}
-      />
       <ExportStatementModal
         ref={exportModalRef}
         handleCloseModal={handleCloseExportModal}
@@ -135,6 +107,16 @@ const Statements = () => {
     </>
   );
 };
+
+const renderItem = ({item}, handlePress) => (
+  <StatementItem
+    title={`Transaction code: ${item?.transactionCode}`}
+    date={moment(item?.createdAt)?.format('Do MMMM, YYYY')}
+    paymentMethod={item?.methodOfPayment}
+    amount={numberWithCommas(Number(item.amountDebited))}
+    handlePress={handlePress}
+  />
+);
 
 const renderHeader = ({section}) => (
   <View className={'pb-2 px-4 mt-3'}>
@@ -147,120 +129,17 @@ const renderHeader = ({section}) => (
 export default Statements;
 
 const years = ['All'];
-const months = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-
-// const statements = [
-//   {
-//     month: 'January',
-//     data: [
-//       {
-//         title: 'invoice #1234567',
-//         date: moment().format('MMM YYYY'),
-//         paymentMethod: 'Mpesa',
-//         amount: '30,000',
-//       },
-//     ],
-//   },
-
-//   {
-//     month: 'December',
-//     data: [
-//       {
-//         title: 'invoice #1234567',
-//         date: moment().subtract('1', 'm').format('MMM YYYY'),
-//         paymentMethod: 'Bank',
-//         amount: '30,000',
-//       },
-//     ],
-//   },
-//   {
-//     month: 'November',
-//     data: [
-//       {
-//         title: 'invoice #1234567',
-//         date: moment().subtract('1', 'm').format('MMM YYYY'),
-//         paymentMethod: 'Bank',
-//         amount: '30,000',
-//       },
-//     ],
-//   },
-//   {
-//     month: 'October',
-//     data: [
-//       {
-//         title: 'invoice #1234567',
-//         date: moment().subtract('1', 'm').format('MMM YYYY'),
-//         paymentMethod: 'Bank',
-//         amount: '30,000',
-//       },
-//     ],
-//   },
-//   {
-//     month: 'September',
-//     data: [
-//       {
-//         title: 'invoice #1234567',
-//         date: moment().subtract('1', 'm').format('MMM YYYY'),
-//         paymentMethod: 'Bank',
-//         amount: '30,000',
-//       },
-//     ],
-//   },
-//   {
-//     month: 'August',
-//     data: [
-//       {
-//         title: 'invoice #1234567',
-//         date: moment().subtract('1', 'm').format('MMM YYYY'),
-//         paymentMethod: 'Bank',
-//         amount: '30,000',
-//       },
-//     ],
-//   },
-//   {
-//     month: 'July',
-//     data: [
-//       {
-//         title: 'invoice #1234567',
-//         date: moment().subtract('1', 'm').format('MMM YYYY'),
-//         paymentMethod: 'Bank',
-//         amount: '30,000',
-//       },
-//     ],
-//   },
-//   {
-//     month: 'June',
-//     data: [
-//       {
-//         title: 'invoice #1234567',
-//         date: moment().subtract('1', 'm').format('MMM YYYY'),
-//         paymentMethod: 'Bank',
-//         amount: '30,000',
-//       },
-//     ],
-//   },
-//   {
-//     month: 'May',
-//     data: [
-//       {
-//         title: 'invoice #1234567',
-//         date: moment().subtract('1', 'm').format('MMM YYYY'),
-//         paymentMethod: 'Bank',
-//         amount: '30,000',
-//       },
-//     ],
-//   },
+// const months = [
+//   'January',
+//   'February',
+//   'March',
+//   'April',
+//   'May',
+//   'June',
+//   'July',
+//   'August',
+//   'September',
+//   'October',
+//   'November',
+//   'December',
 // ];

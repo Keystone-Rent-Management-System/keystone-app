@@ -47,7 +47,7 @@ export const renderUnitListItem = (item, handlePress = () => {}) => {
       id={item?.id}
       title={item?.propertyUnits?.property?.name}
       customDate={
-        moment(item?.tenancyBeginningDate).format('Do MMMM, YYYY') +
+        moment(item?.tenancyBeginningDate)?.format('Do MMMM, YYYY') +
         ' - ' +
         'Current'
       }

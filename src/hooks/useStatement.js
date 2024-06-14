@@ -2,12 +2,12 @@ import {useQuery} from '@tanstack/react-query';
 import StatementServices from '../services/StatementServices';
 import {useEffect, useState} from 'react';
 
-export const useStatement = page => {
+export const useStatement = size => {
   const [statements, setStatments] = useState([]);
 
   const {isPending, isRefetching, error, data, refetch} = useQuery({
     queryKey: ['statements'],
-    queryFn: () => StatementServices.getStatements(page, 20),
+    queryFn: () => StatementServices.getStatements(0, size),
   });
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export const useStatement = page => {
     isRefetching,
     error,
     statements,
-    totalPages: data?.totalPages,
+    totalElements: data?.totalElements,
     refetch,
   };
 };

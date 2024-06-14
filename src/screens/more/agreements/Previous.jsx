@@ -57,9 +57,9 @@ export const renderAgreementListItem = (item, handlePress = () => {}) => {
       id={item?.id}
       title={item?.propertyUnits?.property?.name}
       customDate={
-        moment(item?.tenancyBeginningDate).format('Do MMM, YYYY') +
+        moment(item?.tenancyBeginningDate)?.format('Do MMMM, YYYY') +
         ' - ' +
-        moment(item?.terminatedOn).format('Do MMM, YYYY')
+        moment(item?.terminatedOn)?.format('Do MMMM, YYYY')
       }
       unit={item?.propertyUnits?.name}
       amount={item?.propertyUnits?.rent}

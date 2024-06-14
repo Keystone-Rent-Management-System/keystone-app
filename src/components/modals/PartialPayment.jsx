@@ -1,8 +1,8 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Text, View} from 'react-native';
 import React, {forwardRef} from 'react';
 import {CustomBottomSheet} from '.';
 import {CButton} from '../general';
-import {CheckSvg, CloseSvg, RightArrowSvg} from '../../assets/icons';
+import {CloseSvg} from '../../assets/icons';
 import {LabelledCInput} from '../general/input/CInput';
 
 const PartialPayment = forwardRef((props, ref) => {
@@ -54,29 +54,4 @@ const renderSheetHeader = handleClose => (
   </View>
 );
 
-const PayBtn = ({title, desc, handlePress}) => (
-  <TouchableOpacity
-    className={
-      'px-5 py-3 border  rounded-xl mb-3 border-border_grey flex-row space-x-3 items-center'
-    }
-    onPress={handlePress}>
-    <CheckSvg />
-
-    <View className={'flex-1'}>
-      <Text className={'text-black text-13 font-inter-medium'}>{title}</Text>
-      <Text className={'text-xs mt-1 font-inter text-gray-600'}>{desc}</Text>
-    </View>
-
-    <View className={''}>
-      <RightArrowSvg />
-    </View>
-  </TouchableOpacity>
-);
-
 export default PartialPayment;
-
-const styles = StyleSheet.create({
-  actionButtonWrapper: {
-    gap: 15,
-  },
-});

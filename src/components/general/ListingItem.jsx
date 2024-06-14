@@ -43,11 +43,11 @@ const ListingItem = ({
           </Text>
 
           <View className={'flex-row'}>
-            {isPartial && (
+            {isPartial ? (
               <Text className={'text-green-600 font-inter-medium text-11'}>
                 Partial .&nbsp;
               </Text>
-            )}
+            ) : null}
             <Text className={'text-black font-inter-medium text-xs'}>
               KES. {amount}
             </Text>

@@ -39,7 +39,7 @@ export const renderInvoiceItem = (item, handlePress = () => {}) => {
       icon={<InvoiceSvg size={'24'} />}
       id={item?.id}
       title={item?.propertyName?.split('-')[0]}
-      customDate={moment(item?.createdAt).format('Do MMM, YYYY')}
+      customDate={moment(item?.updatedAt)?.format('Do MMMM, YYYY')}
       unit={item?.propertyName?.split('-')[1]}
       amount={numberWithCommas(item?.dueAmount)}
       isPartial={item?.paidAmount && item?.paidAmount < item?.totalAmount}

@@ -7,13 +7,7 @@ import {
   InvoiceHeader,
   Layout,
 } from '@/components';
-// import {useNavigation} from '@react-navigation/native';
-import {
-  InvoiceConcernModal,
-  InvoicePartialPaymentModal,
-  InvoicePaymentMethodModal,
-  InvoiceReceiptModal,
-} from '@/components/modals';
+import {InvoiceConcernModal, InvoiceReceiptModal} from '@/components/modals';
 import moment from 'moment';
 import {
   useGetConcerns,
@@ -21,13 +15,12 @@ import {
   useSpecificInvoice,
 } from '../../../hooks';
 import numberWithCommas from '../../../utils/numberWithCommas';
+import PaymentInstructions from '../../../components/modals/PaymentInstructions';
 
 const InvoiceView = ({route: {params}}) => {
-  // const navigation = useNavigation();
   const concernModalRef = useRef();
   const receiptModalRef = useRef();
-  const paymentMethodRef = useRef();
-  const partialPaymentRef = useRef();
+  const paymentInstrictionsRef = useRef();
 
   const handleOpenConcernModal = useCallback(() => {
     concernModalRef.current?.expand();
@@ -45,20 +38,12 @@ const InvoiceView = ({route: {params}}) => {
     receiptModalRef.current?.close();
   }, []);
 
-  const handleOpenPaymentModal = useCallback(() => {
-    paymentMethodRef.current?.expand();
+  const handleOpenPaymentInstrictionsModal = useCallback(() => {
+    paymentInstrictionsRef.current?.expand();
   }, []);
 
-  const handleClosePaymentModal = useCallback(() => {
-    paymentMethodRef.current?.close();
-  }, []);
-
-  const handleOpenPartialPaymentModal = useCallback(() => {
-    partialPaymentRef.current?.expand();
-  }, []);
-
-  const handleClosePartialPaymentModal = useCallback(() => {
-    partialPaymentRef.current?.close();
+  const handleClosePaymentInstrictionsModal = useCallback(() => {
+    paymentInstrictionsRef.current?.close();
   }, []);
 
   const {invoiceIsPending, invoice} = useSpecificInvoice(params?.id);
@@ -91,6 +76,18 @@ const InvoiceView = ({route: {params}}) => {
     () => invoice?.paidAmount && invoice?.paidAmount < invoice?.totalAmount,
     [invoice?.paidAmount, invoice?.totalAmount],
   );
+
+  const status = useMemo(
+    () =>
+      invoice?.totalAmount === invoice?.dueAmount
+        ? 'unpaid'
+        : invoice?.paidAmount && invoice?.paidAmount < invoice?.totalAmount
+        ? 'partiallyPaid'
+        : invoice?.paidAmount && invoice?.paidAmount === invoice?.totalAmount
+        ? 'paid'
+        : invoice?.paidAmount && invoice?.dueAmount < 0 && 'overpaid',
+    [invoice?.dueAmount, invoice?.paidAmount, invoice?.totalAmount],
+  );
   return (
     <>
       {!invoiceIsPending && (
@@ -103,7 +100,7 @@ const InvoiceView = ({route: {params}}) => {
             isPartial={isPartiallyPaid}
             invoiceNo={invoice?.invoiceNumber}
             userInvoiced={invoice?.billedTo}
-            invoiceDate={moment(invoice?.createdAt).format('Do MMM, YYYY')}
+            invoiceDate={moment(invoice?.updatedAt).format('Do MMM, YYYY')}
           />
 
           {/*  Scroll section*/}
@@ -133,10 +130,10 @@ const InvoiceView = ({route: {params}}) => {
               containerClassName={'mt-3 border-t border-gray-200 py-5'}
               txtClassName={'font-inter-semibold text-black text-13'}
               title={'Total'}
-              amt={invoice?.totalAmount}
+              amt={numberWithCommas(Number(invoice?.totalAmount))}
             />
 
-            {isPartiallyPaid && (
+            {isPartiallyPaid ? (
               <InvoiceBillItem
                 containerClassName={'py-3 border-y border-border_grey'}
                 txtClassName={'font-inter'}
@@ -144,7 +141,9 @@ const InvoiceView = ({route: {params}}) => {
                 customAmt={
                   <View className={'items-center'}>
                     <Text className={'text-11 font-inter text-inactive_text '}>
-                      {moment(invoice?.updatedAt).format('HH:MMA, MMM YYYY')}
+                      {moment(invoice?.updatedAt).format(
+                        'HH:MMa Do MMMM, YYYY',
+                      )}
                     </Text>
                     <Text
                       className={'text-13 font-inter-semibold text-black mt-2'}>
@@ -153,9 +152,9 @@ const InvoiceView = ({route: {params}}) => {
                   </View>
                 }
               />
-            )}
+            ) : null}
 
-            {!hasConcern && (isUnpaid || isPartiallyPaid) && (
+            {!hasConcern && (isUnpaid || isPartiallyPaid) ? (
               <View>
                 <Text className={'text-sm font-inter-semibold text-black mt-4'}>
                   Does this invoice have an issue?
@@ -174,22 +173,15 @@ const InvoiceView = ({route: {params}}) => {
                   </TouchableOpacity>
                 </Text>
               </View>
-            )}
+            ) : null}
             <View className={'h-20 w-full'} />
           </ScrollView>
 
           <InvoiceFooter
-            // handleManual={() =>
-            //   handleNavigate('home_stack', {
-            //     screen: 'invoice_receipt',
-            //   })
-            // }
-            handlePartial={handleOpenPartialPaymentModal}
-            // handlePrompt={() => handleNavigate('invoice_make_payment')}
-            handlePrompt={handleOpenPaymentModal}
+            handlePrompt={handleOpenPaymentInstrictionsModal}
             hasConcern={hasConcern}
             handleResolve={() => {}}
-            status={params?.type}
+            status={status}
             handleViewReceipt={handleOpenReceiptModal}
           />
         </Layout>
@@ -202,23 +194,21 @@ const InvoiceView = ({route: {params}}) => {
       />
 
       <InvoiceReceiptModal
-        statement={null}
+        receipt={invoice}
         ref={receiptModalRef}
         handleCloseModal={handleCloseReceiptModal}
       />
 
-      <InvoicePaymentMethodModal
-        ref={paymentMethodRef}
-        handleCloseModal={handleClosePaymentModal}
-      />
+      {/* <InvoicePaymentInstrictionsModal
+        invoice={invoice}
+        ref={paymentInstrictionsRef}
+        handleCloseModal={handleClosePaymentInstrictionsModal}
+      /> */}
 
-      <InvoicePartialPaymentModal
-        ref={partialPaymentRef}
-        handleCloseModal={handleClosePartialPaymentModal}
-        handleProceed={() => {
-          handleClosePartialPaymentModal();
-          handleOpenPaymentModal();
-        }}
+      <PaymentInstructions
+        invoice={invoice}
+        ref={paymentInstrictionsRef}
+        handleCloseModal={handleClosePaymentInstrictionsModal}
       />
     </>
   );

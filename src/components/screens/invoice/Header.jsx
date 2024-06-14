@@ -37,7 +37,7 @@ const HeaderSection = ({
       </TouchableOpacity>
 
       <View className={'absolute px-4 inset-x-0 top-24'}>
-        {isPartial && (
+        {isPartial ? (
           <View className={'flex-row mb-3'}>
             <Badge ClassName={'bg-green-100 px-3'}>
               <Text className={'text-2xs text-c_green font-inter'}>
@@ -45,7 +45,7 @@ const HeaderSection = ({
               </Text>
             </Badge>
           </View>
-        )}
+        ) : null}
         <Text className="text-white font-inter-semibold text-lg">
           {invoiceTitle}
         </Text>

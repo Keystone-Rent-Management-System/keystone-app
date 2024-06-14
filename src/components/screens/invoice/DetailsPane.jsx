@@ -3,6 +3,7 @@ import {Text, View} from 'react-native';
 
 import {Indicator} from '../../../screens/notifications';
 import COLORS from '../../../constants/Theme';
+import numberWithCommas from '../../../utils/numberWithCommas';
 
 const DetailsPane = ({
   title,
@@ -23,7 +24,7 @@ const DetailsPane = ({
           Invoice For
         </Text>
 
-        {hasConcern && <ConcernTag text={'Concern'} />}
+        {hasConcern ? <ConcernTag text={'Concern'} /> : null}
       </View>
 
       <Text className={'text-base font-inter-semibold text-black'}>
@@ -49,7 +50,7 @@ const DetailsPane = ({
       </Text>
 
       <Text className={'text-base font-inter-semibold text-black'}>
-        KES. {amount}
+        KES. {numberWithCommas(Number(amount))}
       </Text>
 
       <View className={'flex-row space-x-2 items-center pt-4'}>

@@ -1,4 +1,4 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Text, TouchableOpacity, View} from 'react-native';
 import React, {forwardRef} from 'react';
 import {CustomBottomSheet} from '.';
 import {CButton} from '../general';
@@ -81,9 +81,3 @@ const PayBtn = ({title, desc, handlePress}) => (
 );
 
 export default PaymentMethod;
-
-const styles = StyleSheet.create({
-  actionButtonWrapper: {
-    gap: 15,
-  },
-});

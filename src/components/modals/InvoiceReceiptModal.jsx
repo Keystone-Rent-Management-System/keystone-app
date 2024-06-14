@@ -19,8 +19,8 @@ const InvoiceReceiptModal = forwardRef((props, ref) => {
       <View className={'flex-1 p-5'}>
         <ReceiptTemplate
           color={'#000000D0'}
-          footer={renderFooter(props?.statement)}
-          statement={props?.statement}
+          footer={renderFooter(props?.receipt)}
+          receipt={props?.receipt}
           hasCloseBtn
           handleClose={props.handleCloseModal}>
           <InvoiceBillItem
@@ -31,8 +31,8 @@ const InvoiceReceiptModal = forwardRef((props, ref) => {
 
           <InvoiceBillItem
             txtClassName={'font-sometypemono text-13'}
-            title={`${props?.statement?.firstName} ${props?.statement?.lastName}`}
-            amt={props?.statement?.propertyUnits?.property?.name}
+            title={props?.receipt?.billedTo}
+            amt={props?.receipt?.accountHolderName}
           />
 
           <InvoiceBillItem
@@ -44,19 +44,13 @@ const InvoiceReceiptModal = forwardRef((props, ref) => {
           <InvoiceBillItem
             txtClassName={'font-sometypemono text-13'}
             title={'Mpesa Paybill'}
-            amt={
-              props?.statement?.propertyUnits?.property?.paymentAccounts
-                ?.bankMpesaPaybillNumber
-            }
+            amt={props?.receipt?.bankMpesaPaybillNumber}
           />
 
           <InvoiceBillItem
             txtClassName={'font-sometypemono text-13'}
             title={'Account Number'}
-            amt={
-              props?.statement?.propertyUnits?.property?.paymentAccounts
-                ?.accountNumber
-            }
+            amt={props?.receipt?.accountNumber}
           />
           <View className={'h-10'} />
         </ReceiptTemplate>
@@ -69,14 +63,14 @@ const renderSheetHeader = () => <></>;
 
 export default InvoiceReceiptModal;
 
-const renderFooter = statement => (
+const renderFooter = receipt => (
   <View className={'h-12 px-8 py-3 flex-row justify-between'}>
     <Text className={'text-black font-sometypemono text-15'}>
-      {moment(statement?.transactionDate).format('hh:mm A')}
+      {moment(receipt?.updatedAt).format('hh:mm A')}
     </Text>
 
     <Text className={'text-black font-sometypemono text-15'}>
-      {moment(statement?.transactionDate).format('DD MMMM YYYY')}
+      {moment(receipt?.updatedAt).format('DD MMMM YYYY')}
     </Text>
   </View>
 );

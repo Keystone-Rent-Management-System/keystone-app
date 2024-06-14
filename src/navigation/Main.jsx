@@ -32,6 +32,8 @@ const MainNav = () => {
       screenOptions={{headerShown: false}}
       initialRouteName="bottom-nav">
       <Stack.Screen name={'bottom-nav'} component={BottomNav} />
+      <Stack.Screen name={'apartment_view'} component={ApartmentView} />
+      <Stack.Screen name={'apartment-search'} component={ApartmentSearch} />
 
       {!auth?.access_token ? (
         <>
@@ -108,9 +110,6 @@ const MainNav = () => {
       ) : (
         <>
           {/*  private screens*/}
-
-          <Stack.Screen name={'apartment_view'} component={ApartmentView} />
-          <Stack.Screen name={'apartment-search'} component={ApartmentSearch} />
           <Stack.Screen name={'invoice_view'} component={InvoiceView} />
           <Stack.Screen
             name={'invoice_make_payment'}
