@@ -1,8 +1,9 @@
 import {View, Text, Image, StyleSheet} from 'react-native';
 import React from 'react';
 import COLORS from '@/constants/Theme';
+import numberWithCommas from '../../../utils/numberWithCommas';
 
-const StatsCard = () => {
+const StatsCard = ({invoice}) => {
   return (
     <View
       className={'mt-3 bg-primary rounded-xl h-40 relative overflow-hidden'}>
@@ -20,7 +21,7 @@ const StatsCard = () => {
           </Text>
 
           <Text className={'text-lg text-white font-inter-semibold'}>
-            KES. 35,000.00
+            KES. {numberWithCommas(Number(invoice?.dueAmount))}
           </Text>
         </View>
 
@@ -31,7 +32,7 @@ const StatsCard = () => {
             </Text>
 
             <Text className={'text-11 text-white font-inter-semibold'}>
-              12/12/2023
+              5/06/2024
             </Text>
           </View>
 
@@ -41,7 +42,7 @@ const StatsCard = () => {
             </Text>
 
             <Text className={'text-11 text-white font-inter-semibold'}>
-              KES. 30,000/Mo
+              KES. {numberWithCommas(Number(invoice?.totalAmount))}/Mo
             </Text>
           </View>
         </View>

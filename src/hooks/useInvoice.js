@@ -98,10 +98,10 @@ export const useGetConcerns = id => {
 export const useActiveInvoices = () => {
   const {isPending, error, data, refetch} = useQuery({
     queryKey: ['invoice/active'],
-    queryFn: () => InvoiceServices.getActiveInvoices(0, 10, 'active', 'agreed'),
+    queryFn: () => InvoiceServices.getActiveInvoices(0, 10, 'ACTIVE', 'Agreed'),
   });
 
-  const activeInvoices = data?.data ?? [];
+  const activeInvoices = data?.data?.data ?? [];
 
   return {isPending, error, activeInvoices, refetch};
 };

@@ -139,7 +139,7 @@ export const useLogin = () => {
       navigation.navigate('bottom-nav');
     },
     onError: err => {
-      ToastAndroid.show('Login failed ' + getError(err), 4000);
+      ToastAndroid.show('Login failed ' + getError(err), ToastAndroid.SHORT);
     },
   });
 
@@ -162,7 +162,10 @@ export const useRequestPasswordReset = () => {
       navigation.navigate('auth__recovery_verification');
     },
     onError: err => {
-      ToastAndroid.show('Request password reset failed ' + getError(err), 4000);
+      ToastAndroid.show(
+        'Request password reset failed ' + getError(err),
+        ToastAndroid.SHORT,
+      );
     },
   });
 
@@ -186,7 +189,10 @@ export const useResetPassword = () => {
       navigation.navigate('auth__login');
     },
     onError: err => {
-      ToastAndroid.show('Reset password failed ' + getError(err), 4000);
+      ToastAndroid.show(
+        'Reset password failed ' + getError(err),
+        ToastAndroid.SHORT,
+      );
     },
   });
 

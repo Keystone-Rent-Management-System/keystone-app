@@ -40,7 +40,8 @@ const Current = () => {
     !isPending &&
     agreements?.filter(
       currentAgreement =>
-        currentAgreement?.status?.toLowerCase() === 'active & agreed' ||
+        currentAgreement?.status?.toLowerCase() === 'agreed' ||
+        currentAgreement?.status?.toLowerCase() === 'accepted' ||
         currentAgreement?.status?.toLowerCase() === 'pending',
     );
 
