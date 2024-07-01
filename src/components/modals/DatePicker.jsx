@@ -25,8 +25,8 @@ const DatePicker = forwardRef((props, ref) => {
         selected: true,
         color: '#aabbee',
         textColor: 'black',
-        startingDay: cur == start,
-        endingDay: cur == end,
+        startingDay: cur === start,
+        endingDay: cur === end,
       };
     }
     return marked;
@@ -34,10 +34,6 @@ const DatePicker = forwardRef((props, ref) => {
 
   const handleOpenDateModal = useCallback(() => {
     dateModalRef.current?.expand();
-  }, []);
-
-  const handleCloseDateModal = useCallback(() => {
-    dateModalRef.current?.close();
   }, []);
 
   function handleDayPress(day) {
@@ -58,7 +54,7 @@ const DatePicker = forwardRef((props, ref) => {
     <>
       <View className={'flex-col items-start w-full'}>
         <Text className={'text-grey_1 my-1.5 font-inter text-xs'}>
-          Start Date
+          Select Start and End Date
         </Text>
         <TouchableOpacity
           className={
@@ -67,8 +63,8 @@ const DatePicker = forwardRef((props, ref) => {
           onPress={handleOpenDateModal}>
           <View className={'flex-1'}>
             <Text className={'text-gray-500 font-inter text-xs mr-2'}>
-              {date?.startDate && date?.endDate
-                ? `${date?.startDate || ''} - ${date?.endDate || ''}`
+              {range?.startDate && range?.endDate
+                ? `${range?.startDate || ''} - ${range?.endDate || ''}`
                 : 'select date '}
             </Text>
           </View>

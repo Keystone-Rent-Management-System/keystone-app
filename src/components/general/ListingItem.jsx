@@ -5,11 +5,11 @@ import moment from 'moment/moment';
 
 const ListingItem = ({
   icon,
-  id,
   title,
   date,
   unit,
   amount,
+  status,
   customDate,
   isPartial,
   handlePress,
@@ -19,7 +19,7 @@ const ListingItem = ({
       className={
         'mb-4 flex-row space-x-3 pt-2 pb-3 border-b border-b-border_grey'
       }
-      onPress={() => handlePress(id)}>
+      onPress={handlePress}>
       <View
         className={
           'items-center justify-center h-10 w-10 rounded-full bg-white overflow-hidden border border-border_grey'
@@ -32,9 +32,21 @@ const ListingItem = ({
           <Text className={'text-primary font-inter-medium text-xs'}>
             {title}
           </Text>
-          <Text className={'font-inter text-2xs text-inactive_text'}>
-            {customDate ? customDate : moment(date).format('MMM DD YYYY')}
-          </Text>
+          {status ? (
+            <Text
+              className={`${
+                status?.toLowerCase() === 'occupied'
+                  ? 'text-green-600'
+                  : 'text-inactive_text'
+              } font-inter-medium text-11 capitalize`}>
+              {status?.toLowerCase()}
+            </Text>
+          ) : null}
+          {customDate ? (
+            <Text className={'font-inter text-2xs text-inactive_text'}>
+              {customDate ? customDate : moment(date).format('MMM DD YYYY')}
+            </Text>
+          ) : null}
         </View>
 
         <View className={'flex-row justify-between w-full mt-2'}>
@@ -48,9 +60,11 @@ const ListingItem = ({
                 Partial .&nbsp;
               </Text>
             ) : null}
-            <Text className={'text-black font-inter-medium text-xs'}>
-              KES. {amount}
-            </Text>
+            {amount ? (
+              <Text className={'text-black font-inter-medium text-xs'}>
+                KES. {amount}
+              </Text>
+            ) : null}
           </View>
         </View>
       </View>

@@ -1,6 +1,7 @@
 import {ToastAndroid} from 'react-native';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import InvoiceServices from '../services/InvoiceServices';
+import {useEffect, useState} from 'react';
 
 export const useUnPaidInvoice = () => {
   const {isPending, error, data, refetch} = useQuery({
@@ -104,4 +105,68 @@ export const useActiveInvoices = () => {
   const activeInvoices = data?.data?.data ?? [];
 
   return {isPending, error, activeInvoices, refetch};
+};
+
+export const useInvoiceAnalytics = size => {
+  const [statements, setStatments] = useState([]);
+
+  const {isPending, error, data, isRefetching, refetch} = useQuery({
+    queryKey: ['landlord_statements'],
+    queryFn: () => InvoiceServices.getInvoiceAnalytics(0, size),
+  });
+
+  useEffect(() => {
+    if (size) {
+      if (!isPending) {
+        let groupedData = [];
+        for (let i = 0; i < data?.data?.length; i++) {
+          const statement = data?.data[i];
+          const property = statement?.propertyName?.split('-')[0];
+          const existingProperty = groupedData.find(
+            group => group?.property === property,
+          );
+
+          if (existingProperty) {
+            existingProperty.data.push(statement);
+          } else {
+            groupedData.push({property, data: [statement]});
+          }
+        }
+        setStatments(groupedData);
+      }
+      refetch();
+    }
+  }, [data?.data, isPending, refetch, size]);
+
+  return {
+    isPending,
+    isRefetching,
+    error,
+    statements,
+    totalElements: data?.totalElements,
+    refetch,
+  };
+};
+
+export const useUnitInvoiceAnalytics = (size, propertyUnitName) => {
+  const {isPending, error, data, isRefetching, refetch} = useQuery({
+    queryKey: ['unit_landlord_statements'],
+    queryFn: () =>
+      InvoiceServices.getInvoiceAnalytics(0, size, propertyUnitName),
+  });
+
+  useEffect(() => {
+    if (size || propertyUnitName) {
+      refetch();
+    }
+  }, [data?.data, isPending, propertyUnitName, refetch, size]);
+
+  return {
+    isPending,
+    isRefetching,
+    error,
+    statements: data?.data || [],
+    totalElements: data?.totalElements,
+    refetch,
+  };
 };

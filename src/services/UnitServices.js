@@ -1,6 +1,21 @@
 import AxiosUtility, {setAuthToken} from './AxiosServices';
 
 /**
+ * fetches units
+ * @param {number} page
+ * @param {number} size
+ * @returns {Promise<Unit[]>}
+ */
+const getUnits = async (page, size) => {
+  setAuthToken(AxiosUtility);
+  const {data: res} = await AxiosUtility.get(
+    `/property-units?page=${page}&size=${size}`,
+  );
+
+  return res;
+};
+
+/**
  * fetches single unit
  * @param {number} unitId
  * @returns {Promise<Unit>}
@@ -13,35 +28,8 @@ const getUnit = async unitId => {
 };
 
 const UnitServices = {
+  getUnits,
   getUnit,
 };
 
 export default UnitServices;
-
-/**
- * New unit
- * @typedef {{
- *   unitName: string,
- *   deposit: number,
- *   rent: number,
- *   houseType: string,
- *   numberOfBedrooms:number,
- *   numberOfBathrooms: number,
- *   balcony: number,
- *   floorNumber: number,
- *   squareFoot: number
- * }} Unit
- */
-
-/**
- * Units fetch
- * @typedef {{
- *   first: boolean,
- *   last: boolean,
- *   totalPages: number,
- *   totalElements: number,
- *   numberOfElements: number,
- *   number: number,
- *   content: Unit[]
- * }} UnitsFetch
- */

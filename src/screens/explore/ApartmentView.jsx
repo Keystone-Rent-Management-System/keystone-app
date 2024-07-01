@@ -202,19 +202,19 @@ const ApartmentView = ({route: {params}}) => {
           </Text>
 
           <View className={'h-32 my-3 bg-bg_grey'}>
-            {!isPending && (
-              <MapView className={'flex-1'} region={region}>
-                <Marker
-                  coordinate={{
-                    latitude:
-                      listing?.property?.latitude ?? -1.2881012218277417,
-                    longitude:
-                      listing?.property?.longitude ?? 36.82609607136736,
-                  }}>
-                  <HouseMapMarker />
-                </Marker>
-              </MapView>
-            )}
+            {!isPending &&
+              listing?.property?.latitude &&
+              listing?.property?.longitude && (
+                <MapView className={'flex-1'} region={region}>
+                  <Marker
+                    coordinate={{
+                      latitude: listing?.property?.latitude,
+                      longitude: listing?.property?.longitude,
+                    }}>
+                    <HouseMapMarker />
+                  </Marker>
+                </MapView>
+              )}
           </View>
 
           {/* Virtual tour button */}

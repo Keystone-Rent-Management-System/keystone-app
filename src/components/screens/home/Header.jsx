@@ -7,7 +7,7 @@ import {WavingSvg} from '@/assets/icons';
 import {useAuth} from '../../../hooks';
 
 const Header = () => {
-  const {data} = useAuth();
+  const {isPending, profile} = useAuth();
 
   return (
     <View className={'py-4 flex-row items-center mb-2'}>
@@ -17,19 +17,21 @@ const Header = () => {
         }
       />
 
-      <View className={'ml-1.5'}>
-        <Text
-          className={
-            'text-11 font-inter mb-0.5 flex text-black flex-row items-center'
-          }>
-          {Helper.getGreetings()} <WavingSvg />
-        </Text>
+      {!isPending && (
+        <View className={'ml-1.5'}>
+          <Text
+            className={
+              'text-11 font-inter mb-0.5 flex text-black flex-row items-center'
+            }>
+            {Helper.getGreetings()} <WavingSvg />
+          </Text>
 
-        <Text className={'font-inter-semibold text-13 text-black'}>
-          {' '}
-          {data?.data?.name}{' '}
-        </Text>
-      </View>
+          <Text className={'font-inter-semibold text-13 text-black'}>
+            {' '}
+            {profile?.name}{' '}
+          </Text>
+        </View>
+      )}
     </View>
   );
 };

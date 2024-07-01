@@ -1,7 +1,7 @@
 import React, {useRef, useState} from 'react';
 import {Layout, ListingItem} from '../../../components';
 import {FlashList} from '@shopify/flash-list';
-import {invoiceStyles} from '../../home/invoice/Unpaid';
+import {invoiceStyles} from '../../tenant_home/invoice/Unpaid';
 import {AgreementSvg} from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
 // import moment from 'moment/moment';
@@ -54,7 +54,6 @@ export const renderAgreementListItem = (item, handlePress = () => {}) => {
   return (
     <ListingItem
       icon={<AgreementSvg color={COLORS.primary} size={'24'} />}
-      id={item?.id}
       title={item?.propertyUnits?.property?.name}
       customDate={
         moment(item?.tenancyBeginningDate)?.format('Do MMMM, YYYY') +

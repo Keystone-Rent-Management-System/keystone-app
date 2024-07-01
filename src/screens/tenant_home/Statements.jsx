@@ -1,30 +1,33 @@
-import React, {memo, useCallback, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {Layout} from '@/components';
 import {CButton, StatementItem} from '../../components';
-import {FlatList, Text, View, ActivityIndicator} from 'react-native';
+import {
+  FlatList,
+  Text,
+  View,
+  ActivityIndicator,
+  SectionList,
+} from 'react-native';
 import {SelectorButton} from '../../components/screens/explore/RoomSelector';
 import {StatementListSvg} from '../../assets/icons';
 import COLORS from '../../constants/Theme';
 import {ExportStatementModal} from '../../components/modals';
 import {useStatement} from '../../hooks/useStatement';
-import {SectionList} from 'react-native';
 import moment from 'moment';
 import numberWithCommas from '../../utils/numberWithCommas';
+import {generateYears} from '../../utils/yearsOptions';
 
 const Statements = () => {
   const exportModalRef = useRef();
 
-  const currentDate = new Date();
+  const years = generateYears();
 
-  const endDate = `${currentDate.getFullYear()}-${
-    currentDate.getMonth() + 1
-  }-${currentDate.getDate()}`;
-
-  const [active] = useState(0);
+  const [active, setActive] = useState(0);
+  const [year, setYear] = useState('');
   const [size, setSize] = useState(20);
 
   const {isPending, isRefetching, statements, totalElements, refetch} =
-    useStatement(size);
+    useStatement(size, year);
   const handleLoadMore = () => {
     if (!isPending && totalElements > size) {
       setSize(prev => prev + 10);
@@ -47,9 +50,14 @@ const Statements = () => {
         ClassName={'py-0'}
         isActive={isActive}
         text={item}
+        handlePress={() => {
+          setActive(index);
+          setYear(item);
+        }}
       />
     );
   };
+
   return (
     <>
       <Layout ClassName={'p-4 relative'}>
@@ -68,23 +76,21 @@ const Statements = () => {
             showsHorizontalScrollIndicator={false}
           />
         </View>
-        {!isPending && (
-          <SectionList
-            sections={statements}
-            keyExtractor={item => item?.id}
-            renderItem={renderItem}
-            renderSectionHeader={renderHeader}
-            refreshing={isPending}
-            onRefresh={refetch}
-            onEndReached={handleLoadMore}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={
-              isRefetching ? (
-                <ActivityIndicator color={'#022374'} size="large" />
-              ) : null
-            }
-          />
-        )}
+        <SectionList
+          sections={statements}
+          keyExtractor={item => item?.id}
+          renderItem={renderItem}
+          renderSectionHeader={renderHeader}
+          refreshing={isPending}
+          onRefresh={refetch}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            isRefetching ? (
+              <ActivityIndicator color={'#022374'} size="large" />
+            ) : null
+          }
+        />
 
         <CButton
           style={{elevation: 2}}
@@ -110,7 +116,11 @@ const Statements = () => {
 
 const renderItem = ({item}, handlePress) => (
   <StatementItem
-    title={`Transaction code: ${item?.transactionCode}`}
+    title={
+      item?.invoiceNumber
+        ? `Invoice no: ${item?.invoiceNumber}`
+        : `Transaction code: ${item?.transactionCode}`
+    }
     date={moment(item?.createdAt)?.format('Do MMMM, YYYY')}
     paymentMethod={item?.methodOfPayment}
     amount={numberWithCommas(Number(item.amountDebited))}
@@ -127,19 +137,3 @@ const renderHeader = ({section}) => (
 );
 
 export default Statements;
-
-const years = ['All'];
-// const months = [
-//   'January',
-//   'February',
-//   'March',
-//   'April',
-//   'May',
-//   'June',
-//   'July',
-//   'August',
-//   'September',
-//   'October',
-//   'November',
-//   'December',
-// ];

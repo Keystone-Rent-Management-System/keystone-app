@@ -37,7 +37,6 @@ export const renderInvoiceItem = (item, handlePress = () => {}) => {
   return (
     <ListingItem
       icon={<InvoiceSvg size={'24'} />}
-      id={item?.id}
       title={item?.propertyName?.split('-')[0]}
       customDate={moment(item?.updatedAt)?.format('Do MMMM, YYYY')}
       unit={item?.propertyName?.split('-')[1]}

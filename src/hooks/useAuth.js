@@ -6,12 +6,12 @@ import useGlobals from '../provider/store/useGlobals';
 import {getError} from '../utils/getError';
 
 const useAuth = () => {
-  const query = useQuery({
+  const {isPending, error, data, refetch} = useQuery({
     queryKey: ['user', 'profile'],
     queryFn: () => AuthServices.getProfile(),
   });
 
-  return query;
+  return {isPending, error, profile: data?.data, refetch};
 };
 
 export const useVerifyEmail = () => {

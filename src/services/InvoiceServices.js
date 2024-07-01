@@ -69,12 +69,29 @@ const getConcerns = async (id, data) => {
   return res;
 };
 
+const getInvoiceAnalytics = async (page, size, propertyUnitName) => {
+  setAuthToken(AxiosUtility);
+  const queryParams = `?page=${page}&size=${size}`;
+  let res;
+
+  if (propertyUnitName) {
+    res = await AxiosUtility.get(
+      `/analytics/invoice${queryParams}&propertyUnitName=${propertyUnitName}`,
+    );
+  } else {
+    res = await AxiosUtility.get(`/analytics/invoice${queryParams}`);
+  }
+
+  return res.data;
+};
+
 const InvoiceServices = {
   getInvoices,
   getInvoice,
   raiseConcern,
   getActiveInvoices,
   getConcerns,
+  getInvoiceAnalytics,
 };
 
 export default InvoiceServices;

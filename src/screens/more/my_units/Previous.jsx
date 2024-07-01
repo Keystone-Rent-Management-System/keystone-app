@@ -3,7 +3,7 @@ import moment from 'moment';
 import {FlashList} from '@shopify/flash-list';
 
 import {Layout, ListingItem} from '@/components';
-import {invoiceStyles} from '../../home/invoice/Unpaid';
+import {invoiceStyles} from '../../tenant_home/invoice/Unpaid';
 import {HomeSvg} from '@/assets/icons';
 import COLORS from '@/constants/Theme';
 import {useNavigation} from '@react-navigation/native';
@@ -44,7 +44,6 @@ export const renderUnitListItem = (item, handlePress = () => {}) => {
   return (
     <ListingItem
       icon={<HomeSvg color={COLORS.primary} size={'24'} />}
-      id={item?.id}
       title={item?.propertyUnits?.property?.name}
       customDate={
         moment(item?.tenancyBeginningDate)?.format('Do MMMM, YYYY') +

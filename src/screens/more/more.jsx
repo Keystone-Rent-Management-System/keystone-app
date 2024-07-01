@@ -32,7 +32,7 @@ const More = () => {
     state: {auth},
     resetState,
   } = useGlobals(state => state);
-  const {data} = useAuth();
+  const {isPending, profile} = useAuth();
 
   const handleNavigate = screen => {
     navigation.navigate(screen);
@@ -62,46 +62,66 @@ const More = () => {
         <View
           className={'absolute px-4 inset-x-0 bottom-8 flex-row items-center'}
           style={styles.profileStyle}>
-          <ProfileView
-            text={`${data?.data?.name
-              ?.split(' ')[0]
-              ?.charAt(0)
-              ?.toLowerCase()}${data?.data?.name
-              ?.split(' ')[1]
-              ?.charAt(0)
-              ?.toLowerCase()}`}
-            textClassName={'text-primary'}
-            containerClassName={'bg-white'}
-          />
+          {!isPending && (
+            <ProfileView
+              text={`${profile?.name
+                ?.split(' ')[0]
+                ?.charAt(0)
+                ?.toLowerCase()}${profile?.name
+                ?.split(' ')[1]
+                ?.charAt(0)
+                ?.toLowerCase()}`}
+              textClassName={'text-primary'}
+              containerClassName={'bg-white'}
+            />
+          )}
 
-          <View>
-            <Text
-              className={
-                'text-xs font-inter mb-0.5 flex text-white flex-row items-center'
-              }>
-              {Helper.getGreetings()} <WavingSvg />
-            </Text>
+          {!isPending && (
+            <View>
+              <Text
+                className={
+                  'text-xs font-inter mb-0.5 flex text-white flex-row items-center'
+                }>
+                {Helper.getGreetings()} <WavingSvg />
+              </Text>
 
-            <Text className={'font-inter-semibold text-sm text-white'}>
-              {data?.data?.name}
-            </Text>
-          </View>
+              <Text className={'font-inter-semibold text-sm text-white'}>
+                {profile?.name}
+              </Text>
+            </View>
+          )}
         </View>
       </LinearGradient>
 
-      <FlatList
-        className={'py-4'}
-        style={styles.listStyle}
-        data={navList}
-        renderItem={({item}) =>
-          renderNavItem(
-            {item},
-            handleNavigate,
-            auth?.access_token,
-            handleConfirmSignout,
-          )
-        }
-      />
+      {!isPending && profile?.access_types?.roles?.includes('ROLE_TENANT') ? (
+        <FlatList
+          className={'py-4'}
+          style={styles.listStyle}
+          data={tenantNavList}
+          renderItem={({item}) =>
+            renderNavItem(
+              {item},
+              handleNavigate,
+              auth?.access_token,
+              handleConfirmSignout,
+            )
+          }
+        />
+      ) : (
+        <FlatList
+          className={'py-4'}
+          style={styles.listStyle}
+          data={navList}
+          renderItem={({item}) =>
+            renderNavItem(
+              {item},
+              handleNavigate,
+              auth?.access_token,
+              handleConfirmSignout,
+            )
+          }
+        />
+      )}
 
       <View className={'flex-row justify-center p-3'}>
         <Text className={'text-gray-300 font-inter text-13'}>
@@ -140,7 +160,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const navList = [
+const tenantNavList = [
   {
     icon: <UserSvg />,
     title: 'Account Information',
@@ -160,6 +180,22 @@ const navList = [
     icon: <AgreementSvg color={COLORS.primary} size={22} />,
     title: 'Agreements',
     screen: 'more__agreements',
+  },
+  {
+    icon: <InfoSvg />,
+    title: 'About us',
+  },
+  {
+    icon: <LogoutSvg size={'24'} color={COLORS.primary} />,
+    title: 'Logout',
+  },
+];
+
+const navList = [
+  {
+    icon: <UserSvg />,
+    title: 'Account Information',
+    screen: 'more__account_details',
   },
   {
     icon: <InfoSvg />,

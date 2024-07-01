@@ -20,14 +20,14 @@ const Details = () => {
     navigation.navigate('more__account_password');
   };
 
-  const {data} = useAuth();
+  const {isPending, profile} = useAuth();
 
   return (
     <Layout>
       <DetailsHeader />
 
       {/* body */}
-      <AvatarSection data={data} />
+      {!isPending && <AvatarSection data={profile} />}
 
       <View className="px-5">
         {/* name input */}
@@ -36,7 +36,7 @@ const Details = () => {
           labelClassName={'text-gray-600 text-13'}
           ClassName={'border border-border_grey px-2'}
           InputClassName={'px-2 text-gray-600 text-xs'}
-          value={data?.data?.name}
+          value={!isPending && profile?.name}
         />
 
         {/* phone input */}
@@ -51,7 +51,7 @@ const Details = () => {
           ClassName={'border border-border_grey px-2'}
           InputClassName={'text-xs px-2 text-gray-600 '}
           containerClassName={'mt-4'}
-          value={data?.data?.phoneNumber}
+          value={!isPending && profile?.phoneNumber}
           type={'number'}
         />
 
@@ -67,7 +67,7 @@ const Details = () => {
           ClassName={'border border-border_grey px-2'}
           InputClassName={'text-xs px-2 text-gray-600 '}
           containerClassName={'my-4'}
-          value={data?.data?.username}
+          value={!isPending && profile?.username}
           type={'email'}
         />
 
@@ -96,12 +96,9 @@ const AvatarSection = ({data}) => (
       className={
         'h-16 w-16 bg-primary rounded-full justify-center items-center relative'
       }>
-      <Text
-        className={
-          'text-white font-inter-semibold text-lg'
-        }>{`${data?.data?.name?.split(' ')[0]?.charAt(0)}${data?.data?.name
-        ?.split(' ')[1]
-        ?.charAt(0)}`}</Text>
+      <Text className={'text-white font-inter-semibold text-lg'}>{`${data?.name
+        ?.split(' ')[0]
+        ?.charAt(0)}${data?.name?.split(' ')[1]?.charAt(0)}`}</Text>
       <TouchableOpacity
         className={
           'bg-bg_pale h-5 w-5 flex-row justify-center items-center rounded-full absolute bottom-1 -right-1'

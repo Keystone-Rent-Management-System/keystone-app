@@ -6,6 +6,7 @@ import {
   Layout,
   HomeStatsCard,
   HomeMenu,
+  LandlordHomeRefetchCard,
 } from '@/components';
 import {useActiveInvoices} from '../../hooks/useInvoice';
 import {View} from 'react-native';
@@ -17,15 +18,19 @@ const Home = () => {
     <Layout ClassName={'px-4'}>
       {/* Header */}
       <HomeHeader />
-      {activeInvoices?.map((invoice, index) => (
-        <View key={index}>
-          {/*apartment title */}
-          <HomeApartmentTitle invoice={invoice} refetch={refetch} />
+      {activeInvoices?.length > 0 ? (
+        activeInvoices?.map((invoice, index) => (
+          <View key={index}>
+            {/*apartment title */}
+            <HomeApartmentTitle invoice={invoice} refetch={refetch} />
 
-          {/* stats card */}
-          <HomeStatsCard invoice={invoice} />
-        </View>
-      ))}
+            {/* stats card */}
+            <HomeStatsCard invoice={invoice} />
+          </View>
+        ))
+      ) : (
+        <LandlordHomeRefetchCard refetch={refetch} />
+      )}
 
       {/* Finance & payments */}
       <HomeMenu />

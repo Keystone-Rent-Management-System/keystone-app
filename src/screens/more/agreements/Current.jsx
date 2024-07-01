@@ -5,7 +5,7 @@ import {FlashList} from '@shopify/flash-list';
 import {Layout, ListingItem} from '../../../components';
 import {AgreementSvg} from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
-import {invoiceStyles} from '../../home/invoice/Unpaid';
+import {invoiceStyles} from '../../tenant_home/invoice/Unpaid';
 import AgreementModalSheet from '../../../components/modals/Agreement';
 import {MovingOutModal} from '../../../components/modals';
 import {useHelp} from '../../../hooks';

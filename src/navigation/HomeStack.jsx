@@ -1,15 +1,30 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 
-import {Bills, Home, InvoiceReceipt, Statements} from '@/screens';
+import {
+  Bills,
+  TenantHome,
+  InvoiceReceipt,
+  Statements,
+  LandlordHome,
+  Units,
+} from '@/screens';
 import InvoiceTopTabNav from './InvoiceTopTabNav';
 import COLORS from '../constants/Theme';
 import {View} from 'react-native';
+import {useAuth} from '../hooks';
+import {LoadingModal} from '../components/modals';
+import PropertyStack from './PropertyStack';
+import StatementStack from './StatementStack';
 
 const Stack = createStackNavigator();
 
 const HomeStack = () => {
-  return (
+  const {isPending, profile} = useAuth();
+
+  return isPending ? (
+    <LoadingModal />
+  ) : profile?.access_types?.roles?.includes('ROLE_LANDLORD') ? (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
@@ -17,7 +32,47 @@ const HomeStack = () => {
         animationTypeForReplace: 'push',
       }}
       initialRouteName="home">
-      <Stack.Screen name={'home'} component={Home} />
+      <Stack.Screen name={'home'} component={LandlordHome} />
+      <Stack.Screen name={'properties'} component={PropertyStack} />
+      <Stack.Screen
+        name={'units'}
+        component={Units}
+        options={{
+          headerShown: true,
+          title: 'My Units',
+          headerTitleStyle: {
+            color: COLORS.primary,
+            fontSize: 18,
+            fontFamily: 'Inter-SemiBold',
+            marginHorizontal: 'auto',
+          },
+        }}
+      />
+      <Stack.Screen
+        name={'transactions'}
+        component={Statements}
+        options={{
+          headerShown: true,
+          title: 'Transactions',
+          headerTitleStyle: {
+            color: COLORS.primary,
+            fontSize: 18,
+            fontFamily: 'Inter-SemiBold',
+            marginHorizontal: 'auto',
+          },
+        }}
+      />
+      <Stack.Screen name={'statements'} component={StatementStack} />
+    </Stack.Navigator>
+  ) : profile?.access_types?.roles?.includes('ROLE_TENANT') ? (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        animationEnabled: true,
+        animationTypeForReplace: 'push',
+      }}
+      initialRouteName="home">
+      <Stack.Screen name={'home'} component={TenantHome} />
       <Stack.Screen
         name={'invoice_top_tabs'}
         component={InvoiceTopTabNav}
@@ -78,7 +133,7 @@ const HomeStack = () => {
         }}
       />
     </Stack.Navigator>
-  );
+  ) : null;
 };
 
 export default HomeStack;

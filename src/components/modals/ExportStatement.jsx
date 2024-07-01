@@ -9,14 +9,13 @@ import DatePicker from './DatePicker';
 const ExportStatement = forwardRef((props, ref) => {
   return (
     <CustomBottomSheet
-      snapPoints={['5%', '80%']}
+      snapPoints={['5%', '72%']}
       ref={ref}
       handleComponent={() => renderSheetHeader(props.handleCloseModal)}
       onChange={props.handleSheetChanges}>
       <ScrollView className={'px-4 flex-col '}>
         <DatePicker />
         <View className={'h-3'} />
-        <DatePicker />
       </ScrollView>
     </CustomBottomSheet>
   );
