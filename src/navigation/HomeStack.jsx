@@ -16,6 +16,7 @@ import {useAuth} from '../hooks';
 import {LoadingModal} from '../components/modals';
 import PropertyStack from './PropertyStack';
 import StatementStack from './StatementStack';
+import TransactionTopTabNav from './TransactionTopTabNav';
 
 const Stack = createStackNavigator();
 
@@ -50,7 +51,7 @@ const HomeStack = () => {
       />
       <Stack.Screen
         name={'transactions'}
-        component={Statements}
+        component={TransactionTopTabNav}
         options={{
           headerShown: true,
           title: 'Transactions',
