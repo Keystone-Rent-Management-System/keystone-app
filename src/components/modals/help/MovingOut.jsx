@@ -1,22 +1,34 @@
-import React, {forwardRef} from 'react';
+import React, {forwardRef, useState} from 'react';
 
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {Calendar} from 'react-native-calendars';
 import {CustomBottomSheet} from '../index';
 import {AlertBar, CButton} from '../../general';
 import {CloseSvg} from '@/assets/icons';
 import {CalendarSvg, NotificationsSvg} from '../../../assets/icons';
+import {useSendTerminationNotice} from '../../../hooks/useAgrement';
 
 const MovingOut = forwardRef((props, ref) => {
+  const [selected, setSelected] = useState('');
+
+  const {handleSendTerminationNotice} = useSendTerminationNotice(
+    props.handleCloseModal,
+  );
+
   return (
     <CustomBottomSheet
-      snapPoints={['20%', '60%']}
+      snapPoints={['20%', '87%']}
       ref={ref}
       handleComponent={() => renderSheetHeader(props.handleCloseModal)}
       onChange={props.handleSheetChanges}>
       <ScrollView className={'px-4 min-h-[180px]'}>
         <Text className={'text-xs font-inter text-grey_1 mb-2'}>
           Issue notice to move out, kindly note that the notice should be given
-          out <Text className={'font-bold text-black'}> 30 days</Text> prior to
+          out{' '}
+          <Text className={'font-bold text-black'}>
+            {' '}
+            {props?.agreement?.daysOfTerminationNotice} days
+          </Text>{' '}
           the actual move out date.
         </Text>
 
@@ -28,16 +40,31 @@ const MovingOut = forwardRef((props, ref) => {
             <TouchableOpacity
               className={
                 'p-1 border border-gray-300 rounded-xl h-14 flex-row items-center px-3 w-full'
-              }
-              // onPress={handleOpenDateModal``}
-            >
+              }>
               <View className={'flex-1'}>
                 <Text className={'text-gray-500 font-inter text-13 mr-2'}>
-                  {'select date '}
+                  {selected ? selected : 'select date '}
                 </Text>
               </View>
               <CalendarSvg />
             </TouchableOpacity>
+          </View>
+          <View
+            className={
+              'bg-white border border-border_grey rounded-xl overflow-hidden mt-3 shadow mx-1 px-0.5'
+            }>
+            <Calendar
+              onDayPress={day => {
+                setSelected(day.dateString);
+              }}
+              markedDates={{
+                [selected]: {
+                  selected: true,
+                  disableTouchEvent: true,
+                  selectedDotColor: 'orange',
+                },
+              }}
+            />
           </View>
         </View>
 
@@ -49,7 +76,12 @@ const MovingOut = forwardRef((props, ref) => {
 
       <CButton
         ClassName={'bg-primary text-white py-3.5 mx-5 mb-3'}
-        onPress={props.handleCloseModal}>
+        onPress={() =>
+          handleSendTerminationNotice({
+            agreementsId: props?.agreement?.id,
+            vacationDate: selected,
+          })
+        }>
         <Text className={'text-white font-inter text-13 '}>Issue Notice</Text>
       </CButton>
     </CustomBottomSheet>
@@ -73,22 +105,3 @@ const renderSheetHeader = handleClose => (
   </View>
 );
 export default MovingOut;
-
-const helpList = [
-  {
-    title: 'Moving out notice',
-    description: 'Issue notice to move out',
-  },
-  {
-    title: 'Make a complaint',
-    description: 'Raise a complaint',
-  },
-  {
-    title: 'Request repair',
-    description: 'Notify or request repairs',
-  },
-  {
-    title: 'General Assistance',
-    description: 'Any other form of assistance',
-  },
-];

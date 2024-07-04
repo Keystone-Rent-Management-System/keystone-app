@@ -19,6 +19,7 @@ import {generateYears} from '../../utils/yearsOptions';
 
 const Statements = () => {
   const exportModalRef = useRef();
+  const dateModalRef = useRef();
 
   const years = generateYears();
 
@@ -41,6 +42,10 @@ const Statements = () => {
 
   const handleCloseExportModal = useCallback(() => {
     exportModalRef.current?.close();
+  }, []);
+
+  const handleOpenDateModal = useCallback(() => {
+    dateModalRef.current?.expand();
   }, []);
 
   const renderYears = ({item, index, isActive}) => {
@@ -108,7 +113,9 @@ const Statements = () => {
 
       <ExportStatementModal
         ref={exportModalRef}
+        dateModalRef={dateModalRef}
         handleCloseModal={handleCloseExportModal}
+        handleOpenDateModal={handleOpenDateModal}
       />
     </>
   );

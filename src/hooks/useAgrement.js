@@ -53,3 +53,22 @@ export const useTerminateAgrement = (dismiss, refetch) => {
 
   return {handleTerminateAgreement};
 };
+
+export const useSendTerminationNotice = dismiss => {
+  const sendTerminationMutation = useMutation({
+    mutationKey: ['send_termination_notice'],
+    mutationFn: AgreementServices.sendTerminationNotice,
+    onSuccess: () => {
+      dismiss();
+    },
+    onError: err => {
+      ToastAndroid.show('Moving out notice failed ' + getError(err), 4000);
+    },
+  });
+
+  const handleSendTerminationNotice = props => {
+    sendTerminationMutation.mutateAsync(props);
+  };
+
+  return {handleSendTerminationNotice};
+};

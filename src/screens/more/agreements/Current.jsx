@@ -76,6 +76,7 @@ const Current = () => {
 
       <MovingOutModal
         ref={movingOutRef}
+        agreement={agreement}
         handleCloseModal={handleCloseMovingOutModal}
       />
     </>

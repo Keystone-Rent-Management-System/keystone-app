@@ -39,10 +39,18 @@ const terminateAgreement = async id => {
   return res;
 };
 
+const sendTerminationNotice = async data => {
+  setAuthToken(AxiosUtility);
+  const {data: res} = await AxiosUtility.post('/vacate-notice', data);
+
+  return res;
+};
+
 const AgreementServices = {
   getAgreements,
   acceptAgreement,
   terminateAgreement,
+  sendTerminationNotice,
 };
 
 /**
