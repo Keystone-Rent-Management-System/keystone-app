@@ -1,17 +1,13 @@
 import React, {forwardRef} from 'react';
 
 import {ScrollView, Text, View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 import {CustomBottomSheet} from '../index';
 import {CButton} from '../../general';
 import {CloseSvg} from '@/assets/icons';
 import {HelpItem} from '@/components';
 
 const GetHelp = forwardRef((props, ref) => {
-  const navigation = useNavigation();
-
   const pressHandlers = [
-    props?.handleMovingOut,
     props?.handleMakeComplaint,
     props?.handleRequestRepair,
     props?.handleGeneralAssistance,
@@ -62,10 +58,6 @@ const renderSheetHeader = handleClose => (
 export default GetHelp;
 
 const helpList = [
-  {
-    title: 'Moving out notice',
-    description: 'Issue notice to move out',
-  },
   {
     title: 'Make a complaint',
     description: 'Raise a complaint',

@@ -8,7 +8,6 @@ import {
   GeneralRepairsModal,
   GetHelpModal,
   MakeComplaintModal,
-  MovingOutModal,
   RequestExtensionModal,
   RequestRepairModal,
 } from '../../modals';
@@ -20,17 +19,14 @@ const Menu = () => {
   const extensionModalRef = useRef();
   const {
     getHelpRef,
-    movingOutRef,
     makeComplaintRef,
     requestRepairRef,
     generalAssistanceRef,
     handleCloseHelpModal,
     handleOpenHelpModal,
-    handleMovingOut,
     handleMakeComplaint,
     handleRequestRepair,
     handleGeneralAssistance,
-    handleCloseMovingOutModal,
     handleCloseMakeComplaintModal,
     handleCloseRequestRepairModal,
     handleCloseGeneralAssistanceModal,
@@ -104,12 +100,6 @@ const Menu = () => {
         handleMakeComplaint={handleMakeComplaint}
         handleRequestRepair={handleRequestRepair}
         handleGeneralAssistance={handleGeneralAssistance}
-        handleMovingOut={handleMovingOut}
-      />
-
-      <MovingOutModal
-        ref={movingOutRef}
-        handleCloseModal={handleCloseMovingOutModal}
       />
 
       <MakeComplaintModal

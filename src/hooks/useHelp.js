@@ -2,7 +2,6 @@ import {useCallback, useRef} from 'react';
 
 const useHelp = () => {
   const getHelpRef = useRef();
-  const movingOutRef = useRef();
   const makeComplaintRef = useRef();
   const requestRepairRef = useRef();
   const generalAssistanceRef = useRef();
@@ -13,14 +12,6 @@ const useHelp = () => {
 
   const handleCloseHelpModal = useCallback(() => {
     getHelpRef.current?.close();
-  }, []);
-
-  const handleOpenMovingOutModal = useCallback(() => {
-    movingOutRef.current?.expand();
-  }, []);
-
-  const handleCloseMovingOutModal = useCallback(() => {
-    movingOutRef.current?.close();
   }, []);
 
   const handleOpenMakeComplaintModal = useCallback(() => {
@@ -47,10 +38,6 @@ const useHelp = () => {
     generalAssistanceRef.current?.close();
   }, []);
 
-  const handleMovingOut = () => {
-    handleCloseHelpModal();
-    handleOpenMovingOutModal();
-  };
   const handleMakeComplaint = () => {
     handleCloseHelpModal();
     handleOpenMakeComplaintModal();
@@ -66,20 +53,15 @@ const useHelp = () => {
 
   return {
     getHelpRef,
-    movingOutRef,
     makeComplaintRef,
     requestRepairRef,
     generalAssistanceRef,
     // help modal methods
     handleOpenHelpModal,
     handleCloseHelpModal,
-    handleMovingOut,
     handleMakeComplaint,
     handleRequestRepair,
     handleGeneralAssistance,
-    //   moving out
-    handleOpenMovingOutModal,
-    handleCloseMovingOutModal,
     //   make complaint
     handleOpenMakeComplaintModal,
     handleCloseMakeComplaintModal,

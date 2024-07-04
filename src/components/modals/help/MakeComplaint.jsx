@@ -21,7 +21,7 @@ const MakeComplaint = forwardRef((props, ref) => {
 
         <View className={'flex-col items-start w-full py-3'}>
           <Text className={'text-black my-1.5 font-inter text-xs'}>
-            When would you like to move out?
+            What would you like to complain about?
           </Text>
 
           <TextInput
