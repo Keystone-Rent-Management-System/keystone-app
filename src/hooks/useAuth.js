@@ -78,16 +78,12 @@ export const useRegister = () => {
   const onSubmit = props => {
     Keyboard.dismiss();
     // update details to global state incase mutation is not successful
-    const {name, phoneNumber, identificationNumber} = props;
-    updateRegisteringUser({
-      name,
-      phoneNumber,
-      identificationNumber,
-    });
+    const {firstName, lastName, phoneNumber, identificationNumber} = props;
+    updateRegisteringUser(props);
 
     registerTenantMutation.mutateAsync({
-      firstName: name.split(' ')?.at(0),
-      lastName: name.split(' ')?.at(1) || '',
+      firstName: firstName,
+      lastName: lastName,
       identificationType: 'NATIONAL_ID',
       identificationNumber: identificationNumber,
       phoneNumber: phoneNumber,

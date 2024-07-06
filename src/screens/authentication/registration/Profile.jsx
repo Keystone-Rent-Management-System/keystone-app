@@ -11,7 +11,8 @@ import ControlledInput from '../../../components/general/input/ControlledInput';
 import {useRegister} from '../../../hooks';
 
 const schema = yup.object({
-  name: string().required().min(2),
+  firstName: string().required().min(1),
+  lastName: string().required().min(1),
   phoneNumber: string().required().min(10).max(13),
   identificationNumber: string().required().min(6),
 });
@@ -24,7 +25,8 @@ const Profile = () => {
   const {handleSubmit, control} = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      name: registering_user?.name || '',
+      firstName: registering_user?.firstName || '',
+      lastName: registering_user?.lastName || '',
       phoneNumber: registering_user?.phoneNumber || '',
       identificationNumber: registering_user?.identificationNumber || '',
     },
@@ -38,13 +40,24 @@ const Profile = () => {
         {/* <Uploader /> */}
 
         <ControlledInput
-          label={'Enter Name'}
+          label={'Enter First Name'}
           icon={<UserSvg />}
-          placeholder={'Enter full name'}
+          placeholder={'Enter first name'}
           labelClassName={'text-primary text-13'}
           ClassName={'border border-border_grey px-2'}
           InputClassName={'text-[13px] px-2 text-gray-600 '}
-          name={'name'}
+          name={'firstName'}
+          control={control}
+        />
+
+        <ControlledInput
+          label={'Enter Last Name'}
+          icon={<UserSvg />}
+          placeholder={'Enter last name'}
+          labelClassName={'text-primary text-13'}
+          ClassName={'border border-border_grey px-2'}
+          InputClassName={'text-[13px] px-2 text-gray-600 '}
+          name={'lastName'}
           control={control}
         />
 

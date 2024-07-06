@@ -7,7 +7,8 @@ const initState = {
   registering_user: {
     email: '', //registration email(receives token during registration)
     token: '', // sent to email during registration
-    name: '', // name of the user
+    firstName: '', // first name of the user
+    lastName: '', // last name of the user
     phoneNumber: '', // phone number of the user
     identificationNumber: '', // id number of the user
     identificationType: 'NATIONAL_ID',
