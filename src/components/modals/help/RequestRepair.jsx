@@ -1,10 +1,17 @@
 import React, {forwardRef} from 'react';
 
-import {ScrollView, Text, TextInput, View} from 'react-native';
+import {
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {CustomBottomSheet} from '../index';
 import {CButton} from '../../general';
 import {CloseSvg} from '@/assets/icons';
 import COLORS from '../../../constants/Theme';
+import {CameraSvg} from '../../../assets/icons';
 
 const RequestRepair = forwardRef((props, ref) => {
   return (
@@ -21,14 +28,25 @@ const RequestRepair = forwardRef((props, ref) => {
 
         <View className={'flex-col items-start w-full py-3'}>
           <Text className={'text-black my-1.5 font-inter text-xs'}>
-            What would you like to repair ?
+            What would you like to be repair ?
           </Text>
+          <TouchableOpacity
+            className={
+              'flex flex-col justify-center items-center gap-y-3 h-40 bg-border_grey w-full rounded-xl my-3'
+            }>
+            <View>
+              <CameraSvg h={36} />
+            </View>
+            <Text className={'text-gray-600 text-xs'}>
+              Click here to take a photo of what you want to be repaired
+            </Text>
+          </TouchableOpacity>
 
           <TextInput
             className={
               'text-black border border-border_grey w-full rounded-xl font-inter text-xs px-3'
             }
-            numberOfLines={5}
+            numberOfLines={3}
             placeholder={'List of repairs'}
             placeholderTextColor={COLORS.border_grey}
             style={{
@@ -63,22 +81,3 @@ const renderSheetHeader = handleClose => (
   </View>
 );
 export default RequestRepair;
-
-const helpList = [
-  {
-    title: 'Moving out notice',
-    description: 'Issue notice to move out',
-  },
-  {
-    title: 'Make a complaint',
-    description: 'Raise a complaint',
-  },
-  {
-    title: 'Request repair',
-    description: 'Notify or request repairs',
-  },
-  {
-    title: 'General Assistance',
-    description: 'Any other form of assistance',
-  },
-];

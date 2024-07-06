@@ -9,6 +9,7 @@ import HelloSvg from './hello.js';
 import PropertySvg from './property.js';
 import UnitSvg from './unit.js';
 import TransactionSvg from './transaction.js';
+import CameraSvg from './camera.js';
 
 export {
   ArrowDownUpSvg,
@@ -22,4 +23,5 @@ export {
   PropertySvg,
   UnitSvg,
   TransactionSvg,
+  CameraSvg,
 };
