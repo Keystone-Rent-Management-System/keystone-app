@@ -1,12 +1,15 @@
-import React, {forwardRef} from 'react';
+import React, {forwardRef, useState} from 'react';
 
 import {
+  Image,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import {launchCamera} from 'react-native-image-picker';
 import {CustomBottomSheet} from '../index';
 import {CButton} from '../../general';
 import {CloseSvg} from '@/assets/icons';
@@ -14,6 +17,55 @@ import COLORS from '../../../constants/Theme';
 import {CameraSvg} from '../../../assets/icons';
 
 const RequestRepair = forwardRef((props, ref) => {
+  // saves image
+  const [image, setImage] = useState(null);
+
+  const handleCamera = async () => {
+    const img = await launchCamera(
+      {
+        mediaType: 'photo',
+        includeBase64: false,
+        maxHeight: 1000,
+        maxWidth: 1000,
+      },
+      response => {
+        if (response.didCancel) {
+          return;
+        }
+        if (response.errorCode) {
+          return;
+        }
+        setImage(response.uri);
+      },
+    );
+    setImage(img?.assets?.at(0));
+  };
+
+  const renderImage = () => {
+    if (image?.uri) {
+      return (
+        <Image
+          source={{uri: image?.uri}}
+          alt="img"
+          className={'w-full h-full rounded-xl'}
+          resizeMode="contain"
+          height={100}
+          width={100}
+        />
+      );
+    }
+    return (
+      <>
+        <View>
+          <CameraSvg h={36} />
+        </View>
+        <Text className={'text-gray-600 text-xs'}>
+          Click here to take a photo of what you want to be repaired
+        </Text>
+      </>
+    );
+  };
+
   return (
     <CustomBottomSheet
       snapPoints={['20%', '60%']}
@@ -32,14 +84,10 @@ const RequestRepair = forwardRef((props, ref) => {
           </Text>
           <TouchableOpacity
             className={
-              'flex flex-col justify-center items-center gap-y-3 h-40 bg-border_grey w-full rounded-xl my-3'
-            }>
-            <View>
-              <CameraSvg h={36} />
-            </View>
-            <Text className={'text-gray-600 text-xs'}>
-              Click here to take a photo of what you want to be repaired
-            </Text>
+              'flex flex-col justify-center items-center h-40 bg-border_grey w-full rounded-xl my-3'
+            }
+            onPress={handleCamera}>
+            {renderImage()}
           </TouchableOpacity>
 
           <TextInput
@@ -49,9 +97,7 @@ const RequestRepair = forwardRef((props, ref) => {
             numberOfLines={3}
             placeholder={'List of repairs'}
             placeholderTextColor={COLORS.border_grey}
-            style={{
-              textAlignVertical: 'top',
-            }}
+            style={styles.textArea}
           />
         </View>
       </ScrollView>
@@ -81,3 +127,8 @@ const renderSheetHeader = handleClose => (
   </View>
 );
 export default RequestRepair;
+const styles = StyleSheet.create({
+  textArea: {
+    textAlignVertical: 'top',
+  },
+});
