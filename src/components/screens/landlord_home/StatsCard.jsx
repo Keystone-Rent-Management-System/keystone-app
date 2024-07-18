@@ -13,33 +13,50 @@ const StatsCard = ({isPending, totals}) => {
         alt="bg"
       />
 
-      <View
-        className={
-          'inset-0 h-full p-3 flex-1 items-center flex-row justify-around'
-        }>
+      <View className={'p-3 inset-0 h-full'}>
+        <View className={'flex-1 items-center flex-row justify-around'}>
+          {/* Balance */}
+          <View className={'flex-1 flex-row items-center gap-1'}>
+            <Text style={styles.cartLabel} className={' font-inter text-xs'}>
+              Debit:{' '}
+            </Text>
+
+            <Text className={'text-base text-white font-inter-semibold'}>
+              KES.{' '}
+              {!isPending
+                ? numberWithCommas(Number(totals?.totalAmountDebited ?? 0))
+                : 0}
+            </Text>
+          </View>
+
+          <View className={'flex-1 flex-row items-center gap-1'}>
+            <Text style={styles.cartLabel} className={' font-inter text-xs'}>
+              Credit:{' '}
+            </Text>
+
+            <Text className={'text-base text-white font-inter-semibold'}>
+              KES.{' '}
+              {!isPending
+                ? numberWithCommas(Number(totals?.totalAmountCredited ?? 0))
+                : 0}
+            </Text>
+          </View>
+        </View>
         {/* Balance */}
         <View className={'flex-1 flex-row items-center gap-1'}>
           <Text style={styles.cartLabel} className={' font-inter text-xs'}>
-            Debit:{' '}
+            Balance{' '}
           </Text>
 
-          <Text className={'text-lg text-white font-inter-semibold'}>
+          <Text className={'text-base text-white font-inter-semibold'}>
             KES.{' '}
             {!isPending
-              ? numberWithCommas(Number(totals?.totalAmountDebited ?? 0))
-              : 0}
-          </Text>
-        </View>
-
-        <View className={'flex-1 flex-row items-center gap-1'}>
-          <Text style={styles.cartLabel} className={' font-inter text-xs'}>
-            Credit:{' '}
-          </Text>
-
-          <Text className={'text-lg text-white font-inter-semibold'}>
-            KES.{' '}
-            {!isPending
-              ? numberWithCommas(Number(totals?.totalAmountCredited ?? 0))
+              ? numberWithCommas(
+                  Number(
+                    totals?.totalAmountDebited - totals?.totalAmountCredited ??
+                      0,
+                  ),
+                )
               : 0}
           </Text>
         </View>

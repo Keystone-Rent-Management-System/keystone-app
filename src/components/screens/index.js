@@ -1,5 +1,5 @@
 export * from './explore';
-export * from './home';
+export * from './tenant_home';
 export * from './landlord_home';
 export * from './invoice';
 export * from './statements';

@@ -18,7 +18,7 @@ const UnitStatements = ({route: {params}}) => {
     useUnitInvoiceAnalytics(size, params.unitName);
 
   const handleLoadMore = () => {
-    if (!isPending && totalElements > size) {
+    if (!isPending && !isRefetching && totalElements > size) {
       setSize(prev => prev + 10);
       refetch();
     }
@@ -36,11 +36,11 @@ const UnitStatements = ({route: {params}}) => {
       <Layout ClassName={'px-4 relative'}>
         <FlashList
           contentContainerStyle={propertyStyles.list}
-          refreshing={isPending}
+          refreshing={isPending || isRefetching}
           data={statements}
           renderItem={({item}) => renderStatementItem(item)}
           keyExtractor={item => item?.id}
-          estimatedItemSize={300}
+          estimatedItemSize={20}
           onRefresh={refetch}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}

@@ -1,5 +1,5 @@
-import {StyleSheet} from 'react-native';
-import React from 'react';
+import {ActivityIndicator, StyleSheet} from 'react-native';
+import React, {useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {FlashList} from '@shopify/flash-list';
 
@@ -11,23 +11,39 @@ import {useUnPaidInvoice} from '../../../hooks';
 
 const Unpaid = () => {
   const navigation = useNavigation();
+  const [size, setSize] = useState(20);
 
   const handleNavigate = id => {
     navigation.navigate('invoice_view', {id});
   };
 
-  const {isPending, invoices, refetch} = useUnPaidInvoice();
+  const {isPending, isRefetching, invoices, totalElements, refetch} =
+    useUnPaidInvoice(size);
+
+  const handleLoadMore = () => {
+    if (!isPending && !isRefetching && totalElements > size) {
+      setSize(prev => prev + 10);
+      refetch();
+    }
+  };
 
   return (
     <Layout>
       <FlashList
         contentContainerStyle={invoiceStyles.list}
-        refreshing={isPending}
+        refreshing={isPending || isRefetching}
         data={invoices}
         renderItem={({item}) => renderInvoiceItem(item, handleNavigate)}
         keyExtractor={item => item?.id}
         estimatedItemSize={300}
         onRefresh={refetch}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          isRefetching ? (
+            <ActivityIndicator color={'#022374'} size="large" />
+          ) : null
+        }
       />
     </Layout>
   );

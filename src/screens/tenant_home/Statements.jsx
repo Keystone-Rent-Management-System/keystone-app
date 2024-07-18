@@ -30,7 +30,7 @@ const Statements = () => {
   const {isPending, isRefetching, statements, totalElements, refetch} =
     useStatement(size, year);
   const handleLoadMore = () => {
-    if (!isPending && totalElements > size) {
+    if (!isPending && !isRefetching && totalElements > size) {
       setSize(prev => prev + 10);
       refetch();
     }
@@ -84,9 +84,10 @@ const Statements = () => {
         <SectionList
           sections={statements}
           keyExtractor={item => item?.id}
+          estimatedItemSize={20}
           renderItem={renderItem}
           renderSectionHeader={renderHeader}
-          refreshing={isPending}
+          refreshing={isPending || isRefetching}
           onRefresh={refetch}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}

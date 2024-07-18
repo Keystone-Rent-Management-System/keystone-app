@@ -3,48 +3,76 @@ import {useMutation, useQuery} from '@tanstack/react-query';
 import InvoiceServices from '../services/InvoiceServices';
 import {useEffect, useState} from 'react';
 
-export const useUnPaidInvoice = () => {
-  const {isPending, error, data, refetch} = useQuery({
+export const useUnPaidInvoice = size => {
+  const {isPending, isRefetching, error, data, refetch} = useQuery({
     queryKey: ['invoice/unpaid'],
-    queryFn: () => InvoiceServices.getInvoices(0, 20, 'unpaid'),
+    queryFn: () => InvoiceServices.getInvoices(0, size, 'unpaid'),
   });
 
   const invoices = data?.data || [];
 
-  return {isPending, error, invoices, refetch};
+  return {
+    isPending,
+    isRefetching,
+    error,
+    invoices,
+    totalElements: data?.totalElements,
+    refetch,
+  };
 };
 
-export const usePartiallyPaidInvoice = () => {
-  const {isPending, error, data, refetch} = useQuery({
+export const usePartiallyPaidInvoice = size => {
+  const {isPending, isRefetching, error, data, refetch} = useQuery({
     queryKey: ['invoice/partially-paid'],
-    queryFn: () => InvoiceServices.getInvoices(0, 20, 'paidPartial'),
+    queryFn: () => InvoiceServices.getInvoices(0, size, 'paidPartial'),
   });
 
   const invoices = data?.data || [];
 
-  return {isPending, error, invoices, refetch};
+  return {
+    isPending,
+    isRefetching,
+    error,
+    invoices,
+    totalElements: data?.totalElements,
+    refetch,
+  };
 };
 
-export const usePaidInvoice = () => {
-  const {isPending, error, data, refetch} = useQuery({
+export const usePaidInvoice = size => {
+  const {isPending, isRefetching, error, data, refetch} = useQuery({
     queryKey: ['invoice/paid'],
-    queryFn: () => InvoiceServices.getInvoices(0, 20, 'paid'),
+    queryFn: () => InvoiceServices.getInvoices(0, size, 'paid'),
   });
 
   const invoices = data?.data || null;
 
-  return {isPending, error, invoices, refetch};
+  return {
+    isPending,
+    isRefetching,
+    error,
+    invoices,
+    totalElements: data?.totalElements,
+    refetch,
+  };
 };
 
-export const useOverPaidInvoice = () => {
-  const {isPending, error, data, refetch} = useQuery({
+export const useOverPaidInvoice = size => {
+  const {isPending, isRefetching, error, data, refetch} = useQuery({
     queryKey: ['invoice/over-paid'],
-    queryFn: () => InvoiceServices.getInvoices(0, 20, 'overpaid'),
+    queryFn: () => InvoiceServices.getInvoices(0, size, 'overpaid'),
   });
 
   const invoices = data?.data || [];
 
-  return {isPending, error, invoices, refetch};
+  return {
+    isPending,
+    isRefetching,
+    error,
+    invoices,
+    totalElements: data?.totalElements,
+    refetch,
+  };
 };
 
 export const useSpecificInvoice = id => {

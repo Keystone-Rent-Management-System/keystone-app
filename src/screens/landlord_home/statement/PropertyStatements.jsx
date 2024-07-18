@@ -28,7 +28,7 @@ const PropertyStatements = () => {
     useInvoiceAnalytics(size);
 
   const handleLoadMore = () => {
-    if (!isPending && totalElements > size) {
+    if (!isPending && !isRefetching && totalElements > size) {
       setSize(prev => prev + 10);
       refetch();
     }
@@ -48,9 +48,10 @@ const PropertyStatements = () => {
         <SectionList
           sections={statements}
           keyExtractor={item => item?.id}
+          estimatedItemSize={20}
           renderItem={({item}) => renderStatementItem(item, handleNavigate)}
           renderSectionHeader={renderHeader}
-          refreshing={isPending}
+          refreshing={isPending || isRefetching}
           onRefresh={refetch}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}

@@ -18,7 +18,7 @@ const MoneyOut = () => {
   const {isPending, isRefetching, transactions, totalElements, refetch} =
     useTransactionOut(size);
   const handleLoadMore = () => {
-    if (!isPending && totalElements > size) {
+    if (!isPending && !isRefetching && totalElements > size) {
       setSize(prev => prev + 10);
       refetch();
     }
@@ -38,9 +38,10 @@ const MoneyOut = () => {
         <SectionList
           sections={transactions}
           keyExtractor={item => item?.id}
+          estimatedItemSize={20}
           renderItem={renderItem}
           renderSectionHeader={renderHeader}
-          refreshing={isPending}
+          refreshing={isPending || isRefetching}
           onRefresh={refetch}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}

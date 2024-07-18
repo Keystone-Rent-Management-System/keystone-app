@@ -1250,6 +1250,11 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
+"@hauvo/react-native-360-image-viewer@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@hauvo/react-native-360-image-viewer/-/react-native-360-image-viewer-1.0.0.tgz"
+  integrity sha512-Img/Fw6Ul0wHNZsHkXcBgNBy57tedUrON+iaz2+ayExWQ4edEsIBsHwhNgCvXzHKJIHgvJy/wSdWg1uHdExGTw==
+
 "@hookform/resolvers@^3.3.4":
   version "3.3.4"
   resolved "https://registry.npmjs.org/@hookform/resolvers/-/resolvers-3.3.4.tgz"
@@ -1584,6 +1589,13 @@
   dependencies:
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
+
+"@photo-sphere-viewer/core@^5.8.2":
+  version "5.8.2"
+  resolved "https://registry.npmjs.org/@photo-sphere-viewer/core/-/core-5.8.2.tgz"
+  integrity sha512-7Ex8OLk5ihywT/WpYz/+No6BlGzo/XDbW8M3pe2diBEYU7xXfxQjhQ7WKFRuaKasNrCUNks8r6jM+pUkl4MOtg==
+  dependencies:
+    three "^0.166.1"
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
@@ -7472,6 +7484,11 @@ thenify-all@^1.0.0:
   integrity sha512-RVZSIV5IG10Hk3enotrhvz0T9em6cyHBLkH/YAZuKqd8hRkKhSfCGIcP2KUY0EPxndzANBmNllzWPwak+bheSw==
   dependencies:
     any-promise "^1.0.0"
+
+three@^0.166.1:
+  version "0.166.1"
+  resolved "https://registry.npmjs.org/three/-/three-0.166.1.tgz"
+  integrity sha512-LtuafkKHHzm61AQA1be2MAYIw1IjmhOUxhBa0prrLpEMWbV7ijvxCRHjSgHPGp2493wLBzwKV46tA9nivLEgKg==
 
 throat@^5.0.0:
   version "5.0.0"

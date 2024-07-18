@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {FlashList} from '@shopify/flash-list';
 import {CInput, Layout, ListingItem} from '@/components';
@@ -15,19 +15,34 @@ const Property = () => {
     navigation.navigate('my_properties__view', {id, propertyName});
   };
 
-  const {isPending, properties, refetch} = useProperty(size);
+  const {isPending, isRefetching, properties, totalElements, refetch} =
+    useProperty(size);
+
+  const handleLoadMore = () => {
+    if (!isPending && !isRefetching && totalElements > size) {
+      setSize(prev => prev + 10);
+      refetch();
+    }
+  };
 
   return (
     <Layout>
       <FlashList
         ListHeaderComponent={<Header />}
         contentContainerStyle={propertyStyles.list}
-        refreshing={isPending}
+        refreshing={isPending || isRefetching}
         data={properties}
         renderItem={({item}) => renderPropertyItem(item, handleNavigate)}
         keyExtractor={item => item?.id}
         estimatedItemSize={300}
         onRefresh={refetch}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          isRefetching ? (
+            <ActivityIndicator color={'#022374'} size="large" />
+          ) : null
+        }
       />
     </Layout>
   );

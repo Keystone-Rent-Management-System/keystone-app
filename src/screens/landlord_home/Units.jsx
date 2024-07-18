@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
-import {View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {View, ActivityIndicator} from 'react-native';
 import {FlashList} from '@shopify/flash-list';
 import {CInput, Layout, ListingItem} from '@/components';
 import {SearchSvg, UnitSvg} from '@/assets/icons';
@@ -8,21 +9,44 @@ import {propertyStyles} from './property/Property';
 import {useUnit} from '../../hooks';
 
 const Units = () => {
+  const navigation = useNavigation();
   const [size, setSize] = useState(20);
 
-  const {isPending, units, refetch} = useUnit(size);
+  const {isPending, isRefetching, units, totalElements, refetch} =
+    useUnit(size);
+
+  const handleNavigate = unitName => {
+    navigation.navigate('statements', {
+      screen: 'unit_statements',
+      params: {unitName: unitName},
+    });
+  };
+
+  const handleLoadMore = () => {
+    if (!isPending && !isRefetching && totalElements > size) {
+      setSize(prev => prev + 10);
+      refetch();
+    }
+  };
 
   return (
     <Layout>
       <FlashList
         ListHeaderComponent={<Header />}
         contentContainerStyle={propertyStyles.list}
-        refreshing={isPending}
+        refreshing={isPending || isRefetching}
         data={units}
-        renderItem={({item}) => renderUnitItem(item)}
+        renderItem={({item}) => renderUnitItem(item, handleNavigate)}
         keyExtractor={item => item?.id}
-        estimatedItemSize={300}
+        estimatedItemSize={20}
         onRefresh={refetch}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          isRefetching ? (
+            <ActivityIndicator color={'#022374'} size="large" />
+          ) : null
+        }
       />
     </Layout>
   );
@@ -43,12 +67,13 @@ export const Header = () => (
   />
 );
 
-export const renderUnitItem = item => {
+export const renderUnitItem = (item, handlePress = () => {}) => {
   return (
     <ListingItem
       icon={<UnitSvg size={'24'} />}
       title={item?.name}
       status={item?.occupationStatus}
+      handlePress={() => handlePress(item?.name)}
     />
   );
 };

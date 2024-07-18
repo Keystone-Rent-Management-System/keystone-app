@@ -1,15 +1,22 @@
 import {useQuery} from '@tanstack/react-query';
 import PropertyListingServices from '../services/PropertyListingServices';
 
-export const usePropertyListing = () => {
-  const {isPending, error, data, refetch} = useQuery({
+export const usePropertyListing = size => {
+  const {isPending, isRefetching, error, data, refetch} = useQuery({
     queryKey: ['property-listings'],
-    queryFn: () => PropertyListingServices.getPropertyListings(0, 20),
+    queryFn: () => PropertyListingServices.getPropertyListings(0, size),
   });
 
   const listings = data?.data || [];
 
-  return {isPending, error, listings, refetch};
+  return {
+    isPending,
+    isRefetching,
+    error,
+    listings,
+    totalElements: data?.totalElements,
+    refetch,
+  };
 };
 
 export const useSpecificPropertyListing = id => {

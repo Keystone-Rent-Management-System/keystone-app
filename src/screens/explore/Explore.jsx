@@ -12,13 +12,15 @@ import {
 // import listings from '@/provider/listings';
 import {ExplorerFilterModal} from '@/components/modals';
 import {useNavigation} from '@react-navigation/native';
-import {StyleSheet, View} from 'react-native';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {usePropertyListing} from '../../hooks';
 
 const Explore = () => {
   const navigation = useNavigation();
+  const [size, setSize] = useState(20);
 
-  const {isPending, refetch, listings} = usePropertyListing();
+  const {isPending, isRefetching, listings, totalElements, refetch} =
+    usePropertyListing(size);
 
   const filterModalRef = useRef(null);
 
@@ -56,6 +58,13 @@ const Explore = () => {
     [navigation],
   );
 
+  const handleLoadMore = () => {
+    if (!isPending && !isRefetching && totalElements > size) {
+      setSize(prev => prev + 10);
+      refetch();
+    }
+  };
+
   const handleSwitchMode = () => {
     setMode(prev => (prev === 'map' ? 'list' : 'map'));
   };
@@ -63,7 +72,6 @@ const Explore = () => {
   const renderListingItem = ({item}) => {
     const {
       houseType,
-      matterportUrl,
       user,
       property,
       rent,
@@ -71,11 +79,11 @@ const Explore = () => {
       numberOfBedrooms,
       numberOfBathrooms,
       unitName,
+      showCaseUploads,
       id,
     } = item;
     return (
       <ExploreListingItem
-        image={matterportUrl}
         title={unitName}
         userType={user}
         category={houseType}
@@ -84,6 +92,7 @@ const Explore = () => {
         balconies={balconies}
         bedrooms={numberOfBedrooms}
         bathrooms={numberOfBathrooms}
+        image={showCaseUploads[0]?.fileUrl}
         id={id}
         handlePress={() => handleViewApartment(id)}
       />
@@ -108,7 +117,14 @@ const Explore = () => {
           isPending={isPending}
         />
       ) : (
-        renderListView(listings, renderListingItem, isPending, refetch)
+        renderListView(
+          listings,
+          renderListingItem,
+          isPending,
+          isRefetching,
+          refetch,
+          handleLoadMore,
+        )
       )}
 
       <ExplorerMapBtn handlePress={handleSwitchMode} mode={mode} />
@@ -123,7 +139,7 @@ const Explore = () => {
           style={styles.exploreView}
           className={'absolute z-50 inset-x-0 bottom-0 px-3 py-2'}>
           <ExploreListingItem
-            image={currentProperty?.matterportUrl}
+            image={currentProperty?.showCaseUploads[0]?.fileUrl}
             title={currentProperty?.unitName}
             userType={'Landlord'}
             category={currentProperty?.houseType}
@@ -146,7 +162,14 @@ const Explore = () => {
   );
 };
 
-function renderListView(list, renderListingItem, loading, handleRefresh) {
+function renderListView(
+  list,
+  renderListingItem,
+  isPending,
+  isRefetching,
+  handleRefresh,
+  handleLoadMore,
+) {
   return (
     <FlashList
       // eslint-disable-next-line react-native/no-inline-styles
@@ -156,9 +179,16 @@ function renderListView(list, renderListingItem, loading, handleRefresh) {
       data={list}
       renderItem={renderListingItem}
       keyExtractor={(_, ind) => ind.toString()}
-      estimatedItemSize={300}
-      refreshing={loading}
+      estimatedItemSize={20}
+      refreshing={isPending || isRefetching}
       onRefresh={handleRefresh}
+      onEndReached={handleLoadMore}
+      onEndReachedThreshold={0.5}
+      ListFooterComponent={
+        isRefetching ? (
+          <ActivityIndicator color={'#022374'} size="large" />
+        ) : null
+      }
     />
   );
 }
