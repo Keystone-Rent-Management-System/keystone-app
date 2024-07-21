@@ -86,7 +86,8 @@ export const useRegister = () => {
       lastName: lastName,
       identificationType: 'NATIONAL_ID',
       identificationNumber: identificationNumber,
-      phoneNumber: phoneNumber,
+      phoneNumber:
+        phoneNumber.length === 9 ? '0' + phoneNumber.toString() : phoneNumber,
       email: registering_user.email,
       token: registering_user.token,
       password: registering_user.password,

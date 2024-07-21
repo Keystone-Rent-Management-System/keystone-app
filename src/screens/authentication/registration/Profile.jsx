@@ -13,7 +13,7 @@ import {useRegister} from '../../../hooks';
 const schema = yup.object({
   firstName: string().required().min(1),
   lastName: string().required().min(1),
-  phoneNumber: string().required().min(10).max(13),
+  phoneNumber: string().required().min(9).max(10),
   identificationNumber: string().required().min(6),
 });
 

@@ -35,9 +35,10 @@ const AgreementModalSheet = forwardRef((props, ref) => {
       '2. Term',
       `The term of this agreement shall commence on the ${moment(
         props?.agreement?.tenancyBeginningDate,
-      ).format(
-        'DD-MM-yyyy',
-      )}, and shall continue until the ____ day of ____________, 20, unless terminated earlier in accordance with the provisions of this Agreement.`,
+      ).format('MM/DD/YYYY')}, and shall continue until the ${moment(
+        props?.agreement?.endDate,
+      ).format('MM/DD/YYYY')}
+      , unless terminated earlier in accordance with the provisions of this Agreement.`,
     ],
     [
       '3. Rent',
@@ -107,7 +108,7 @@ const AgreementModalSheet = forwardRef((props, ref) => {
           This Tenancy Agreement ("Agreement") is made and entered into on this{' '}
           <Text className={'font-inter-semibold text-grey_1 text-xs leading-5'}>
             {moment(props?.agreement?.tenancyBeginningDate).format(
-              'DD-MM-yyyy',
+              'MM/DD/YYYY',
             )}
           </Text>{' '}
           ("Effective Date"), by and between:
