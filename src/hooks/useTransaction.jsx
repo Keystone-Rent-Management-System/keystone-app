@@ -11,6 +11,46 @@ export const useTotalTransaction = () => {
   return {isPending, error, totals: data, refetch};
 };
 
+export const useTenantTransaction = size => {
+  const [statements, setStatments] = useState([]);
+
+  const {isPending, isRefetching, error, data, refetch} = useQuery({
+    queryKey: ['transactions/tenant'],
+    queryFn: () => TransactionServices.getTenantTransactions(0, size),
+  });
+
+  useEffect(() => {
+    if (!isPending) {
+      let groupedData = [];
+      data?.data?.forEach(item => {
+        const month = new Date(item?.transactionDate).toLocaleString(
+          'default',
+          {
+            month: 'long',
+          },
+        );
+        const existingMonth = groupedData.find(group => group.month === month);
+
+        if (existingMonth) {
+          existingMonth.data.push(item);
+        } else {
+          groupedData.push({month, data: [item]});
+        }
+      });
+      setStatments(groupedData);
+    }
+  }, [data?.data, isPending]);
+
+  return {
+    isPending,
+    isRefetching,
+    error,
+    statements,
+    totalElements: data?.totalElements,
+    refetch,
+  };
+};
+
 export const useTransactionIn = size => {
   const [transactions, setTransactions] = useState([]);
 

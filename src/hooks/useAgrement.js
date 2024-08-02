@@ -14,6 +14,17 @@ export const useAgrement = () => {
   return {isPending, error, agreements, refetch};
 };
 
+export const useActiveAgrement = () => {
+  const {isPending, error, data, refetch} = useQuery({
+    queryKey: ['active_agreement'],
+    queryFn: () => AgreementServices.getActiveAgreement(),
+  });
+
+  const agreement = data ?? null;
+
+  return {isPending, error, agreement, agreementRefetch: refetch};
+};
+
 export const useAcceptAgrement = (dismiss, refetch) => {
   const acceptAgrementMutation = useMutation({
     mutationKey: ['agreement_current', 'accept'],

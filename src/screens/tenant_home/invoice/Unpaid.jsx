@@ -8,6 +8,7 @@ import {InvoiceSvg} from '@/assets/icons';
 import numberWithCommas from '../../../utils/numberWithCommas';
 import moment from 'moment';
 import {useUnPaidInvoice} from '../../../hooks';
+import numberConverter from '../../../utils/numberConverter';
 
 const Unpaid = () => {
   const navigation = useNavigation();
@@ -56,7 +57,7 @@ export const renderInvoiceItem = (item, handlePress = () => {}) => {
       title={item?.propertyName?.split('-')[0]}
       customDate={moment(item?.updatedAt)?.format('Do MMMM, YYYY')}
       unit={item?.propertyName?.split('-')[1]}
-      amount={numberWithCommas(item?.dueAmount)}
+      amount={numberConverter(item?.dueAmount)}
       isPartial={item?.paidAmount && item?.paidAmount < item?.totalAmount}
       handlePress={() => handlePress(item?.id)}
     />

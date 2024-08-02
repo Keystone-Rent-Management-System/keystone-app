@@ -12,12 +12,14 @@ import useAuth, {
 import {useRefreshToken} from './useRefreshToken';
 import {
   useAgrement,
+  useActiveAgrement,
   useAcceptAgrement,
   useTerminateAgrement,
 } from './useAgrement';
 import {useSpecificUnit} from './useUnit';
 import {
   useUnPaidInvoice,
+  useActiveInvoices,
   usePaidInvoice,
   usePartiallyPaidInvoice,
   useOverPaidInvoice,
@@ -28,7 +30,7 @@ import {
   useUnitInvoiceAnalytics,
 } from './useInvoice';
 import {useProperty, usePropertyUnits} from './useProperty';
-import {useTotalTransaction} from './useTransaction';
+import {useTotalTransaction, useTenantTransaction} from './useTransaction';
 import {useUnit} from './useUnit';
 
 export {
@@ -45,10 +47,11 @@ export {
   useChangePassword,
   useRefreshToken,
   useAgrement,
+  useActiveAgrement,
   useAcceptAgrement,
   useTerminateAgrement,
-  useSpecificUnit,
   useUnPaidInvoice,
+  useActiveInvoices,
   usePartiallyPaidInvoice,
   usePaidInvoice,
   useSpecificInvoice,
@@ -60,5 +63,7 @@ export {
   useProperty,
   usePropertyUnits,
   useTotalTransaction,
+  useTenantTransaction,
+  useSpecificUnit,
   useUnit,
 };

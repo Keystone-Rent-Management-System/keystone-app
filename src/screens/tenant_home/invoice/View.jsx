@@ -16,6 +16,7 @@ import {
 } from '../../../hooks';
 import numberWithCommas from '../../../utils/numberWithCommas';
 import PaymentInstructions from '../../../components/modals/PaymentInstructions';
+import numberConverter from '../../../utils/numberConverter';
 
 const InvoiceView = ({route: {params}}) => {
   const concernModalRef = useRef();
@@ -56,10 +57,6 @@ const InvoiceView = ({route: {params}}) => {
     refetch,
   );
 
-  // const handleNavigate = (screen, options) => {
-  //   navigation.navigate(screen, options);
-  // };
-
   const handleRaiseConcern = text => {
     onSubmit(text);
   };
@@ -93,7 +90,7 @@ const InvoiceView = ({route: {params}}) => {
       {!invoiceIsPending && (
         <Layout ClassName={'relative'}>
           <InvoiceHeader
-            invoiceAmount={invoice?.dueAmount}
+            invoiceAmount={numberConverter(invoice?.dueAmount)}
             invoiceTitle={invoice?.propertyName?.split('-')[0]}
             invoiceUnit={invoice?.propertyName?.split('-')[1]}
             hasConcern={hasConcern}
@@ -180,7 +177,6 @@ const InvoiceView = ({route: {params}}) => {
           <InvoiceFooter
             handlePrompt={handleOpenPaymentInstrictionsModal}
             hasConcern={hasConcern}
-            handleResolve={() => {}}
             status={status}
             handleViewReceipt={handleOpenReceiptModal}
           />

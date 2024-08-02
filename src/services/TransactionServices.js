@@ -26,6 +26,21 @@ const getTransactions = async (page, size, startDate, endDate) => {
 };
 
 /**
+ * Fetches tenant transactions
+ * @param {number} page
+ * @param {number} size
+ * @returns {Promise<Transaction[]>}
+ */
+const getTenantTransactions = async (page, size) => {
+  setAuthToken(AxiosUtility);
+  const {data: res} = await AxiosUtility.get(
+    `/transactions/tenant-transactions?page=${page}&size=${size}`,
+  );
+
+  return res;
+};
+
+/**
  * Fetches all transactions comming in
  * @param {number} page
  * @param {number} size
@@ -65,6 +80,7 @@ const getTotalTransactions = async () => {
 
 const TransactionServices = {
   getTransactions,
+  getTenantTransactions,
   getTransactionsIn,
   getTransactionsOut,
   getTotalTransactions,

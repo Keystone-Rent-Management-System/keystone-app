@@ -16,6 +16,19 @@ const getAgreements = async (page, size) => {
 };
 
 /**
+ * Fetches active agreement
+ * @returns {Promise<Agreement>}
+ */
+const getActiveAgreement = async () => {
+  setAuthToken(AxiosUtility);
+  const {data: res} = await AxiosUtility.get(
+    '/tenants/current-active-agreement',
+  );
+
+  return res;
+};
+
+/**
  * Accept agreement
  * @param {number} id
  * @returns {Promise<Agreement>}
@@ -48,6 +61,7 @@ const sendTerminationNotice = async data => {
 
 const AgreementServices = {
   getAgreements,
+  getActiveAgreement,
   acceptAgreement,
   terminateAgreement,
   sendTerminationNotice,

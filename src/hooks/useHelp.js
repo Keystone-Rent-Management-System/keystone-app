@@ -5,6 +5,7 @@ const useHelp = () => {
   const makeComplaintRef = useRef();
   const requestRepairRef = useRef();
   const generalAssistanceRef = useRef();
+  const paymentAllocationRef = useRef();
 
   const handleOpenHelpModal = useCallback(() => {
     getHelpRef.current?.expand();
@@ -38,6 +39,14 @@ const useHelp = () => {
     generalAssistanceRef.current?.close();
   }, []);
 
+  const handleOpenPaymentAllocationModal = useCallback(() => {
+    paymentAllocationRef.current?.expand();
+  }, []);
+
+  const handleClosePaymentAllocationModal = useCallback(() => {
+    paymentAllocationRef.current?.close();
+  }, []);
+
   const handleMakeComplaint = () => {
     handleCloseHelpModal();
     handleOpenMakeComplaintModal();
@@ -51,17 +60,24 @@ const useHelp = () => {
     handleOpenGeneralAssistanceModal();
   };
 
+  const handlePaymentAllocation = () => {
+    handleCloseHelpModal();
+    handleOpenPaymentAllocationModal();
+  };
+
   return {
     getHelpRef,
     makeComplaintRef,
     requestRepairRef,
     generalAssistanceRef,
+    paymentAllocationRef,
     // help modal methods
     handleOpenHelpModal,
     handleCloseHelpModal,
     handleMakeComplaint,
     handleRequestRepair,
     handleGeneralAssistance,
+    handlePaymentAllocation,
     //   make complaint
     handleOpenMakeComplaintModal,
     handleCloseMakeComplaintModal,
@@ -71,6 +87,9 @@ const useHelp = () => {
     //   general assistance
     handleOpenGeneralAssistanceModal,
     handleCloseGeneralAssistanceModal,
+    //  payment allocation
+    handleOpenPaymentAllocationModal,
+    handleClosePaymentAllocationModal,
   };
 };
 

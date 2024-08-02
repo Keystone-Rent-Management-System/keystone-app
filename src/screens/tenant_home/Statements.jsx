@@ -12,10 +12,10 @@ import {SelectorButton} from '../../components/screens/explore/RoomSelector';
 import {StatementListSvg} from '../../assets/icons';
 import COLORS from '../../constants/Theme';
 import {ExportStatementModal} from '../../components/modals';
-import {useStatement} from '../../hooks/useStatement';
 import moment from 'moment';
 import numberWithCommas from '../../utils/numberWithCommas';
 import {generateYears} from '../../utils/yearsOptions';
+import {useTenantTransaction} from '../../hooks';
 
 const Statements = () => {
   const exportModalRef = useRef();
@@ -24,11 +24,11 @@ const Statements = () => {
   const years = generateYears();
 
   const [active, setActive] = useState(0);
-  const [year, setYear] = useState('');
   const [size, setSize] = useState(20);
 
   const {isPending, isRefetching, statements, totalElements, refetch} =
-    useStatement(size, year);
+    useTenantTransaction(size);
+
   const handleLoadMore = () => {
     if (!isPending && !isRefetching && totalElements > size) {
       setSize(prev => prev + 10);
@@ -57,7 +57,6 @@ const Statements = () => {
         text={item}
         handlePress={() => {
           setActive(index);
-          setYear(item);
         }}
       />
     );
