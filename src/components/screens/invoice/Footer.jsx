@@ -3,13 +3,7 @@ import {View} from 'react-native';
 
 import {CButton} from '../../general';
 
-const Footer = ({
-  handlePrompt,
-  hasConcern,
-  handleResolve,
-  status,
-  handleViewReceipt,
-}) => (
+const Footer = ({handlePrompt, hasConcern, status, handleViewReceipt}) => (
   <View className={'h-16 p-2 px-4 flex-row w-full bg-bg shadow-xl space-x-4'}>
     {status === 'paid' || status === 'overpaid' ? (
       <CButton
@@ -22,10 +16,11 @@ const Footer = ({
       <>
         {hasConcern ? (
           <CButton
-            ClassName={'bg-none border border-primary flex-1 mr-5 mx-auto'}
+            ClassName={
+              'bg-none border border-primary flex-1 mr-5 mx-auto cursor-default'
+            }
             textClassName={'text-primary font-inter text-xs'}
-            text={'Resolve Concern'}
-            onPress={handleResolve}
+            text={'To be resolved'}
           />
         ) : (
           <CButton

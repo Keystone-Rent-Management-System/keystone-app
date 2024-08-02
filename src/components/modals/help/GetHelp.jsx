@@ -11,6 +11,7 @@ const GetHelp = forwardRef((props, ref) => {
     props?.handleMakeComplaint,
     props?.handleRequestRepair,
     props?.handleGeneralAssistance,
+    props?.handlePaymentAllocation,
   ];
 
   return (
@@ -69,5 +70,9 @@ const helpList = [
   {
     title: 'General Assistance',
     description: 'Any other form of assistance',
+  },
+  {
+    title: 'Allocate payment',
+    description: 'Provide payment transaction code',
   },
 ];

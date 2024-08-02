@@ -25,7 +25,7 @@ const GeneralRepairsModal = forwardRef((props, ref) => {
 
           <TextInput
             className={
-              'text-black font-inter border border-border_grey w-full rounded-xl font-inter text-xs px-3'
+              'text-black font-inter border border-border_grey w-full rounded-xl text-xs px-3'
             }
             numberOfLines={5}
             placeholder={'Enter Details'}

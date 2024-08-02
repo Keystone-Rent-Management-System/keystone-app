@@ -10,6 +10,7 @@ import {
   MakeComplaintModal,
   RequestExtensionModal,
   RequestRepairModal,
+  PaymentAllocationModal,
 } from '../../modals';
 import {useHelp} from '../../../hooks';
 
@@ -22,14 +23,17 @@ const Menu = () => {
     makeComplaintRef,
     requestRepairRef,
     generalAssistanceRef,
+    paymentAllocationRef,
     handleCloseHelpModal,
     handleOpenHelpModal,
     handleMakeComplaint,
     handleRequestRepair,
+    handlePaymentAllocation,
     handleGeneralAssistance,
     handleCloseMakeComplaintModal,
     handleCloseRequestRepairModal,
     handleCloseGeneralAssistanceModal,
+    handleClosePaymentAllocationModal,
   } = useHelp();
 
   const handleOpenExtensionModal = useCallback(() => {
@@ -100,6 +104,7 @@ const Menu = () => {
         handleMakeComplaint={handleMakeComplaint}
         handleRequestRepair={handleRequestRepair}
         handleGeneralAssistance={handleGeneralAssistance}
+        handlePaymentAllocation={handlePaymentAllocation}
       />
 
       <MakeComplaintModal
@@ -120,6 +125,11 @@ const Menu = () => {
       <RequestExtensionModal
         ref={extensionModalRef}
         handleCloseModal={handleCloseExtensionModal}
+      />
+
+      <PaymentAllocationModal
+        ref={paymentAllocationRef}
+        handleCloseModal={handleClosePaymentAllocationModal}
       />
     </>
   );
