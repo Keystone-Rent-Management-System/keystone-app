@@ -1,5 +1,7 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
+import useGlobals from '../provider/store/useGlobals';
+import {useNavigation} from '@react-navigation/native';
 
 import {
   Bills,
@@ -21,7 +23,15 @@ import TransactionTopTabNav from './TransactionTopTabNav';
 const Stack = createStackNavigator();
 
 const HomeStack = () => {
+  const {auth} = useGlobals(state => state.state);
+  const navigation = useNavigation();
   const {isPending, profile} = useAuth();
+
+  useEffect(() => {
+    if (!auth?.access_token) {
+      navigation.navigate('auth__login');
+    }
+  }, [auth?.access_token, navigation]);
 
   if (isPending) {
     return <LoadingModal />;
