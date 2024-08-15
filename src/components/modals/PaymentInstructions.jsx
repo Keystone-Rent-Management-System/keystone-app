@@ -26,14 +26,8 @@ const PaymentInstructions = forwardRef((props, ref) => {
           <Text className={'font-inter text-xs text-gray-700'}>
             Go to your mpesa menu select Lipa na M-PESA:
           </Text>
-          <PaymentInstruction
-            title={'Pay bill'}
-            value={props?.invoice?.bankMpesaPaybillNumber}
-          />
-          <PaymentInstruction
-            title={'Account no'}
-            value={props?.invoice?.accountNumber}
-          />
+          <PaymentInstruction title={'Pay bill'} value={'522522'} />
+          <PaymentInstruction title={'Account no'} value={'7776542'} />
           <PaymentInstruction
             title={'Amount'}
             value={`KES. ${props?.invoice?.dueAmount}`}

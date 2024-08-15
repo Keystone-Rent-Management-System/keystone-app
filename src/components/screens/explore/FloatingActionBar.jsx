@@ -19,7 +19,7 @@ const FloatingActionBar = ({amount}) => (
       <TouchableOpacity
         className={'bg-primary py-3.5 rounded-lg items-center px-4'}>
         <Text className={'text-xs text-white font-inter-medium'}>
-          Contact Owner
+          Contact Pallax
         </Text>
       </TouchableOpacity>
     </View>

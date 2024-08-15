@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 
 import Helper from '@/utils/Helper';
-import { IconLabel } from '@/components/screens/explore/ListingItem';
+import {IconLabel} from '@/components/screens/explore/ListingItem';
 import {
   BackSvg,
   BalconySvg,
@@ -26,21 +26,21 @@ import {
   ExploreAmenity,
   Layout,
 } from '@/components';
-import { useNavigation } from '@react-navigation/native';
-import { VirtualTourModal } from '@/components/modals';
-import { LandlordItem } from '../../components';
-import { useSpecificPropertyListing } from '../../hooks/usePropertyListing';
+import {useNavigation} from '@react-navigation/native';
+import {VirtualTourModal} from '@/components/modals';
+import {LandlordItem} from '../../components';
+import {useSpecificPropertyListing} from '../../hooks/usePropertyListing';
 import numberWithCommas from '../../utils/numberWithCommas';
-import MapView, { Marker } from 'react-native-maps';
-import { HouseMapMarker } from '../../assets/icons';
+import MapView, {Marker} from 'react-native-maps';
+import {HouseMapMarker} from '../../assets/icons';
 
-const ApartmentView = ({ route: { params } }) => {
+const ApartmentView = ({route: {params}}) => {
   const bottomSheetRef = useRef();
   const navigation = useNavigation();
 
   const [modalState, setModalState] = useState(false);
 
-  const { isPending, listing } = useSpecificPropertyListing(params?.apartment);
+  const {isPending, listing} = useSpecificPropertyListing(params?.apartment);
 
   const region = useMemo(
     () => ({
@@ -117,7 +117,11 @@ const ApartmentView = ({ route: { params } }) => {
         {!isPending && (
           <Image
             className={'w-full h-60'}
-            source={listing?.showCaseUploads[0]?.fileUrl ? {uri: listing?.showCaseUploads[0]?.fileUrl}: require('../../assets/images/shot-panoramic-composition-bedroom.jpg')}
+            source={
+              listing?.showCaseUploads[0]?.fileUrl
+                ? {uri: listing?.showCaseUploads[0]?.fileUrl}
+                : require('../../assets/images/shot-panoramic-composition-bedroom.jpg')
+            }
             alt={'property_img'}
           />
         )}
@@ -193,8 +197,8 @@ const ApartmentView = ({ route: { params } }) => {
 
         <LandlordItem
           unitName={listing?.unitName}
-          phoneNumber={listing?.property?.propertyContacts?.phoneNumber}
-          userName={listing?.property?.propertyContacts?.contactName}
+          phoneNumber={'0743271775'}
+          userName={'Pallax'}
         />
 
         {/* Location details */}
