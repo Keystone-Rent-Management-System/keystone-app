@@ -1,7 +1,8 @@
 import React from 'react';
 
-import {Text, TextInput, View} from 'react-native';
+import {Text, TextInput, TouchableOpacity, View} from 'react-native';
 import COLORS from '../../../constants/Theme';
+import {ClosedEyeSvg, OpenEyeSvg} from '../../../assets/icons/auth';
 
 const CInput = ({
   icon,
@@ -45,6 +46,8 @@ export const PasswordCInput = ({
   labelClassName,
   containerClassName,
   hasError,
+  handleEyeClick,
+  type,
   error,
   ...props
 }) => (
@@ -55,8 +58,18 @@ export const PasswordCInput = ({
     <CInput
       {...props}
       hasError={hasError}
-      secureTextEntry={true}
+      secureTextEntry={type === 'password' ? true : false}
       textContentType={'password'}
+      rightElement={
+        <TouchableOpacity
+          onPress={() => {
+            type === 'password'
+              ? handleEyeClick('text')
+              : type === 'text' && handleEyeClick('password');
+          }}>
+          {type === 'password' ? <ClosedEyeSvg /> : <OpenEyeSvg />}
+        </TouchableOpacity>
+      }
     />
     {hasError && (
       <Text

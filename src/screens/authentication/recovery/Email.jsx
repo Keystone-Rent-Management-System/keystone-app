@@ -3,15 +3,15 @@ import {Text} from 'react-native';
 
 import {CButton, Layout} from '../../../components';
 import {EmailSvg} from '../../../assets/icons';
-import * as yup from 'yup';
+import {object, string} from 'yup';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {useForm} from 'react-hook-form';
 import ControlledInput from '../../../components/general/input/ControlledInput';
 import {useRequestPasswordReset} from '../../../hooks';
 
 const Email = () => {
-  const schema = yup.object({
-    email: yup.string().email().required().min(2),
+  const schema = object({
+    email: string().email().required().min(2),
   });
   const {handleSubmit, control} = useForm({
     resolver: yupResolver(schema),

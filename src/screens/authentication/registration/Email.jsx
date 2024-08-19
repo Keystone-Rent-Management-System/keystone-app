@@ -1,16 +1,15 @@
 import React from 'react';
 import {Text} from 'react-native';
 import {useForm} from 'react-hook-form';
-import {string} from 'yup';
+import {object, string} from 'yup';
 import {yupResolver} from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 
 import {CButton, Layout} from '../../../components';
 import {EmailSvg} from '../../../assets/icons';
 import ControlledInput from '../../../components/general/input/ControlledInput';
 import {useVerifyEmail} from '../../../hooks';
 
-const emailSchema = yup.object({
+const emailSchema = object({
   email: string().email().required(),
 });
 

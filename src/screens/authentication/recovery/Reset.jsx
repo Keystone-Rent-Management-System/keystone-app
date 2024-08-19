@@ -1,16 +1,19 @@
-import React from 'react';
+import React, {useState} from 'react';
 
 import {CButton, Layout} from '../../../components';
 import {LockSvg} from '../../../assets/icons';
 import {yupResolver} from '@hookform/resolvers/yup';
-import {string} from 'yup';
+import {object, string} from 'yup';
 import {useForm} from 'react-hook-form';
-import * as yup from 'yup';
 import ControlledPasswordInput from '../../../components/general/input/ControlledPasswordInput';
 import {useResetPassword} from '../../../hooks';
 
 const Reset = () => {
-  const schema = yup.object({
+  const [passworType, setPasswordType] = useState('password');
+  const [confirmationPassworType, setConfirmationPasswordType] =
+    useState('password');
+
+  const schema = object({
     password: string().required().min(6),
     confirmPassword: string().required().min(6),
   });
@@ -37,6 +40,8 @@ const Reset = () => {
         required
         name={'password'}
         control={control}
+        type={passworType}
+        handleEyeClick={setPasswordType}
       />
 
       <ControlledPasswordInput
@@ -49,6 +54,8 @@ const Reset = () => {
         containerClassName={'mt-4'}
         name={'confirmPassword'}
         control={control}
+        type={confirmationPassworType}
+        handleEyeClick={setConfirmationPasswordType}
       />
 
       <CButton

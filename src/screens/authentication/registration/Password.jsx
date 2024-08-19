@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {CButton, Layout} from '../../../components';
 import {LockSvg} from '../../../assets/icons';
 import {useNavigation} from '@react-navigation/native';
@@ -16,6 +16,10 @@ const schema = yup.object({
 });
 
 const Password = () => {
+  const [passworType, setPasswordType] = useState('password');
+  const [confirmationPassworType, setConfirmationPasswordType] =
+    useState('password');
+
   const {
     state: {registering_user},
     updateRegisteringUser,
@@ -54,6 +58,8 @@ const Password = () => {
         required
         name={'password'}
         control={control}
+        type={passworType}
+        handleEyeClick={setPasswordType}
       />
 
       <ControlledPasswordInput
@@ -66,6 +72,8 @@ const Password = () => {
         containerClassName={'mt-4'}
         name={'confirmPassword'}
         control={control}
+        type={confirmationPassworType}
+        handleEyeClick={setConfirmationPasswordType}
       />
 
       <CButton

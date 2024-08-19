@@ -1,5 +1,5 @@
-import React from "react";
-import Svg, { Path } from "react-native-svg";
+import React from 'react';
+import Svg, {Path} from 'react-native-svg';
 
 const Image = () => {
   return (
@@ -8,8 +8,7 @@ const Image = () => {
       height="16"
       viewBox="0 0 20 16"
       fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+      xmlns="http://www.w3.org/2000/svg">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"

@@ -1,17 +1,21 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Text} from 'react-native';
 
 import {CButton, Layout} from '@/components';
 import ControlledPasswordInput from '../../../components/general/input/ControlledPasswordInput';
 import {LockSvg} from '../../../assets/icons';
 import {yupResolver} from '@hookform/resolvers/yup';
-import {string} from 'yup';
+import {object, string} from 'yup';
 import {useForm} from 'react-hook-form';
-import * as yup from 'yup';
 import {useChangePassword} from '../../../hooks';
 
 const ChangePassword = () => {
-  const schema = yup.object({
+  const [currentPassworType, setCurrentPasswordType] = useState('password');
+  const [passworType, setPasswordType] = useState('password');
+  const [confirmationPassworType, setConfirmationPasswordType] =
+    useState('password');
+
+  const schema = object({
     currentPassword: string().required().min(6),
     password: string().required().min(6),
     confirmPassword: string().required().min(6),
@@ -40,6 +44,8 @@ const ChangePassword = () => {
         required
         name={'currentPassword'}
         control={control}
+        type={currentPassworType}
+        handleEyeClick={setCurrentPasswordType}
       />
 
       <ControlledPasswordInput
@@ -53,6 +59,8 @@ const ChangePassword = () => {
         required
         name={'password'}
         control={control}
+        type={passworType}
+        handleEyeClick={setPasswordType}
       />
 
       <ControlledPasswordInput
@@ -66,6 +74,8 @@ const ChangePassword = () => {
         required
         name={'confirmPassword'}
         control={control}
+        type={confirmationPassworType}
+        handleEyeClick={setConfirmationPasswordType}
       />
 
       <CButton

@@ -2,18 +2,17 @@ import React from 'react';
 import {CButton, Layout} from '../../../components';
 import {FlagSvg, UserSvg} from '../../../assets/icons';
 import {StyleSheet, Text, View} from 'react-native';
-import {string} from 'yup';
-import * as yup from 'yup';
+import {object, string} from 'yup';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {useForm} from 'react-hook-form';
 import useGlobals from '../../../provider/store/useGlobals';
 import ControlledInput from '../../../components/general/input/ControlledInput';
 import {useRegister} from '../../../hooks';
 
-const schema = yup.object({
+const schema = object({
   firstName: string().required().min(1),
   lastName: string().required().min(1),
-  phoneNumber: string().required().min(9).max(10),
+  phoneNumber: string().required().length(9),
   identificationNumber: string().required().min(6),
 });
 
@@ -69,6 +68,7 @@ const Profile = () => {
           ClassName={'border border-border_grey px-2'}
           InputClassName={'text-[13px] px-2 text-gray-600 '}
           name={'phoneNumber'}
+          keyboardType={'number-pad'}
           control={control}
         />
 
@@ -80,6 +80,7 @@ const Profile = () => {
           ClassName={'border border-border_grey px-2'}
           InputClassName={'text-[13px] px-2 text-gray-600 '}
           name={'identificationNumber'}
+          keyboardType={'number-pad'}
           control={control}
         />
       </View>

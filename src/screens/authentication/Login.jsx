@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
@@ -6,18 +6,20 @@ import {Layout} from '@/components';
 import {EmailSvg, LockSvg} from '../../assets/icons';
 import {CButton} from '../../components';
 import {yupResolver} from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import {object, string} from 'yup';
 import {useForm} from 'react-hook-form';
 import ControlledInput from '../../components/general/input/ControlledInput';
 import ControlledPasswordInput from '../../components/general/input/ControlledPasswordInput';
 import {useLogin} from '../../hooks';
 
-const schema = yup.object({
-  username: yup.string().email().required().min(2),
-  password: yup.string().required().min(6),
+const schema = object({
+  username: string().email().required().min(2),
+  password: string().required().min(6),
 });
 
 const Login = () => {
+  const [passworType, setPasswordType] = useState('password');
+
   const navigation = useNavigation();
   const {handleSubmit, control} = useForm({
     resolver: yupResolver(schema),
@@ -57,6 +59,8 @@ const Login = () => {
           containerClassName={'mt-4'}
           name={'password'}
           control={control}
+          type={passworType}
+          handleEyeClick={setPasswordType}
         />
       </View>
 
