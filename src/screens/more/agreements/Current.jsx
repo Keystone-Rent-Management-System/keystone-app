@@ -10,11 +10,7 @@ import AgreementModalSheet from '../../../components/modals/Agreement';
 import {MovingOutModal} from '../../../components/modals';
 import {useHelp} from '../../../hooks';
 import {useBottomSheetModal} from '@gorhom/bottom-sheet';
-import {
-  useAcceptAgrement,
-  useAgrement,
-  useTerminateAgrement,
-} from '../../../hooks';
+import {useAcceptAgrement, useAgrement} from '../../../hooks';
 import moment from 'moment';
 
 const Current = () => {
@@ -45,8 +41,10 @@ const Current = () => {
         currentAgreement?.status?.toLowerCase() === 'pending',
     );
 
-  const {handleAcceptAgreement} = useAcceptAgrement(dismiss, refetch);
-  const {handleTerminateAgreement} = useTerminateAgrement(dismiss, refetch);
+  const {acceptAgrementMutation, handleAcceptAgreement} = useAcceptAgrement(
+    dismiss,
+    refetch,
+  );
 
   return (
     <>
@@ -58,7 +56,7 @@ const Current = () => {
         }
         handleIssueTermination={handleIssueTermination}
         handleAcceptAgreement={handleAcceptAgreement}
-        handleTerminateAgreement={handleTerminateAgreement}
+        acceptAgrementMutation={acceptAgrementMutation}
       />
       <Layout>
         <FlashList

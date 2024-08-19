@@ -10,12 +10,7 @@ import useAuth, {
   useChangePassword,
 } from './useAuth';
 import {useRefreshToken} from './useRefreshToken';
-import {
-  useAgrement,
-  useActiveAgrement,
-  useAcceptAgrement,
-  useTerminateAgrement,
-} from './useAgrement';
+import {useAgrement, useActiveAgrement, useAcceptAgrement} from './useAgrement';
 import {useSpecificUnit} from './useUnit';
 import {
   useUnPaidInvoice,
@@ -49,7 +44,6 @@ export {
   useAgrement,
   useActiveAgrement,
   useAcceptAgrement,
-  useTerminateAgrement,
   useUnPaidInvoice,
   useActiveInvoices,
   usePartiallyPaidInvoice,

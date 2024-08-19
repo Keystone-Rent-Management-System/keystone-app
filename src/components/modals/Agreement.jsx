@@ -1,6 +1,6 @@
-import React, {forwardRef} from 'react';
+import React, {forwardRef, useState} from 'react';
 
-import {Text, TouchableOpacity, View} from 'react-native';
+import {Text, TouchableOpacity, View, StyleSheet} from 'react-native';
 import CustomBottomSheetModal from './CustomBottomSheetModal';
 import {CButton} from '../general';
 import {CloseSvg} from '../../assets/icons';
@@ -8,8 +8,12 @@ import moment from 'moment';
 import {BottomSheetScrollView, useBottomSheetModal} from '@gorhom/bottom-sheet';
 import Badge from '../screens/explore/Badge';
 import numberWithCommas from '../../utils/numberWithCommas';
+import CheckBox from '@react-native-community/checkbox';
+import COLORS from '../../constants/Theme';
 
 const AgreementModalSheet = forwardRef((props, ref) => {
+  const [isSelected, setSelection] = useState(false);
+
   const tenantDetails = {
     Name: `${props?.agreement?.tenants?.tenantUser?.firstName} ${props?.agreement?.tenants?.tenantUser?.lastName}`,
     ID: props?.agreement?.tenants?.tenantUser?.identificationNumber,
@@ -103,7 +107,7 @@ const AgreementModalSheet = forwardRef((props, ref) => {
       ref={ref}
       snapPoints={['50%', '99%']}
       handleComponent={() => renderSheetHeader(props?.type)}>
-      <BottomSheetScrollView style={{padding: 16}} className={'p-4 flex-col '}>
+      <BottomSheetScrollView style={{padding: 16}} className={'p-4 flex-col'}>
         <Text className={'text-grey_1 text-xs font-inter leading-5'}>
           This Tenancy Agreement ("Agreement") is made and entered into on this{' '}
           <Text className={'font-inter-semibold text-grey_1 text-xs leading-5'}>
@@ -141,6 +145,7 @@ const AgreementModalSheet = forwardRef((props, ref) => {
           ))}
         </AgreementItem>
 
+        {/* Recitals */}
         <AgreementItem title={'RECITALS'} ClassName={'pl-1'}>
           <View className={'pl-1'}>
             {terms.map((term, ind) => (
@@ -184,7 +189,7 @@ const AgreementModalSheet = forwardRef((props, ref) => {
           </View>
         </AgreementItem>
 
-        <View className={'h-5 w-full'} />
+        {props.type === 'agreed' ? <View className={'h-5 w-full'} /> : null}
       </BottomSheetScrollView>
       {props.type === 'agreed' ? (
         <View className={'py-5 pb-10 w-full flex-row justify-center'}>
@@ -196,19 +201,35 @@ const AgreementModalSheet = forwardRef((props, ref) => {
         </View>
       ) : (
         props.type === 'pending' && (
-          <View className={'py-5 pb-10 w-full flex-row justify-around'}>
-            <TouchableOpacity
-              onPress={() => props.handleAcceptAgreement(props.agreement.id)}>
-              <Text className={'text-c_green font-inter-semibold'}>Accept</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() =>
-                props.handleTerminateAgreement(props.agreement.id)
+          <View className={'w-full pt-2 pb-10'}>
+            <View
+              className={
+                'my-2 w-full flex flex-row items-start justify-center gap-1'
               }>
-              <Text className={'text-red-700 font-inter-semibold'}>
-                Decline
+              <CheckBox
+                disabled={false}
+                value={isSelected}
+                onValueChange={newValue => setSelection(newValue)}
+                tintColors={{true: COLORS.primary, false: COLORS.primary}}
+                tintColor={COLORS.primary}
+                onFillColor={COLORS.primary}
+              />
+              <Text className={'text-black m-8'}>
+                By checking here you confirm that you have read the agreement.{' '}
               </Text>
-            </TouchableOpacity>
+            </View>
+            <CButton
+              ClassName={'bg-primary text-white mx-4'}
+              disabled={!isSelected}
+              isLoading={props.acceptAgrementMutation.isPending}
+              onPress={() => props.handleAcceptAgreement(props.agreement.id)}
+              textClassName={'text-white font'}
+              text={
+                props.acceptAgrementMutation.isPending
+                  ? 'Accepting...'
+                  : 'I agree to the terms'
+              }
+            />
           </View>
         )
       )}
@@ -274,3 +295,10 @@ const SheetHeader = ({type}) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  checkbox: {
+    // alignSelf: 'center',
+    backgroundColor: '#02237405',
+  },
+});

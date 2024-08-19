@@ -42,27 +42,7 @@ export const useAcceptAgrement = (dismiss, refetch) => {
     acceptAgrementMutation.mutateAsync(id);
   };
 
-  return {handleAcceptAgreement};
-};
-
-export const useTerminateAgrement = (dismiss, refetch) => {
-  const acceptAgrementMutation = useMutation({
-    mutationKey: ['agreement_current', 'terminate'],
-    mutationFn: AgreementServices.terminateAgreement,
-    onSuccess: () => {
-      refetch();
-      dismiss();
-    },
-    onError: err => {
-      ToastAndroid.show('Decline agreement failed ' + getError(err), 4000);
-    },
-  });
-
-  const handleTerminateAgreement = id => {
-    acceptAgrementMutation.mutateAsync(id);
-  };
-
-  return {handleTerminateAgreement};
+  return {acceptAgrementMutation, handleAcceptAgreement};
 };
 
 export const useSendTerminationNotice = dismiss => {
