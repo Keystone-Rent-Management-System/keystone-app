@@ -92,7 +92,7 @@ const Explore = () => {
         balconies={balconies}
         bedrooms={numberOfBedrooms}
         bathrooms={numberOfBathrooms}
-        image={showCaseUploads[0]?.fileUrl}
+        image={''}
         id={id}
         handlePress={() => handleViewApartment(id)}
       />
@@ -139,7 +139,7 @@ const Explore = () => {
           style={styles.exploreView}
           className={'absolute z-50 inset-x-0 bottom-0 px-3 py-2'}>
           <ExploreListingItem
-            image={currentProperty?.showCaseUploads[0]?.fileUrl}
+            image={''}
             title={currentProperty?.unitName}
             userType={'Landlord'}
             category={currentProperty?.houseType}

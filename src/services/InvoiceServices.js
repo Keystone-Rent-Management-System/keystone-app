@@ -4,12 +4,13 @@ import AxiosUtility, {setAuthToken} from './AxiosServices';
  * Fetches all invoices
  * @param {number} page page number
  * @param {number} size size per page
+ * @param {number} id agreement id
  * @returns {Promise<Invoice[]>}
  */
-const getInvoices = async (page, size, status) => {
+const getInvoices = async (page, size, id, status) => {
   setAuthToken(AxiosUtility);
   const {data: res} = await AxiosUtility.get(
-    `/invoices/tenant-invoice?status=${status}&page=${page}&size=${size}`,
+    `/invoices/agreement/${id}&page=${page}&size=${size}`,
   );
 
   return res;

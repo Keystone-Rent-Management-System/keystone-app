@@ -117,11 +117,7 @@ const ApartmentView = ({route: {params}}) => {
         {!isPending && (
           <Image
             className={'w-full h-60'}
-            source={
-              listing?.showCaseUploads[0]?.fileUrl
-                ? {uri: listing?.showCaseUploads[0]?.fileUrl}
-                : require('../../assets/images/shot-panoramic-composition-bedroom.jpg')
-            }
+            source={require('../../assets/images/shot-panoramic-composition-bedroom.jpg')}
             alt={'property_img'}
           />
         )}

@@ -2,11 +2,15 @@ import {ToastAndroid} from 'react-native';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import InvoiceServices from '../services/InvoiceServices';
 import {useEffect, useState} from 'react';
+import {useActiveAgrement} from './useAgrement';
 
 export const useUnPaidInvoice = size => {
+  const {agreement} = useActiveAgrement();
+
   const {isPending, isRefetching, error, data, refetch} = useQuery({
     queryKey: ['invoice/unpaid'],
-    queryFn: () => InvoiceServices.getInvoices(0, size, 'unpaid'),
+    queryFn: () =>
+      InvoiceServices.getInvoices(0, size, agreement?.id, 'unpaid'),
   });
 
   const invoices = data?.data || [];
@@ -22,9 +26,12 @@ export const useUnPaidInvoice = size => {
 };
 
 export const usePartiallyPaidInvoice = size => {
+  const {agreement} = useActiveAgrement();
+
   const {isPending, isRefetching, error, data, refetch} = useQuery({
     queryKey: ['invoice/partially-paid'],
-    queryFn: () => InvoiceServices.getInvoices(0, size, 'paidPartial'),
+    queryFn: () =>
+      InvoiceServices.getInvoices(0, size, agreement?.id, 'paidPartial'),
   });
 
   const invoices = data?.data || [];
@@ -40,9 +47,11 @@ export const usePartiallyPaidInvoice = size => {
 };
 
 export const usePaidInvoice = size => {
+  const {agreement} = useActiveAgrement();
+
   const {isPending, isRefetching, error, data, refetch} = useQuery({
     queryKey: ['invoice/paid'],
-    queryFn: () => InvoiceServices.getInvoices(0, size, 'paid'),
+    queryFn: () => InvoiceServices.getInvoices(0, size, agreement?.id, 'paid'),
   });
 
   const invoices = data?.data || null;
@@ -58,9 +67,12 @@ export const usePaidInvoice = size => {
 };
 
 export const useOverPaidInvoice = size => {
+  const {agreement} = useActiveAgrement();
+
   const {isPending, isRefetching, error, data, refetch} = useQuery({
     queryKey: ['invoice/over-paid'],
-    queryFn: () => InvoiceServices.getInvoices(0, size, 'overpaid'),
+    queryFn: () =>
+      InvoiceServices.getInvoices(0, size, agreement?.id, 'overpaid'),
   });
 
   const invoices = data?.data || [];
