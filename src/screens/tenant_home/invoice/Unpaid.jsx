@@ -57,8 +57,8 @@ export const renderInvoiceItem = (item, handlePress = () => {}) => {
       title={item?.propertyName?.split('-')[0]}
       customDate={moment(item?.updatedAt)?.format('Do MMMM, YYYY')}
       unit={item?.propertyName?.split('-')[1]}
-      amount={numberConverter(item?.dueAmount)}
-      isPartial={item?.paidAmount && item?.paidAmount < item?.totalAmount}
+      amount={numberConverter(item?.totalAmount)}
+      isPartial={item?.paymentStatus?.toLowerCase() === 'paid_partially'}
       handlePress={() => handlePress(item?.id)}
     />
   );

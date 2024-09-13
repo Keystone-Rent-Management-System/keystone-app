@@ -179,9 +179,9 @@ const ApartmentView = ({route: {params}}) => {
               <IconLabel
                 icon={<BalconySvg />}
                 text={
-                  listing?.numberOfBathrooms +
+                  listing?.balcony +
                   ` Balcon${Helper.renderSingularPlural(
-                    listing?.numberOfBathrooms,
+                    listing?.balcony,
                     'ies',
                     'y',
                   )}`

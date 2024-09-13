@@ -175,7 +175,7 @@ const financeOptions = [
   },
   {
     icon: <BillsSvg />,
-    text: 'Bills',
+    text: 'Payments',
     screen: {
       name: 'bills',
     },
