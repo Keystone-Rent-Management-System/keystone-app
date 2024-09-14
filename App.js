@@ -10,10 +10,13 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {StyleSheet} from 'react-native';
 
 import Main from './src/Main';
+import RemoteNotification from './src/components/notifications';
 
 function App() {
   return (
     <GestureHandlerRootView style={styles.gestureProvider}>
+      <RemoteNotification />
+
       <Main />
     </GestureHandlerRootView>
   );
