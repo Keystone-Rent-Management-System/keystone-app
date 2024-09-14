@@ -19,9 +19,9 @@ const RemoteNotification = () => {
     checkApplicationPermission();
     // Using this function as we are rendering local notification so without this function we will receive multiple notification for same notification
     // We have same channelID for every FCM test server notification.
-    PushNotification.getChannels(function (channel_ids) {
+    PushNotification?.getChannels(function (channel_ids) {
       channel_ids.forEach(id => {
-        PushNotification.deleteChannel(id);
+        PushNotification?.deleteChannel(id);
       });
     });
     PushNotification.configure({
@@ -32,11 +32,11 @@ const RemoteNotification = () => {
 
       // (required) Called when a remote or local notification is opened or received
       onNotification: function (notification) {
-        const {message, title, id} = notification as any;
-        let strTitle: string = JSON.stringify(title).split('"').join('');
-        let strBody: string = JSON.stringify(message).split('"').join('');
-        const key: string = JSON.stringify(id).split('"').join('');
-        PushNotification.createChannel(
+        const {message, title, id} = notification;
+        let strTitle = JSON.stringify(title).split('"').join('');
+        let strBody = JSON.stringify(message).split('"').join('');
+        const key = JSON.stringify(id).split('"').join('');
+        PushNotification?.createChannel(
           {
             channelId: key, // (required & must be unique)
             channelName: 'remote messasge', // (required)
@@ -46,7 +46,7 @@ const RemoteNotification = () => {
           },
           created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
         );
-        PushNotification.localNotification({
+        PushNotification?.localNotification({
           channelId: key, //this must be same with channelId in createchannel
           title: strTitle,
           message: strBody,
