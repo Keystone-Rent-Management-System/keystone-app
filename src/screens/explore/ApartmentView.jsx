@@ -8,8 +8,6 @@ import {
   View,
 } from 'react-native';
 
-import Helper from '@/utils/Helper';
-import {IconLabel} from '@/components/screens/explore/ListingItem';
 import {
   BackSvg,
   BalconySvg,
@@ -19,20 +17,23 @@ import {
   UploadSvg,
   VirtualTourSvg,
 } from '@/assets/icons';
-import COLORS from '@/constants/Theme';
 import {
   ApartmentViewFloatingActionBar,
   ExploreActionBtn,
   ExploreAmenity,
   Layout,
 } from '@/components';
-import {useNavigation} from '@react-navigation/native';
 import {VirtualTourModal} from '@/components/modals';
-import {LandlordItem} from '../../components';
-import {useSpecificPropertyListing} from '../../hooks/usePropertyListing';
-import numberWithCommas from '../../utils/numberWithCommas';
+import {IconLabel} from '@/components/screens/explore/ListingItem';
+import COLORS from '@/constants/Theme';
+import Helper from '@/utils/Helper';
+import {useNavigation} from '@react-navigation/native';
 import MapView, {Marker} from 'react-native-maps';
 import {HouseMapMarker} from '../../assets/icons';
+import {LandlordItem} from '../../components';
+import {PALLAX_PHONE_NUMBER} from '../../constants';
+import {useSpecificPropertyListing} from '../../hooks/usePropertyListing';
+import numberWithCommas from '../../utils/numberWithCommas';
 
 const ApartmentView = ({route: {params}}) => {
   const bottomSheetRef = useRef();
@@ -193,7 +194,7 @@ const ApartmentView = ({route: {params}}) => {
 
         <LandlordItem
           unitName={listing?.unitName}
-          phoneNumber={'0743271775'}
+          phoneNumber={PALLAX_PHONE_NUMBER}
           userName={'Pallax'}
         />
 
