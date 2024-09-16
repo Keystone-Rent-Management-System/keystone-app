@@ -26,10 +26,16 @@ const LandlordItem = ({userName, phoneNumber, ClassName}) => {
         className={'flex-row items-center'}
         style={styles.actionButtonWrapper}>
         {/* message button */}
-        <ExploreActionBtn icon={<MessageSvg />} />
+        <ExploreActionBtn
+          icon={<MessageSvg />}
+          handlePress={Helper.handleSmsSupport}
+        />
 
         {/* call button */}
-        <ExploreActionBtn icon={<PhoneSvg />} />
+        <ExploreActionBtn
+          icon={<PhoneSvg />}
+          handlePress={Helper.handleCallSupport}
+        />
       </View>
     </View>
   );

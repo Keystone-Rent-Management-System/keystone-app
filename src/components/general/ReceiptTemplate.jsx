@@ -53,7 +53,7 @@ const ReceiptTemplate = ({
       />
 
       <Text className={'font-sometypemono text-black text-xl mx-auto'}>
-        KES. {numberWithCommas(Number(receipt?.paidAmount))}
+        KES. {numberWithCommas(Number(receipt?.totalAmount))}
       </Text>
 
       <Text className={'text-black font-sometypemono text-xs mt-2 text-center'}>

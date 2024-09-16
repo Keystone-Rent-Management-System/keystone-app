@@ -66,24 +66,22 @@ const InvoiceView = ({route: {params}}) => {
     [concerns, concernsIsPending],
   );
   const isUnpaid = useMemo(
-    () => invoice?.totalAmount === invoice?.dueAmount,
-    [invoice?.dueAmount, invoice?.totalAmount],
+    () => invoice?.paymentStatus?.toLowerCase() === 'unpaid',
+    [invoice?.paymentStatus],
   );
   const isPartiallyPaid = useMemo(
-    () => invoice?.paidAmount && invoice?.paidAmount < invoice?.totalAmount,
-    [invoice?.paidAmount, invoice?.totalAmount],
+    () => invoice?.paymentStatus?.toLowerCase() === 'paid_partially',
+    [invoice?.paymentStatus],
   );
 
   const status = useMemo(
     () =>
-      invoice?.totalAmount === invoice?.dueAmount
+      invoice?.paymentStatus?.toLowerCase() === 'unpaid'
         ? 'unpaid'
-        : invoice?.paidAmount && invoice?.paidAmount < invoice?.totalAmount
+        : invoice?.paymentStatus?.toLowerCase() === 'paid_partially'
         ? 'partiallyPaid'
-        : invoice?.paidAmount && invoice?.paidAmount === invoice?.totalAmount
-        ? 'paid'
-        : invoice?.paidAmount && invoice?.dueAmount < 0 && 'overpaid',
-    [invoice?.dueAmount, invoice?.paidAmount, invoice?.totalAmount],
+        : invoice?.paymentStatus?.toLowerCase() === 'paid' && 'paid',
+    [invoice?.paymentStatus],
   );
   return (
     <>
@@ -116,7 +114,7 @@ const InvoiceView = ({route: {params}}) => {
               amt={numberWithCommas(Number(invoice?.waterFeeAmount)) ?? 0}
             />
             <InvoiceBillItem
-              title={'Trash/garbage'}
+              title={'Garbage'}
               amt={numberWithCommas(Number(invoice?.garbageFeeAmount)) ?? 0}
             />
             <InvoiceBillItem

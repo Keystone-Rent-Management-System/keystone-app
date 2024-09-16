@@ -1,3 +1,6 @@
+import {Linking} from 'react-native';
+import {PALLAX_SUPPORT_NUMBER} from '../constants';
+
 const renderSingularPlural = (num, render, nullRender = '') =>
   parseInt(num, 10) > 1 ? render : nullRender;
 
@@ -24,6 +27,20 @@ const getInitials = fullName => {
   return `${firstInitial}${secondInitial}`.toUpperCase();
 };
 
-const Helper = {renderSingularPlural, getGreetings, getInitials};
+const handleCallSupport = () => {
+  Linking.openURL(`tel:+254${PALLAX_SUPPORT_NUMBER}`);
+};
+
+const handleSmsSupport = () => {
+  Linking.openURL(`sms:+254${PALLAX_SUPPORT_NUMBER}`);
+};
+
+const Helper = {
+  renderSingularPlural,
+  getGreetings,
+  getInitials,
+  handleCallSupport,
+  handleSmsSupport,
+};
 
 export default Helper;

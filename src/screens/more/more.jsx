@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Alert,
   FlatList,
+  Linking,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -10,9 +11,6 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import VersionCheck from 'react-native-version-check';
 
-import {Layout, ProfileView} from '@/components';
-import COLORS from '@/constants/Theme';
-import Helper from '@/utils/Helper';
 import {
   AgreementSvg,
   ApartmentSvg,
@@ -22,9 +20,13 @@ import {
   UserSvg,
   WavingSvg,
 } from '@/assets/icons';
+import {Layout, ProfileView} from '@/components';
+import COLORS from '@/constants/Theme';
+import Helper from '@/utils/Helper';
 import {useNavigation} from '@react-navigation/native';
-import useGlobals from '../../provider/store/useGlobals';
+import {ABOUT_URL, PRIVACY_POLICY_URL} from '../../constants';
 import {useAuth} from '../../hooks';
+import useGlobals from '../../provider/store/useGlobals';
 
 const More = () => {
   const navigation = useNavigation();
@@ -134,16 +136,22 @@ const More = () => {
 
 const renderNavItem = ({item}, handleNavigate, token, signout) => {
   const {icon, title} = item;
+
+  const handlePress = () => {
+    !token
+      ? () => {}
+      : title?.toLowerCase() === 'logout'
+      ? signout()
+      : handleNavigate(item?.screen ?? '');
+  };
+  const handleOpenLink = () => {
+    Linking.openURL(item?.link);
+  };
+
   return (
     <TouchableOpacity
       className={'flex flex-row my-3.5 px-5 items-center space-x-3'}
-      onPress={() =>
-        !token
-          ? () => {}
-          : title?.toLowerCase() === 'logout'
-          ? signout()
-          : handleNavigate(item?.screen ?? '')
-      }>
+      onPress={item?.link ? handleOpenLink : handlePress}>
       <View className={'items-center justify-center h-6 w-6 mr-3'}>{icon}</View>
 
       <Text className={'text-black font-inter text-sm'}>{title}</Text>
@@ -184,6 +192,12 @@ const tenantNavList = [
   {
     icon: <InfoSvg />,
     title: 'About us',
+    link: ABOUT_URL,
+  },
+  {
+    icon: <AgreementSvg />,
+    title: 'Privacy Policy',
+    link: PRIVACY_POLICY_URL,
   },
   {
     icon: <LogoutSvg size={'24'} color={COLORS.primary} />,
@@ -200,6 +214,12 @@ const navList = [
   {
     icon: <InfoSvg />,
     title: 'About us',
+    link: ABOUT_URL,
+  },
+  {
+    icon: <AgreementSvg />,
+    title: 'Privacy Policy',
+    link: PRIVACY_POLICY_URL,
   },
   {
     icon: <LogoutSvg size={'24'} color={COLORS.primary} />,

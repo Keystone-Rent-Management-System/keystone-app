@@ -17,7 +17,6 @@ import {
   useActiveInvoices,
   usePaidInvoice,
   usePartiallyPaidInvoice,
-  useOverPaidInvoice,
   useSpecificInvoice,
   useRaiseConcern,
   useGetConcerns,
@@ -26,6 +25,7 @@ import {
 } from './useInvoice';
 import {useProperty, usePropertyUnits} from './useProperty';
 import {useTotalTransaction, useTenantTransaction} from './useTransaction';
+import {useStatement} from './useStatement';
 import {useUnit} from './useUnit';
 
 export {
@@ -49,7 +49,6 @@ export {
   usePartiallyPaidInvoice,
   usePaidInvoice,
   useSpecificInvoice,
-  useOverPaidInvoice,
   useInvoiceAnalytics,
   useUnitInvoiceAnalytics,
   useRaiseConcern,
@@ -58,6 +57,7 @@ export {
   usePropertyUnits,
   useTotalTransaction,
   useTenantTransaction,
+  useStatement,
   useSpecificUnit,
   useUnit,
 };

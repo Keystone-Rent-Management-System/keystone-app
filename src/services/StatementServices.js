@@ -4,24 +4,16 @@ import AxiosUtility, {setAuthToken} from './AxiosServices';
  * Fetches all statements
  * @param {number} page
  * @param {number} size
- * @param {string} year
+ * @param {string} agreementId
  * @returns {Promise<Statement[]>}
  */
-const getStatements = async (page, size, year) => {
+const getStatements = async (agreementId, page, size) => {
   setAuthToken(AxiosUtility);
-  const queryParams = `?page=${page}&size=${size}`;
-  let res;
+  const {data: res} = await AxiosUtility.get(
+    `/statements/tenantStatements?agreementId=${agreementId}&page=${page}&size=${size}`,
+  );
 
-  if (year && year !== 'All') {
-    const yearParams = `&startDate=${year}-01-01&endDate=${year}-12-31`;
-    res = await AxiosUtility.get(
-      `/transactional-reports${queryParams}${yearParams}`,
-    );
-  } else {
-    res = await AxiosUtility.get(`/transactional-reports${queryParams}`);
-  }
-
-  return res.data;
+  return res;
 };
 
 const StatementServices = {
