@@ -3,7 +3,7 @@ import {Layout} from '@/components';
 import {CButton, StatementItem} from '../../components';
 import {Text, View, ActivityIndicator, StyleSheet} from 'react-native';
 import {FlashList} from '@shopify/flash-list';
-import {StatementListSvg} from '../../assets/icons';
+import {StatementListSvg, StatementsSvg} from '../../assets/icons';
 import COLORS from '../../constants/Theme';
 import {ExportStatementModal} from '../../components/modals';
 import moment from 'moment';
@@ -38,20 +38,6 @@ const Statements = () => {
     dateModalRef.current?.expand();
   }, []);
 
-  // const renderYears = ({item, index, isActive}) => {
-  //   return (
-  //     <SelectorButton
-  //       key={index}
-  //       ClassName={'py-0'}
-  //       isActive={isActive}
-  //       text={item}
-  //       handlePress={() => {
-  //         setActive(index);
-  //       }}
-  //     />
-  //   );
-  // };
-
   const handleNavigate = () => {
     console.log('naviagate');
   };
@@ -60,7 +46,6 @@ const Statements = () => {
     <>
       <Layout>
         <FlashList
-          ListHeaderComponent={<Header />}
           contentContainerStyle={statementStyles.list}
           refreshing={isPending || isRefetching}
           data={statements}
@@ -90,39 +75,6 @@ const Statements = () => {
           </Text>
         </CButton>
       </Layout>
-      {/* <Layout ClassName={'p-4 relative'}>
-        <View>
-          <FlatList
-            className={'h-8'}
-            data={years}
-            renderItem={({item, index}) =>
-              renderYears({
-                item,
-                index,
-                isActive: active === index,
-              })
-            }
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-        <SectionList
-          sections={statements}
-          keyExtractor={item => item?.id}
-          estimatedItemSize={20}
-          renderItem={renderItem}
-          renderSectionHeader={renderHeader}
-          refreshing={isPending || isRefetching}
-          onRefresh={refetch}
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={
-            isRefetching ? (
-              <ActivityIndicator color={'#022374'} size="large" />
-            ) : null
-          }
-        />
-      </Layout> */}
 
       <ExportStatementModal
         ref={exportModalRef}
@@ -136,47 +88,67 @@ const Statements = () => {
 
 const renderItem = (item, handlePress = () => {}) => (
   <StatementItem
-    date={moment(item?.createdAt)?.format('Do MMMM, YYYY')}
-    title={
-      item?.invoiceNumber
-        ? `Invoice no: ${item?.invoiceNumber}`
-        : `Transaction: ${item?.transactionCode}`
+    icon={
+      <View className={'px-3 black my-auto flex items-center justify-center'}>
+        <StatementsSvg size={'18'} />
+      </View>
     }
-    charge={`KES. ${numberWithCommas(Number(100))}`}
-    paidAmount={`KES. ${numberWithCommas(Number(100))}`}
-    balance={`KES. ${numberWithCommas(Number(100))}`}
+    details={[
+      {
+        key: 'Date',
+        value: moment(item?.createdAt)?.format('Do MMMM, YYYY'),
+      },
+      {
+        key: 'Details',
+        value: item?.payement
+          ? `Transaction: ${item?.transactionCode}`
+          : `Invoice no: ${item?.invoiceNumber}`,
+      },
+      {
+        key: 'Charges',
+        value: `KES. ${numberWithCommas(Number(100))}`,
+      },
+      {
+        key: 'Payments',
+        value: `KES. ${numberWithCommas(Number(100))}`,
+      },
+      {
+        key: 'Balance',
+        value: `KES. ${numberWithCommas(Number(100))}`,
+      },
+    ]}
     handlePress={handlePress}
   />
 );
 
-const Header = () => (
-  <View
-    className={'pb-2 px-1 flex flex-row justify-between items-center border-b'}>
-    <View>
-      <Text className={'font-inter-semibold text-grey_1 capitalize'}>Date</Text>
-    </View>
-    <View>
-      <Text className={'font-inter-semibold text-grey_1 capitalize text-xs'}>
-        Details
-      </Text>
-    </View>
-    <View>
-      <Text className={'font-inter-semibold text-grey_1 capitalize text-xs'}>
-        Charges
-      </Text>
-    </View>
-    <View>
-      <Text className={'font-inter-semibold text-grey_1 capitalize text-xs'}>
-        Payments
-      </Text>
-    </View>
-    <View>
-      <Text className={'font-inter-semibold text-grey_1 capitalize text-xs'}>
-        Balance
-      </Text>
-    </View>
-  </View>
-);
+// const Header = () => (
+//   <View
+//     className={'pb-2 px-1 flex flex-row justify-between items-center border-b'}>
+//     <View>
+//       <Text className={'font-inter-semibold text-grey_1 capitalize'}>Date</Text>
+//     </View>
+//     <View>
+//       <Text className={'font-inter-semibold text-grey_1 capitalize text-xs'}>
+//         Details
+//       </Text>
+//     </View>
+//     <View>
+//       <Text className={'font-inter-semibold text-grey_1 capitalize text-xs'}>
+//         Charges
+//       </Text>
+//     </View>
+//     <View>
+//       <Text className={'font-inter-semibold text-grey_1 capitalize text-xs'}>
+//         Payments
+//       </Text>
+//     </View>
+//     <View>
+//       <Text className={'font-inter-semibold text-grey_1 capitalize text-xs'}>
+//         Balance
+//       </Text>
+//     </View>
+//   </View>
+// );
 
 export const statementStyles = StyleSheet.create({
   list: {

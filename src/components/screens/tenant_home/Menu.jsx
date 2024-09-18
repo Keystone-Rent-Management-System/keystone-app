@@ -1,8 +1,14 @@
 import React, {useCallback, useRef} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
-import {BillsSvg, InvoiceSvg, StatementsSvg} from '@/assets/icons';
-import {CallSvg, ExtensionSvg, HelpSvg} from '../../../assets/icons';
+import {
+  BillsSvg,
+  InvoiceSvg,
+  StatementsSvg,
+  CallSvg,
+  ExtensionSvg,
+  HelpSvg,
+} from '@/assets/icons';
 import {useNavigation} from '@react-navigation/native';
 import {
   GeneralRepairsModal,
@@ -177,7 +183,7 @@ const financeOptions = [
     icon: <BillsSvg />,
     text: 'Payments',
     screen: {
-      name: 'bills',
+      name: 'payments',
     },
   },
 ];

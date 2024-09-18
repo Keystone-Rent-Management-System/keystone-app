@@ -4,7 +4,7 @@ import useGlobals from '../provider/store/useGlobals';
 import {useNavigation} from '@react-navigation/native';
 
 import {
-  Bills,
+  Payments,
   TenantHome,
   InvoiceReceipt,
   Statements,
@@ -134,11 +134,11 @@ const HomeStack = () => {
           }}
         />
         <Stack.Screen
-          name={'bills'}
-          component={Bills}
+          name={'payments'}
+          component={Payments}
           options={{
             headerShown: true,
-            title: 'My Bills',
+            title: 'My Payments',
             headerTitleStyle: {
               color: COLORS.primary,
               fontSize: 18,

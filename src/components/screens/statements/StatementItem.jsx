@@ -7,30 +7,24 @@ const StatementItem = props => {
       className={'flex-row space-x-2 py-3.5 border-b border-border_grey'}
       onPress={props.handlePress}>
       {/*  text  */}
+      <View
+        className={
+          'items-center justify-center h-10 w-10 rounded-full bg-white overflow-hidden border border-border_grey'
+        }>
+        {props.icon}
+      </View>
+
       <View className={'flex-1'}>
-        <View className={'flex-1 flex-row justify-between mt-1.5'}>
-          <Text className={'text-xs font-inter text-inactive_text'}>
-            {/*{moment().format('MMM YYYY')}*/}
-            {props.date}
-          </Text>
-          <Text
-            className={'text-primary capitalize text-xs font-inter-semibold'}>
-            {/*Invoice #123455*/}
-            {props.title}
-          </Text>
-          <Text className={'text-xs font-inter text-inactive_text'}>
-            {/*KES 1234*/}
-            {props.charge}
-          </Text>
-          <Text className={'text-xs font-inter text-inactive_text'}>
-            {/*KES 1234*/}
-            {props.paidAmount}
-          </Text>
-          <Text className={'text-xs font-inter text-inactive_text'}>
-            {/*KES 1234*/}
-            {props.balance}
-          </Text>
-        </View>
+        {props.details.map((detail, index) => (
+          <View key={index} className={'flex-row justify-between w-full mt-2'}>
+            <Text className={'font-inter text-2xs text-inactive_text'}>
+              {detail.key}
+            </Text>
+            <Text className={'text-black font-inter-medium text-xs'}>
+              {detail.value}
+            </Text>
+          </View>
+        ))}
       </View>
     </Pressable>
   );

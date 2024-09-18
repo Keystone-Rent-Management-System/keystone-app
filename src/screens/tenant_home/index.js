@@ -1,6 +1,6 @@
 import TenantHome from './home';
 import Statements from './Statements';
-import Bills from './Bills';
+import Payments from './Payments';
 
-export {TenantHome, Statements, Bills};
+export {TenantHome, Statements, Payments};
 export * from './invoice';

@@ -5,7 +5,6 @@ import {FlashList} from '@shopify/flash-list';
 
 import {Layout, ListingItem} from '@/components';
 import {InvoiceSvg} from '@/assets/icons';
-import numberWithCommas from '../../../utils/numberWithCommas';
 import moment from 'moment';
 import {useUnPaidInvoice} from '../../../hooks';
 import numberConverter from '../../../utils/numberConverter';

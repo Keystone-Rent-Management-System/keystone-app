@@ -12,7 +12,7 @@ export const useTotalTransaction = () => {
 };
 
 export const useTenantTransaction = size => {
-  const [statements, setStatments] = useState([]);
+  const [transactions, setTransactions] = useState([]);
 
   const {isPending, isRefetching, error, data, refetch} = useQuery({
     queryKey: ['transactions/tenant'],
@@ -37,7 +37,7 @@ export const useTenantTransaction = size => {
           groupedData.push({month, data: [item]});
         }
       });
-      setStatments(groupedData);
+      setTransactions(groupedData);
     }
   }, [data?.data, isPending]);
 
@@ -45,7 +45,7 @@ export const useTenantTransaction = size => {
     isPending,
     isRefetching,
     error,
-    statements,
+    transactions,
     totalElements: data?.totalElements,
     refetch,
   };
