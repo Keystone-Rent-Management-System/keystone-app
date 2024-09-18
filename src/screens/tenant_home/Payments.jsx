@@ -23,6 +23,7 @@ const Payments = () => {
 
   const {isPending, isRefetching, transactions, totalElements, refetch} =
     useTenantTransaction(size);
+
   const handleLoadMore = () => {
     if (!isPending && totalElements > size) {
       setSize(prev => prev + 10);
