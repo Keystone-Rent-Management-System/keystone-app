@@ -1,5 +1,5 @@
-import React from 'react';
-import {Image, Text, View} from 'react-native';
+import React, {useCallback} from 'react';
+import {Image, Text, ToastAndroid, View} from 'react-native';
 
 import COLORS from '@/constants/Theme';
 import {CButton} from './index';
@@ -7,8 +7,12 @@ import {CloseSvg} from '@/assets/icons';
 import {DownloadSvg} from '@/assets/icons/receipt';
 import logo from '@/assets/images/logo.png';
 import numberWithCommas from '../../utils/numberWithCommas';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import {renderHtmlTemplate} from '../../utils/htmlToPdf';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const noOfEllipse = Array(35).fill('_');
+
 const ReceiptTemplate = ({
   children,
   footer,
@@ -17,6 +21,27 @@ const ReceiptTemplate = ({
   handleClose,
   receipt,
 }) => {
+  const createPDF = useCallback(async () => {
+    const fileName = receipt?.invoiceNumber ?? 'Invoice';
+    let options = {
+      html: renderHtmlTemplate(receipt),
+      fileName: fileName,
+      directory: 'Documents',
+      base64: true,
+    };
+    let file = await RNHTMLtoPDF.convert(options);
+    let filePath = RNFetchBlob.fs.dirs.DownloadDir + '/' + fileName + '.pdf';
+
+    RNFetchBlob.fs
+      .writeFile(filePath, file.base64, 'base64')
+      .then(res => {
+        ToastAndroid.show('Invoice saved to Downloads', ToastAndroid.LONG);
+      })
+      .catch(() =>
+        ToastAndroid.show('Invoice Download Error', ToastAndroid.LONG),
+      );
+  }, [receipt]);
+
   return (
     <View className={'bg-bg_pale w-full relative pt-3 overflow-x-hidden'}>
       {/*ellipses*/}
@@ -29,6 +54,7 @@ const ReceiptTemplate = ({
 
         <View className={'flex-row space-x-2 items-center'}>
           <CButton
+            onPress={createPDF}
             ClassName={'bg-slate-200 px-2 h-6 py-0 text-xs flex-row space-x-1'}
             textClassName={'text-2xs text-black'}>
             <DownloadSvg />
