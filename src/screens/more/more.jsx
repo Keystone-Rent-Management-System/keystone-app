@@ -27,6 +27,7 @@ import {useNavigation} from '@react-navigation/native';
 import {ABOUT_URL, PRIVACY_POLICY_URL} from '../../constants';
 import {useAuth} from '../../hooks';
 import useGlobals from '../../provider/store/useGlobals';
+import {useNotificationStore} from '../../provider/store/notification';
 
 const More = () => {
   const navigation = useNavigation();
@@ -35,6 +36,7 @@ const More = () => {
     resetState,
   } = useGlobals(state => state);
   const {isPending, profile} = useAuth();
+  const {removeDeviceToken} = useNotificationStore();
 
   const handleNavigate = screen => {
     navigation.navigate(screen);
@@ -42,9 +44,9 @@ const More = () => {
 
   const handleSignout = () => {
     resetState();
+    removeDeviceToken();
     navigation.navigate('bottom-nav', {screen: 'explore_stack'});
   };
-
   const handleConfirmSignout = () => {
     Alert.alert('Signout?', 'please confirm you want to sign out', [
       {
