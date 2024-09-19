@@ -1,20 +1,22 @@
 import AxiosUtility, {setAuthToken} from './AxiosServices';
+import {useNotificationStore} from '../provider/store/notification.ts';
 
+const notificationStore = useNotificationStore.getState();
 /**
  * Registers device token for push notifications
  */
-export const registerDeviceToken = async (token: string) => {
+export const registerDeviceToken = async () => {
   // Set the token in the AxiosUtility
   setAuthToken(AxiosUtility);
 
   // check if token exists
-  if (!token) {
+  if (!notificationStore.deviceToken) {
     throw new Error('Notification token required.');
   }
 
-  const {data} = await AxiosUtility.post('/notifications/deviceToken', {
-    deviceToken: token,
-  });
+  const {data} = await AxiosUtility.post(
+    `/notifications/deviceToken?deviceToken=${notificationStore.deviceToken}`,
+  );
 
   return data;
 };
