@@ -1,6 +1,7 @@
 import {useEffect} from 'react';
 import {PermissionsAndroid, Platform} from 'react-native';
 import PushNotification from 'react-native-push-notification';
+import {useNotificationStore} from '../../provider/store/notification';
 
 const checkApplicationPermission = async () => {
   if (Platform.OS === 'android') {
@@ -15,8 +16,10 @@ const checkApplicationPermission = async () => {
 };
 
 const RemoteNotification = () => {
+  const {deviceToken, saveDeviceToken} = useNotificationStore();
+
   useEffect(() => {
-    checkApplicationPermission();
+    checkApplicationPermission().then();
     // Using this function as we are rendering local notification so without this function we will receive multiple notification for same notification
     // We have same channelID for every FCM test server notification.
     PushNotification?.getChannels(function (channel_ids) {
@@ -27,7 +30,10 @@ const RemoteNotification = () => {
     PushNotification.configure({
       // (optional) Called when Token is generated (iOS and Android)
       onRegister: function (token) {
-        console.log('TOKEN:', token);
+        // save device token if existing token is different
+        if (deviceToken !== token.token) {
+          saveDeviceToken(token.token);
+        }
       },
 
       // (required) Called when a remote or local notification is opened or received
@@ -39,12 +45,12 @@ const RemoteNotification = () => {
         PushNotification?.createChannel(
           {
             channelId: key, // (required & must be unique)
-            channelName: 'remote messasge', // (required)
+            channelName: 'remote message', // (required)
             channelDescription: 'Notification for remote message', // (optional) default: undefined.
             importance: 4, // (optional) default: 4. Int value of the Android notification importance
             vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
           },
-          created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+          // created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
         );
         PushNotification?.localNotification({
           channelId: key, //this must be same with channelId in createchannel
