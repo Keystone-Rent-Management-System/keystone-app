@@ -22,3 +22,18 @@ export const registerDeviceToken = async (token: string) => {
 /**
  * Gets all user notifications
  */
+export const getNotifications = async () => {
+  // Set the token in the AxiosUtility
+  setAuthToken(AxiosUtility);
+
+  const {data} = await AxiosUtility.get('/notifications');
+
+  return data;
+};
+
+const NotificationService = {
+  registerDeviceToken,
+  getNotifications,
+};
+
+export default NotificationService;
