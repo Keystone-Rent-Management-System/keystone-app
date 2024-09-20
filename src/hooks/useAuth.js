@@ -1,9 +1,10 @@
-import {ToastAndroid, Keyboard} from 'react-native';
+import {Keyboard, ToastAndroid} from 'react-native';
 import AuthServices from '../services/AuthServices';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {useNavigation} from '@react-navigation/native';
 import useGlobals from '../provider/store/useGlobals';
 import {getError} from '../utils/getError';
+import NotificationService from '../services/Notification';
 
 const useAuth = () => {
   const {isPending, error, data, refetch} = useQuery({
@@ -58,6 +59,7 @@ export const useRegister = () => {
       );
       navigation.navigate('auth__login');
       resetRegisteringUser();
+      NotificationService.registerDeviceToken().then();
     },
     onError: err => {
       ToastAndroid.show(
@@ -133,7 +135,10 @@ export const useLogin = () => {
     mutationFn: AuthServices.login,
     onSuccess: res => {
       updateAuth(res);
+      NotificationService.registerDeviceToken().then();
+
       navigation.navigate('bottom-nav');
+      //   register device token
     },
     onError: err => {
       ToastAndroid.show('Login failed ' + getError(err), ToastAndroid.SHORT);
