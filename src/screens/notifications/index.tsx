@@ -57,7 +57,7 @@ const renderItem = ({item}: {item: any}) => (
       style={styles.iconContainer}>
       {
         // @ts-ignore
-        notificationIcons[item?.category](item.read && COLORS.inactive_text)
+        notificationIcons.invoice(item.read && COLORS.inactive_text)
       }
     </View>
 
@@ -98,105 +98,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
 });
-
-const date = moment();
-
-const notifications = [
-  {
-    category: 'invoice',
-    message: 'You have received your month of April Invoice, View to Pay',
-    time: date.clone().subtract(2, 'hours'),
-    read: false,
-  },
-  {
-    category: 'invoice',
-    message:
-      'You have payment invoice #2456523 has been accepted and confirmed.',
-    time: date.clone().subtract(3, 'hours'),
-    read: false,
-  },
-  {
-    category: 'extension',
-    message: 'Rent extension request declined.',
-    time: date.clone().subtract(4, 'hours'),
-    read: false,
-  },
-  {
-    category: 'invoice',
-    message: 'You have received your month of April Invoice, View to Pay',
-    time: date.clone().subtract(5, 'hours'),
-    read: false,
-  },
-  {
-    category: 'extension',
-    message: 'You have received your month of April Invoice, View to Pay',
-    time: date.clone().subtract(6, 'hours'),
-    read: false,
-  },
-
-  {
-    category: 'invoice',
-    message: 'You have received your month of March Invoice, View to Pay',
-    time: date.clone().subtract(24 * 30, 'hours'),
-    read: true,
-  },
-  {
-    category: 'invoice',
-    message:
-      'You have payment invoice #2456588 has been accepted and confirmed.',
-    time: date.clone().subtract(24 * 28, 'hours'),
-    read: true,
-  },
-  {
-    category: 'extension',
-    message: 'Rent extension request accepted.',
-    time: date.clone().subtract(24 * 60, 'hours'),
-    read: true,
-  },
-  {
-    category: 'invoice',
-    message: 'You have received your month of February Invoice, View to Pay',
-    time: date.clone().subtract(24 * 90, 'hours'),
-    read: true,
-  },
-  {
-    category: 'extension',
-    message: 'You have received your month of January Invoice, View to Pay',
-    time: date.clone().subtract(24 * 90, 'hours'),
-    read: true,
-  },
-  {
-    category: 'invoice',
-    message: 'You have received your month of March Invoice, View to Pay',
-    time: date.clone().subtract(24 * 30, 'hours'),
-    read: true,
-  },
-  {
-    category: 'invoice',
-    message:
-      'You have payment invoice #2456588 has been accepted and confirmed.',
-    time: date.clone().subtract(24 * 28, 'hours'),
-    read: true,
-  },
-  {
-    category: 'extension',
-    message: 'Rent extension request accepted.',
-    time: date.clone().subtract(24 * 60, 'hours'),
-    read: true,
-  },
-  {
-    category: 'invoice',
-    message: 'You have received your month of February Invoice, View to Pay',
-    time: date.clone().subtract(24 * 90, 'hours'),
-    read: true,
-  },
-  {
-    category: 'extension',
-    message: 'You have received your month of January Invoice, View to Pay',
-    time: date.clone().subtract(24 * 90, 'hours'),
-    read: true,
-  },
-];
 
 const notificationIcons = {
   invoice: (color: string) => <InvoiceSvg size={25} color={color} />,
