@@ -5,8 +5,8 @@ const Statements = () => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="35"
-      height="34"
+      width="29"
+      height="28"
       viewBox="0 0 40 39"
       fill="none">
       <Path
