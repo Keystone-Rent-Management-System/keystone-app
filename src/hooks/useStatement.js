@@ -1,22 +1,56 @@
-import {useQuery} from '@tanstack/react-query';
+import {useInfiniteQuery} from '@tanstack/react-query';
 import StatementServices from '../services/StatementServices';
 import {useActiveAgrement} from './useAgrement';
+import {PAGINATION_LIMIT} from '../constants';
+import {getNextPageParam, returnPaginationData} from '../utils/pagination';
+import React, {useCallback, useMemo} from 'react';
+import {ActivityIndicator} from 'react-native';
 
 export const useStatement = size => {
   const {agreement} = useActiveAgrement();
-  const {isPending, isRefetching, error, data, refetch} = useQuery({
+
+  const {
+    data,
+    error,
+    isError,
+    isPending,
+    isRefetching,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+    fetchNextPage,
+  } = useInfiniteQuery({
     queryKey: ['statements'],
-    queryFn: () => StatementServices.getStatements(agreement?.id, 0, size),
+    queryFn: async ({pageParam}) =>
+      StatementServices.getStatements(
+        agreement?.id,
+        pageParam ?? 0,
+        PAGINATION_LIMIT,
+      ),
+    initialPageParam: 0,
+    getNextPageParam: props => getNextPageParam(props),
   });
 
-  const statements = data?.data || [];
+  const statements = useMemo(() => returnPaginationData(data), [data]);
+
+  const renderListFooter = useCallback(() => {
+    if (isFetchingNextPage) {
+      return <ActivityIndicator color={'#022374'} size="large" />;
+    }
+    return null;
+  }, [isFetchingNextPage]);
 
   return {
     isPending,
     isRefetching,
     error,
     statements,
-    totalElements: data?.totalElements,
+    hasNextPage,
+    isFetchingNextPage,
+    isError,
     refetch,
+
+    fetchNextPage,
+    renderListFooter,
   };
 };
