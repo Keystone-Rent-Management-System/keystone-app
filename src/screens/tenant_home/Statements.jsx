@@ -1,10 +1,9 @@
 import React, {useCallback, useRef, useState} from 'react';
 import {Layout} from '@/components';
-import {CButton, StatementItem} from '../../components';
-import {Text, View, ActivityIndicator, StyleSheet} from 'react-native';
+import {StatementItem} from '../../components';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {FlashList} from '@shopify/flash-list';
-import {StatementListSvg, StatementsSvg} from '../../assets/icons';
-import COLORS from '../../constants/Theme';
+import {StatementsSvg} from '../../assets/icons';
 import {ExportStatementModal} from '../../components/modals';
 import moment from 'moment';
 import numberWithCommas from '../../utils/numberWithCommas';
@@ -62,18 +61,18 @@ const Statements = () => {
           }
         />
 
-        <CButton
-          style={{elevation: 2}}
-          ClassName={
-            'absolute bg-primary_bg_pale rounded-full flex-row space-x-1 shadow-md bottom-3 right-3'
-          }
-          onPress={handleOpenExportModal}>
-          <StatementListSvg h={'20'} color={COLORS.primary} />
+        {/*<CButton*/}
+        {/*  style={{elevation: 2}}*/}
+        {/*  ClassName={*/}
+        {/*    'absolute bg-primary_bg_pale rounded-full flex-row space-x-1 shadow-md bottom-3 right-3'*/}
+        {/*  }*/}
+        {/*  onPress={handleOpenExportModal}>*/}
+        {/*  <StatementListSvg h={'20'} color={COLORS.primary} />*/}
 
-          <Text className={'text-primary text-xs font-inter-medium'}>
-            Export Statement
-          </Text>
-        </CButton>
+        {/*  <Text className={'text-primary text-xs font-inter-medium'}>*/}
+        {/*    Export Statement*/}
+        {/*  </Text>*/}
+        {/*</CButton>*/}
       </Layout>
 
       <ExportStatementModal
