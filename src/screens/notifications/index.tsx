@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
 // import {ExtensionSvg, InvoiceSvg} from '@/assets/icons';
@@ -22,12 +22,6 @@ const Notifications = () => {
     queryKey: ['notifications'],
     queryFn: () => NotificationService.getNotifications(),
   });
-
-  useEffect(() => {
-    if (isError) {
-      console.log('ERROR IN FETCHING NOTIFICATIONS\n', error);
-    }
-  }, [error, isError]);
 
   const renderEmptyList = useCallback(() => <EmptyList />, []);
 
