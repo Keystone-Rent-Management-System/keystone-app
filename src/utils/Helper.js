@@ -27,12 +27,16 @@ const getInitials = fullName => {
   return `${firstInitial}${secondInitial}`.toUpperCase();
 };
 
-const handleCallSupport = () => {
-  Linking.openURL(`tel:+254${PALLAX_SUPPORT_NUMBER}`);
+const handleCallSupport = async () => {
+  await handleCall(PALLAX_SUPPORT_NUMBER);
 };
 
-const handleSmsSupport = () => {
-  Linking.openURL(`sms:+254${PALLAX_SUPPORT_NUMBER}`);
+const handleCall = async phoneNumber => {
+  await Linking.openURL(`tel:+254${phoneNumber}`);
+};
+
+const handleSmsSupport = async () => {
+  await Linking.openURL(`sms:+254${PALLAX_SUPPORT_NUMBER}`);
 };
 
 const Helper = {
@@ -41,6 +45,7 @@ const Helper = {
   getInitials,
   handleCallSupport,
   handleSmsSupport,
+  handleCall,
 };
 
 export default Helper;
