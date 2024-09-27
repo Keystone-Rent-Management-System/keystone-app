@@ -1,24 +1,25 @@
-import React, {useCallback, useRef} from 'react';
+import React, {useCallback, useMemo, useRef} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 import {
   BillsSvg,
-  InvoiceSvg,
-  StatementsSvg,
   CallSvg,
   ExtensionSvg,
   HelpSvg,
+  InvoiceSvg,
+  StatementsSvg,
 } from '@/assets/icons';
 import {useNavigation} from '@react-navigation/native';
 import {
   GeneralRepairsModal,
   GetHelpModal,
   MakeComplaintModal,
+  PaymentAllocationModal,
   RequestExtensionModal,
   RequestRepairModal,
-  PaymentAllocationModal,
 } from '../../modals';
-import {useHelp} from '../../../hooks';
+import {useActiveAgrement, useHelp} from '../../../hooks';
+import Helper from '../../../utils/Helper';
 
 const Menu = () => {
   const navigation = useNavigation();
@@ -42,6 +43,13 @@ const Menu = () => {
     handleClosePaymentAllocationModal,
   } = useHelp();
 
+  const {isPending, agreement} = useActiveAgrement();
+
+  const propertyContact = useMemo(
+    () => agreement?.propertyUnits?.property?.propertyContacts?.phoneNumber,
+    [agreement],
+  );
+
   const handleOpenExtensionModal = useCallback(() => {
     extensionModalRef.current?.expand();
   }, []);
@@ -58,6 +66,10 @@ const Menu = () => {
 
   const handleHelp = () => {
     handleOpenHelpModal();
+  };
+
+  const handleCallAssistance = async () => {
+    await Helper.handleCall(`tel:+254${propertyContact}`);
   };
 
   return (
@@ -91,11 +103,14 @@ const Menu = () => {
                 key={ind}
                 icon={opt.icon}
                 text={opt.text}
+                disabled={isPending}
                 handlePress={
                   opt.text === 'Help'
                     ? handleHelp
                     : opt.text === 'Extension'
                     ? handleOpenExtensionModal
+                    : opt.text === 'Call'
+                    ? handleCallAssistance
                     : () => handleNavigate(opt?.screen)
                 }
               />
@@ -141,13 +156,14 @@ const Menu = () => {
   );
 };
 
-const MenuBtn = ({icon, text, handlePress}) => (
+const MenuBtn = ({icon, text, handlePress, disabled}) => (
   <View className={'items-center'}>
     <TouchableOpacity
       className={
         'items-center justify-center h-12 w-12 rounded-full bg-white overflow-hidden'
       }
       style={styles.menuBtn}
+      disabled={disabled}
       onPress={handlePress}>
       {icon}
     </TouchableOpacity>
