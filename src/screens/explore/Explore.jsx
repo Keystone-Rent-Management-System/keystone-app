@@ -12,15 +12,22 @@ import {
 // import listings from '@/provider/listings';
 import {ExplorerFilterModal} from '@/components/modals';
 import {useNavigation} from '@react-navigation/native';
-import {ActivityIndicator, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {usePropertyListing} from '../../hooks';
 
 const Explore = () => {
   const navigation = useNavigation();
-  const [size, setSize] = useState(20);
 
-  const {isPending, isRefetching, listings, totalElements, refetch} =
-    usePropertyListing(size);
+  const {
+    isPending,
+    isRefetching,
+    listings,
+    refetch,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    renderListFooter,
+  } = usePropertyListing();
 
   const filterModalRef = useRef(null);
 
@@ -58,12 +65,11 @@ const Explore = () => {
     [navigation],
   );
 
-  const handleLoadMore = () => {
-    if (!isPending && !isRefetching && totalElements > size) {
-      setSize(prev => prev + 10);
-      refetch();
+  const handleLoadMore = useCallback(async () => {
+    if (!isRefetching && !isFetchingNextPage && hasNextPage) {
+      await fetchNextPage();
     }
-  };
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, isRefetching]);
 
   const handleSwitchMode = () => {
     setMode(prev => (prev === 'map' ? 'list' : 'map'));
@@ -79,7 +85,7 @@ const Explore = () => {
       numberOfBedrooms,
       numberOfBathrooms,
       unitName,
-      showCaseUploads,
+
       id,
     } = item;
     return (
@@ -117,14 +123,22 @@ const Explore = () => {
           isPending={isPending}
         />
       ) : (
-        renderListView(
-          listings,
-          renderListingItem,
-          isPending,
-          isRefetching,
-          refetch,
-          handleLoadMore,
-        )
+        <FlashList
+          // eslint-disable-next-line react-native/no-inline-styles
+          contentContainerStyle={{
+            padding: 16,
+            paddingBottom: 30,
+          }}
+          data={listings}
+          renderItem={renderListingItem}
+          keyExtractor={(_, ind) => ind.toString()}
+          estimatedItemSize={100}
+          refreshing={isPending || isRefetching}
+          onRefresh={refetch}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={renderListFooter}
+        />
       )}
 
       <ExplorerMapBtn handlePress={handleSwitchMode} mode={mode} />
@@ -161,37 +175,6 @@ const Explore = () => {
     </Layout>
   );
 };
-
-function renderListView(
-  list,
-  renderListingItem,
-  isPending,
-  isRefetching,
-  handleRefresh,
-  handleLoadMore,
-) {
-  return (
-    <FlashList
-      // eslint-disable-next-line react-native/no-inline-styles
-      contentContainerStyle={{
-        padding: 16,
-      }}
-      data={list}
-      renderItem={renderListingItem}
-      keyExtractor={(_, ind) => ind.toString()}
-      estimatedItemSize={20}
-      refreshing={isPending || isRefetching}
-      onRefresh={handleRefresh}
-      onEndReached={handleLoadMore}
-      onEndReachedThreshold={0.5}
-      ListFooterComponent={
-        isRefetching ? (
-          <ActivityIndicator color={'#022374'} size="large" />
-        ) : null
-      }
-    />
-  );
-}
 
 export default Explore;
 
