@@ -8,7 +8,7 @@ import {
   ExploreMapView,
   ExplorerMapBtn,
   Layout,
-} from '@/components';
+} from '../../components';
 // import listings from '@/provider/listings';
 import {ExplorerFilterModal} from '@/components/modals';
 import {useNavigation} from '@react-navigation/native';
@@ -136,7 +136,7 @@ const Explore = () => {
           refreshing={isPending || isRefetching}
           onRefresh={refetch}
           onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.5}
+          onEndReachedThreshold={2}
           ListFooterComponent={renderListFooter}
         />
       )}
