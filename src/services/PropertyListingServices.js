@@ -8,7 +8,7 @@ import AxiosUtility from './AxiosServices';
  */
 const getPropertyListings = async (page, size) => {
   const {data: res} = await AxiosUtility.get(
-    `/public/property-listing?page=${page}&size=${size}`,
+    `/public/property-listing/search?page=${page}&size=${size}`,
   );
 
   return res;
