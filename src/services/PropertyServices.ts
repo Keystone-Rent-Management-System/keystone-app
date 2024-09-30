@@ -1,33 +1,50 @@
 import AxiosUtility, {setAuthToken} from './AxiosServices';
 
+interface Property {
+  id: string;
+  name: string;
+  // Add other relevant fields
+}
+
+interface Unit {
+  id: string;
+  propertyId: string;
+  // Add other relevant fields
+}
+
 /**
  * Fetches all properties
  * @param {number} page
  * @param {number} size
- * @returns {Promise<Property>}
+ * @returns {Promise<Property[]>}
  */
-const getProperties = async (page, size) => {
+const getProperties = async (
+  page: number,
+  size: number,
+): Promise<Property[]> => {
   setAuthToken(AxiosUtility);
   const {data: res} = await AxiosUtility.get(
     `/properties?page=${page}&size=${size}`,
   );
-
   return res;
 };
 
 /**
- * fetch property units
+ * Fetch property units
  * @param {number} propertyId
  * @param {number} page
  * @param {number} size
- * @returns {Promise<Unit>}
+ * @returns {Promise<Unit[]>}
  */
-const getPropertyUnits = async (propertyId, page, size) => {
+const getPropertyUnits = async (
+  propertyId: number,
+  page: number,
+  size: number,
+): Promise<Unit[]> => {
   setAuthToken(AxiosUtility);
   const {data: res} = await AxiosUtility.get(
     `/properties/${propertyId}/units?page=${page}&size=${size}`,
   );
-
   return res;
 };
 

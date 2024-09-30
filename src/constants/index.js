@@ -6,4 +6,4 @@ export const ABOUT_URL = 'https://pallax-ke.com/about-us';
 export const PALLAX_SUPPORT_NUMBER = '743271775';
 export const PALLAX_PHONE_NUMBER = `0${PALLAX_SUPPORT_NUMBER}`;
 
-export const PAGINATION_LIMIT = 100;
+export const PAGINATION_LIMIT = 10;

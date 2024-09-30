@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {memo, useState} from 'react';
 
 import {Image, Pressable, Text, TouchableOpacity, View} from 'react-native';
 import COLORS from '@/constants/Theme';
@@ -148,7 +148,7 @@ const ListingItem = props => {
   );
 };
 
-export default ListingItem;
+export default memo(ListingItem);
 
 export const IconLabel = ({icon, text}) => (
   <View className={'flex-row space-x-2 mr-3'}>

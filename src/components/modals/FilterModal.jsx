@@ -259,10 +259,12 @@ const houseTypes = [
   {
     icon: <ApartmentSvg />,
     text: 'Apartment',
+    value: 'apartment',
   },
   {
     icon: <VillaSvg size={'30'} color={'black'} />,
     text: 'Villa',
+    value: 'villa',
   },
 ];
 
