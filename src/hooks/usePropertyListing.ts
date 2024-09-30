@@ -1,10 +1,32 @@
 import {useInfiniteQuery, useQuery} from '@tanstack/react-query';
 import PropertyListingServices from '../services/PropertyListingServices';
 import {getNextPageParam, returnPaginationData} from '../utils/pagination';
-import React, {useCallback, useMemo} from 'react';
-import {ActivityIndicator} from 'react-native';
+import {useCallback, useMemo, useState} from 'react';
+import {IPropertyListingSearchParams} from '../types/property.ts';
 
 export const usePropertyListing = () => {
+  const [filters, setFilters] = useState<IPropertyListingSearchParams>({});
+
+  const handleAddRemoveFilter = useCallback(
+    <K extends keyof IPropertyListingSearchParams>(
+      key: K,
+      value: IPropertyListingSearchParams[K],
+    ) => {
+      console.log('FILTERS::', key, value);
+      setFilters(prevState => {
+        const newFilters = {...prevState};
+
+        if (newFilters[key] === value) {
+          delete newFilters[key];
+        } else {
+          newFilters[key] = value;
+        }
+        return newFilters;
+      });
+    },
+    [],
+  );
+
   const {
     data,
     error,
@@ -18,42 +40,28 @@ export const usePropertyListing = () => {
   } = useInfiniteQuery({
     queryKey: ['property-listings'],
     queryFn: async ({pageParam}) =>
-      PropertyListingServices.getPropertyListings(pageParam ?? 0, 5),
+      PropertyListingServices.getPropertyListings(pageParam ?? 0, 5, filters),
     initialPageParam: 0,
     getNextPageParam: props => getNextPageParam(props),
   });
 
   const listings = useMemo(() => returnPaginationData(data), [data]);
 
-  const renderListFooter = useCallback(() => {
-    if (isFetchingNextPage) {
-      return (
-        <ActivityIndicator
-          style={{marginBottom: 20}}
-          color={'#022374'}
-          size="large"
-        />
-      );
-    }
-    return null;
-  }, [isFetchingNextPage]);
-
   return {
     isPending,
     isRefetching,
     error,
     listings,
-    totalElements: data?.totalElements,
     refetch,
     isError,
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-    renderListFooter,
+    handleAddRemoveFilter,
   };
 };
 
-export const useSpecificPropertyListing = id => {
+export const useSpecificPropertyListing = (id: number) => {
   const {isPending, error, data, refetch} = useQuery({
     queryKey: [`property-listings/${id}`],
     queryFn: () => PropertyListingServices.getPropertyListing(id),
