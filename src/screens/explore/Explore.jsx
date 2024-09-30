@@ -26,6 +26,7 @@ const Explore = () => {
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
+    handleAddRemoveFilter,
   } = usePropertyListing();
 
   const renderListFooter = useCallback(() => {
@@ -91,13 +92,11 @@ const Explore = () => {
       balconies,
       numberOfBedrooms,
       numberOfBathrooms,
-      unitName,
-
       id,
     } = item;
     return (
       <ExploreListingItem
-        title={unitName}
+        title={item?.property?.name}
         userType={user}
         category={houseType}
         location={`${property?.country}, ${property?.county}, ${property?.neighborhood}`}
@@ -121,7 +120,8 @@ const Explore = () => {
       />
 
       {/*  Filters  */}
-      <ExploreFilters />
+      <ExploreFilters handleAddRemoveFilter={handleAddRemoveFilter} />
+
       {mode === 'map' ? (
         <ExploreMapView
           current={current}
