@@ -16,7 +16,7 @@ const getPropertyListings = async (
   page: number,
   size: number,
   searchParams: IPropertyListingSearchParams,
-): Promise<IPropertyListingResponse[]> => {
+): Promise<IPropertyListingResponse> => {
   const params = new URLSearchParams({
     page: page.toString(),
     size: size.toString(),
