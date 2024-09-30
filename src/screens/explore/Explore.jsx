@@ -10,9 +10,9 @@ import {
   Layout,
 } from '../../components';
 // import listings from '@/provider/listings';
-import {ExplorerFilterModal} from '@/components/modals';
+import {ExplorerFilterModal} from '../../components/modals';
 import {useNavigation} from '@react-navigation/native';
-import {StyleSheet, View} from 'react-native';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {usePropertyListing} from '../../hooks';
 
 const Explore = () => {
@@ -26,8 +26,14 @@ const Explore = () => {
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-    renderListFooter,
   } = usePropertyListing();
+
+  const renderListFooter = useCallback(() => {
+    if (isFetchingNextPage) {
+      renderFlashListFooter();
+    }
+    return null;
+  }, [isFetchingNextPage]);
 
   const filterModalRef = useRef(null);
 
@@ -55,12 +61,13 @@ const Explore = () => {
   }, []);
 
   const handleSearch = useCallback(() => {
+    // @ts-ignore
     navigation.navigate('apartment-search');
   }, [navigation]);
 
   const handleViewApartment = useCallback(
     id => {
-      navigation.navigate('apartment_view', {apartment: id});
+      return navigation.navigate('apartment_view', {apartment: id});
     },
     [navigation],
   );
@@ -133,7 +140,7 @@ const Explore = () => {
           renderItem={renderListingItem}
           keyExtractor={(_, ind) => ind.toString()}
           estimatedItemSize={100}
-          refreshing={isPending || isRefetching}
+          refreshing={isPending}
           onRefresh={refetch}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={2}
@@ -154,7 +161,7 @@ const Explore = () => {
           className={'absolute z-50 inset-x-0 bottom-0 px-3 py-2'}>
           <ExploreListingItem
             image={''}
-            title={currentProperty?.unitName}
+            title={currentProperty?.name}
             userType={'Landlord'}
             category={currentProperty?.houseType}
             location={`${currentProperty?.property?.country}, ${currentProperty?.property?.county}, ${currentProperty?.property?.neighborhood}`}
@@ -183,3 +190,7 @@ const styles = StyleSheet.create({
     gap: 50,
   },
 });
+
+export function renderFlashListFooter() {
+  return <ActivityIndicator color={'#022374'} size="large" />;
+}
