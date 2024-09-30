@@ -11,10 +11,10 @@ export const usePropertyListing = () => {
     <K extends keyof IPropertyListingSearchParams>(
       key: K,
       value: IPropertyListingSearchParams[K],
+      shouldResetRest?: boolean,
     ) => {
-      console.log('FILTERS::', key, value);
       setFilters(prevState => {
-        const newFilters = {...prevState};
+        const newFilters = shouldResetRest ? {} : {...prevState};
 
         if (newFilters[key] === value) {
           delete newFilters[key];
@@ -24,7 +24,7 @@ export const usePropertyListing = () => {
         return newFilters;
       });
     },
-    [],
+    [setFilters],
   );
 
   const {
@@ -38,7 +38,7 @@ export const usePropertyListing = () => {
     refetch,
     fetchNextPage,
   } = useInfiniteQuery({
-    queryKey: ['property-listings'],
+    queryKey: ['property-listings', JSON.stringify(filters)],
     queryFn: async ({pageParam}) =>
       PropertyListingServices.getPropertyListings(pageParam ?? 0, 5, filters),
     initialPageParam: 0,
