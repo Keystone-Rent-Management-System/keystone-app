@@ -3,22 +3,11 @@ import React, {forwardRef, useState} from 'react';
 
 import {CustomBottomSheet} from '.';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {
-  ApartmentSvg,
-  BabyCareSvg,
-  CarSvg,
-  GymSvg,
-  RightArrowSvg,
-  SecuritySvg,
-  SwimmingPoolSvg,
-  VillaSvg,
-  WaterAvailableSvg,
-  WifiSvg,
-} from '../../assets/icons';
+import {ApartmentSvg, RightArrowSvg, VillaSvg} from '../../assets/icons';
 import CInput, {LabelledCInput} from '../general/input/CInput.tsx';
 import COLORS from '../../constants/Theme';
 import CRangeSlider from '../rangeSlider';
-import {ExploreAmenity, ExploreRoomSelector} from '..';
+import {ExploreRoomSelector} from '..';
 import HouseTypeItem from '../screens/explore/HouseTypeItem';
 import {SelectorButton} from '../screens/explore/RoomSelector';
 import {BottomSheetMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
@@ -128,15 +117,6 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
               className={'my-5 h-1 w-full bg-none border-b border-border_grey'}
             />
 
-            {/* Amenities */}
-            <Text className={'font-inter-medium text-black mb-1'}>
-              Amenities
-            </Text>
-
-            {amenityFilters.map((item, key) => (
-              <ExploreAmenity key={key} icon={item.icon} title={item.text} />
-            ))}
-
             {/* Seperator */}
             <View
               className={'my-5 h-1 w-full bg-none border-b border-border_grey'}
@@ -231,37 +211,6 @@ const styles = StyleSheet.create({
 const houseFilters = [
   {Bedroom: ['any', '1', '2', '3', '4', '5']},
   {Bathroom: ['any', '1', '2', '3', '4', '5']},
-];
-
-const amenityFilters = [
-  {
-    icon: <WaterAvailableSvg />,
-    text: 'Available Water 24/7',
-  },
-  {
-    icon: <WifiSvg />,
-    text: 'Wifi',
-  },
-  {
-    icon: <CarSvg />,
-    text: 'Parking',
-  },
-  {
-    icon: <SecuritySvg />,
-    text: 'Security',
-  },
-  {
-    icon: <GymSvg />,
-    text: 'Gym',
-  },
-  {
-    icon: <SwimmingPoolSvg />,
-    text: 'Swimming Pool',
-  },
-  {
-    icon: <BabyCareSvg />,
-    text: 'Baby Care',
-  },
 ];
 
 const houseTypes = [
