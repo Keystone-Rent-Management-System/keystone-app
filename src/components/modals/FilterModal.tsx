@@ -9,7 +9,6 @@ import COLORS from '../../constants/Theme';
 import CRangeSlider from '../rangeSlider';
 import {ExploreRoomSelector} from '..';
 import HouseTypeItem from '../screens/explore/HouseTypeItem';
-import {SelectorButton} from '../screens/explore/RoomSelector';
 import {BottomSheetMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
 
 interface FilterModalProps {
@@ -19,7 +18,7 @@ interface FilterModalProps {
 const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
   (props, ref) => {
     const [isChecked, setIsChecked] = useState(false);
-    const [chosenManagement, setChosenManagement] = useState('any');
+
     const [chosenHouseType, setChosenHouseType] = useState('');
 
     const renderSheetHeader = () => (
@@ -143,25 +142,6 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
             <View
               className={'my-5 h-1 w-full bg-none border-b border-border_grey'}
             />
-
-            {/* House type filters */}
-            <Text className={'font-inter-medium text-black mt-3'}>
-              Management
-            </Text>
-            <Text className={'font-inter-medium text-grey_1 text-xs my-1'}>
-              Who manages the house?
-            </Text>
-
-            <View style={styles.houseManagement} className={'flex-row my-2'}>
-              {houseManagement?.map((item, ind) => (
-                <SelectorButton
-                  isActive={chosenManagement === item.toLowerCase()}
-                  handlePress={() => setChosenManagement(item.toLowerCase())}
-                  key={ind}
-                  text={item}
-                />
-              ))}
-            </View>
 
             <View className={'w-full h-10 '} />
           </ScrollView>
