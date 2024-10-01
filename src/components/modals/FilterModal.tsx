@@ -205,5 +205,3 @@ const houseTypes = [
     value: 'villa',
   },
 ];
-
-const houseManagement = ['Any', 'Agent', 'Landlord'];
