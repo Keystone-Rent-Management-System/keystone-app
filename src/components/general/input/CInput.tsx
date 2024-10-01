@@ -3,6 +3,20 @@ import React from 'react';
 import {Text, TextInput, TouchableOpacity, View} from 'react-native';
 import COLORS from '../../../constants/Theme';
 import {ClosedEyeSvg, OpenEyeSvg} from '../../../assets/icons/auth';
+import {TextInputProps} from 'react-native/Libraries/Components/TextInput/TextInput';
+
+interface ICInputProps extends TextInputProps {
+  icon?: React.ReactNode;
+  value?: string;
+  handleChange?: (text: string) => void;
+  maxL?: number;
+  placeHolder?: string;
+  ClassName?: string;
+  InputClassName?: string;
+  rightElement?: React.ReactNode;
+  placeholderTextColor?: string;
+  hasError?: boolean;
+}
 
 const CInput = ({
   icon,
@@ -10,14 +24,13 @@ const CInput = ({
   handleChange,
   maxL,
   placeHolder = 'Hellow',
-  inputClassName,
   ClassName,
   InputClassName,
   rightElement,
   placeholderTextColor = COLORS.inactive_text,
   hasError,
   ...rest
-}) => {
+}: ICInputProps) => {
   return (
     <View
       className={`flex-row rounded-xl border items-center ${ClassName} ${
@@ -41,6 +54,15 @@ const CInput = ({
   );
 };
 
+interface IPasswordCInputProps extends ICInputProps {
+  label: string;
+  labelClassName?: string;
+  containerClassName?: string;
+  hasError?: boolean;
+  handleEyeClick: (type: string) => void;
+  type: string;
+  error?: string;
+}
 export const PasswordCInput = ({
   label,
   labelClassName,
@@ -50,7 +72,7 @@ export const PasswordCInput = ({
   type,
   error,
   ...props
-}) => (
+}: IPasswordCInputProps) => (
   <View className={` flex flex-col ${containerClassName}`}>
     <Text className={`${labelClassName} font-inter-medium text-black mb-2 -2 `}>
       {label}
@@ -58,7 +80,7 @@ export const PasswordCInput = ({
     <CInput
       {...props}
       hasError={hasError}
-      secureTextEntry={type === 'password' ? true : false}
+      secureTextEntry={type === 'password'}
       textContentType={'password'}
       rightElement={
         <TouchableOpacity
@@ -80,14 +102,21 @@ export const PasswordCInput = ({
   </View>
 );
 
+interface ILabelledCInputProps extends ICInputProps {
+  label: string;
+  labelClassName?: string;
+  containerClassName?: string;
+  hasError?: boolean;
+  error?: string;
+}
 export const LabelledCInput = ({
   label,
   labelClassName,
   containerClassName,
-  hasError,
+  hasError = false,
   error,
   ...props
-}) => (
+}: ILabelledCInputProps) => (
   <View className={` flex flex-col ${containerClassName}`}>
     <Text className={`font-inter-medium text-black mb-2 ${labelClassName}`}>
       {label}
