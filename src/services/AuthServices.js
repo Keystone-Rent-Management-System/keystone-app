@@ -84,6 +84,19 @@ const updateUserPassword = async data => {
   return res;
 };
 
+/**
+ * Refreshes token upon expiration
+ * @param {string} refreshTkn
+ * @returns {Promise<any>}
+ */
+const refreshToken = async refreshTkn => {
+  const {data: res} = await AxiosUtility.post('/profile/refresh-token', {
+    refreshToken: refreshTkn,
+  });
+
+  return res;
+};
+
 const AuthServices = {
   verifyRegisteringEmail,
   registerTenant,
@@ -92,6 +105,7 @@ const AuthServices = {
   resetPassword,
   getProfile,
   updateUserPassword,
+  refreshToken,
 };
 
 export default AuthServices;
