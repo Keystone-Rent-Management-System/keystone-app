@@ -27,6 +27,7 @@ const Explore = () => {
     isFetchingNextPage,
     fetchNextPage,
     handleAddRemoveFilter,
+    handleSetFilters,
   } = usePropertyListing();
 
   const renderListFooter = useCallback(() => {
@@ -153,6 +154,7 @@ const Explore = () => {
       <ExplorerFilterModal
         handleCloseFilter={handleCloseFilter}
         ref={filterModalRef}
+        handleSetFilters={handleSetFilters}
       />
 
       {!!currentProperty && (

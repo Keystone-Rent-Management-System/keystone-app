@@ -7,6 +7,16 @@ import {IPropertyListingSearchParams} from '../types/property.ts';
 export const usePropertyListing = () => {
   const [filters, setFilters] = useState<IPropertyListingSearchParams>({});
 
+  console.log('FILTERS CHANGED:::', filters);
+
+  const handleSetFilters = useCallback(
+    (newFilters: IPropertyListingSearchParams) => {
+      console.log('NEW FILTERS ARE:::', newFilters);
+      setFilters(newFilters);
+    },
+    [setFilters],
+  );
+
   const handleAddRemoveFilter = useCallback(
     <K extends keyof IPropertyListingSearchParams>(
       key: K,
@@ -15,7 +25,7 @@ export const usePropertyListing = () => {
     ) => {
       setFilters(prevState => {
         const newFilters = shouldResetRest ? {} : {...prevState};
-
+        console.log('CALLED');
         if (newFilters[key] === value) {
           delete newFilters[key];
         } else {
@@ -38,7 +48,14 @@ export const usePropertyListing = () => {
     refetch,
     fetchNextPage,
   } = useInfiniteQuery({
-    queryKey: ['property-listings', JSON.stringify(filters)],
+    queryKey: [
+      'property-listings',
+      JSON.stringify(
+        Object.fromEntries(
+          Object.entries(filters).filter(([_, v]) => v !== undefined),
+        ),
+      ),
+    ],
     queryFn: async ({pageParam}) =>
       PropertyListingServices.getPropertyListings(pageParam ?? 0, 5, filters),
     initialPageParam: 0,
@@ -58,6 +75,7 @@ export const usePropertyListing = () => {
     isFetchingNextPage,
     fetchNextPage,
     handleAddRemoveFilter,
+    handleSetFilters,
   };
 };
 
