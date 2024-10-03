@@ -11,10 +11,14 @@ export const returnPaginationData = (data: any) => {
 
   if (data?.pages?.length > 0) {
     for (const obj of data?.pages) {
-      if (obj?.data) {
-        result.push(...obj?.data);
-      } else {
-        result.push(...obj);
+      if (obj) {
+        if (obj?.data) {
+          result.push(...obj?.data);
+        } else if (obj?.content) {
+          result.push(...obj?.content);
+        } else {
+          result.push(...obj);
+        }
       }
     }
   }
