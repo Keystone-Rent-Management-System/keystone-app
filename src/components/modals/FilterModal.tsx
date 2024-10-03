@@ -1,5 +1,12 @@
-import {ScrollView, StyleSheet, Switch, Text, View} from 'react-native';
-import React, {forwardRef, useState} from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacityProps,
+  View,
+} from 'react-native';
+import React, {forwardRef, useCallback, useMemo, useState} from 'react';
 
 import {CustomBottomSheet} from '.';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -10,16 +17,103 @@ import CRangeSlider from '../rangeSlider';
 import {ExploreRoomSelector} from '..';
 import HouseTypeItem from '../screens/explore/HouseTypeItem';
 import {BottomSheetMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
+import {
+  MAX_PRICE_RANGE,
+  MIN_PRICE_RANGE,
+  STEP,
+} from '../../constants/property.ts';
+import {IPropertyListingSearchParams} from '../../types/property.ts';
 
 interface FilterModalProps {
   handleCloseFilter: () => void;
+  handleSetFilters: (newFilters: IPropertyListingSearchParams) => void;
 }
 
 const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
   (props, ref) => {
     const [isChecked, setIsChecked] = useState(false);
 
-    const [chosenHouseType, setChosenHouseType] = useState('');
+    const [chosenHouseType, setChosenHouseType] = useState(null);
+
+    const [chosenHouseSize, setChosenHouseSize] = useState('');
+    const [chosenBedroomSize, setChosenBedroomSize] = useState('');
+
+    const [lowNumber, setLowNumber] = useState<number>(1);
+    const [highNumber, setHighNumber] = useState<number>(1);
+
+    const handleLowChange = useCallback((value: string | number = '0') => {
+      if (parseInt(value.toString(), 10) > 0) {
+        setLowNumber(parseInt(value.toString(), 10));
+      }
+    }, []);
+    const handleHighChange = useCallback((value: string | number = '0') => {
+      if (parseInt(value.toString(), 10) > 0) {
+        setHighNumber(parseInt(value.toString(), 10));
+      }
+    }, []);
+
+    const handleSliderChange = useCallback(
+      (low: number, high: number) => {
+        handleHighChange(high);
+        handleLowChange(low);
+      },
+      [handleHighChange, handleLowChange],
+    );
+    const handleHouseSizeChange = useCallback((size: string) => {
+      const splitSections = size.split('_');
+      const category = splitSections[0] ?? null;
+      const _size = splitSections[1] ?? null;
+
+      if (category && _size) {
+        if (category === 'bedroom') {
+          setChosenBedroomSize(_size);
+        } else {
+          setChosenHouseSize(_size);
+        }
+      }
+    }, []);
+
+    const handleApplyFilter = useCallback(() => {
+      const filters: IPropertyListingSearchParams = {};
+      console.log(chosenHouseType, chosenHouseSize, lowNumber, highNumber);
+      if (chosenHouseType) {
+        filters.propertyType = chosenHouseType;
+      }
+      if (chosenBedroomSize) {
+        filters.numberOfBedrooms = parseInt(chosenBedroomSize, 10);
+      }
+      if (chosenHouseSize) {
+        filters.numberOfBedrooms = parseInt(chosenHouseSize, 10);
+      }
+
+      console.log('FILTS:::', filters);
+
+      // if (
+      //   (lowNumber !== MIN_PRICE_RANGE || highNumber > 1) &&
+      //   filters?.minPrice
+      // ) {
+      //   filters.minPrice = undefined;
+      // }
+      // if (
+      //   (highNumber !== MAX_PRICE_RANGE || highNumber > 1) &&
+      //   filters?.maxPrice
+      // ) {
+      //   filters.maxPrice = undefined;
+      // }
+
+      props.handleSetFilters(filters);
+    }, [chosenBedroomSize, chosenHouseSize, chosenHouseType, props]);
+
+    const hasFiltered = useMemo(() => {
+      console.log(chosenHouseType, chosenHouseSize, lowNumber, highNumber);
+
+      return (
+        !!chosenHouseType ||
+        !!chosenHouseSize ||
+        lowNumber !== MIN_PRICE_RANGE ||
+        highNumber !== MAX_PRICE_RANGE
+      );
+    }, [chosenHouseSize, chosenHouseType, highNumber, lowNumber]);
 
     const renderSheetHeader = () => (
       <View
@@ -80,7 +174,12 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
             />
 
             {/* Range slider */}
-            <CRangeSlider />
+            <CRangeSlider
+              onValuesChange={handleSliderChange}
+              minVal={MIN_PRICE_RANGE}
+              maxVal={MAX_PRICE_RANGE}
+              step={STEP}
+            />
 
             {/* Range slider inputs */}
             <View className={'flex-row '}>
@@ -88,6 +187,9 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
                 placeHolder="Min Value"
                 ClassName={'flex-1 border-border_grey px-2 py-0 h-11'}
                 InputClassName={'text-xs'}
+                defaultValue={lowNumber.toString()}
+                // defaultValue={}
+                onChangeText={handleLowChange}
               />
 
               <View className={'mx-2 border-b border-gray-700 w-6 my-auto'} />
@@ -96,6 +198,8 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
                 ClassName={'flex-1 border-border_grey px-2 py-0 h-11'}
                 placeHolder="Max Value"
                 InputClassName={'text-xs'}
+                defaultValue={highNumber.toString()}
+                onChangeText={handleHighChange}
               />
             </View>
 
@@ -108,13 +212,12 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
             <Text className={'font-inter-medium text-black '}>House Size</Text>
 
             {houseFilters.map((filt, ind) => (
-              <ExploreRoomSelector filter={filt} key={ind} />
+              <ExploreRoomSelector
+                filter={filt}
+                key={ind}
+                handleActiveChange={handleHouseSizeChange}
+              />
             ))}
-
-            {/* Seperator */}
-            <View
-              className={'my-5 h-1 w-full bg-none border-b border-border_grey'}
-            />
 
             {/* Seperator */}
             <View
@@ -143,7 +246,12 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
               className={'my-5 h-1 w-full bg-none border-b border-border_grey'}
             />
 
-            <View className={'w-full h-10 '} />
+            <SaveFiltersBtn
+              disabled={!hasFiltered}
+              onPress={handleApplyFilter}
+            />
+
+            <View className={'h-10'} />
           </ScrollView>
         </View>
       </CustomBottomSheet>
@@ -205,3 +313,19 @@ const houseTypes = [
     value: 'villa',
   },
 ];
+
+interface ISaveFiltersBtnProps extends Partial<TouchableOpacityProps> {}
+
+const SaveFiltersBtn = ({disabled, ...rest}: ISaveFiltersBtnProps) => (
+  // @ts-ignore
+  <TouchableOpacity
+    className={`flex-row items-center h-12 justify-center border border-border_grey mr-3 py-1.5 px-4 rounded-full bg-primary ${
+      disabled ? 'opacity-70' : ''
+    }`}
+    disabled={disabled}
+    {...rest}>
+    <Text className={'text-[15px] text-white font-inter-semibold'}>
+      Apply filters
+    </Text>
+  </TouchableOpacity>
+);
