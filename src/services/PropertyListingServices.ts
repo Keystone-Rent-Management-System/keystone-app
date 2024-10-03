@@ -24,9 +24,13 @@ const getPropertyListings = async (
 
   if (searchParams) {
     Object.entries(searchParams).forEach(([key, value]) => {
-      params.append(key, value.toString());
+      if (value !== null && value !== undefined && value !== 0) {
+        params.append(key, value.toString());
+      }
     });
   }
+
+  console.log('PARAMS ARE', params.toString());
 
   const {data: res} = await AxiosUtility.get(
     `/public/property-listing/search?${params.toString()}`,
