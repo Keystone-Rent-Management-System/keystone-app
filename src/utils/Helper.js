@@ -32,7 +32,11 @@ const handleCallSupport = async () => {
 };
 
 const handleCall = async phoneNumber => {
-  await Linking.openURL(`tel:+254${phoneNumber}`);
+  const validatedPhoneNumber = phoneNumber.startsWith('07')
+    ? phoneNumber.slice(1)
+    : phoneNumber;
+
+  await Linking.openURL(`tel:+254${validatedPhoneNumber}`);
 };
 
 const handleSmsSupport = async () => {
