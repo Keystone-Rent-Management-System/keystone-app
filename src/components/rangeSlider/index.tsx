@@ -1,11 +1,23 @@
-import {View, StyleSheet} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import React, {useCallback} from 'react';
 import RnRangeSlider from 'rn-range-slider';
 import COLORS from '../../constants/Theme';
 
 const THUMB_RADIUS_LOW = 12;
 
-const CRangeSlider = () => {
+interface ICRangeSlider {
+  minVal: number;
+  maxVal: number;
+  step?: number;
+  onValuesChange?: (low: number, high: number) => void;
+}
+
+const CRangeSlider = ({
+  minVal = 1,
+  maxVal = 10000000,
+  step = 1,
+  onValuesChange,
+}: ICRangeSlider) => {
   const renderThumb = useCallback(() => <Thumb />, []);
   const renderRail = useCallback(() => <Rail />, []);
   const renderRailSelected = useCallback(() => <RailSelected />, []);
@@ -13,12 +25,10 @@ const CRangeSlider = () => {
   return (
     <View className={'my-7 px-1'}>
       <RnRangeSlider
-        // values={values}
-        // onValuesChange={handleValuesChange}
-        min={0}
-        max={1000}
-        step={1}
-        allowOverlap={false} // Prevent thumbs from overlapping
+        onValueChanged={onValuesChange}
+        min={minVal}
+        max={maxVal}
+        step={step}
         renderRail={renderRail}
         renderRailSelected={renderRailSelected}
         renderThumb={renderThumb}
@@ -27,7 +37,7 @@ const CRangeSlider = () => {
   );
 };
 
-const Thumb = ({name}) => {
+const Thumb = () => {
   return <View style={styles.thumb} />;
 };
 
