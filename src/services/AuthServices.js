@@ -1,4 +1,5 @@
-import AxiosUtility, {setAuthToken} from './AxiosServices';
+import AxiosUtility, {ENDPOINT, setAuthToken} from './AxiosServices';
+import axios from 'axios';
 
 /**
  * Verifies registering tenant's email
@@ -90,7 +91,7 @@ const updateUserPassword = async data => {
  * @returns {Promise<any>}
  */
 const refreshToken = async refreshTkn => {
-  const {data: res} = await AxiosUtility.post('/profile/refresh-token', {
+  const {data: res} = await axios.post(`${ENDPOINT}/profile/refresh-token`, {
     refreshToken: refreshTkn,
   });
 
