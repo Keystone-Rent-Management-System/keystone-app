@@ -9,7 +9,7 @@ export const useAgrement = () => {
     queryFn: () => AgreementServices.getAgreements(0, 20),
   });
 
-  const agreements = data?.data || [];
+  const agreements = data?.content || data?.data || [];
 
   return {isPending, error, agreements, refetch};
 };
