@@ -1,4 +1,4 @@
-import {useInfiniteQuery} from '@tanstack/react-query';
+import {useInfiniteQuery, useQuery} from '@tanstack/react-query';
 import StatementServices from '../services/StatementServices';
 import {useActiveAgrement} from './useAgrement';
 import {PAGINATION_LIMIT} from '../constants';
@@ -52,5 +52,21 @@ export const useStatement = size => {
 
     fetchNextPage,
     renderListFooter,
+  };
+};
+
+export const useActiveStatement = () => {
+  const {agreement} = useActiveAgrement();
+
+  const {data, error, isError, isPending} = useQuery({
+    queryKey: ['active-statement'],
+    queryFn: async () => StatementServices.fetchActiveStatement(agreement?.id),
+  });
+
+  return {
+    isPending,
+    error,
+    isError,
+    activeStatement: data,
   };
 };
