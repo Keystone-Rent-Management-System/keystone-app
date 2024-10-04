@@ -1,7 +1,8 @@
-export const getNextPageParam = (lastPage: any) => {
+export const getNextPageParam = (prevPage: any) => {
+  const lastPage = prevPage?.page ?? prevPage;
   const pageLimit = parseInt(lastPage?.size, 10);
   const totalItems = parseInt(lastPage?.totalElements, 10);
-  const currentPage = parseInt(lastPage?.page, 10);
+  const currentPage = parseInt(lastPage?.number ?? lastPage?.page, 10);
 
   return getNextPrevPage(pageLimit, totalItems, currentPage);
 };
