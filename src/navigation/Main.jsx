@@ -5,6 +5,7 @@ import BottomNav from './BottomNav';
 import {ApartmentSearch, ApartmentView, InvoiceView} from '@/screens';
 import {
   AccountChangePassword,
+  CurrentAgreements,
   InvoiceMakePayment,
   Login,
   RecoveryEmail,
@@ -14,7 +15,6 @@ import {
 } from '../screens';
 import NavOptions from './options';
 import MyUnitsStack from './MyUnitsStack';
-import AgreementsTopTabNav from './AgreementsTopNav';
 import {
   RegistrationEmail,
   RegistrationPassword,
@@ -141,10 +141,10 @@ const MainNav = () => {
           />
           <Stack.Screen
             name={'more__agreements'}
-            component={AgreementsTopTabNav}
+            component={CurrentAgreements}
             options={{
               ...NavOptions.withBackBarOptions,
-              title: 'Agreements',
+              title: 'Current Agreement',
             }}
           />
         </>

@@ -8,9 +8,8 @@ import COLORS from '../../../constants/Theme';
 import {invoiceStyles} from '../../tenant_home/invoice/Unpaid';
 import AgreementModalSheet from '../../../components/modals/Agreement';
 import {MovingOutModal} from '../../../components/modals';
-import {useHelp} from '../../../hooks';
+import {useAcceptAgrement, useAgrement, useHelp} from '../../../hooks';
 import {useBottomSheetModal} from '@gorhom/bottom-sheet';
-import {useAcceptAgrement, useAgrement} from '../../../hooks';
 import moment from 'moment';
 
 const Current = () => {
@@ -40,7 +39,6 @@ const Current = () => {
         currentAgreement?.status?.toLowerCase() === 'accepted' ||
         currentAgreement?.status?.toLowerCase() === 'pending',
     );
-
   const {acceptAgrementMutation, handleAcceptAgreement} = useAcceptAgrement(
     dismiss,
     refetch,
@@ -66,7 +64,6 @@ const Current = () => {
           renderItem={({item}) =>
             renderAgreementListItem(item, handleOpenAgreement)
           }
-          keyExtractor={item => item?.id}
           estimatedItemSize={300}
           onRefresh={refetch}
         />
@@ -84,6 +81,7 @@ const Current = () => {
 export const renderAgreementListItem = (item, handlePress = () => {}) => {
   return (
     <ListingItem
+      key={item?.id}
       icon={<AgreementSvg color={COLORS.primary} size={'24'} />}
       id={item?.id}
       title={item?.propertyUnits?.property?.name}
