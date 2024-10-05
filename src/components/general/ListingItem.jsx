@@ -13,12 +13,14 @@ const ListingItem = ({
   customDate,
   isPartial,
   handlePress,
+  disabled,
 }) => {
   return (
     <TouchableOpacity
       className={
         'mb-4 flex-row space-x-3 pt-2 pb-3 border-b border-b-border_grey'
       }
+      disabled={disabled}
       onPress={handlePress}>
       <View
         className={
