@@ -13,6 +13,7 @@ import COLORS from '../../../constants/Theme';
 import {useActiveAgrement} from '../../../hooks';
 import {useActiveStatement} from '../../../hooks/useStatement';
 import {ILandlord} from '../../../types/property.ts';
+import AgreementModalSheet from '../../../components/modals/Agreement';
 
 type ChargeKey = string;
 
@@ -96,18 +97,19 @@ const UnitView = () => {
           <Line />
 
           {/*Agreement section*/}
-          <View className={'flex-row space-x-3 items-center py-3'}>
-            <AgreementSvg color={COLORS.primary} size={'25'} />
+          <AgreementModalSheet>
+            <View className={'flex-row space-x-3 items-center py-3'}>
+              <AgreementSvg color={COLORS.primary} size={'25'} />
 
-            {/* TODO: Add link to pre-view agreement via modal */}
-            <View className={'flex-1'}>
-              <Text className={'text-sm text-primary font-inter-medium'}>
-                View Agreement
-              </Text>
+              <View className={'flex-1'}>
+                <Text className={'text-sm text-primary font-inter-medium'}>
+                  View Agreement
+                </Text>
+              </View>
+
+              <RightArrowSvg />
             </View>
-
-            <RightArrowSvg />
-          </View>
+          </AgreementModalSheet>
 
           {/*seperator*/}
           <Line />
