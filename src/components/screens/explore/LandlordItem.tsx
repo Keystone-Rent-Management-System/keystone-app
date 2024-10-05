@@ -3,22 +3,32 @@ import {StyleSheet, Text, View} from 'react-native';
 
 import ProfileView from '../ProfileView';
 import {ExploreActionBtn} from './index';
-import {MessageSvg, PhoneSvg} from '@/assets/icons';
+import {MessageSvg, PhoneSvg} from '../../../assets/icons';
 import Helper from '../../../utils/Helper';
 
-const LandlordItem = ({userName, phoneNumber, ClassName}) => {
+interface ILandlordItem {
+  name: string;
+  phoneNumber: string;
+  rent: string;
+  ClassName?: string;
+}
+
+const LandlordItem = ({name, phoneNumber, ClassName, rent}: ILandlordItem) => {
   return (
-    <View className={`p-4 border-b border-border_grey flex-row ${ClassName}`}>
+    <View className={`p-4 flex-row items-center ${ClassName}`}>
       <ProfileView
-        text={Helper.getInitials(userName)}
+        text={Helper.getInitials(name)}
         textClassName={'text-white text-lg'}
         containerClassName={'bg-primary'}
       />
 
-      <View className={'mx-3 flex-1'}>
-        <Text className={'font-inter-medium text-black'}>{userName}</Text>
-        <Text className={'font-inter capitalize text-13 text-grey_1'}>
+      <View className={'mx-3 flex-1 '} style={{gap: 5}}>
+        <Text className={'font-inter-medium text-black'}>{name}</Text>
+        <Text className={'pl-1 font-inter capitalize text-13 text-grey_1'}>
           {phoneNumber}
+        </Text>
+        <Text className={'pl-1 font-inter capitalize text-13 text-grey_1'}>
+          Rent: {rent}
         </Text>
       </View>
 
@@ -28,13 +38,13 @@ const LandlordItem = ({userName, phoneNumber, ClassName}) => {
         {/* message button */}
         <ExploreActionBtn
           icon={<MessageSvg />}
-          handlePress={Helper.handleSmsSupport}
+          handlePress={() => Helper.handleSms(phoneNumber)}
         />
 
         {/* call button */}
         <ExploreActionBtn
           icon={<PhoneSvg />}
-          handlePress={Helper.handleCallSupport}
+          handlePress={() => Helper.handleCall(phoneNumber)}
         />
       </View>
     </View>

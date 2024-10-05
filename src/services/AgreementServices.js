@@ -4,7 +4,7 @@ import AxiosUtility, {setAuthToken} from './AxiosServices';
  * Fetches all agreements
  * @param {number} page
  * @param {number} size
- * @returns {Promise<Agreement[]>}
+ * @returns {Promise<{content:Agreement[],page:any}>}
  */
 const getAgreements = async (page, size) => {
   setAuthToken(AxiosUtility);
@@ -30,7 +30,7 @@ const getActiveAgreement = async () => {
 
 /**
  * Accept agreement
- * @param {number} id
+ * @param {number|string} id
  * @returns {Promise<Agreement>}
  */
 const acceptAgreement = async id => {
