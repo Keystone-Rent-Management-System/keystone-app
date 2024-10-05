@@ -42,6 +42,13 @@ const handleCall = async phoneNumber => {
 const handleSmsSupport = async () => {
   await Linking.openURL(`sms:+254${PALLAX_SUPPORT_NUMBER}`);
 };
+const handleSms = async phoneNumber => {
+  const validatedPhoneNumber = phoneNumber.startsWith('07')
+    ? phoneNumber.slice(1)
+    : phoneNumber;
+
+  await Linking.openURL(`sms:+254${validatedPhoneNumber}`);
+};
 
 const Helper = {
   renderSingularPlural,
@@ -50,6 +57,7 @@ const Helper = {
   handleCallSupport,
   handleSmsSupport,
   handleCall,
+  handleSms,
 };
 
 export default Helper;
