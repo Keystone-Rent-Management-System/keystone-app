@@ -3,12 +3,16 @@ import {StyleSheet, Text, View} from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 import COLORS from '../../../constants/Theme';
 
-const ExtensionDropdown = () => {
+const ExtensionDropdown = props => {
   const [currentFilter, setFilter] = useState('all');
 
-  const handleFilterChange = useCallback(item => {
-    setFilter(item);
-  }, []);
+  const handleFilterChange = useCallback(
+    item => {
+      setFilter(item);
+      props.handleChange(item);
+    },
+    [props],
+  );
 
   return (
     <Dropdown
