@@ -1,5 +1,6 @@
 import {Linking} from 'react-native';
 import {PALLAX_SUPPORT_NUMBER} from '../constants';
+import moment from 'moment';
 
 const renderSingularPlural = (num, render, nullRender = '') =>
   parseInt(num, 10) > 1 ? render : nullRender;
@@ -50,6 +51,21 @@ const handleSms = async phoneNumber => {
   await Linking.openURL(`sms:+254${validatedPhoneNumber}`);
 };
 
+const getCurrentMonthInNumberForm = () => {
+  const date = new Date();
+  return date.getMonth() + 1;
+};
+
+const getCurrentYear = () => {
+  const date = new Date();
+  return date.getFullYear();
+};
+
+const calculateDaysRemaining = sampleDate => {
+  const currentDate = new Date();
+  return moment(sampleDate).diff(currentDate, 'days').toString();
+};
+
 const Helper = {
   renderSingularPlural,
   getGreetings,
@@ -58,6 +74,9 @@ const Helper = {
   handleSmsSupport,
   handleCall,
   handleSms,
+  getCurrentMonthInNumberForm,
+  getCurrentYear,
+  calculateDaysRemaining,
 };
 
 export default Helper;
