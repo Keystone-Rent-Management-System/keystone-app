@@ -9,7 +9,7 @@ const notificationStore = useNotificationStore.getState();
 export const registerDeviceToken = async () => {
   // Set the token in the AxiosUtility
   setAuthToken(AxiosUtility);
-  console.log('TOKEN ISS REGISTERED', notificationStore.deviceToken);
+
   // check if token exists
   if (!notificationStore.deviceToken) {
     throw new Error('Notification token required.');
