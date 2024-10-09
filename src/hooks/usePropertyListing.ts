@@ -69,5 +69,5 @@ export const useSpecificPropertyListing = (id: number) => {
 
   const listing = data || null;
 
-  return {isPending, error, listing, refetch};
+  return {isPending, error, listing: listing?.propertyListing, refetch};
 };
