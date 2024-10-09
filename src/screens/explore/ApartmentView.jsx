@@ -1,6 +1,5 @@
 import React, {useMemo, useRef, useState} from 'react';
 import {
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -34,6 +33,7 @@ import MapView, {Marker} from 'react-native-maps';
 import {PALLAX_PHONE_NUMBER} from '../../constants';
 import {useSpecificPropertyListing} from '../../hooks/usePropertyListing';
 import numberWithCommas from '../../utils/numberWithCommas';
+import ImageSlider from '../../components/screens/property_view/ImageSlider';
 
 const ApartmentView = ({route: {params}}) => {
   const bottomSheetRef = useRef();
@@ -41,7 +41,15 @@ const ApartmentView = ({route: {params}}) => {
 
   const [modalState, setModalState] = useState(false);
 
-  const {isPending, listing} = useSpecificPropertyListing(params?.apartment);
+  const {isPending, data} = useSpecificPropertyListing(params?.apartment);
+
+  const listing = useMemo(() => {
+    if (!isPending) {
+      return data?.propertyListing;
+    }
+
+    return null;
+  }, [data, isPending]);
 
   const region = useMemo(
     () => ({
@@ -76,7 +84,17 @@ const ApartmentView = ({route: {params}}) => {
     navigation.goBack();
   };
 
-  const imgs = useMemo(() => listing?.prop, []);
+  const imgs = useMemo(() => {
+    if (isPending) {
+      return ['default'];
+    }
+
+    if (!data?.propertyUploads || data?.propertyUploads?.length === 0) {
+      return ['default'];
+    }
+
+    return data?.propertyUploads.map(item => item?.fileUrl);
+  }, [isPending, data]);
 
   const htmlIframe = useMemo(() => {
     return `<iframe
@@ -117,19 +135,14 @@ const ApartmentView = ({route: {params}}) => {
             </View>
           </View>
         )}
-        {!isPending && (
-          <Image
-            className={'w-full h-60'}
-            source={require('../../assets/images/shot-panoramic-composition-bedroom.jpg')}
-            alt={'property_img'}
-          />
-        )}
+
+        <ImageSlider images={imgs} />
 
         {/* virtual tour image */}
         <TouchableOpacity
           style={styles.floatingVirtualButton}
           className={
-            'flex-row py-1.5 px-2 border-[0.4px] border-white rounded-md items-center absolute bottom-3 right-3'
+            'flex-row  py-1.5 px-2 border-[0.4px] border-white rounded-md items-center absolute bottom-8 right-3'
           }
           onPress={handleViewTour}>
           <VirtualTourSvg color={COLORS.white} />
@@ -140,8 +153,8 @@ const ApartmentView = ({route: {params}}) => {
 
       <ScrollView>
         {/* apartment primary details  */}
-        <View className={'p-4 border-b border-border_grey'}>
-          <Text className={'text-black font-inter-semibold'}>
+        <View className={'px-4 border-b border-border_grey'}>
+          <Text className={'text-black font-inter-semibold mt-2'}>
             {listing?.property.name}
           </Text>
 
