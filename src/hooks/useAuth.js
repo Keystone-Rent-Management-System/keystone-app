@@ -12,7 +12,7 @@ const useAuth = () => {
     queryFn: () => AuthServices.getProfile(),
   });
 
-  return {isPending, error, profile: data?.data, refetch};
+  return {isPending, error, profile: data, refetch};
 };
 
 export const useVerifyEmail = () => {
