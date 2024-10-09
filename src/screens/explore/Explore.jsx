@@ -99,7 +99,7 @@ const Explore = () => {
         title={item?.property?.name}
         userType={user}
         category={houseType}
-        location={`${property?.country}, ${property?.county}, ${property?.neighborhood}`}
+        location={`${property?.address?.line ?? ''}`}
         price={rent}
         balconies={balconies}
         bedrooms={numberOfBedrooms}
