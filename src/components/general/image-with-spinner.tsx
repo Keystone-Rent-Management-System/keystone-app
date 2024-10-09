@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   Image,
   ImageProps,
-  ImageURISource,
   StyleSheet,
   View,
 } from 'react-native';
@@ -13,13 +12,8 @@ interface ImageWithSpinnerProps extends ImageProps {
   defaultUri?: string;
 }
 
-const ImageWithSpinner: React.FC<ImageWithSpinnerProps> = ({
-  defaultUri = 'https://semantic-ui.com/images/wireframe/image.png',
-  source,
-  ...props
-}) => {
+const ImageWithSpinner: React.FC<ImageWithSpinnerProps> = ({...props}) => {
   const [loading, setLoading] = useState(true);
-  const _source = source as ImageURISource;
 
   const handleLoadStart = useCallback(() => {
     setLoading(true);
@@ -41,7 +35,6 @@ const ImageWithSpinner: React.FC<ImageWithSpinnerProps> = ({
       )}
       <Image
         {...props}
-        source={{uri: _source?.uri || defaultUri || ''}}
         onLoadStart={handleLoadStart}
         onLoadEnd={handleLoadEnd}
       />
