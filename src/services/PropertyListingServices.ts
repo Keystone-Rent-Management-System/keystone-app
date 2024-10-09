@@ -30,7 +30,7 @@ const getPropertyListings = async (
   }
 
   const {data: res} = await AxiosUtility.get(
-    `/public/property-listing/search?${params.toString()}`,
+    `/public/property/listings?${params.toString()}`,
   );
 
   return res;
