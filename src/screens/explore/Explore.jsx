@@ -94,8 +94,9 @@ const Explore = () => {
       balconies,
       numberOfBedrooms,
       numberOfBathrooms,
-      id,
+      listingId: id,
     } = item;
+
     return (
       <ExploreListingItem
         title={item?.property?.name}
