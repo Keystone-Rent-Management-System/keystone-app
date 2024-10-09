@@ -7,10 +7,10 @@ import {IAgreement} from '../types/agreement';
 export const useAgrement = () => {
   const {isPending, error, data, refetch} = useQuery({
     queryKey: ['agreements'],
-    queryFn: () => AgreementServices.getAgreements(0, 20),
+    queryFn: () => AgreementServices.getActiveAgreement(),
   });
 
-  const agreements = data?.content ?? [];
+  const agreements = [data] ?? [];
 
   return {isPending, error, agreements, refetch};
 };
