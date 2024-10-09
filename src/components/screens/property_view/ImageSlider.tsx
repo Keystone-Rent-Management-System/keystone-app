@@ -43,7 +43,7 @@ const PropertyImages = ({images}: IPropertyImages) => {
       style={{
         alignItems: 'center',
       }}>
-      <View className={'min-h-[220px] w-full pb-10'}>
+      <View className={'h- w-full pb-10 h-full'}>
         <Carousel
           ref={ref}
           {...baseOptions}
@@ -57,16 +57,15 @@ const PropertyImages = ({images}: IPropertyImages) => {
             parallaxScrollingOffset: 50,
           }}
           data={images}
-          renderItem={({item}) => (
-            <Pressable
-              className={
-                'rounded-xl overflow-hidden bg-white border border-gray-200 w-[90%]'
-              }>
+          renderItem={({item}: {item: any}) => (
+            <Pressable className={'overflow-hidden bg-white border-0 w-full'}>
               <ImageWithSpinner
-                className={'w-full h-[210px]'}
-                source={{
-                  uri: item,
-                }}
+                className={'w-full h-60'}
+                source={
+                  item === 'default'
+                    ? require('../../../assets/images/shot-panoramic-composition-bedroom.jpg')
+                    : {uri: item}
+                }
                 style={{resizeMode: 'cover'}}
               />
             </Pressable>
