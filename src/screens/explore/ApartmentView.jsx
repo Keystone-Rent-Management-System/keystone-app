@@ -189,8 +189,10 @@ const ApartmentView = ({route: {params}}) => {
         </View>
 
         <LandlordItem
+          name={'Pallax'}
           unitName={listing?.unitName}
           phoneNumber={PALLAX_PHONE_NUMBER}
+          rent={listing?.rent?.toString()}
           userName={'Pallax'}
         />
 
@@ -200,8 +202,9 @@ const ApartmentView = ({route: {params}}) => {
             Where is the unit located
           </Text>
 
-          <Text className={'text-grey_1 font-inter my-1.5'}>
-            {`${listing?.property?.address?.line}ss`}
+          <Text
+            className={'text-grey_1 font-inter my-1.5 text-[13px] leading-6'}>
+            {`${listing?.property?.address?.line}`}
           </Text>
 
           {!!listing?.property?.latitude && (
@@ -242,17 +245,7 @@ const ApartmentView = ({route: {params}}) => {
           <Text className={'text-black font-inter-medium'}>Charges</Text>
 
           <View className={'mt-3'} style={styles.chargeList}>
-            {/* {Object?.keys(currentApartmentDetails?.charges)?.map(
-              (charge, ind) => (
-                <ExploreAmenity
-                  key={ind}
-                  showCheckBox={false}
-                  icon={currentApartmentDetails?.charges[charge]?.icon}
-                  title={charge}
-                  value={`KES. ${currentApartmentDetails?.charges[charge]?.amount}`}
-                />
-              ),
-            )} */}
+            <Text className={'text-black'}>_____</Text>
           </View>
         </View>
 
