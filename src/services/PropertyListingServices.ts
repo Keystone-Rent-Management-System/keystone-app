@@ -3,6 +3,7 @@ import {
   IPropertyListing,
   IPropertyListingResponse,
   IPropertyListingSearchParams,
+  ISpecificPropertyListing,
 } from '../types/property.ts';
 
 /**
@@ -42,7 +43,7 @@ const getPropertyListings = async (
  */
 const getPropertyListing = async (
   propertyId: number,
-): Promise<IPropertyListing> => {
+): Promise<ISpecificPropertyListing> => {
   const {data: res} = await AxiosUtility.get(
     `/public/property-listing/${propertyId}`,
   );
