@@ -22,7 +22,7 @@ const LandlordItem = ({name, phoneNumber, ClassName, rent}: ILandlordItem) => {
         containerClassName={'bg-primary'}
       />
 
-      <View className={'mx-3 flex-1 '} style={{gap: 5}}>
+      <View className={'mx-3 flex-1 '} style={{gap: 2}}>
         <Text className={'font-inter-medium text-black'}>{name}</Text>
         <Text className={'pl-1 font-inter capitalize text-13 text-grey_1'}>
           {phoneNumber}
