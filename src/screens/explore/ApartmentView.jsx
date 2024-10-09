@@ -13,24 +13,24 @@ import {
   BalconySvg,
   BathroomSvg,
   BedSvg,
+  HouseMapMarker,
   LikeSvg,
   UploadSvg,
   VirtualTourSvg,
-} from '@/assets/icons';
+} from '../../assets/icons';
 import {
   ApartmentViewFloatingActionBar,
   ExploreActionBtn,
   ExploreAmenity,
+  LandlordItem,
   Layout,
-} from '@/components';
-import {VirtualTourModal} from '@/components/modals';
-import {IconLabel} from '@/components/screens/explore/ListingItem';
-import COLORS from '@/constants/Theme';
-import Helper from '@/utils/Helper';
+} from '../../components';
+import {VirtualTourModal} from '../../components/modals';
+import {IconLabel} from '../../components/screens/explore/ListingItem';
+import COLORS from '../../constants/Theme';
+import Helper from '../../utils/Helper';
 import {useNavigation} from '@react-navigation/native';
 import MapView, {Marker} from 'react-native-maps';
-import {HouseMapMarker} from '../../assets/icons';
-import {LandlordItem} from '../../components';
 import {PALLAX_PHONE_NUMBER} from '../../constants';
 import {useSpecificPropertyListing} from '../../hooks/usePropertyListing';
 import numberWithCommas from '../../utils/numberWithCommas';
@@ -75,6 +75,8 @@ const ApartmentView = ({route: {params}}) => {
   const handleGoBack = () => {
     navigation.goBack();
   };
+
+  const imgs = useMemo(() => listing?.prop, []);
 
   const htmlIframe = useMemo(() => {
     return `<iframe
@@ -122,12 +124,6 @@ const ApartmentView = ({route: {params}}) => {
             alt={'property_img'}
           />
         )}
-        {/* <WebView
-          source={{
-            html: htmlIframe,
-          }}
-          style={styles.webview}
-        /> */}
 
         {/* virtual tour image */}
         <TouchableOpacity
@@ -146,7 +142,7 @@ const ApartmentView = ({route: {params}}) => {
         {/* apartment primary details  */}
         <View className={'p-4 border-b border-border_grey'}>
           <Text className={'text-black font-inter-semibold'}>
-            {listing?.unitName}
+            {listing?.property.name}
           </Text>
 
           <View className={'flex-row mt-2'}>
@@ -205,13 +201,12 @@ const ApartmentView = ({route: {params}}) => {
           </Text>
 
           <Text className={'text-grey_1 font-inter my-1.5'}>
-            {`${listing?.property?.country}, ${listing?.property?.county}, ${listing?.property?.neighborhood}`}
+            {`${listing?.property?.address?.line}ss`}
           </Text>
 
-          <View className={'h-32 my-3 bg-bg_grey'}>
-            {!isPending &&
-              listing?.property?.latitude &&
-              listing?.property?.longitude && (
+          {!!listing?.property?.latitude && (
+            <View className={'h-32 my-3 bg-bg_grey'}>
+              {!isPending && (
                 <MapView className={'flex-1'} region={region}>
                   <Marker
                     coordinate={{
@@ -222,7 +217,8 @@ const ApartmentView = ({route: {params}}) => {
                   </Marker>
                 </MapView>
               )}
-          </View>
+            </View>
+          )}
 
           {/* Virtual tour button */}
           <View className={'flex-row justify-center '}>
