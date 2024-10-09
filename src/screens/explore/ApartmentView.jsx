@@ -89,11 +89,11 @@ const ApartmentView = ({route: {params}}) => {
       return ['default'];
     }
 
-    if (!data?.propertyUploads || data?.propertyUploads?.length === 0) {
+    if (!data?.uploads || data?.uploads?.length === 0) {
       return ['default'];
     }
 
-    return data?.propertyUploads.map(item => item?.fileUrl);
+    return data?.uploads.map(item => item?.fileUrl);
   }, [isPending, data]);
 
   const htmlIframe = useMemo(() => {
