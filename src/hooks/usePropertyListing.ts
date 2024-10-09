@@ -61,7 +61,7 @@ export const usePropertyListing = () => {
   };
 };
 
-export const useSpecificPropertyListing = (id: number) => {
+export const useSpecificPropertyListing = (id: string) => {
   const {isPending, error, data, refetch} = useQuery({
     queryKey: [`property-listings/${id}`],
     queryFn: () => PropertyListingServices.getPropertyListing(id),
