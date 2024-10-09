@@ -45,7 +45,7 @@ const ApartmentView = ({route: {params}}) => {
 
   const listing = useMemo(() => {
     if (!isPending) {
-      return data?.propertyListing;
+      return data;
     }
 
     return null;
@@ -158,7 +158,7 @@ const ApartmentView = ({route: {params}}) => {
             {listing?.property.name}
           </Text>
 
-          <View className={'flex-row mt-2'}>
+          <View className={'flex-row py-2'}>
             {listing?.numberOfBedrooms > 0 && (
               <IconLabel
                 icon={<BedSvg size={17} />}
