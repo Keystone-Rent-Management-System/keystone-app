@@ -67,7 +67,5 @@ export const useSpecificPropertyListing = (id: number) => {
     queryFn: () => PropertyListingServices.getPropertyListing(id),
   });
 
-  const listing = data || null;
-
-  return {isPending, error, listing: listing?.propertyListing, refetch};
+  return {isPending, error, data: data ?? null, refetch};
 };
