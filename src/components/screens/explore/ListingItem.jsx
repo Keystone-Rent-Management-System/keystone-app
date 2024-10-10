@@ -1,6 +1,6 @@
 import React, {memo, useState} from 'react';
 
-import {Image, Pressable, Text, TouchableOpacity, View} from 'react-native';
+import {Pressable, Text, TouchableOpacity, View} from 'react-native';
 import COLORS from '@/constants/Theme';
 import {styled} from 'nativewind';
 import Badge from './Badge';
@@ -13,6 +13,7 @@ import {
   MapPinSvg,
 } from '@/assets/icons';
 import Helper from '@/utils/Helper';
+import ImageWithSpinner from '../../../components/general/image-with-spinner';
 import {RightArrowSvg} from '../../../assets/icons';
 import numberWithCommas from '../../../utils/numberWithCommas';
 
@@ -40,7 +41,7 @@ const ListingItem = props => {
       onPress={props.handlePress}>
       {/*  image   */}
       <StyledView className={'bg-bg shadow-xl rounded-xl relative'}>
-        <Image
+        <ImageWithSpinner
           className={`w-full rounded-xl ${imgClassName}`}
           source={
             props.image

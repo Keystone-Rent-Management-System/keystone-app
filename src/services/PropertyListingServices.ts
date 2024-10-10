@@ -30,7 +30,7 @@ const getPropertyListings = async (
   }
 
   const {data: res} = await AxiosUtility.get(
-    `/public/property-listing/search?${params.toString()}`,
+    `/public/property/listings?${params.toString()}`,
   );
 
   return res;
@@ -42,10 +42,10 @@ const getPropertyListings = async (
  * @returns {Promise<IPropertyListing>}
  */
 const getPropertyListing = async (
-  propertyId: number,
+  propertyId: string,
 ): Promise<ISpecificPropertyListing> => {
   const {data: res} = await AxiosUtility.get(
-    `/public/property-listing/${propertyId}`,
+    `/public/property/listings/${propertyId}`,
   );
 
   return res;

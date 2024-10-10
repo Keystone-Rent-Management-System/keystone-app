@@ -45,7 +45,7 @@ const ApartmentView = ({route: {params}}) => {
 
   const listing = useMemo(() => {
     if (!isPending) {
-      return data?.propertyListing;
+      return data;
     }
 
     return null;
@@ -89,11 +89,11 @@ const ApartmentView = ({route: {params}}) => {
       return ['default'];
     }
 
-    if (!data?.propertyUploads || data?.propertyUploads?.length === 0) {
+    if (!data?.uploads || data?.uploads?.length === 0) {
       return ['default'];
     }
 
-    return data?.propertyUploads.map(item => item?.fileUrl);
+    return data?.uploads.map(item => item?.fileUrl);
   }, [isPending, data]);
 
   const htmlIframe = useMemo(() => {
@@ -158,7 +158,7 @@ const ApartmentView = ({route: {params}}) => {
             {listing?.property.name}
           </Text>
 
-          <View className={'flex-row mt-2'}>
+          <View className={'flex-row py-2'}>
             {listing?.numberOfBedrooms > 0 && (
               <IconLabel
                 icon={<BedSvg size={17} />}

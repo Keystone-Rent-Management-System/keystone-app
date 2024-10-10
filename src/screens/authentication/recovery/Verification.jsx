@@ -47,7 +47,7 @@ export default function Verification({navigation, route: {params}}) {
   };
   const handleFocus = () => {
     otpInputRef.current.focus();
-    // console.log('Input pressed');
+
     setInputIsFocused(true);
     // Keyboard?.emit;
   };

@@ -84,6 +84,8 @@ const Explore = () => {
   };
 
   const renderListingItem = ({item}) => {
+    const firstPropertyImage = item?.uploads?.at(0)?.fileUrl;
+
     const {
       houseType,
       user,
@@ -92,8 +94,9 @@ const Explore = () => {
       balconies,
       numberOfBedrooms,
       numberOfBathrooms,
-      id,
+      listingId: id,
     } = item;
+
     return (
       <ExploreListingItem
         title={item?.property?.name}
@@ -104,7 +107,7 @@ const Explore = () => {
         balconies={balconies}
         bedrooms={numberOfBedrooms}
         bathrooms={numberOfBathrooms}
-        image={''}
+        image={firstPropertyImage ?? ''}
         id={id}
         handlePress={() => handleViewApartment(id)}
       />

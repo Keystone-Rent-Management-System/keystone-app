@@ -54,19 +54,7 @@ const PdfViewer = ({
     <View
       className={'flex-1 w-[100%] p-0'}
       style={{width: Dimensions.get('window').width}}>
-      <Pdf
-        source={source}
-        onLoadComplete={numberOfPages => {
-          console.log(`Number of pages: ${numberOfPages}`);
-        }}
-        onPageChanged={page => {
-          console.log(`Current page: ${page}`);
-        }}
-        onError={error => {
-          console.log(error);
-        }}
-        style={styles.pdf}
-      />
+      <Pdf source={source} style={styles.pdf} />
     </View>
   );
 };
