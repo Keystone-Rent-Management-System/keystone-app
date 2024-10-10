@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -15,16 +16,18 @@ import {CButton} from '../../general';
 import {CloseSvg} from '@/assets/icons';
 import COLORS from '../../../constants/Theme';
 import {CameraSvg} from '../../../assets/icons';
+import {useMutation} from '@tanstack/react-query';
+import HelpServices from '../../../services/help';
 
 const RequestRepair = forwardRef((props, ref) => {
   // saves image
   const [image, setImage] = useState(null);
+  const [message, setMessage] = useState('');
 
   const handleCamera = async () => {
     const img = await launchCamera(
       {
         mediaType: 'photo',
-        includeBase64: false,
         maxHeight: 1000,
         maxWidth: 1000,
       },
@@ -66,9 +69,41 @@ const RequestRepair = forwardRef((props, ref) => {
     );
   };
 
+  const requestRepairMutation = useMutation({
+    mutationKey: ['requestRepair'],
+    mutationFn: async () => {
+      const formData = new FormData();
+
+      // Append fields to the FormData object
+      formData.append('message', message);
+      formData.append('attachmentFile', {
+        uri: image?.uri,
+        type: 'image/jpeg',
+        name: image?.fileName,
+      });
+
+      return await HelpServices.requestRepair(formData);
+    },
+    onSuccess: () => {
+      ToastAndroid.show('Repair request sent successfully', ToastAndroid.LONG);
+      props?.handleCloseModal();
+    },
+    onError: () => {
+      ToastAndroid.show('Error: Failed to request repair', ToastAndroid.LONG);
+    },
+  });
+
+  const handleRequestRepair = () => {
+    //   validate values
+    if (!image?.uri) {
+      return ToastAndroid.show('A photo is required.', ToastAndroid.LONG);
+    }
+    requestRepairMutation.mutate();
+  };
+
   return (
     <CustomBottomSheet
-      snapPoints={['20%', '60%']}
+      snapPoints={['70%', '70%']}
       ref={ref}
       handleComponent={() => renderSheetHeader(props.handleCloseModal)}
       onChange={props.handleSheetChanges}>
@@ -82,14 +117,6 @@ const RequestRepair = forwardRef((props, ref) => {
           <Text className={'text-black my-1.5 font-inter text-xs'}>
             What would you like to be repair ?
           </Text>
-          <TouchableOpacity
-            className={
-              'flex flex-col justify-center items-center h-40 bg-border_grey w-full rounded-xl my-3'
-            }
-            onPress={handleCamera}>
-            {renderImage()}
-          </TouchableOpacity>
-
           <TextInput
             className={
               'text-black border border-border_grey w-full rounded-xl font-inter text-xs px-3'
@@ -98,13 +125,26 @@ const RequestRepair = forwardRef((props, ref) => {
             placeholder={'List of repairs'}
             placeholderTextColor={COLORS.border_grey}
             style={styles.textArea}
+            value={message}
+            onChangeText={setMessage}
           />
+
+          <TouchableOpacity
+            className={
+              'flex flex-col justify-center items-center h-40 bg-border_grey w-full rounded-xl my-3'
+            }
+            onPress={handleCamera}>
+            {renderImage()}
+          </TouchableOpacity>
         </View>
       </ScrollView>
       <CButton
+        disabled={requestRepairMutation.isPending}
         ClassName={'bg-primary text-white py-3.5 mx-5 mb-3'}
-        onPress={props.handleCloseModal}>
-        <Text className={'text-white font-inter text-13 '}>Submit</Text>
+        onPress={handleRequestRepair}>
+        <Text className={'text-white font-inter text-13 '}>
+          {requestRepairMutation?.isPending ? 'saving...' : 'Submit'}
+        </Text>
       </CButton>
     </CustomBottomSheet>
   );
