@@ -31,9 +31,25 @@ const generalAssistance = async (
   return res;
 };
 
+/**
+ * Request repair
+ */
+const requestRepair = async (formData: FormData) => {
+  return await AxiosUtility({
+    url: '/request-repair',
+    method: 'POST',
+    data: formData,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+};
+
 const HelpServices = {
   makeComplain,
   generalAssistance,
+  requestRepair,
 };
 
 export default HelpServices;
