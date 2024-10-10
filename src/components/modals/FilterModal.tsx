@@ -33,7 +33,7 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
   (props, ref) => {
     const [isChecked, setIsChecked] = useState(false);
 
-    const [chosenHouseType, setChosenHouseType] = useState(null);
+    const [chosenHouseType, setChosenHouseType] = useState<string>('');
 
     const [chosenHouseSize, setChosenHouseSize] = useState('');
     const [chosenBedroomSize, setChosenBedroomSize] = useState('');
@@ -75,38 +75,20 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
 
     const handleApplyFilter = useCallback(() => {
       const filters: IPropertyListingSearchParams = {};
-      console.log(chosenHouseType, chosenHouseSize, lowNumber, highNumber);
       if (chosenHouseType) {
-        filters.propertyType = chosenHouseType;
+        filters.houseType = chosenHouseType;
       }
       if (chosenBedroomSize) {
-        filters.numberOfBedrooms = parseInt(chosenBedroomSize, 10);
+        filters.bedrooms = parseInt(chosenBedroomSize, 10);
       }
       if (chosenHouseSize) {
-        filters.numberOfBedrooms = parseInt(chosenHouseSize, 10);
+        filters.bedrooms = parseInt(chosenHouseSize, 10);
       }
-
-      console.log('FILTS:::', filters);
-
-      // if (
-      //   (lowNumber !== MIN_PRICE_RANGE || highNumber > 1) &&
-      //   filters?.minPrice
-      // ) {
-      //   filters.minPrice = undefined;
-      // }
-      // if (
-      //   (highNumber !== MAX_PRICE_RANGE || highNumber > 1) &&
-      //   filters?.maxPrice
-      // ) {
-      //   filters.maxPrice = undefined;
-      // }
 
       props.handleSetFilters(filters);
     }, [chosenBedroomSize, chosenHouseSize, chosenHouseType, props]);
 
     const hasFiltered = useMemo(() => {
-      console.log(chosenHouseType, chosenHouseSize, lowNumber, highNumber);
-
       return (
         !!chosenHouseType ||
         !!chosenHouseSize ||
