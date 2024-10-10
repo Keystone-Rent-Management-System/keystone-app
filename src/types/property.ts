@@ -113,9 +113,9 @@ export interface IPropertyListingResponse extends IPagination {
 }
 
 export interface IPropertyListingSearchParams {
-  propertyType?: string;
-  numberOfBedrooms?: number;
-  numberOfBathRooms?: number;
+  houseType?: string;
+  bedrooms?: number;
+  bathrooms?: number;
   minPrice?: number;
   maxPrice?: number;
 }
