@@ -5,7 +5,7 @@ import moment from 'moment';
 
 interface IStatementItem {
   invoiceNumber: string;
-  charge: string;
+  startingBalance: string;
   date: string;
   paymentAmount: string;
   handlePress?: () => void;
@@ -13,7 +13,7 @@ interface IStatementItem {
 
 const StatementItem = ({
   invoiceNumber,
-  charge,
+  startingBalance,
   date,
   paymentAmount,
 }: IStatementItem) => {
@@ -46,7 +46,7 @@ const StatementItem = ({
         {/*Row 2*/}
         <View className={'flex flex-row justify-between'}>
           <Text className={'text-zinc-400 text-xs font-inter'}>
-            Charges: KES {charge}
+            Starting Bal: KES {startingBalance}
           </Text>
 
           <Text className={'text-black text-[13px] font-inter-semibold'}>

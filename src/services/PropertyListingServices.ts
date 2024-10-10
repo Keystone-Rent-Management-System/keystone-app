@@ -3,6 +3,7 @@ import {
   IPropertyListing,
   IPropertyListingResponse,
   IPropertyListingSearchParams,
+  ISpecificPropertyListing,
 } from '../types/property.ts';
 
 /**
@@ -33,7 +34,7 @@ const getPropertyListings = async (
   console.log('PARAMS ARE', params.toString());
 
   const {data: res} = await AxiosUtility.get(
-    `/public/property-listing/search?${params.toString()}`,
+    `/public/property/listings?${params.toString()}`,
   );
 
   return res;
@@ -45,10 +46,10 @@ const getPropertyListings = async (
  * @returns {Promise<IPropertyListing>}
  */
 const getPropertyListing = async (
-  propertyId: number,
-): Promise<IPropertyListing> => {
+  propertyId: string,
+): Promise<ISpecificPropertyListing> => {
   const {data: res} = await AxiosUtility.get(
-    `/public/property-listing/${propertyId}`,
+    `/public/property/listings/${propertyId}`,
   );
 
   return res;

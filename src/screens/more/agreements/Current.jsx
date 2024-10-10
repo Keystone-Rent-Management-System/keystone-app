@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 // import moment from 'moment';
 import {FlashList} from '@shopify/flash-list';
 
@@ -6,29 +6,15 @@ import {Layout, ListingItem} from '../../../components';
 import {AgreementSvg} from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
 import {invoiceStyles} from '../../tenant_home/invoice/Unpaid';
-import AgreementModalSheet from '../../../components/modals/Agreement';
 import {MovingOutModal} from '../../../components/modals';
-import {useHelp} from '../../../hooks';
-import {useBottomSheetModal} from '@gorhom/bottom-sheet';
-import {useAcceptAgrement, useAgrement} from '../../../hooks';
+import {useAgrement, useHelp} from '../../../hooks';
 import moment from 'moment';
+import AgreementModalSheet from '../../../components/modals/Agreement';
 
 const Current = () => {
-  const agreementModalRef = useRef();
-  const [agreement, setAgreement] = useState({});
-  const {dismiss} = useBottomSheetModal();
-  const {movingOutRef, handleOpenMovingOutModal, handleCloseMovingOutModal} =
-    useHelp();
+  const [agreement] = useState({});
 
-  const handleOpenAgreement = data => {
-    setAgreement(data);
-    agreementModalRef?.current?.present();
-  };
-
-  const handleIssueTermination = () => {
-    dismiss();
-    handleOpenMovingOutModal();
-  };
+  const {movingOutRef, handleCloseMovingOutModal} = useHelp();
 
   const {isPending, agreements, refetch} = useAgrement();
 
@@ -41,32 +27,36 @@ const Current = () => {
         currentAgreement?.status?.toLowerCase() === 'pending',
     );
 
-  const {acceptAgrementMutation, handleAcceptAgreement} = useAcceptAgrement(
-    dismiss,
-    refetch,
+  const renderAgreementItem = useCallback(
+    item => (
+      <AgreementModalSheet>
+        <ListingItem
+          key={item?.id}
+          icon={<AgreementSvg color={COLORS.primary} size={'24'} />}
+          id={item?.id}
+          title={item?.propertyUnits?.property?.name}
+          customDate={
+            moment(item?.tenancyBeginningDate)?.format('Do MMMM, YYYY') +
+            ' - ' +
+            'Current'
+          }
+          unit={item?.propertyUnits?.name}
+          amount={item?.propertyUnits?.rent}
+          disabled={true}
+        />
+      </AgreementModalSheet>
+    ),
+    [],
   );
 
   return (
     <>
-      <AgreementModalSheet
-        agreement={agreement}
-        ref={agreementModalRef}
-        type={
-          agreement?.status?.toLowerCase() === 'pending' ? 'pending' : 'agreed'
-        }
-        handleIssueTermination={handleIssueTermination}
-        handleAcceptAgreement={handleAcceptAgreement}
-        acceptAgrementMutation={acceptAgrementMutation}
-      />
       <Layout>
         <FlashList
           contentContainerStyle={invoiceStyles.list}
           refreshing={isPending}
           data={currentAgreements}
-          renderItem={({item}) =>
-            renderAgreementListItem(item, handleOpenAgreement)
-          }
-          keyExtractor={item => item?.id}
+          renderItem={({item}) => renderAgreementItem(item)}
           estimatedItemSize={300}
           onRefresh={refetch}
         />
@@ -84,6 +74,7 @@ const Current = () => {
 export const renderAgreementListItem = (item, handlePress = () => {}) => {
   return (
     <ListingItem
+      key={item?.id}
       icon={<AgreementSvg color={COLORS.primary} size={'24'} />}
       id={item?.id}
       title={item?.propertyUnits?.property?.name}

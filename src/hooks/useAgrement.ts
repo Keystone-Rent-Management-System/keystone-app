@@ -2,14 +2,15 @@ import {ToastAndroid} from 'react-native';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import AgreementServices from '../services/AgreementServices';
 import {getError} from '../utils/getError';
+import {IAgreement} from '../types/agreement';
 
 export const useAgrement = () => {
   const {isPending, error, data, refetch} = useQuery({
     queryKey: ['agreements'],
-    queryFn: () => AgreementServices.getAgreements(0, 20),
+    queryFn: () => AgreementServices.getActiveAgreement(),
   });
 
-  const agreements = data?.data || [];
+  const agreements = [data] ?? [];
 
   return {isPending, error, agreements, refetch};
 };
@@ -22,10 +23,15 @@ export const useActiveAgrement = () => {
 
   const agreement = data ?? null;
 
-  return {isPending, error, agreement, agreementRefetch: refetch};
+  return {
+    isPending,
+    error,
+    agreement: agreement as IAgreement,
+    agreementRefetch: refetch,
+  };
 };
 
-export const useAcceptAgrement = (dismiss, refetch) => {
+export const useAcceptAgrement = (dismiss: any, refetch: any) => {
   const acceptAgrementMutation = useMutation({
     mutationKey: ['agreement_current', 'accept'],
     mutationFn: AgreementServices.acceptAgreement,
@@ -38,14 +44,14 @@ export const useAcceptAgrement = (dismiss, refetch) => {
     },
   });
 
-  const handleAcceptAgreement = id => {
-    acceptAgrementMutation.mutateAsync(id);
+  const handleAcceptAgreement = (id: string) => {
+    acceptAgrementMutation.mutate(id);
   };
 
   return {acceptAgrementMutation, handleAcceptAgreement};
 };
 
-export const useSendTerminationNotice = dismiss => {
+export const useSendTerminationNotice = (dismiss: any) => {
   const sendTerminationMutation = useMutation({
     mutationKey: ['send_termination_notice'],
     mutationFn: AgreementServices.sendTerminationNotice,
@@ -57,7 +63,7 @@ export const useSendTerminationNotice = dismiss => {
     },
   });
 
-  const handleSendTerminationNotice = props => {
+  const handleSendTerminationNotice = (props: any) => {
     sendTerminationMutation.mutateAsync(props);
   };
 

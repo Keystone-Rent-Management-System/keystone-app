@@ -45,6 +45,20 @@ export interface IPaymentAccount {
   status: string;
 }
 
+interface IAddress {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  line: string;
+  streetNumber: string;
+  streetName: string;
+  location: string;
+  county: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+}
+
 export interface Property {
   id: string;
   createdAt: string;
@@ -66,6 +80,7 @@ export interface Property {
   landlord: ILandlord;
   merchants: any | null;
   paymentAccounts: IPaymentAccount;
+  address: IAddress;
 }
 
 export interface IPropertyListing {
@@ -103,4 +118,13 @@ export interface IPropertyListingSearchParams {
   numberOfBathRooms?: number;
   minPrice?: number;
   maxPrice?: number;
+}
+
+interface IPropertyListingUpload {
+  fileUrl: string;
+}
+
+export interface ISpecificPropertyListing {
+  propertyListing: Partial<IPropertyListing>;
+  propertyUploads?: IPropertyListingUpload[];
 }

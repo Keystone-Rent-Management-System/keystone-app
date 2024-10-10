@@ -1,10 +1,11 @@
 import AxiosUtility, {setAuthToken} from './AxiosServices';
+import RNFetchBlob from 'rn-fetch-blob';
 
 /**
  * Fetches all agreements
  * @param {number} page
  * @param {number} size
- * @returns {Promise<Agreement[]>}
+ * @returns {Promise<{content:Agreement[],page:any}>}
  */
 const getAgreements = async (page, size) => {
   setAuthToken(AxiosUtility);
@@ -30,7 +31,7 @@ const getActiveAgreement = async () => {
 
 /**
  * Accept agreement
- * @param {number} id
+ * @param {number|string} id
  * @returns {Promise<Agreement>}
  */
 const acceptAgreement = async id => {
@@ -59,12 +60,30 @@ const sendTerminationNotice = async data => {
   return res;
 };
 
+const fetchPDF = async agreementId => {
+  setAuthToken(AxiosUtility);
+
+  const response = await AxiosUtility.get(
+    `/agreements/${agreementId}/download`,
+    {
+      responseType: 'arraybuffer',
+    },
+  );
+
+  const pdfBytes = response.request?._response;
+  const pdfPath = `${RNFetchBlob.fs.dirs.DocumentDir}/temp.pdf`;
+  await RNFetchBlob.fs.writeFile(pdfPath, pdfBytes, 'base64');
+
+  return pdfPath;
+};
+
 const AgreementServices = {
   getAgreements,
   getActiveAgreement,
   acceptAgreement,
   terminateAgreement,
   sendTerminationNotice,
+  fetchPDF,
 };
 
 /**

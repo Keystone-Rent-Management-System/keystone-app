@@ -1,10 +1,11 @@
 import React, {useCallback, useRef} from 'react';
 import {StatementItem} from '../../components';
-import {StyleSheet} from 'react-native';
+import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
 import {FlashList} from '@shopify/flash-list';
 import {ExportStatementModal} from '../../components/modals';
 import {useStatement} from '../../hooks';
 import Layout from '../../components/Layout';
+import {useActiveStatement} from '../../hooks/useStatement';
 
 const Statements = () => {
   const exportModalRef = useRef();
@@ -20,6 +21,8 @@ const Statements = () => {
     fetchNextPage,
     renderListFooter,
   } = useStatement();
+
+  const {isPending: isPendingActive, activeStatement} = useActiveStatement();
 
   const handleLoadMore = useCallback(async () => {
     if (!isRefetching && !isFetchingNextPage && hasNextPage) {
@@ -38,6 +41,30 @@ const Statements = () => {
   return (
     <>
       <Layout>
+        <View
+          className={'flex flex-row justify-between px-5 pt-3'}
+          style={{gap: 15}}>
+          {/*  Opening Balance m*/}
+          <BalanceDisplayItem
+            loading={isPendingActive}
+            title={'Opening Balance'}
+            value={activeStatement?.startingBalance?.toString()}
+          />
+          {/*  Closing Balance  */}
+          <BalanceDisplayItem
+            loading={isPendingActive}
+            title={'Closing Balance'}
+            value={activeStatement?.endingBalance?.toString()}
+          />
+        </View>
+
+        <View className={'flex-row px-5 pt-3'}>
+          <View className={'h-5 rounded-full w-1 bg-primary mr-2'} />
+          <Text className={'text-gray-700 font-inter-semibold text-sm '}>
+            Statement List
+          </Text>
+        </View>
+
         <FlashList
           contentContainerStyle={statementStyles.list}
           refreshing={isPending}
@@ -70,7 +97,7 @@ const renderItem = (item, handlePress = () => {}) => (
         : `Invoice ${item?.invoices?.invoiceNumber}`
     }
     date={item?.createdAt}
-    charge={item?.payment ?? 0}
+    startingBalance={item?.startingBalance ?? 0}
     paymentAmount={item?.endingBalance ?? 0}
   />
 );
@@ -81,5 +108,27 @@ export const statementStyles = StyleSheet.create({
     paddingTop: 0,
   },
 });
+
+const BalanceDisplayItem = ({title, value, loading}) => (
+  <View
+    style={{
+      elevation: 1,
+      shadowColor: '#000',
+      zIndex: 1,
+    }}
+    className={
+      'rounded-xl flex-1 h-24 bg-white p-3 items-center justify-center'
+    }>
+    {/*title*/}
+    <Text className={'text-black font-inter text-xs mb-2'}>{title}</Text>
+    {loading ? (
+      <ActivityIndicator color={'#022374'} size="small" />
+    ) : (
+      <Text className={'text-black font-inter-semibold text-base'}>
+        ksh. {value}
+      </Text>
+    )}
+  </View>
+);
 
 export default Statements;

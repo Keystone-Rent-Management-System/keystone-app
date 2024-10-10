@@ -69,7 +69,7 @@ const Menu = () => {
   };
 
   const handleCallAssistance = async () => {
-    await Helper.handleCall(`tel:+254${propertyContact}`);
+    await Helper.handleCall(propertyContact);
   };
 
   return (

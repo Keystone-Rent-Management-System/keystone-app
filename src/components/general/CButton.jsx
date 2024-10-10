@@ -2,12 +2,12 @@ import React from 'react';
 import {ActivityIndicator, Text, TouchableOpacity} from 'react-native';
 
 const CButtonFill = ({
-  ClassName,
-  textClassName,
-  text,
+  ClassName = '',
+  textClassName = '',
+  text = '',
   children,
-  isLoading,
-  disabled,
+  isLoading = false,
+  disabled = false,
   ...rest
 }) => {
   return (

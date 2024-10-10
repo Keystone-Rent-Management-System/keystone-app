@@ -16,8 +16,19 @@ const getStatements = async (agreementId, page, size) => {
   return res;
 };
 
+const fetchCurrentStatement = async agreementId => {
+  setAuthToken(AxiosUtility);
+
+  const {data: res} = await AxiosUtility.get(
+    `/statements/currentStatement?agreementId=${agreementId}`,
+  );
+
+  return res;
+};
+
 const StatementServices = {
   getStatements,
+  fetchActiveStatement: fetchCurrentStatement,
 };
 
 /**

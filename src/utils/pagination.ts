@@ -1,7 +1,8 @@
-export const getNextPageParam = (lastPage: any) => {
+export const getNextPageParam = (prevPage: any) => {
+  const lastPage = prevPage?.page ?? prevPage;
   const pageLimit = parseInt(lastPage?.size, 10);
   const totalItems = parseInt(lastPage?.totalElements, 10);
-  const currentPage = parseInt(lastPage?.page, 10);
+  const currentPage = parseInt(lastPage?.number ?? lastPage?.page, 10);
 
   return getNextPrevPage(pageLimit, totalItems, currentPage);
 };
@@ -11,10 +12,14 @@ export const returnPaginationData = (data: any) => {
 
   if (data?.pages?.length > 0) {
     for (const obj of data?.pages) {
-      if (obj?.data) {
-        result.push(...obj?.data);
-      } else {
-        result.push(...obj);
+      if (obj) {
+        if (obj?.data) {
+          result.push(...obj?.data);
+        } else if (obj?.content) {
+          result.push(...obj?.content);
+        } else {
+          result.push(...obj);
+        }
       }
     }
   }

@@ -1,5 +1,6 @@
 import {Linking} from 'react-native';
 import {PALLAX_SUPPORT_NUMBER} from '../constants';
+import moment from 'moment';
 
 const renderSingularPlural = (num, render, nullRender = '') =>
   parseInt(num, 10) > 1 ? render : nullRender;
@@ -32,11 +33,37 @@ const handleCallSupport = async () => {
 };
 
 const handleCall = async phoneNumber => {
-  await Linking.openURL(`tel:+254${phoneNumber}`);
+  const validatedPhoneNumber = phoneNumber.startsWith('07')
+    ? phoneNumber.slice(1)
+    : phoneNumber;
+
+  await Linking.openURL(`tel:+254${validatedPhoneNumber}`);
 };
 
 const handleSmsSupport = async () => {
   await Linking.openURL(`sms:+254${PALLAX_SUPPORT_NUMBER}`);
+};
+const handleSms = async phoneNumber => {
+  const validatedPhoneNumber = phoneNumber.startsWith('07')
+    ? phoneNumber.slice(1)
+    : phoneNumber;
+
+  await Linking.openURL(`sms:+254${validatedPhoneNumber}`);
+};
+
+const getCurrentMonthInNumberForm = () => {
+  const date = new Date();
+  return date.getMonth() + 1;
+};
+
+const getCurrentYear = () => {
+  const date = new Date();
+  return date.getFullYear();
+};
+
+const calculateDaysRemaining = sampleDate => {
+  const currentDate = new Date();
+  return moment(sampleDate).diff(currentDate, 'days').toString();
 };
 
 const Helper = {
@@ -46,6 +73,10 @@ const Helper = {
   handleCallSupport,
   handleSmsSupport,
   handleCall,
+  handleSms,
+  getCurrentMonthInNumberForm,
+  getCurrentYear,
+  calculateDaysRemaining,
 };
 
 export default Helper;
