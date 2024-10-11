@@ -1,8 +1,7 @@
 import AxiosUtility from './AxiosServices';
 import {
-  IPropertyListing,
+  IFilters,
   IPropertyListingResponse,
-  IPropertyListingSearchParams,
   ISpecificPropertyListing,
 } from '../types/property.ts';
 
@@ -10,13 +9,13 @@ import {
  * Fetches all property listings
  * @param {number} page
  * @param {number} size
- * @param {IPropertyListingSearchParams} searchParams
+ * @param {IFilters} searchParams
  * @returns {Promise<IPropertyListingResponse[]>}
  */
 const getPropertyListings = async (
   page: number,
   size: number,
-  searchParams: IPropertyListingSearchParams,
+  searchParams: IFilters,
 ): Promise<IPropertyListingResponse> => {
   const params = new URLSearchParams({
     page: page.toString(),
