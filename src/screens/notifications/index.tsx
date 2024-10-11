@@ -16,8 +16,6 @@ const Notifications = () => {
     data: response,
     isPending,
     refetch,
-    error,
-    isError,
   } = useQuery({
     queryKey: ['notifications'],
     queryFn: () => NotificationService.getNotifications(),
@@ -30,7 +28,7 @@ const Notifications = () => {
       <FlashList
         refreshing={isPending}
         onRefresh={refetch}
-        data={response?.data ?? []}
+        data={response?.content ?? []}
         renderItem={renderItem}
         estimatedItemSize={100}
         ListEmptyComponent={() => renderEmptyList()}
