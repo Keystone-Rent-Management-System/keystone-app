@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useRef, useState} from 'react';
 
 import {Text, TouchableOpacity, View} from 'react-native';
 import CustomBottomSheetModal from './CustomBottomSheetModal';
@@ -6,9 +6,12 @@ import {CButton} from '../general';
 import {CloseSvg} from '../../assets/icons';
 import {BottomSheetScrollView, useBottomSheetModal} from '@gorhom/bottom-sheet';
 import PdfPreview from '../screens/agreement/pdf-preview';
+import CheckBox from '@react-native-community/checkbox';
+import COLORS from '../../constants/Theme';
 
 const AgreementModalSheet = props => {
   const agreementModalRef = useRef();
+  const [isSelected, setSelection] = useState(false);
 
   const handleOpenAgreement = data => {
     agreementModalRef?.current?.present();
@@ -27,6 +30,49 @@ const AgreementModalSheet = props => {
         <BottomSheetScrollView style={{flexDirection: 'row'}}>
           <PdfPreview />
         </BottomSheetScrollView>
+
+        {props.type === 'agreed' ? (
+          <View className={'py-5 pb-10 w-full flex-row justify-center'}>
+            <TouchableOpacity onPress={props?.handleIssueTermination}>
+              <Text className={'text-red-700 font-inter-semibold'}>
+                Issue Termination Notice
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          props?.type === 'pending' && (
+            <View className={'w-full pt-2 pb-10'}>
+              <View
+                className={
+                  'my-2 w-full flex flex-row items-start justify-center gap-1'
+                }>
+                <CheckBox
+                  disabled={false}
+                  value={isSelected}
+                  onValueChange={newValue => setSelection(newValue)}
+                  tintColors={{true: COLORS.primary, false: COLORS.primary}}
+                  tintColor={COLORS.primary}
+                  onFillColor={COLORS.primary}
+                />
+                <Text className={'text-black m-8'}>
+                  By checking here you confirm that you have read the agreement.{' '}
+                </Text>
+              </View>
+              <CButton
+                ClassName={'bg-primary text-white mx-4'}
+                disabled={!isSelected}
+                isLoading={props?.acceptAgrementMutation.isPending}
+                onPress={() => props?.handleAcceptAgreement(props.agreement.id)}
+                textClassName={'text-white font'}
+                text={
+                  props.acceptAgrementMutation.isPending
+                    ? 'Accepting...'
+                    : 'I agree to the terms'
+                }
+              />
+            </View>
+          )
+        )}
       </CustomBottomSheetModal>
     </>
   );
@@ -34,7 +80,7 @@ const AgreementModalSheet = props => {
 export default AgreementModalSheet;
 
 const renderSheetHeader = type => <SheetHeader type={type} />;
-const SheetHeader = ({type}) => {
+const SheetHeader = () => {
   const {dismiss} = useBottomSheetModal();
 
   return (
