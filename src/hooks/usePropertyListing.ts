@@ -2,16 +2,16 @@ import {useInfiniteQuery, useQuery} from '@tanstack/react-query';
 import PropertyListingServices from '../services/PropertyListingServices';
 import {getNextPageParam, returnPaginationData} from '../utils/pagination';
 import {useCallback, useMemo} from 'react';
-import {IPropertyListingSearchParams} from '../types/property.ts';
+import {IFilters} from '../types/property.ts';
 import {useFiltersStore} from '../provider/store/filters.ts';
 
 export const usePropertyListing = () => {
   const {addRemoveFilter, data: filters} = useFiltersStore();
 
   const handleAddRemoveFilter = useCallback(
-    <K extends keyof IPropertyListingSearchParams>(
+    <K extends keyof IFilters>(
       key: K,
-      value: IPropertyListingSearchParams[K],
+      value: IFilters[K],
       shouldResetRest?: boolean,
     ) => {
       addRemoveFilter(key, value, shouldResetRest);
