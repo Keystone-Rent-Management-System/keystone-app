@@ -116,7 +116,7 @@ export interface IFilters {
   bedrooms?: string;
   houseType?: string;
   bathrooms?: string;
-  searchQuery?: string;
+  searchKeyword?: string;
   minPrice?: number;
   maxPrice?: number;
 }
