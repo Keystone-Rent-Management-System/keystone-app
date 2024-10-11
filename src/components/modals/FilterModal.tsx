@@ -6,7 +6,7 @@ import {
   TouchableOpacityProps,
   View,
 } from 'react-native';
-import React, {forwardRef, useCallback, useMemo, useState} from 'react';
+import React, {forwardRef, useCallback, useState} from 'react';
 
 import {CustomBottomSheet} from '.';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -22,30 +22,39 @@ import {
   MIN_PRICE_RANGE,
   STEP,
 } from '../../constants/property.ts';
-import {IPropertyListingSearchParams} from '../../types/property.ts';
+import {IFilters} from '../../types/property.ts';
+import {useFiltersStore} from '../../provider/store/filters.ts';
 
 interface FilterModalProps {
   handleCloseFilter: () => void;
-  handleSetFilters: (newFilters: IPropertyListingSearchParams) => void;
 }
 
 const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
   (props, ref) => {
+    const {addRemoveFilters} = useFiltersStore();
+
     const [isChecked, setIsChecked] = useState(false);
 
-    const [chosenHouseType, setChosenHouseType] = useState<string>('');
+    const [chosenHouseType, setChosenHouseType] = useState<string | undefined>(
+      undefined,
+    );
 
-    const [chosenHouseSize, setChosenHouseSize] = useState('');
-    const [chosenBedroomSize, setChosenBedroomSize] = useState('');
+    const [chosenHouseSize, setChosenHouseSize] = useState<string | undefined>(
+      undefined,
+    );
+    const [chosenBedroomSize, setChosenBedroomSize] = useState<
+      string | undefined
+    >(undefined);
 
-    const [lowNumber, setLowNumber] = useState<number>(1);
-    const [highNumber, setHighNumber] = useState<number>(1);
+    const [lowNumber, setLowNumber] = useState<number>(MIN_PRICE_RANGE);
+    const [highNumber, setHighNumber] = useState<number>(MAX_PRICE_RANGE);
 
     const handleLowChange = useCallback((value: string | number = '0') => {
       if (parseInt(value.toString(), 10) > 0) {
         setLowNumber(parseInt(value.toString(), 10));
       }
     }, []);
+
     const handleHighChange = useCallback((value: string | number = '0') => {
       if (parseInt(value.toString(), 10) > 0) {
         setHighNumber(parseInt(value.toString(), 10));
@@ -59,6 +68,18 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
       },
       [handleHighChange, handleLowChange],
     );
+
+    const handleHouseTypeChange = useCallback(
+      (type: string) => {
+        if (type === chosenHouseType) {
+          setChosenHouseType(undefined);
+        } else {
+          setChosenHouseType(type);
+        }
+      },
+      [chosenHouseType],
+    );
+
     const handleHouseSizeChange = useCallback((size: string) => {
       const splitSections = size.split('_');
       const category = splitSections[0] ?? null;
@@ -66,36 +87,48 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
 
       if (category && _size) {
         if (category === 'bedroom') {
-          setChosenBedroomSize(_size);
+          if (_size === '0') {
+            setChosenBedroomSize(undefined);
+          } else {
+            setChosenBedroomSize(_size);
+          }
         } else {
-          setChosenHouseSize(_size);
+          if (_size === '0') {
+            setChosenHouseSize(undefined);
+          } else {
+            setChosenHouseSize(_size);
+          }
         }
       }
     }, []);
 
     const handleApplyFilter = useCallback(() => {
-      const filters: IPropertyListingSearchParams = {};
-      if (chosenHouseType) {
-        filters.houseType = chosenHouseType;
-      }
+      const filters: IFilters = {};
+
       if (chosenBedroomSize) {
-        filters.bedrooms = parseInt(chosenBedroomSize, 10);
+        filters.bedrooms = chosenBedroomSize;
       }
       if (chosenHouseSize) {
-        filters.bedrooms = parseInt(chosenHouseSize, 10);
+        filters.bedrooms = chosenHouseSize;
       }
 
-      props.handleSetFilters(filters);
-    }, [chosenBedroomSize, chosenHouseSize, chosenHouseType, props]);
-
-    const hasFiltered = useMemo(() => {
-      return (
-        !!chosenHouseType ||
-        !!chosenHouseSize ||
-        lowNumber !== MIN_PRICE_RANGE ||
-        highNumber !== MAX_PRICE_RANGE
-      );
-    }, [chosenHouseSize, chosenHouseType, highNumber, lowNumber]);
+      addRemoveFilters({
+        houseType: chosenHouseType,
+        bedrooms: chosenBedroomSize?.toString(),
+        bathrooms: chosenHouseSize?.toString(),
+        minPrice: lowNumber !== MIN_PRICE_RANGE ? lowNumber : undefined,
+        maxPrice: highNumber !== MAX_PRICE_RANGE ? highNumber : undefined,
+      });
+      props.handleCloseFilter();
+    }, [
+      chosenBedroomSize,
+      chosenHouseSize,
+      addRemoveFilters,
+      chosenHouseType,
+      lowNumber,
+      highNumber,
+      props,
+    ]);
 
     const renderSheetHeader = () => (
       <View
@@ -158,8 +191,12 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
             {/* Range slider */}
             <CRangeSlider
               onValuesChange={handleSliderChange}
-              minVal={MIN_PRICE_RANGE}
-              maxVal={MAX_PRICE_RANGE}
+              minVal={lowNumber}
+              maxVal={
+                highNumber > MAX_PRICE_RANGE || highNumber < 100
+                  ? MAX_PRICE_RANGE
+                  : highNumber
+              }
               step={STEP}
             />
 
@@ -217,7 +254,7 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
                   text={item?.text}
                   isCurrent={item?.text?.toLowerCase() === chosenHouseType}
                   handleChoose={() =>
-                    setChosenHouseType(item?.text?.toLowerCase())
+                    handleHouseTypeChange(item?.text?.toLowerCase())
                   }
                 />
               ))}
@@ -228,10 +265,7 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
               className={'my-5 h-1 w-full bg-none border-b border-border_grey'}
             />
 
-            <SaveFiltersBtn
-              disabled={!hasFiltered}
-              onPress={handleApplyFilter}
-            />
+            <SaveFiltersBtn onPress={handleApplyFilter} />
 
             <View className={'h-10'} />
           </ScrollView>
