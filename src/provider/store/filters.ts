@@ -1,13 +1,5 @@
 import {create} from 'zustand';
-
-interface IFilters {
-  bedrooms?: number;
-  houseType?: string;
-  bathrooms?: number;
-  searchQuery?: string;
-  minPrice?: number;
-  maxPrice?: number;
-}
+import {IFilters} from '../../types/property.ts';
 
 interface FiltersState {
   data: IFilters;
@@ -16,6 +8,7 @@ interface FiltersState {
     value: IFilters[K],
     shouldResetRest?: boolean,
   ) => void;
+  addRemoveFilters: (filters: IFilters) => void;
   resetFilters: () => void;
 }
 
