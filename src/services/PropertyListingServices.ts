@@ -30,8 +30,6 @@ const getPropertyListings = async (
     });
   }
 
-  console.log('PARAMS ARE', params.toString());
-
   const {data: res} = await AxiosUtility.get(
     `/public/property/listings?${params.toString()}`,
   );

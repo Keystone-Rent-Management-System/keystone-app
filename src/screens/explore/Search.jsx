@@ -1,13 +1,25 @@
-import {View, TouchableOpacity, StyleSheet, FlatList, Text} from 'react-native';
-import React from 'react';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useCallback} from 'react';
 
 import COLORS from '@/constants/Theme';
 
 import {CInput, Layout} from '@/components';
 import {RightArrowSvg} from '@/assets/icons';
 import {HistorySvg} from '../../assets/icons';
+import {usePropertyListing} from '../../hooks';
+import {useNavigation} from '@react-navigation/native';
 
 const Search = props => {
+  const navigation = useNavigation();
+  const {handleSearchChange, listings} = usePropertyListing();
+
+  const handleViewApartment = useCallback(
+    id => {
+      return navigation.navigate('apartment_view', {apartment: id});
+    },
+    [navigation],
+  );
+
   return (
     <Layout>
       <View
@@ -30,29 +42,35 @@ const Search = props => {
           }
           placeHolder={'what are you looking for?'}
           placeholderTextColor={COLORS.inactive_text}
+          onChangeText={handleSearchChange}
         />
       </View>
 
       {/* Suggestion list */}
       <FlatList
         className={'mt-3'}
-        data={suggestions}
-        renderItem={renderSuggestionItem}
-        keyExtractor={(_, ind) => ind}
+        data={listings}
+        renderItem={({item}) => renderSuggestionItem(item, handleViewApartment)}
+        keyExtractor={(_, ind) => ind?.toString()}
       />
     </Layout>
   );
 };
 
-const renderSuggestionItem = ({item}) => (
-  <View
-    style={styles.suggestionItem}
-    className={'mx-4 py-4 flex-row items-center border-b border-border_grey'}>
-    {/* icon */}
-    <HistorySvg />
+const renderSuggestionItem = (item, handleApartmentView) => (
+  <TouchableOpacity onPress={() => handleApartmentView(item?.listingId)}>
+    <View
+      style={styles.suggestionItem}
+      className={'mx-4 py-4 flex-row items-center border-b border-border_grey'}>
+      {/* icon */}
+      <HistorySvg />
 
-    <Text className={'text-black font-inter text-xs'}>{item}</Text>
-  </View>
+      <Text
+        className={
+          'text-black font-inter text-xs w-11/12'
+        }>{`${item?.property?.name}, ${item?.property?.address?.line}`}</Text>
+    </View>
+  </TouchableOpacity>
 );
 
 export default Search;
@@ -65,5 +83,3 @@ const styles = StyleSheet.create({
     gap: 20,
   },
 });
-
-const suggestions = ['2 bedroom Kilimani', 'Apartment 360 Runda', '1 Bedroom'];
