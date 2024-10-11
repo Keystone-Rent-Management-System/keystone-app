@@ -13,7 +13,7 @@ import {CustomBottomSheet} from '../index';
 import {CameraSvg, CloseSvg} from '../../../assets/icons';
 import {CButton} from '../../general';
 import COLORS from '../../../constants/Theme';
-import {launchCamera} from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 import {useMutation} from '@tanstack/react-query';
 import HelpServices from '../../../services/help';
 
@@ -23,7 +23,7 @@ const PaymentAllocation = forwardRef((props, ref) => {
   const [phone, setPhone] = useState('');
 
   const handleCamera = async () => {
-    const img = await launchCamera(
+    const img = await launchImageLibrary(
       {
         mediaType: 'photo',
         includeBase64: false,
