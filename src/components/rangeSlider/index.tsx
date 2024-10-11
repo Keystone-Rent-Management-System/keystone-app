@@ -9,12 +9,12 @@ interface ICRangeSlider {
   minVal: number;
   maxVal: number;
   step?: number;
-  onValuesChange?: (low: number, high: number) => void;
+  onValuesChange: (low: number, high: number) => void;
 }
 
 const CRangeSlider = ({
   minVal = 1,
-  maxVal = 10000000,
+  maxVal = 1000,
   step = 1,
   onValuesChange,
 }: ICRangeSlider) => {
@@ -25,7 +25,7 @@ const CRangeSlider = ({
   return (
     <View className={'my-7 px-1'}>
       <RnRangeSlider
-        onValueChanged={onValuesChange}
+        onSliderTouchEnd={(low, high) => onValuesChange(low, high)}
         min={minVal}
         max={maxVal}
         step={step}
