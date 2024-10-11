@@ -1,14 +1,24 @@
 import {Text, TouchableOpacity, View} from 'react-native';
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {BottomSheetFlatList} from '@gorhom/bottom-sheet';
 
-const RoomSelector = ({label, filter, containerClassName, labelClassName}) => {
+const RoomSelector = ({
+  label = null,
+  filter,
+  containerClassName = '',
+  labelClassName = '',
+  handleActiveChange,
+}) => {
   const [active, setActive] = useState(0);
 
   const handlePress = index => {
     setActive(index);
   };
   const filterName = useMemo(() => Object.keys(filter).at(0), [filter]);
+
+  useEffect(() => {
+    handleActiveChange(`${filterName?.toLowerCase() ?? ''}_${active}`);
+  }, [active, handleActiveChange, filterName]);
 
   return (
     <View className={` flex flex-col mt-2 ${containerClassName}`}>
@@ -41,9 +51,9 @@ const renderFilterItem = ({item, index: ind, isActive, handlePress}) => (
 );
 export const SelectorButton = ({
   text = '3',
-  isActive,
-  handlePress,
-  ClassName,
+  isActive = false,
+  handlePress = () => {},
+  ClassName = '',
 }) => (
   <TouchableOpacity
     className={`bg-white flex-row items-center  border border-border_grey mr-3 py-1.5 px-4 rounded-full ${

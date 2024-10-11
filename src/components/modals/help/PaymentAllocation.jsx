@@ -37,7 +37,7 @@ const PaymentAllocation = forwardRef((props, ref) => {
         if (response.errorCode) {
           return;
         }
-        setImage(response.uri);
+        setImage(response?.uri);
       },
     );
     setImage(img?.assets?.at(0));
@@ -80,7 +80,7 @@ const PaymentAllocation = forwardRef((props, ref) => {
         name: image?.fileName,
       });
 
-      return await HelpServices.requestRepair(
+      return await HelpServices.allocatePayments(
         {
           phone,
           transactionCode: code,
@@ -89,11 +89,15 @@ const PaymentAllocation = forwardRef((props, ref) => {
       );
     },
     onSuccess: () => {
-      ToastAndroid.show('Repair request sent successfully', ToastAndroid.LONG);
+      ToastAndroid.show(
+        'Payment allocation request sent successfully',
+        ToastAndroid.LONG,
+      );
       props?.handleCloseModal();
     },
-    onError: () => {
-      ToastAndroid.show('Error: Failed to request repair', ToastAndroid.LONG);
+    onError: err => {
+      console.log('ERROR IS::', err);
+      ToastAndroid.show('Error: Failed to verify payment', ToastAndroid.LONG);
     },
   });
 

@@ -1,9 +1,9 @@
-import React from "react";
-import { TouchableOpacity, View } from "react-native";
+import React from 'react';
+import {TouchableOpacity, View} from 'react-native';
 
-import { FilterSvg, SearchSvg } from "@/assets/icons";
-import COLORS from "@/constants/Theme";
-import { CInput } from "@/components";
+import {FilterSvg, SearchSvg} from '@/assets/icons';
+import COLORS from '@/constants/Theme';
+import {CInput} from '@/components';
 
 /**
  *

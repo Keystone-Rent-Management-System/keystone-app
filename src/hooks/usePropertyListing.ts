@@ -1,30 +1,22 @@
 import {useInfiniteQuery, useQuery} from '@tanstack/react-query';
 import PropertyListingServices from '../services/PropertyListingServices';
 import {getNextPageParam, returnPaginationData} from '../utils/pagination';
-import {useCallback, useMemo, useState} from 'react';
-import {IPropertyListingSearchParams} from '../types/property.ts';
+import {useCallback, useMemo} from 'react';
+import {IFilters} from '../types/property.ts';
+import {useFiltersStore} from '../provider/store/filters.ts';
 
 export const usePropertyListing = () => {
-  const [filters, setFilters] = useState<IPropertyListingSearchParams>({});
+  const {addRemoveFilter, data: filters} = useFiltersStore();
 
   const handleAddRemoveFilter = useCallback(
-    <K extends keyof IPropertyListingSearchParams>(
+    <K extends keyof IFilters>(
       key: K,
-      value: IPropertyListingSearchParams[K],
+      value: IFilters[K],
       shouldResetRest?: boolean,
     ) => {
-      setFilters(prevState => {
-        const newFilters = shouldResetRest ? {} : {...prevState};
-
-        if (newFilters[key] === value) {
-          delete newFilters[key];
-        } else {
-          newFilters[key] = value;
-        }
-        return newFilters;
-      });
+      addRemoveFilter(key, value, shouldResetRest);
     },
-    [setFilters],
+    [addRemoveFilter],
   );
 
   const {
@@ -38,7 +30,14 @@ export const usePropertyListing = () => {
     refetch,
     fetchNextPage,
   } = useInfiniteQuery({
-    queryKey: ['property-listings', JSON.stringify(filters)],
+    queryKey: [
+      'property-listings',
+      JSON.stringify(
+        Object.fromEntries(
+          Object.entries(filters).filter(([_, v]) => v !== undefined),
+        ),
+      ),
+    ],
     queryFn: async ({pageParam}) =>
       PropertyListingServices.getPropertyListings(pageParam ?? 0, 5, filters),
     initialPageParam: 0,

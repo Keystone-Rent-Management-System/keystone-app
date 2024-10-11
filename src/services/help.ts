@@ -34,16 +34,9 @@ const generalAssistance = async (
 /**
  * Request repair
  */
-const requestRepair = async (
-  {phone, transactionCode}: {phone: string; transactionCode: string},
-  formData: FormData,
-) => {
-  const params = new URLSearchParams();
-  params.append('phoneNumber', phone);
-  params.append('transactionCode', transactionCode);
-
+const requestRepair = async (formData: FormData) => {
   return await AxiosUtility({
-    url: `/request-repair?${params.toString()}`,
+    url: '/request-repair',
     method: 'POST',
     data: formData,
     headers: {
@@ -56,9 +49,16 @@ const requestRepair = async (
 /**
  * Allocate payments
  */
-const allocatePayments = async (formData: FormData) => {
+const allocatePayments = async (
+  {phone, transactionCode}: {phone: string; transactionCode: string},
+  formData: FormData,
+) => {
+  const params = new URLSearchParams();
+  params.append('phoneNumber', phone);
+  params.append('transactionCode', transactionCode);
+
   return await AxiosUtility({
-    url: '/allocate-payments',
+    url: `/allocate-payments?${params.toString()}`,
     method: 'POST',
     data: formData,
     headers: {

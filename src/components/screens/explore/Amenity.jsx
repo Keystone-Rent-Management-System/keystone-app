@@ -3,7 +3,12 @@ import React from 'react';
 import CheckBox from '@react-native-community/checkbox';
 import COLORS from '../../../constants/Theme';
 
-const Amenity = ({icon, title, value, showCheckBox = true}) => {
+const Amenity = ({
+  icon = <></>,
+  title = '',
+  value = '',
+  showCheckBox = true,
+}) => {
   return (
     <View className={'flex-row justify-between'}>
       <View className={'flex-row items-center'}>

@@ -15,12 +15,12 @@ const Filters = ({handleAddRemoveFilter}) => {
       setCurrent(key);
     }
 
-    if (filterKey === 'propertyType') {
+    if (filterKey === 'houseType') {
       handleAddRemoveFilter(filterKey, title, true);
-    } else if (filterKey === 'numberOfBedRooms') {
+    } else if (filterKey === 'bedrooms') {
       //   extract the number of bedrooms from the title
-      const numberOfBedRooms = parseInt(title.split(' ')[0], 10);
-      handleAddRemoveFilter(filterKey, numberOfBedRooms, true);
+      const bedrooms = parseInt(title.split(' ')[0], 10);
+      handleAddRemoveFilter(filterKey, bedrooms, true);
     }
   };
 
@@ -69,30 +69,30 @@ const filters = [
     },
     title: 'Apartment',
     key: 1,
-    filterKey: 'propertyType',
+    filterKey: 'houseType',
   },
   {
     icon: color => <BedSvg color={color} />,
     title: '1 Bedroom',
     key: 2,
-    filterKey: 'numberOfBedRooms',
+    filterKey: 'bedrooms',
   },
   {
     icon: color => <BedSvg color={color} />,
     title: '2 Bedroom',
     key: 3,
-    filterKey: 'numberOfBedRooms',
+    filterKey: 'bedrooms',
   },
   {
     icon: color => <BedSvg color={color} />,
     title: '3 Bedroom',
     key: 4,
-    filterKey: 'numberOfBedRooms',
+    filterKey: 'bedrooms',
   },
   {
     icon: color => <VillaSvg color={color} />,
     title: 'Villa',
     key: 5,
-    filterKey: 'propertyType',
+    filterKey: 'houseType',
   },
 ];
