@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 // import moment from 'moment';
 import {FlashList} from '@shopify/flash-list';
 
@@ -7,46 +7,75 @@ import {AgreementSvg} from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
 import {invoiceStyles} from '../../tenant_home/invoice/Unpaid';
 import {MovingOutModal} from '../../../components/modals';
-import {useAgrement, useHelp} from '../../../hooks';
+import {useAcceptAgrement, useAgrement, useHelp} from '../../../hooks';
 import moment from 'moment';
 import AgreementModalSheet from '../../../components/modals/Agreement';
+import {useBottomSheetModal} from '@gorhom/bottom-sheet';
 
 const Current = () => {
+  const agreementModalRef = useRef();
   const [agreement] = useState({});
-
-  const {movingOutRef, handleCloseMovingOutModal} = useHelp();
+  const {dismiss} = useBottomSheetModal();
+  const {movingOutRef, handleOpenMovingOutModal, handleCloseMovingOutModal} =
+    useHelp();
 
   const {isPending, agreements, refetch} = useAgrement();
+  const {acceptAgrementMutation, handleAcceptAgreement} = useAcceptAgrement(
+    dismiss,
+    refetch,
+  );
 
-  const currentAgreements =
-    !isPending &&
-    agreements?.filter(
-      currentAgreement =>
-        currentAgreement?.status?.toLowerCase() === 'agreed' ||
-        currentAgreement?.status?.toLowerCase() === 'accepted' ||
-        currentAgreement?.status?.toLowerCase() === 'pending',
-    );
+  const handleIssueTermination = useCallback(() => {
+    dismiss();
+    handleOpenMovingOutModal();
+  }, [dismiss, handleOpenMovingOutModal]);
+
+  const currentAgreements = !isPending
+    ? []
+    : agreements?.filter(
+        currentAgreement =>
+          currentAgreement?.status?.toLowerCase() === 'agreed' ||
+          currentAgreement?.status?.toLowerCase() === 'accepted' ||
+          currentAgreement?.status?.toLowerCase() === 'pending',
+      );
 
   const renderAgreementItem = useCallback(
-    item => (
-      <AgreementModalSheet>
-        <ListingItem
-          key={item?.id}
-          icon={<AgreementSvg color={COLORS.primary} size={'24'} />}
-          id={item?.id}
-          title={item?.propertyUnits?.property?.name}
-          customDate={
-            moment(item?.tenancyBeginningDate)?.format('Do MMMM, YYYY') +
-            ' - ' +
-            'Current'
+    item => {
+      return (
+        <AgreementModalSheet
+          agreement={agreement}
+          ref={agreementModalRef}
+          type={
+            agreement?.status?.toLowerCase() === 'pending'
+              ? 'pending'
+              : 'agreed'
           }
-          unit={item?.propertyUnits?.name}
-          amount={item?.propertyUnits?.rent}
-          disabled={true}
-        />
-      </AgreementModalSheet>
-    ),
-    [],
+          handleIssueTermination={handleIssueTermination}
+          handleAcceptAgreement={handleAcceptAgreement}
+          acceptAgrementMutation={acceptAgrementMutation}>
+          <ListingItem
+            key={item?.id}
+            icon={<AgreementSvg color={COLORS.primary} size={'24'} />}
+            id={item?.id}
+            title={item?.propertyUnits?.property?.name}
+            customDate={
+              moment(item?.tenancyBeginningDate)?.format('Do MMMM, YYYY') +
+              ' - ' +
+              'Current'
+            }
+            unit={item?.propertyUnits?.name}
+            amount={item?.propertyUnits?.rent}
+            disabled={true}
+          />
+        </AgreementModalSheet>
+      );
+    },
+    [
+      agreement,
+      acceptAgrementMutation,
+      handleAcceptAgreement,
+      handleIssueTermination,
+    ],
   );
 
   return (
