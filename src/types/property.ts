@@ -112,10 +112,11 @@ export interface IPropertyListingResponse extends IPagination {
   data: IPropertyListing[];
 }
 
-export interface IPropertyListingSearchParams {
+export interface IFilters {
+  bedrooms?: string;
   houseType?: string;
-  bedrooms?: number;
-  bathrooms?: number;
+  bathrooms?: string;
+  searchQuery?: string;
   minPrice?: number;
   maxPrice?: number;
 }
