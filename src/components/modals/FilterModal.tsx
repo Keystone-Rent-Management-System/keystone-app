@@ -191,12 +191,8 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
             {/* Range slider */}
             <CRangeSlider
               onValuesChange={handleSliderChange}
-              minVal={lowNumber}
-              maxVal={
-                highNumber > MAX_PRICE_RANGE || highNumber < 100
-                  ? MAX_PRICE_RANGE
-                  : highNumber
-              }
+              minVal={MIN_PRICE_RANGE}
+              maxVal={MAX_PRICE_RANGE}
               step={STEP}
             />
 
