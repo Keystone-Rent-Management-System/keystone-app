@@ -1,12 +1,15 @@
 import {useInfiniteQuery, useQuery} from '@tanstack/react-query';
 import PropertyListingServices from '../services/PropertyListingServices';
 import {getNextPageParam, returnPaginationData} from '../utils/pagination';
-import {useCallback, useMemo} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import {IFilters} from '../types/property.ts';
 import {useFiltersStore} from '../provider/store/filters.ts';
+import {useDebounce} from '@uidotdev/usehooks';
 
 export const usePropertyListing = () => {
   const {addRemoveFilter, data: filters} = useFiltersStore();
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const handleAddRemoveFilter = useCallback(
     <K extends keyof IFilters>(
@@ -37,9 +40,13 @@ export const usePropertyListing = () => {
           Object.entries(filters).filter(([_, v]) => v !== undefined),
         ),
       ),
+      debouncedSearchQuery,
     ],
     queryFn: async ({pageParam}) =>
-      PropertyListingServices.getPropertyListings(pageParam ?? 0, 5, filters),
+      PropertyListingServices.getPropertyListings(pageParam ?? 0, 5, {
+        ...filters,
+        searchKeyword: debouncedSearchQuery,
+      }),
     initialPageParam: 0,
     getNextPageParam: props => getNextPageParam(props),
   });
@@ -57,6 +64,7 @@ export const usePropertyListing = () => {
     isFetchingNextPage,
     fetchNextPage,
     handleAddRemoveFilter,
+    handleSearchChange: setSearchQuery,
   };
 };
 
