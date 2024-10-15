@@ -1,5 +1,5 @@
 import {useQuery} from '@tanstack/react-query';
-import {useState, useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import TransactionServices from '../services/TransactionServices';
 
 export const useTotalTransaction = () => {
@@ -114,7 +114,7 @@ export const useTransactionOut = size => {
   useEffect(() => {
     if (!isPending) {
       let groupedData = [];
-      data?.data?.forEach(item => {
+      data?.content?.forEach(item => {
         const month = new Date(item?.transactionDate).toLocaleString(
           'default',
           {
