@@ -41,10 +41,10 @@ const AgreementModalSheet = props => {
           </View>
         ) : (
           props?.type === 'pending' && (
-            <View className={'w-full pt-2 pb-10'}>
+            <View className={'w-full pb-5 px-5 '}>
               <View
                 className={
-                  'my-2 w-full flex flex-row items-start justify-center gap-1'
+                  'py-5 w-full flex flex-row items-start justify-center gap-1'
                 }>
                 <CheckBox
                   disabled={false}
@@ -54,12 +54,12 @@ const AgreementModalSheet = props => {
                   tintColor={COLORS.primary}
                   onFillColor={COLORS.primary}
                 />
-                <Text className={'text-black m-8'}>
+                <Text className={'text-black mx-8 font-inter text-xs'}>
                   By checking here you confirm that you have read the agreement.{' '}
                 </Text>
               </View>
               <CButton
-                ClassName={'bg-primary text-white mx-4'}
+                ClassName={'bg-primary text-white'}
                 disabled={!isSelected}
                 isLoading={props?.acceptAgrementMutation.isPending}
                 onPress={() => props?.handleAcceptAgreement(props.agreement.id)}
