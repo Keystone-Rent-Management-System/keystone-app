@@ -9,7 +9,7 @@ export const useUnPaidInvoice = size => {
     queryFn: () => InvoiceServices.getInvoices(0, size, 'unpaid'),
   });
 
-  const invoices = data?.data || [];
+  const invoices = data?.content || [];
 
   return {
     isPending,
@@ -27,7 +27,7 @@ export const usePartiallyPaidInvoice = size => {
     queryFn: () => InvoiceServices.getInvoices(0, size, 'paidPartial'),
   });
 
-  const invoices = data?.data || [];
+  const invoices = data?.content || [];
 
   return {
     isPending,
@@ -45,7 +45,7 @@ export const usePaidInvoice = size => {
     queryFn: () => InvoiceServices.getInvoices(0, size, 'paid'),
   });
 
-  const invoices = data?.data || null;
+  const invoices = data?.content || null;
 
   return {
     isPending,
@@ -63,7 +63,7 @@ export const useSpecificInvoice = id => {
     queryFn: () => InvoiceServices.getInvoice(id),
   });
 
-  const invoice = data?.data || null;
+  const invoice = data || null;
 
   return {invoiceIsPending: isPending, error, invoice};
 };
@@ -101,7 +101,7 @@ export const useGetConcerns = id => {
     queryFn: () => InvoiceServices.getConcerns(id),
   });
 
-  const concerns = data?.data || null;
+  const concerns = data?.content || null;
 
   return {concernsIsPending: isPending, error, concerns, refetch};
 };
@@ -112,7 +112,7 @@ export const useActiveInvoices = () => {
     queryFn: () => InvoiceServices.getActiveInvoices(0, 10, 'ACTIVE', 'Agreed'),
   });
 
-  const activeInvoices = data?.data?.data ?? [];
+  const activeInvoices = data?.content?.content ?? [];
 
   return {isPending, error, activeInvoices, refetch};
 };
@@ -129,8 +129,8 @@ export const useInvoiceAnalytics = size => {
     if (size) {
       if (!isPending) {
         let groupedData = [];
-        for (let i = 0; i < data?.data?.length; i++) {
-          const statement = data?.data[i];
+        for (let i = 0; i < data?.content?.length; i++) {
+          const statement = data?.content[i];
           const property = statement?.propertyName?.split('-')[0];
           const existingProperty = groupedData.find(
             group => group?.property === property,
@@ -146,7 +146,7 @@ export const useInvoiceAnalytics = size => {
       }
       refetch();
     }
-  }, [data?.data, isPending, refetch, size]);
+  }, [data?.content, isPending, refetch, size]);
 
   return {
     isPending,
@@ -169,13 +169,13 @@ export const useUnitInvoiceAnalytics = (size, propertyUnitName) => {
     if (size || propertyUnitName) {
       refetch();
     }
-  }, [data?.data, isPending, propertyUnitName, refetch, size]);
+  }, [data?.content, isPending, propertyUnitName, refetch, size]);
 
   return {
     isPending,
     isRefetching,
     error,
-    statements: data?.data || [],
+    statements: data?.content || [],
     totalElements: data?.totalElements,
     refetch,
   };
