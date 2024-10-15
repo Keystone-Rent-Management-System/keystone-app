@@ -30,7 +30,7 @@ const Current = () => {
     handleOpenMovingOutModal();
   }, [dismiss, handleOpenMovingOutModal]);
 
-  const currentAgreements = !isPending
+  const currentAgreements = isPending
     ? []
     : agreements?.filter(
         currentAgreement =>
@@ -43,12 +43,10 @@ const Current = () => {
     item => {
       return (
         <AgreementModalSheet
-          agreement={agreement}
+          agreement={item}
           ref={agreementModalRef}
           type={
-            agreement?.status?.toLowerCase() === 'pending'
-              ? 'pending'
-              : 'agreed'
+            item?.status?.toLowerCase() === 'pending' ? 'pending' : 'agreed'
           }
           handleIssueTermination={handleIssueTermination}
           handleAcceptAgreement={handleAcceptAgreement}
@@ -70,12 +68,7 @@ const Current = () => {
         </AgreementModalSheet>
       );
     },
-    [
-      agreement,
-      acceptAgrementMutation,
-      handleAcceptAgreement,
-      handleIssueTermination,
-    ],
+    [acceptAgrementMutation, handleAcceptAgreement, handleIssueTermination],
   );
 
   return (
