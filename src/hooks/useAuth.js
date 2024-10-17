@@ -106,6 +106,7 @@ export const useChangePassword = () => {
     mutationFn: AuthServices.updateUserPassword,
     onSuccess: () => {
       navigation.navigate('bottom-nav', {screen: 'more'});
+      ToastAndroid.show('Password updated successfully', ToastAndroid.LONG);
     },
     onError: err => {
       ToastAndroid.show('Updating password failed ' + getError(err), 4000);

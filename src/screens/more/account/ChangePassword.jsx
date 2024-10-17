@@ -34,7 +34,7 @@ const ChangePassword = () => {
   return (
     <Layout ClassName={'px-5 relative'}>
       <ControlledPasswordInput
-        label={'New Password'}
+        label={'Current Password'}
         icon={<LockSvg />}
         placeholder={'Enter current password'}
         labelClassName={'text-primary text-13'}
@@ -64,7 +64,7 @@ const ChangePassword = () => {
       />
 
       <ControlledPasswordInput
-        label={'New Password'}
+        label={'Confirm New Password'}
         icon={<LockSvg />}
         placeholder={'Confirm password'}
         labelClassName={'text-primary text-13'}
