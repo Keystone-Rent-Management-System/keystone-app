@@ -7,17 +7,17 @@ import {AgreementSvg} from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
 import {invoiceStyles} from '../../tenant_home/invoice/Unpaid';
 import {MovingOutModal} from '../../../components/modals';
-import {useAcceptAgrement, useAgrement, useHelp} from '../../../hooks';
+import {useAcceptAgrement, useAgrement} from '../../../hooks';
 import moment from 'moment';
 import AgreementModalSheet from '../../../components/modals/Agreement';
 import {useBottomSheetModal} from '@gorhom/bottom-sheet';
 
 const Current = () => {
   const agreementModalRef = useRef();
-  const [agreement] = useState({});
+  const movingOutRef = useRef();
+
+  const [agreement, setAgreement] = useState({});
   const {dismiss} = useBottomSheetModal();
-  const {movingOutRef, handleOpenMovingOutModal, handleCloseMovingOutModal} =
-    useHelp();
 
   const {isPending, agreements, refetch} = useAgrement();
   const {acceptAgrementMutation, handleAcceptAgreement} = useAcceptAgrement(
@@ -25,10 +25,22 @@ const Current = () => {
     refetch,
   );
 
-  const handleIssueTermination = useCallback(() => {
-    dismiss();
-    handleOpenMovingOutModal();
-  }, [dismiss, handleOpenMovingOutModal]);
+  const handleOpenMovingOutModal = useCallback(() => {
+    movingOutRef.current?.expand();
+  }, []);
+
+  const handleCloseMovingOutModal = useCallback(() => {
+    movingOutRef.current?.close();
+  }, []);
+
+  const handleIssueTermination = useCallback(
+    agreementId => {
+      setAgreement(agreementId);
+      handleOpenMovingOutModal();
+      dismiss();
+    },
+    [dismiss, handleOpenMovingOutModal],
+  );
 
   const currentAgreements = isPending
     ? []
@@ -48,7 +60,7 @@ const Current = () => {
           type={
             item?.status?.toLowerCase() === 'pending' ? 'pending' : 'agreed'
           }
-          handleIssueTermination={handleIssueTermination}
+          handleIssueTermination={() => handleIssueTermination(item?.id)}
           handleAcceptAgreement={handleAcceptAgreement}
           acceptAgrementMutation={acceptAgrementMutation}>
           <ListingItem

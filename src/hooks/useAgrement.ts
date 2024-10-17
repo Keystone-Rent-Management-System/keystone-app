@@ -56,6 +56,10 @@ export const useSendTerminationNotice = (dismiss: any) => {
     mutationKey: ['send_termination_notice'],
     mutationFn: AgreementServices.sendTerminationNotice,
     onSuccess: () => {
+      ToastAndroid.show(
+        'Termination notice sent successfully',
+        ToastAndroid.LONG,
+      );
       dismiss();
     },
     onError: err => {

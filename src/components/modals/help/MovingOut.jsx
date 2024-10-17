@@ -78,7 +78,7 @@ const MovingOut = forwardRef((props, ref) => {
         ClassName={'bg-primary text-white py-3.5 mx-5 mb-3'}
         onPress={() =>
           handleSendTerminationNotice({
-            agreementsId: props?.agreement?.id,
+            agreementsId: props?.agreement,
             vacationDate: selected,
           })
         }>
