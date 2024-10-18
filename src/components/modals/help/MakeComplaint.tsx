@@ -11,6 +11,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {useMutation} from '@tanstack/react-query';
 import HelpServices from '../../../services/help.ts';
 import {useActiveAgrement} from '../../../hooks';
+import {BottomSheetModal} from '@gorhom/bottom-sheet';
 
 export interface RequestHelpFormData {
   message: string;
@@ -25,105 +26,119 @@ export interface IMakeComplainProps {
   handleSheetChanges: () => {};
 }
 
-const MakeComplaint = forwardRef((props: IMakeComplainProps, ref) => {
-  const {agreement} = useActiveAgrement();
+const MakeComplaint = forwardRef<BottomSheetModal, IMakeComplainProps>(
+  (props: IMakeComplainProps, ref) => {
+    const {agreement} = useActiveAgrement();
 
-  const {control, handleSubmit, reset} = useForm<RequestHelpFormData>({
-    resolver: zodResolver(RequestHelpFormSchema),
-    defaultValues: {
-      message: '',
-    },
-  });
-
-  const makeComplainMutation = useMutation({
-    mutationKey: ['makeComplain'],
-    mutationFn: (data: {agreementId: string; message: string}) =>
-      HelpServices.makeComplain(data.agreementId, data.message),
-    onSuccess: () => {
-      ToastAndroid.show('Complain submitted successfully', ToastAndroid.SHORT);
-      reset();
-      props.handleCloseModal();
-    },
-  });
-
-  const handleMakeComplain = (data: RequestHelpFormData) => {
-    if (!agreement) {
-      return ToastAndroid.show(
-        'Error: No active agreement found',
-        ToastAndroid.SHORT,
-      );
-    }
-
-    makeComplainMutation.mutate({
-      agreementId: agreement.id,
-      message: data.message,
+    const {control, handleSubmit, reset} = useForm<RequestHelpFormData>({
+      resolver: zodResolver(RequestHelpFormSchema),
+      defaultValues: {
+        message: '',
+      },
     });
-  };
 
-  return (
-    // @ts-ignore
-    <CustomBottomSheet
-      snapPoints={['75%', '80%']}
-      ref={ref}
-      handleComponent={() => renderSheetHeader(props.handleCloseModal)}
-      onChange={props.handleSheetChanges}>
-      <ScrollView className={'px-4 min-h-[180px]'}>
-        <Text className={'text-xs font-inter text-grey_1 mb-2'}>
-          Share your complaint with the management to ensure you have a smooth
-          experience.
-        </Text>
+    const makeComplainMutation = useMutation({
+      mutationKey: ['makeComplain'],
+      mutationFn: (data: {agreementId: string; message: string}) =>
+        HelpServices.makeComplain(data.agreementId, data.message),
+      onSuccess: () => {
+        ToastAndroid.show(
+          'Complain submitted successfully',
+          ToastAndroid.SHORT,
+        );
+        reset();
+        props.handleCloseModal();
+      },
+      onError: error => {
+        ToastAndroid.show(
+          'An error occurred while submitting your complain ' + error?.message,
+          ToastAndroid.LONG,
+        );
+      },
+    });
 
-        <View className={'flex-col items-start w-full py-3'}>
-          <Text className={'text-black my-1.5 font-inter text-xs'}>
-            What would you like to complain about?
+    const handleMakeComplain = (data: RequestHelpFormData) => {
+      if (!agreement) {
+        return ToastAndroid.show(
+          'Error: No active agreement found',
+          ToastAndroid.SHORT,
+        );
+      }
+
+      makeComplainMutation.mutate({
+        agreementId: agreement.id,
+        message: data.message,
+      });
+    };
+
+    return (
+      // @ts-ignore
+      <CustomBottomSheet
+        snapPoints={['75%', '80%']}
+        ref={ref}
+        handleComponent={() => renderSheetHeader(props.handleCloseModal)}
+        onChange={props.handleSheetChanges}>
+        <ScrollView className={'px-4 min-h-[180px]'}>
+          <Text className={'text-xs font-inter text-grey_1 mb-2'}>
+            Share your complaint with the management to ensure you have a smooth
+            experience.
           </Text>
 
-          <Controller
-            control={control}
-            render={({
-              field: {onChange, onBlur, value},
-              fieldState: {error},
-            }) => (
-              <>
-                <TextInput
-                  className={
-                    'text-black font-inter border border-border_grey w-full rounded-xl  text-xs px-3'
-                  }
-                  numberOfLines={9}
-                  placeholder={'Briefly explain your complains'}
-                  placeholderTextColor={COLORS.border_grey}
-                  style={{
-                    textAlignVertical: 'top',
-                  }}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  value={value}
-                />
-                {error && (
-                  <Text
-                    className={
-                      'text-xs font-inter-medium leading-5 text-red-600'
-                    }>
-                    {error?.message}
-                  </Text>
-                )}
-              </>
-            )}
-            name={'message'}
-          />
-        </View>
-      </ScrollView>
+          <View className={'flex-col items-start w-full py-3'}>
+            <Text className={'text-black my-1.5 font-inter text-xs'}>
+              What would you like to complain about?
+            </Text>
 
-      <CButton
-        ClassName={'bg-primary text-white py-3.5 mx-5 mb-3'}
-        onPress={handleSubmit(handleMakeComplain)}>
-        <Text className={'text-white font-inter text-13 '}>
-          Submit Complain(s)
-        </Text>
-      </CButton>
-    </CustomBottomSheet>
-  );
-});
+            <Controller
+              control={control}
+              render={({
+                field: {onChange, onBlur, value},
+                fieldState: {error},
+              }) => (
+                <>
+                  <TextInput
+                    className={
+                      'text-black font-inter border border-border_grey w-full rounded-xl  text-xs px-3'
+                    }
+                    numberOfLines={9}
+                    placeholder={'Briefly explain your complains'}
+                    placeholderTextColor={COLORS.border_grey}
+                    style={{
+                      textAlignVertical: 'top',
+                    }}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                  />
+                  {error && (
+                    <Text
+                      className={
+                        'text-xs font-inter-medium leading-5 text-red-600'
+                      }>
+                      {error?.message}
+                    </Text>
+                  )}
+                </>
+              )}
+              name={'message'}
+            />
+          </View>
+        </ScrollView>
+
+        <CButton
+          disabled={makeComplainMutation.isPending}
+          ClassName={'bg-primary text-white py-3.5 mx-5 mb-3'}
+          onPress={handleSubmit(handleMakeComplain)}>
+          <Text className={'text-white font-inter text-13 '}>
+            {makeComplainMutation?.isPending
+              ? 'Saving...'
+              : 'Submit Complain(s)'}
+          </Text>
+        </CButton>
+      </CustomBottomSheet>
+    );
+  },
+);
 
 const renderSheetHeader = (handleClose: () => {}) => (
   <View

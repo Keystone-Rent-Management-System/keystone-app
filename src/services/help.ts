@@ -22,7 +22,7 @@ const generalAssistance = async (
 ): Promise<IPropertyListing> => {
   //   verify arguments
   const {data: res} = await AxiosUtility.post(
-    `/general_assistance/${agreementId}`,
+    `/general-assistance/${agreementId}`,
     {
       message,
     },
