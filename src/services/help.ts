@@ -4,9 +4,9 @@ import AxiosUtility from './AxiosServices';
 /**
  * make a complain
  */
-const makeComplain = async (agreementId: string, message: string) => {
+const makeComplain = async (message: string) => {
   //   verify arguments
-  const {data: res} = await AxiosUtility.post(`/complaints/${agreementId}`, {
+  const {data: res} = await AxiosUtility.post('/complaints', {
     message,
   });
 
@@ -17,16 +17,12 @@ const makeComplain = async (agreementId: string, message: string) => {
  * General assistance
  */
 const generalAssistance = async (
-  agreementId: string,
   message: string,
 ): Promise<IPropertyListing> => {
   //   verify arguments
-  const {data: res} = await AxiosUtility.post(
-    `/general-assistance/${agreementId}`,
-    {
-      message,
-    },
-  );
+  const {data: res} = await AxiosUtility.post('/general-assistance', {
+    message,
+  });
 
   return res;
 };

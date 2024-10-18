@@ -40,7 +40,7 @@ const MakeComplaint = forwardRef<BottomSheetModal, IMakeComplainProps>(
     const makeComplainMutation = useMutation({
       mutationKey: ['makeComplain'],
       mutationFn: (data: {agreementId: string; message: string}) =>
-        HelpServices.makeComplain(data.agreementId, data.message),
+        HelpServices.makeComplain(data.message),
       onSuccess: () => {
         ToastAndroid.show(
           'Complain submitted successfully',
