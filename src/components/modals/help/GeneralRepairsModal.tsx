@@ -31,7 +31,7 @@ const GeneralRepairsModal = forwardRef<BottomSheetModal, IMakeComplainProps>(
     const requestGeneralAssistance = useMutation({
       mutationKey: ['generalAssistance'],
       mutationFn: (data: {agreementId: string; message: string}) =>
-        HelpServices.generalAssistance(data.agreementId, data.message),
+        HelpServices.generalAssistance(data.message),
       onSuccess: () => {
         ToastAndroid.show(
           'Assistance requested successfully',
