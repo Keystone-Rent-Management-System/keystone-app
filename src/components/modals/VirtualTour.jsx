@@ -16,7 +16,7 @@ const VirtualTour = forwardRef((props, ref) => {
         source={{
           html: props.htmlIframe,
         }}
-        style={styles.webview}
+        style={virtualStyle.webview}
       />
     </CustomBottomSheet>
   );
@@ -31,7 +31,7 @@ const renderSheetHeader = handleClose => (
     />
 
     <View
-      style={styles.actionButtonWrapper}
+      style={virtualStyle.actionButtonWrapper}
       className={'flex-1 flex-row justify-end shadow-xl'}>
       <ExploreActionBtn ClassName={'bg-white'} icon={<UploadSvg />} />
     </View>
@@ -40,7 +40,7 @@ const renderSheetHeader = handleClose => (
 
 export default VirtualTour;
 
-const styles = StyleSheet.create({
+export const virtualStyle = StyleSheet.create({
   actionButtonWrapper: {
     gap: 15,
   },
