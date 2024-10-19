@@ -33,7 +33,7 @@ import MapView, {Marker} from 'react-native-maps';
 import {PALLAX_PHONE_NUMBER} from '../../constants';
 import {useSpecificPropertyListing} from '../../hooks/usePropertyListing';
 import numberWithCommas from '../../utils/numberWithCommas';
-import ImageSlider from '../../components/screens/property_view/ImageSlider';
+import MatterPortPreview from '../../components/screens/property_view/matterport-preview';
 
 const ApartmentView = ({route: {params}}) => {
   const bottomSheetRef = useRef();
@@ -136,7 +136,8 @@ const ApartmentView = ({route: {params}}) => {
           </View>
         )}
 
-        <ImageSlider images={imgs} />
+        {/*<ImageSlider images={imgs} />*/}
+        <MatterPortPreview htmlIframe={htmlIframe} />
 
         {/* virtual tour image */}
         <TouchableOpacity
