@@ -9,7 +9,7 @@ import AxiosUtility, {setAuthToken} from './AxiosServices';
 const getUnits = async (page, size) => {
   setAuthToken(AxiosUtility);
   const {data: res} = await AxiosUtility.get(
-    `/property-units?page=${page}&size=${size}`,
+    `/search/propertyUnits?page=${page}&size=${size}`,
   );
 
   return res;

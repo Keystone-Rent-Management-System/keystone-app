@@ -5,7 +5,7 @@ import {FlashList} from '@shopify/flash-list';
 import {Layout} from '@/components';
 import {propertyStyles} from './Property';
 import {usePropertyUnits} from '../../../hooks';
-import {renderUnitItem, Header} from '../Units';
+import {renderUnitItem} from '../Units';
 
 const PropertyView = ({route: {params}}) => {
   const navigation = useNavigation();
@@ -31,7 +31,7 @@ const PropertyView = ({route: {params}}) => {
   return (
     <Layout>
       <FlashList
-        ListHeaderComponent={<Header />}
+        // ListHeaderComponent={<Header />}
         contentContainerStyle={propertyStyles.list}
         refreshing={isPending || isRefetching}
         data={units}

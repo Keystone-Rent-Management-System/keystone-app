@@ -33,14 +33,14 @@ export const usePropertyUnits = (propertyId, size) => {
     queryFn: () => PropertyServices.getPropertyUnits(propertyId, 0, size),
   });
 
-  const units = data?.data || [];
+  const units = data?.content || [];
 
   return {
     isPending,
     isRefetching,
     error,
     units,
-    totalElements: data?.totalElements,
+    totalElements: data?.page?.totalElements,
     refetch,
   };
 };

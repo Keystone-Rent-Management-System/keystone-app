@@ -7,14 +7,14 @@ export const useUnit = size => {
     queryFn: () => UnitServices.getUnits(0, size),
   });
 
-  const units = data?.data || null;
+  const units = data?.content || null;
 
   return {
     isPending,
     isRefetching,
     error,
     units,
-    totalElements: data?.totalElements,
+    totalElements: data?.page?.totalElements,
     refetch,
   };
 };
