@@ -59,10 +59,10 @@ const renderItem = ({item}: {item: any}) => (
         className={`font-inter  text-xs ${
           item.read ? 'text-inactive_text' : 'text-black'
         }`}>
-        {item.message}
+        {item.message || item?.body}
       </Text>
       <Text className={'font-inter text-inactive_text text-11 mt-1.5'}>
-        {moment(item.time).fromNow()}
+        {moment(item.time || item?.createdAt).fromNow()}
       </Text>
     </View>
 

@@ -13,5 +13,5 @@ export interface iNotification {
 }
 
 export interface INotificationsResponse extends IPagination {
-  data: iNotification[];
+  content: iNotification[];
 }
