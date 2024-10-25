@@ -55,10 +55,10 @@ const Property = () => {
   );
 };
 
-const Header = ({setSearch, search}) => {
+export const SearchHeader = ({setSearch, search}) => {
   return (
     <CInput
-      ClassName={'rounded-xl mb-3 overflow-hidden border-border_grey'}
+      ClassName={'rounded-xl mb-3 overflow.,,;.-hidden border-border_grey'}
       icon={
         <View className={'px-3 black my-auto flex items-center justify-center'}>
           <SearchSvg size={'18'} />
