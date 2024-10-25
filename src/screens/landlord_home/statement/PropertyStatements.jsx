@@ -1,18 +1,16 @@
-import React, {useState, useRef, useCallback} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {
   ActivityIndicator,
-  StyleSheet,
-  View,
-  Text,
   SectionList,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
-import {CButton, LandlordStatementItem, Layout} from '@/components';
-import COLORS from '../../../constants/Theme';
+import {LandlordStatementItem, Layout} from '@/components';
 import {useInvoiceAnalytics} from '../../../hooks';
 import numberWithCommas from '../../../utils/numberWithCommas';
 import moment from 'moment';
-import {StatementListSvg} from '@/assets/icons';
 import {ExportStatementModal} from '../../../components/modals';
 
 const PropertyStatements = () => {
@@ -61,18 +59,18 @@ const PropertyStatements = () => {
             ) : null
           }
         />
-        <CButton
-          style={{elevation: 2}}
-          ClassName={
-            'absolute bg-primary_bg_pale rounded-full flex-row space-x-1 shadow-md bottom-3 right-3'
-          }
-          onPress={handleOpenExportModal}>
-          <StatementListSvg h={'20'} color={COLORS.primary} />
+        {/*<CButton*/}
+        {/*  style={{elevation: 2}}*/}
+        {/*  ClassName={*/}
+        {/*    'absolute bg-primary_bg_pale rounded-full flex-row space-x-1 shadow-md bottom-3 right-3'*/}
+        {/*  }*/}
+        {/*  onPress={handleOpenExportModal}>*/}
+        {/*  <StatementListSvg h={'20'} color={COLORS.primary} />*/}
 
-          <Text className={'text-primary text-xs font-inter-medium'}>
-            Export Statement
-          </Text>
-        </CButton>
+        {/*  <Text className={'text-primary text-xs font-inter-medium'}>*/}
+        {/*    Export Statement*/}
+        {/*  </Text>*/}
+        {/*</CButton>*/}
       </Layout>
 
       <ExportStatementModal

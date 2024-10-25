@@ -1,8 +1,6 @@
-import React, {useRef, useCallback, useState} from 'react';
-import {CButton, LandlordStatementItem, Layout} from '@/components';
-import {ActivityIndicator, Text} from 'react-native';
-import {StatementListSvg} from '@/assets/icons';
-import COLORS from '../../../constants/Theme';
+import React, {useCallback, useRef, useState} from 'react';
+import {LandlordStatementItem, Layout} from '@/components';
+import {ActivityIndicator} from 'react-native';
 import {FlashList} from '@shopify/flash-list';
 import moment from 'moment';
 import numberWithCommas from '../../../utils/numberWithCommas';
@@ -51,18 +49,18 @@ const UnitStatements = ({route: {params}}) => {
           }
         />
 
-        <CButton
-          style={{elevation: 2}}
-          ClassName={
-            'absolute bg-primary_bg_pale rounded-full flex-row space-x-1 shadow-md bottom-3 right-3'
-          }
-          onPress={handleOpenExportModal}>
-          <StatementListSvg h={'20'} color={COLORS.primary} />
+        {/*<CButton*/}
+        {/*  style={{elevation: 2}}*/}
+        {/*  ClassName={*/}
+        {/*    'absolute bg-primary_bg_pale rounded-full flex-row space-x-1 shadow-md bottom-3 right-3'*/}
+        {/*  }*/}
+        {/*  onPress={handleOpenExportModal}>*/}
+        {/*  <StatementListSvg h={'20'} color={COLORS.primary} />*/}
 
-          <Text className={'text-primary text-xs font-inter-medium'}>
-            Export Statement
-          </Text>
-        </CButton>
+        {/*  <Text className={'text-primary text-xs font-inter-medium'}>*/}
+        {/*    Export Statement*/}
+        {/*  </Text>*/}
+        {/*</CButton>*/}
       </Layout>
 
       <ExportStatementModal
