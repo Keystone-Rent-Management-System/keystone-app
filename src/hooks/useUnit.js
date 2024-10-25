@@ -1,13 +1,18 @@
 import UnitServices from '../services/UnitServices';
 import {useQuery} from '@tanstack/react-query';
+import {useState} from 'react';
+import {useDebounce} from '@uidotdev/usehooks';
 
 export const useUnit = size => {
+  const [search, setSearch] = useState('');
+  const debouncedSearchQuery = useDebounce(search, 500);
+
   const {isPending, isRefetching, error, data, refetch} = useQuery({
-    queryKey: ['units'],
-    queryFn: () => UnitServices.getUnits(0, size),
+    queryKey: ['units', debouncedSearchQuery],
+    queryFn: () => UnitServices.getUnits(0, size, debouncedSearchQuery),
   });
 
-  const units = data?.content || null;
+  const units = data?.content || [];
 
   return {
     isPending,
@@ -16,6 +21,8 @@ export const useUnit = size => {
     units,
     totalElements: data?.page?.totalElements,
     refetch,
+    search,
+    setSearch,
   };
 };
 
