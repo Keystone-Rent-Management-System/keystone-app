@@ -1,4 +1,4 @@
-import AxiosUtility, {ENDPOINT, setAuthToken} from './AxiosServices';
+import AxiosUtility, {setAuthToken, UAT} from './AxiosServices';
 import axios from 'axios';
 
 /**
@@ -91,7 +91,7 @@ const updateUserPassword = async data => {
  * @returns {Promise<any>}
  */
 const refreshToken = async refreshTkn => {
-  const {data: res} = await axios.post(`${ENDPOINT}/profile/refresh-token`, {
+  const {data: res} = await axios.post(`${UAT}/profile/refresh-token`, {
     refreshToken: refreshTkn,
   });
 

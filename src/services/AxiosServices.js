@@ -3,10 +3,11 @@ import {mmkvStorage} from '../provider/store/MMKV';
 import useGlobals from '../provider/store/useGlobals';
 import AuthServices from './AuthServices';
 
-export const ENDPOINT = 'http://94.156.189.106:8085/api/v1/rms';
+// export const DEV = 'http://94.156.189.106:8085/api/v1/rms';
+export const UAT = 'https://uat.pallaxrms.cloud/api/v1/rms';
 
 export const AxiosUtility = axios.create({
-  baseURL: `${ENDPOINT}`,
+  baseURL: `${UAT}`,
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
