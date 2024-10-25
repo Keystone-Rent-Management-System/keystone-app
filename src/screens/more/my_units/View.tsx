@@ -24,7 +24,6 @@ const UnitView = () => {
   const landlord: ILandlord = useMemo(() => {
     return agreement?.propertyUnits?.property?.landlord || {};
   }, [agreement]);
-  console.log('LANDLORD', landlord);
 
   const charges: Record<ChargeKey, {amount: any; icon: React.JSX.Element}> =
     useMemo(() => {
