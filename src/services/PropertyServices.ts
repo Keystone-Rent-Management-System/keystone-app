@@ -16,15 +16,17 @@ interface Unit {
  * Fetches all properties
  * @param {number} page
  * @param {number} size
+ * @param {string} searchQuery
  * @returns {Promise<Property[]>}
  */
 const getProperties = async (
   page: number,
   size: number,
+  searchQuery?: string,
 ): Promise<Property[]> => {
   setAuthToken(AxiosUtility);
   const {data: res} = await AxiosUtility.get(
-    `/properties?page=${page}&size=${size}`,
+    `/search/properties?page=${page}&size=${size}&searchParam=${searchQuery}`,
   );
   return res;
 };
