@@ -2,11 +2,15 @@ import {ToastAndroid} from 'react-native';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import InvoiceServices from '../services/InvoiceServices';
 import {useEffect, useState} from 'react';
+import useAuth from './useAuth';
 
 export const useUnPaidInvoice = size => {
+  const {profile} = useAuth();
+
   const {isPending, isRefetching, error, data, refetch} = useQuery({
     queryKey: ['invoice/unpaid'],
-    queryFn: () => InvoiceServices.getInvoices(0, size, 'unpaid'),
+    queryFn: () =>
+      InvoiceServices.getInvoices(0, size, 'unpaid', profile?.userId),
   });
 
   const invoices = data?.content || [];
@@ -40,9 +44,11 @@ export const usePartiallyPaidInvoice = size => {
 };
 
 export const usePaidInvoice = size => {
+  const {profile} = useAuth();
   const {isPending, isRefetching, error, data, refetch} = useQuery({
     queryKey: ['invoice/paid'],
-    queryFn: () => InvoiceServices.getInvoices(0, size, 'paid'),
+    queryFn: () =>
+      InvoiceServices.getInvoices(0, size, 'paid', profile?.userId),
   });
 
   const invoices = data?.content || null;
