@@ -9,7 +9,7 @@ interface IMatterPortPreview {
 
 const MatterPortPreview = (props: IMatterPortPreview) => {
   return (
-    <View className={'relative h-60 bg-active_text'}>
+    <View className={'h-60'}>
       <WebView
         source={{
           html: props.htmlIframe,

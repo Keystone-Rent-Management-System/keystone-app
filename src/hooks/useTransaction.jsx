@@ -1,6 +1,7 @@
 import {useQuery} from '@tanstack/react-query';
 import {useEffect, useState} from 'react';
 import TransactionServices from '../services/TransactionServices';
+import {useAuth} from './index';
 
 export const useTotalTransaction = () => {
   const {isPending, error, data, refetch} = useQuery({
@@ -12,17 +13,19 @@ export const useTotalTransaction = () => {
 };
 
 export const useTenantTransaction = size => {
+  const {profile} = useAuth();
   const [transactions, setTransactions] = useState([]);
 
   const {isPending, isRefetching, error, data, refetch} = useQuery({
     queryKey: ['transactions/tenant'],
-    queryFn: () => TransactionServices.getTenantTransactions(0, size),
+    queryFn: () =>
+      TransactionServices.getTenantTransactions(0, size, profile?.userId),
   });
 
   useEffect(() => {
     if (!isPending) {
       let groupedData = [];
-      data?.data?.forEach(item => {
+      data?.content?.forEach(item => {
         const month = new Date(item?.transactionDate).toLocaleString(
           'default',
           {

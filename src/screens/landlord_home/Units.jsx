@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import {View, ActivityIndicator} from 'react-native';
+import {ActivityIndicator, View} from 'react-native';
 import {FlashList} from '@shopify/flash-list';
 import {CInput, Layout, ListingItem} from '@/components';
 import {SearchSvg, UnitSvg} from '@/assets/icons';

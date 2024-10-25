@@ -119,9 +119,7 @@ const UnitView = () => {
             <Text className={'text-black font-inter-semibold'}>Location</Text>
 
             <Text className={'font-inter text-xs text-grey_1 mt-2'}>
-              {agreement.propertyUnits.property.country},{' '}
-              {agreement.propertyUnits.property.county},{' '}
-              {agreement.propertyUnits.property.neighborhood}
+              {agreement.propertyUnits.property?.address?.line},{' '}
             </Text>
           </View>
 
@@ -150,8 +148,8 @@ const UnitView = () => {
 
           {/*  landlord details  */}
           <LandlordItem
-            name={`${landlord?.landlordUser?.firstName} ${landlord?.landlordUser?.lastName}`}
-            phoneNumber={landlord?.landlordUser?.phoneNumber}
+            name={`${landlord?.user?.firstName} ${landlord?.user?.lastName}`}
+            phoneNumber={landlord?.user?.phoneNumber}
             rent={agreement?.propertyUnits?.rent?.toString()}
             ClassName={'px-0'}
           />

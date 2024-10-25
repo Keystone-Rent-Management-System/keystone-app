@@ -1,14 +1,6 @@
 import React, {useState} from 'react';
 import {Layout} from '@/components';
-import {
-  Text,
-  View,
-  ActivityIndicator,
-  FlatList,
-  SectionList,
-} from 'react-native';
-import {generateYears} from '../../utils/yearsOptions';
-import {SelectorButton} from '../../components/screens/explore/RoomSelector';
+import {ActivityIndicator, SectionList, Text, View} from 'react-native';
 import numberWithCommas from '../../utils/numberWithCommas';
 import moment from 'moment';
 import {BillsSvg} from '@/assets/icons';
@@ -16,9 +8,6 @@ import {PaymentItem} from '../../components';
 import {useTenantTransaction} from '../../hooks';
 
 const Payments = () => {
-  const [active, setActive] = useState(0);
-  const years = generateYears();
-
   const [size, setSize] = useState(20);
 
   const {isPending, isRefetching, transactions, totalElements, refetch} =
@@ -31,38 +20,39 @@ const Payments = () => {
     }
   };
 
-  const renderYears = ({item, index, isActive}) => {
-    return (
-      <SelectorButton
-        key={index}
-        ClassName={'py-0'}
-        isActive={isActive}
-        text={item}
-        handlePress={() => {
-          setActive(index);
-        }}
-      />
-    );
-  };
+  // const renderYears = ({item, index, isActive}) => {
+  //   return (
+  //     <SelectorButton
+  //       key={index}
+  //       ClassName={'py-0'}
+  //       isActive={isActive}
+  //       text={item}
+  //       handlePress={() => {
+  //         setActive(index);
+  //       }}
+  //     />
+  //   );
+  // };
 
   return (
     <>
       <Layout ClassName={'p-4 relative'}>
-        <View>
-          <FlatList
-            className={'h-8'}
-            data={years}
-            renderItem={({item, index}) =>
-              renderYears({
-                item,
-                index,
-                isActive: active === index,
-              })
-            }
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
+        {/*<View>*/}
+        {/*  <FlatList*/}
+        {/*    className={'h-8'}*/}
+        {/*    data={years}*/}
+        {/*    renderItem={({item, index}) =>*/}
+        {/*      renderYears({*/}
+        {/*        item,*/}
+        {/*        index,*/}
+        {/*        isActive: active === index,*/}
+        {/*      })*/}
+        {/*    }*/}
+        {/*    horizontal={true}*/}
+        {/*    showsHorizontalScrollIndicator={false}*/}
+        {/*  />*/}
+        {/*</View>*/}
+
         <SectionList
           sections={transactions}
           keyExtractor={item => item?.id}

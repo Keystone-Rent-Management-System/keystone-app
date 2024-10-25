@@ -29,12 +29,13 @@ const getTransactions = async (page, size, startDate, endDate) => {
  * Fetches tenant transactions
  * @param {number} page
  * @param {number} size
+ * @param {string} userId
  * @returns {Promise<Transaction[]>}
  */
-const getTenantTransactions = async (page, size) => {
+const getTenantTransactions = async (page, size, userId) => {
   setAuthToken(AxiosUtility);
   const {data: res} = await AxiosUtility.get(
-    `/transactions/tenant-transactions?page=${page}&size=${size}`,
+    `/transactions/tenant-transactions?page=${page}&size=${size}&tenantUserId=${userId}`,
   );
 
   return res;

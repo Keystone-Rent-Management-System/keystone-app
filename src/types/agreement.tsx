@@ -47,7 +47,7 @@ interface ILandlord {
   createdBy: string | null;
   modifiedBy: string | null;
   deleted: boolean;
-  landlordUser: ILandlordUser;
+  user: ILandlordUser;
   userId: string | null;
   status: string;
 }
@@ -67,6 +67,15 @@ interface IPaymentAccounts {
   status: string;
 }
 
+interface IAddress {
+  line?: string;
+  streetNumber?: string;
+  streetName?: string;
+  location?: string;
+  county?: string;
+  country?: string;
+}
+
 interface IProperty {
   id: string;
   createdAt: string;
@@ -78,9 +87,7 @@ interface IProperty {
   name: string;
   description: string;
   referenceCode: string;
-  country: string;
-  county: string;
-  neighborhood: string;
+  address: IAddress;
   amenities: any[];
   latitude: number;
   longitude: number;
