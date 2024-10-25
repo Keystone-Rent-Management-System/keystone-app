@@ -71,7 +71,7 @@ export const useTransactionIn = size => {
   useEffect(() => {
     if (!isPending) {
       let groupedData = [];
-      data?.data?.forEach(item => {
+      data?.content?.forEach(item => {
         const month = new Date(item?.transactionDate).toLocaleString(
           'default',
           {

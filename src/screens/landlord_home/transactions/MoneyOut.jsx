@@ -1,4 +1,4 @@
-import React, {useState, useRef, useCallback} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {CButton, Layout, StatementItem} from '../../../components';
 import moment from 'moment';
 import numberWithCommas from '../../../utils/numberWithCommas';
@@ -7,7 +7,7 @@ import {StatementListSvg} from '../../../assets/icons';
 import {Text} from 'react-native-svg';
 import {ExportStatementModal} from '../../../components/modals';
 import COLORS from '../../../constants/Theme';
-import {renderHeader} from './MoneyIn';
+import {renderHeader, renderMoneyItem} from './MoneyIn';
 import {useTransactionOut} from '../../../hooks/useTransaction';
 
 const MoneyOut = () => {
@@ -39,7 +39,7 @@ const MoneyOut = () => {
           sections={transactions}
           keyExtractor={item => item?.id}
           estimatedItemSize={20}
-          renderItem={renderItem}
+          renderItem={renderMoneyItem}
           renderSectionHeader={renderHeader}
           refreshing={isPending || isRefetching}
           onRefresh={refetch}

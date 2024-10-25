@@ -35,7 +35,9 @@ const Property = () => {
   return (
     <Layout>
       <FlashList
-        ListHeaderComponent={<Header setSearch={setSearch} search={search} />}
+        ListHeaderComponent={
+          <SearchHeader setSearch={setSearch} search={search} />
+        }
         contentContainerStyle={propertyStyles.list}
         refreshing={isPending || isRefetching}
         data={properties}

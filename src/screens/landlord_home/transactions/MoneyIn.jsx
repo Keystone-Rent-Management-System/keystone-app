@@ -1,11 +1,6 @@
-import React, {useState, useRef, useCallback} from 'react';
-import {CButton, Layout, StatementItem} from '../../../components';
-import moment from 'moment';
-import numberWithCommas from '../../../utils/numberWithCommas';
+import React, {useCallback, useRef, useState} from 'react';
+import {Layout, StatementItem} from '../../../components';
 import {ActivityIndicator, SectionList, Text, View} from 'react-native';
-import {StatementListSvg} from '../../../assets/icons';
-import {ExportStatementModal} from '../../../components/modals';
-import COLORS from '../../../constants/Theme';
 import {useTransactionIn} from '../../../hooks/useTransaction';
 
 const MoneyIn = () => {
@@ -30,6 +25,8 @@ const MoneyIn = () => {
     exportModalRef.current?.close();
   }, []);
 
+  console.log('DATA IS::', transactions);
+
   return (
     <>
       <Layout ClassName={'p-4 relative'}>
@@ -37,7 +34,7 @@ const MoneyIn = () => {
           sections={transactions}
           keyExtractor={item => item?.id}
           estimatedItemSize={20}
-          renderItem={renderItem}
+          renderItem={renderMoneyItem}
           renderSectionHeader={renderHeader}
           refreshing={isPending || isRefetching}
           onRefresh={refetch}
@@ -50,41 +47,42 @@ const MoneyIn = () => {
           }
         />
 
-        <CButton
-          style={{elevation: 2}}
-          ClassName={
-            'absolute bg-primary_bg_pale rounded-full flex-row space-x-1 shadow-md bottom-3 right-3'
-          }
-          onPress={handleOpenExportModal}>
-          <StatementListSvg h={'20'} color={COLORS.primary} />
+        {/*<CButton*/}
+        {/*  style={{elevation: 2}}*/}
+        {/*  ClassName={*/}
+        {/*    'absolute bg-primary_bg_pale rounded-full flex-row space-x-1 shadow-md bottom-3 right-3'*/}
+        {/*  }*/}
+        {/*  onPress={handleOpenExportModal}>*/}
+        {/*  <StatementListSvg h={'20'} color={COLORS.primary} />*/}
 
-          <Text className={'text-primary text-xs font-inter-medium'}>
-            Export Statement
-          </Text>
-        </CButton>
+        {/*  <Text className={'text-primary text-xs font-inter-medium'}>*/}
+        {/*    Export Statement*/}
+        {/*  </Text>*/}
+        {/*</CButton>*/}
       </Layout>
 
-      <ExportStatementModal
-        ref={exportModalRef}
-        handleCloseModal={handleCloseExportModal}
-      />
+      {/*<ExportStatementModal*/}
+      {/*  ref={exportModalRef}*/}
+      {/*  handleCloseModal={handleCloseExportModal}*/}
+      {/*/>*/}
     </>
   );
 };
 
-const renderItem = ({item}, handlePress) => (
-  <StatementItem
-    title={
-      item?.invoiceNumber
-        ? `Invoice no: ${item?.invoiceNumber}`
-        : `Transaction code: ${item?.transactionCode}`
-    }
-    date={moment(item?.createdAt)?.format('Do MMMM, YYYY')}
-    paymentMethod={item?.methodOfPayment}
-    amount={numberWithCommas(Number(item.amountDebited))}
-    handlePress={handlePress}
-  />
-);
+export const renderMoneyItem = ({item}, handlePress) => {
+  return (
+    <StatementItem
+      invoiceNumber={
+        item?.transactionCode
+          ? ` ${item?.transactionCode}`
+          : `Invoice ${item?.invoiceNumber}`
+      }
+      date={item?.createdAt}
+      startingBalance={null}
+      paymentAmount={item?.amountDebited ?? 0}
+    />
+  );
+};
 
 export const renderHeader = ({section}) => (
   <View className={'pb-2 px-4 mt-3'}>
