@@ -5,15 +5,22 @@ import {FlashList} from '@shopify/flash-list';
 import {CInput, Layout, ListingItem} from '@/components';
 import {SearchSvg, UnitSvg} from '@/assets/icons';
 import COLORS from '@/constants/Theme';
-import {propertyStyles} from './property/Property';
+import {propertyStyles, SearchHeader} from './property/Property';
 import {useUnit} from '../../hooks';
 
 const Units = () => {
   const navigation = useNavigation();
   const [size, setSize] = useState(20);
 
-  const {isPending, isRefetching, units, totalElements, refetch} =
-    useUnit(size);
+  const {
+    isPending,
+    isRefetching,
+    units,
+    totalElements,
+    refetch,
+    search,
+    setSearch,
+  } = useUnit(size);
 
   const handleNavigate = unitName => {
     navigation.navigate('statements', {
@@ -32,7 +39,9 @@ const Units = () => {
   return (
     <Layout>
       <FlashList
-        ListHeaderComponent={<Header />}
+        ListHeaderComponent={
+          <SearchHeader search={search} setSearch={setSearch} />
+        }
         contentContainerStyle={propertyStyles.list}
         refreshing={isPending || isRefetching}
         data={units}
