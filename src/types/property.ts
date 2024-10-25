@@ -26,7 +26,7 @@ export interface ILandlord {
   createdBy: string | null;
   modifiedBy: string | null;
   deleted: boolean;
-  landlordUser: ILandlordUser;
+  user: ILandlordUser;
   status: string;
 }
 
