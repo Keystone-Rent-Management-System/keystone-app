@@ -1,7 +1,7 @@
 import React from 'react';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 
-import {InvoicePaid, InvoicePartiallyPaid, InvoiceUnpaid} from '@/screens';
+import {InvoicePaid, InvoiceUnpaid} from '@/screens';
 import COLORS from '../constants/Theme';
 
 const TopTab = createMaterialTopTabNavigator();
@@ -34,13 +34,7 @@ const InvoiceTopTabNav = () => {
           title: 'Unpaid',
         }}
       />
-      <TopTab.Screen
-        name={'invoice_partially_paid'}
-        component={InvoicePartiallyPaid}
-        options={{
-          title: 'Partially Paid',
-        }}
-      />
+
       <TopTab.Screen
         name={'invoice_paid'}
         component={InvoicePaid}
