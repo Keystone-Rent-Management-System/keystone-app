@@ -4,7 +4,7 @@ import COLORS from '@/constants/Theme';
 import numberWithCommas from '../../../utils/numberWithCommas';
 import numberConverter from '../../../utils/numberConverter';
 
-const StatsCard = ({invoice, agreement}) => {
+const StatsCard = ({statement, agreement}) => {
   const currentDate = new Date();
   return (
     <View
@@ -19,11 +19,11 @@ const StatsCard = ({invoice, agreement}) => {
         {/* Balance */}
         <View>
           <Text style={styles.cartLabel} className={' font-inter text-xs'}>
-            {invoice?.dueAmount < 0 ? 'Advance Balance' : 'Balance'}{' '}
+            {statement?.endingBalance < 0 ? 'Advance Balance' : 'Balance'}{' '}
           </Text>
 
           <Text className={'text-lg text-white font-inter-semibold'}>
-            KES. {numberConverter(Number(invoice?.dueAmount))}
+            KES. {numberConverter(Number(statement?.endingBalance || 0))}
           </Text>
         </View>
 

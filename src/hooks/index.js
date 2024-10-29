@@ -14,7 +14,6 @@ import {useAgrement, useActiveAgrement, useAcceptAgrement} from './useAgrement';
 import {useSpecificUnit} from './useUnit';
 import {
   useUnPaidInvoice,
-  useActiveInvoices,
   usePaidInvoice,
   usePartiallyPaidInvoice,
   useSpecificInvoice,
@@ -25,7 +24,7 @@ import {
 } from './useInvoice';
 import {useProperty, usePropertyUnits} from './useProperty';
 import {useTotalTransaction, useTenantTransaction} from './useTransaction';
-import {useStatement} from './useStatement';
+import {useStatement, useActiveStatement} from './useStatement';
 import {useUnit} from './useUnit';
 
 export {
@@ -45,7 +44,6 @@ export {
   useActiveAgrement,
   useAcceptAgrement,
   useUnPaidInvoice,
-  useActiveInvoices,
   usePartiallyPaidInvoice,
   usePaidInvoice,
   useSpecificInvoice,
@@ -58,6 +56,7 @@ export {
   useTotalTransaction,
   useTenantTransaction,
   useStatement,
+  useActiveStatement,
   useSpecificUnit,
   useUnit,
 };

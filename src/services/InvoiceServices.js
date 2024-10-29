@@ -18,28 +18,6 @@ const getInvoices = async (page, size, status, userId) => {
 };
 
 /**
- * Fetches active invoices
- * @param {number} page page number
- * @param {number} size size per page
- * @param {string} invoiceStatus invoice status
- * @param {string} agreementStatus agreement status
- * @returns {Promise<Invoice[]>}
- */
-const getActiveInvoices = async (
-  page,
-  size,
-  invoiceStatus,
-  agreementStatus,
-) => {
-  setAuthToken(AxiosUtility);
-  const {data: res} = await AxiosUtility.get(
-    `/invoices/active-invoice?page=${page}&size=${size}&invoiceStatus=${invoiceStatus}&agreementStatus=${agreementStatus}`,
-  );
-
-  return res;
-};
-
-/**
  * Fetches specific invoice
  * @param {string} id
  * @returns {Promise<Invoice>}
@@ -91,7 +69,6 @@ const InvoiceServices = {
   getInvoices,
   getInvoice,
   raiseConcern,
-  getActiveInvoices,
   getConcerns,
   getInvoiceAnalytics,
 };

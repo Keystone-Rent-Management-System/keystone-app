@@ -58,9 +58,10 @@ export const useStatement = size => {
 export const useActiveStatement = () => {
   const {agreement} = useActiveAgrement();
 
-  const {data, error, isError, isPending} = useQuery({
+  const {data, error, isError, isPending, refetch} = useQuery({
     queryKey: ['active-statement'],
     queryFn: async () => StatementServices.fetchActiveStatement(agreement?.id),
+    enabled: !!agreement?.id,
   });
 
   return {
@@ -68,5 +69,6 @@ export const useActiveStatement = () => {
     error,
     isError,
     activeStatement: data,
+    refetch,
   };
 };
