@@ -28,7 +28,7 @@ const AgreementModalSheet = props => {
         snapPoints={['50%', '99%']}
         handleComponent={() => renderSheetHeader(props?.type)}>
         <BottomSheetScrollView style={{flexDirection: 'row'}}>
-          <PdfPreview />
+          <PdfPreview agreementId={props.agreement.id} />
         </BottomSheetScrollView>
 
         {props.type === 'agreed' ? (
