@@ -2,17 +2,17 @@ import {View, Text, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {ArrowDownUpSvg} from '../../../assets/icons';
 
-const ApartmentTitle = ({invoice, refetch}) => {
+const ApartmentTitle = ({agreement, refetch}) => {
   return (
     <View className={'flex-row '}>
       <View className={'flex-1'}>
         <Text className={'text-black font-inter-medium text-15'}>
-          {invoice?.propertyName?.split('-')[0]}
+          {agreement?.propertyUnits?.property?.name}
         </Text>
 
         <Text className={'text-xs mt-1 font-inter text-black'}>
           {' '}
-          Unit {invoice?.propertyName?.split('-')[1]}
+          Unit {agreement?.propertyUnits?.name}
         </Text>
       </View>
 

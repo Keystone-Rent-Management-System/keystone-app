@@ -8,29 +8,38 @@ import {
   LandlordHomeRefetchCard,
   Layout,
 } from '../../components';
-import {useActiveAgrement, useActiveInvoices} from '../../hooks';
+import {useActiveAgrement, useActiveStatement} from '../../hooks';
 import {View} from 'react-native';
 
 const Home = () => {
-  const {activeInvoices, refetch} = useActiveInvoices();
-  const {isPending, agreement} = useActiveAgrement();
+  const {isPending, agreement, agreementRefetch} = useActiveAgrement();
+  const {activeStatement, refetch} = useActiveStatement();
 
   return (
     <Layout ClassName={'px-4'}>
       {/* Header */}
       <HomeHeader />
       {!isPending && agreement ? (
-        activeInvoices?.map((invoice, index) => (
-          <View key={index}>
-            {/*apartment title */}
-            <HomeApartmentTitle invoice={invoice} refetch={refetch} />
+        <View>
+          {/*apartment title */}
+          <HomeApartmentTitle
+            agreement={agreement}
+            refetch={() => {
+              agreementRefetch();
+              refetch();
+            }}
+          />
 
-            {/* stats card */}
-            <HomeStatsCard invoice={invoice} agreement={agreement} />
-          </View>
-        ))
+          {/* stats card */}
+          <HomeStatsCard statement={activeStatement} agreement={agreement} />
+        </View>
       ) : (
-        <LandlordHomeRefetchCard refetch={refetch} />
+        <LandlordHomeRefetchCard
+          refetch={() => {
+            agreementRefetch();
+            refetch();
+          }}
+        />
       )}
 
       {/* Finance & payments */}

@@ -112,17 +112,6 @@ export const useGetConcerns = id => {
   return {concernsIsPending: isPending, error, concerns, refetch};
 };
 
-export const useActiveInvoices = () => {
-  const {isPending, error, data, refetch} = useQuery({
-    queryKey: ['invoice/active'],
-    queryFn: () => InvoiceServices.getActiveInvoices(0, 10, 'ACTIVE', 'Agreed'),
-  });
-
-  const activeInvoices = data?.content?.content ?? [];
-
-  return {isPending, error, activeInvoices, refetch};
-};
-
 export const useInvoiceAnalytics = size => {
   const [statements, setStatments] = useState([]);
 
