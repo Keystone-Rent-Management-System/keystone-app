@@ -69,6 +69,7 @@ const RequestExtension = forwardRef((props: IRequestExtension, ref) => {
           placeholder={'Enter number of days'}
           placeholderTextColor={'#000000A0'}
           keyboardType={'numeric'}
+          onChangeText={text => setSelectedDays(Number(text))}
         />
       </ScrollView>
 
