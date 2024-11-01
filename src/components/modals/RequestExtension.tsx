@@ -1,10 +1,9 @@
 import React, {forwardRef, useMemo} from 'react';
-import {ScrollView, Text, ToastAndroid, View} from 'react-native';
+import {ScrollView, Text, TextInput, ToastAndroid, View} from 'react-native';
 
 import {CustomBottomSheet} from './index';
 import {CButton} from '../general';
 import {CloseSvg} from '../../assets/icons';
-import {ExtensionDropDown} from '../screens';
 import {useActiveAgrement} from '../../hooks';
 import Helper from '../../utils/Helper';
 import {useMutation} from '@tanstack/react-query';
@@ -63,7 +62,15 @@ const RequestExtension = forwardRef((props: IRequestExtension, ref) => {
             I would like to request an extension of;
           </Text>
         </View>
-        <ExtensionDropDown handleChange={handleDaysChange} />
+        <TextInput
+          className={
+            'border border-gray-200 h-11 rounded-lg text-black font-inter text-xs px-2'
+          }
+          placeholder={'Enter number of days'}
+          placeholderTextColor={'#000000A0'}
+          keyboardType={'numeric'}
+          onChangeText={text => setSelectedDays(Number(text))}
+        />
       </ScrollView>
 
       <CButton
