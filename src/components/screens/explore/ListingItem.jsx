@@ -1,4 +1,4 @@
-import React, {memo, useState} from 'react';
+import React, {memo, useCallback, useMemo} from 'react';
 
 import {Pressable, Text, TouchableOpacity, View} from 'react-native';
 import COLORS from '@/constants/Theme';
@@ -16,6 +16,7 @@ import Helper from '@/utils/Helper';
 import ImageWithSpinner from '../../../components/general/image-with-spinner';
 import {RightArrowSvg} from '../../../assets/icons';
 import numberWithCommas from '../../../utils/numberWithCommas';
+import useSavedUnits, {useFetchSavedUnits} from '../../../hooks/useSavedUnits';
 
 /**
  * Returns property item for listing
@@ -31,9 +32,22 @@ const ListingItem = props => {
     showBack = false,
   } = props;
   const StyledView = styled(View);
-  const [liked, setLiked] = useState(props?.isSaved ?? false);
 
-  const handleLike = () => setLiked(prev => !prev);
+  const {data} = useFetchSavedUnits();
+
+  const liked = useMemo(() => {
+    return data?.some(unit => unit.unit_id === props.id);
+  }, [data, props.id]);
+
+  const {saveUnitMutation, removeUnitMutation} = useSavedUnits();
+  const handleLike = useCallback(() => {
+    // remove unit if already liked
+    if (liked) {
+      return removeUnitMutation.mutate(props.id);
+    }
+
+    saveUnitMutation.mutate({unitId: props.id, data: props.data});
+  }, [liked, props, removeUnitMutation, saveUnitMutation]);
 
   return (
     <Pressable
@@ -170,7 +184,8 @@ export const IconLabel = ({icon, text}) => (
  *   balconies:number,
  *   bedrooms:number,
  *   bathrooms:number,
- *   id:number
+ *   id:string
  *   handlePress:Function
+ *   data?:Object
  * }} ListingProperty
  */
