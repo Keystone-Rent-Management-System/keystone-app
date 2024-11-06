@@ -111,6 +111,7 @@ const Explore = () => {
         image={firstPropertyImage ?? ''}
         id={id}
         handlePress={() => handleViewApartment(id)}
+        data={item}
       />
     );
   };
