@@ -10,25 +10,7 @@ export const useUnPaidInvoice = size => {
   const {isPending, isRefetching, error, data, refetch} = useQuery({
     queryKey: ['invoice/unpaid'],
     queryFn: () =>
-      InvoiceServices.getInvoices(0, size, 'unpaid', profile?.userId),
-  });
-
-  const invoices = data?.content || [];
-
-  return {
-    isPending,
-    isRefetching,
-    error,
-    invoices,
-    totalElements: data?.totalElements,
-    refetch,
-  };
-};
-
-export const usePartiallyPaidInvoice = size => {
-  const {isPending, isRefetching, error, data, refetch} = useQuery({
-    queryKey: ['invoice/partially-paid'],
-    queryFn: () => InvoiceServices.getInvoices(0, size, 'paidPartial'),
+      InvoiceServices.getInvoices(0, size, 'UNPAID', profile?.userId),
   });
 
   const invoices = data?.content || [];
@@ -48,7 +30,7 @@ export const usePaidInvoice = size => {
   const {isPending, isRefetching, error, data, refetch} = useQuery({
     queryKey: ['invoice/paid'],
     queryFn: () =>
-      InvoiceServices.getInvoices(0, size, 'paid', profile?.userId),
+      InvoiceServices.getInvoices(0, size, 'PAID', profile?.userId),
   });
 
   const invoices = data?.content || null;
