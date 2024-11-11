@@ -1,12 +1,14 @@
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {FlashList} from '@shopify/flash-list';
 
 import {ExploreListingItem, Layout} from '@/components';
-import listings from '@/provider/listings';
+import {useFetchSavedUnits} from '../../hooks/useSavedUnits';
 
 const SavedUnits = () => {
   const navigation = useNavigation();
+
+  const {data, isFetching, refetch} = useFetchSavedUnits(); //fetches liked units
 
   const handleViewApartment = useCallback(
     id => {
@@ -14,38 +16,49 @@ const SavedUnits = () => {
     },
     [navigation],
   );
-  const renderListingItem = ({item}) => {
-    const {category, image, user, location, price, properties, title, id} =
-      item;
+
+  const renderListingItem = ({item: {data: item}}) => {
+    const firstPropertyImage = item?.uploads?.at(0)?.fileUrl;
+
+    const {
+      houseType,
+      user,
+      property,
+      rent,
+      balconies,
+      numberOfBedrooms,
+      numberOfBathrooms,
+      listingId: id,
+    } = item;
+
     return (
       <ExploreListingItem
-        image={image}
-        title={title}
+        title={item?.property?.name}
         userType={user}
-        category={category}
-        location={location}
-        price={price}
-        balconies={properties.balconies}
-        bedrooms={properties.bedrooms}
-        bathrooms={properties.bathrooms}
+        category={houseType}
+        location={`${property?.address?.line ?? ''}`}
+        price={rent}
+        balconies={balconies}
+        bedrooms={numberOfBedrooms}
+        bathrooms={numberOfBathrooms}
+        image={firstPropertyImage ?? ''}
         id={id}
         handlePress={() => handleViewApartment(id)}
-        isSaved={item?.isFavorite}
+        data={item}
       />
     );
   };
 
-  const list = useMemo(() => listings.filter(item => item?.isFavorite), []);
-
   return (
     <Layout>
       <FlashList
-        // eslint-disable-next-line react-native/no-inline-styles
+        refreshing={isFetching}
+        onRefresh={refetch}
         contentContainerStyle={{
           paddingHorizontal: 16,
           paddingVertical: 3,
         }}
-        data={list}
+        data={data}
         renderItem={renderListingItem}
         keyExtractor={(_, ind) => ind.toString()}
         estimatedItemSize={300}
