@@ -29,7 +29,7 @@ const MovingOut = forwardRef((props, ref) => {
             {' '}
             {props?.agreement?.daysOfTerminationNotice} days
           </Text>{' '}
-          the actual move out date.
+          before the actual move out date.
         </Text>
 
         <View className={'py-3 mb-2'}>

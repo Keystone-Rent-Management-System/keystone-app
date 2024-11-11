@@ -98,7 +98,7 @@ const Current = () => {
 
       <MovingOutModal
         ref={movingOutRef}
-        agreement={agreement}
+        agreement={currentAgreements?.find(agr => agr.id === agreement)}
         handleCloseModal={handleCloseMovingOutModal}
       />
     </>
