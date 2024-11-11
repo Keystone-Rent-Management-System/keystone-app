@@ -15,7 +15,7 @@ interface ILandlordItem {
 
 const LandlordItem = ({name, phoneNumber, ClassName, rent}: ILandlordItem) => {
   return (
-    <View className={`p-4 flex-row items-center ${ClassName}`}>
+    <View className={`px-4 py-2 flex-row items-center ${ClassName}`}>
       <ProfileView
         text={Helper.getInitials(name)}
         textClassName={'text-white text-lg'}
