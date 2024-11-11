@@ -12,7 +12,7 @@ import {
 import COLORS from '../../../constants/Theme';
 import {useActiveAgrement} from '../../../hooks';
 import {useActiveStatement} from '../../../hooks/useStatement';
-import {ILandlord} from '../../../types/property.ts';
+import {IPropertyContacts} from '../../../types/property.ts';
 import AgreementModalSheet from '../../../components/modals/Agreement';
 
 type ChargeKey = string;
@@ -21,8 +21,8 @@ const UnitView = () => {
   const {isPending, agreement} = useActiveAgrement();
   const {isPending: isPendingActive, activeStatement} = useActiveStatement();
 
-  const landlord: ILandlord = useMemo(() => {
-    return agreement?.propertyUnits?.property?.landlord || {};
+  const propertyContactPerson: IPropertyContacts = useMemo(() => {
+    return agreement?.propertyUnits?.property?.propertyContacts || {};
   }, [agreement]);
 
   const charges: Record<ChargeKey, {amount: any; icon: React.JSX.Element}> =
@@ -146,10 +146,11 @@ const UnitView = () => {
           {/*seperator*/}
           <Line />
 
+          <Text className={'text-black font-inter-semibold'}>Contacts</Text>
           {/*  landlord details  */}
           <LandlordItem
-            name={`${landlord?.user?.firstName} ${landlord?.user?.lastName}`}
-            phoneNumber={landlord?.user?.phoneNumber}
+            name={`${propertyContactPerson?.contactName}`}
+            phoneNumber={propertyContactPerson?.phoneNumber}
             rent={agreement?.propertyUnits?.rent?.toString()}
             ClassName={'px-0'}
           />
