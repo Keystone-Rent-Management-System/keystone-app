@@ -1,5 +1,6 @@
 import React, {forwardRef, useState} from 'react';
 
+import {useMutation} from '@tanstack/react-query';
 import {
   Image,
   ScrollView,
@@ -9,18 +10,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {CustomBottomSheet} from '../index';
-import {CameraSvg, CloseSvg} from '../../../assets/icons';
-import {CButton} from '../../general';
-import COLORS from '../../../constants/Theme';
 import {launchImageLibrary} from 'react-native-image-picker';
-import {useMutation} from '@tanstack/react-query';
+import {CameraSvg, CloseSvg} from '../../../assets/icons';
+import COLORS from '../../../constants/Theme';
 import HelpServices from '../../../services/help';
+import {CButton} from '../../general';
+import {CustomBottomSheet} from '../index';
 
 const PaymentAllocation = forwardRef((props, ref) => {
   const [image, setImage] = useState(null);
   const [code, setCode] = useState('');
-  const [phone, setPhone] = useState('');
 
   const handleCamera = async () => {
     const img = await launchImageLibrary(
@@ -82,7 +81,6 @@ const PaymentAllocation = forwardRef((props, ref) => {
 
       return await HelpServices.allocatePayments(
         {
-          phone,
           transactionCode: code,
         },
         formData,
@@ -112,12 +110,6 @@ const PaymentAllocation = forwardRef((props, ref) => {
     if (!image) {
       return ToastAndroid.show(
         'Please upload a proof of payment',
-        ToastAndroid.LONG,
-      );
-    }
-    if (!phone) {
-      return ToastAndroid.show(
-        'Please enter a phone number',
         ToastAndroid.LONG,
       );
     }
@@ -157,23 +149,6 @@ const PaymentAllocation = forwardRef((props, ref) => {
         </View>
 
         <View className={'flex-col items-start w-full py-3'}>
-          <Text className={'text-black my-1.5 font-inter text-xs'}>
-            Payment phone number
-          </Text>
-
-          <TextInput
-            className={
-              'text-black font-inter border border-border_grey w-full rounded-xl text-xs px-3'
-            }
-            placeholder={'Enter a payment phone number'}
-            placeholderTextColor={COLORS.border_grey}
-            style={{
-              textAlignVertical: 'top',
-            }}
-            onChangeText={setPhone}
-            value={phone}
-          />
-
           <TouchableOpacity
             className={
               'flex flex-col justify-center items-center h-40 bg-border_grey w-full rounded-xl my-3'
