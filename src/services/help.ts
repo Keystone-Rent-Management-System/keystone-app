@@ -46,11 +46,11 @@ const requestRepair = async (formData: FormData) => {
  * Allocate payments
  */
 const allocatePayments = async (
-  {phone, transactionCode}: {phone: string; transactionCode: string},
+  {transactionCode}: {transactionCode: string},
   formData: FormData,
 ) => {
   const params = new URLSearchParams();
-  params.append('phoneNumber', phone);
+
   params.append('transactionCode', transactionCode);
 
   return await AxiosUtility({
