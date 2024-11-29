@@ -254,15 +254,6 @@ const ApartmentView = ({route: {params}}) => {
           </View>
         </View>
 
-        {/* Charges */}
-        <View className={'px-4 py-5 border-b border-border_grey'}>
-          <Text className={'text-black font-inter-medium'}>Charges</Text>
-
-          <View className={'mt-3'} style={styles.chargeList}>
-            <Text className={'text-black'}>_____</Text>
-          </View>
-        </View>
-
         {/* amenities */}
         <View className={'px-4 py-5'}>
           <Text className={'text-black font-inter-medium'}>
