@@ -40,14 +40,6 @@ const UnitView = () => {
           amount: agreement?.rentDueDate,
           icon: <AgreementSvg />,
         },
-        bedrooms: {
-          amount: agreement?.propertyUnits?.numberOfBedrooms,
-          icon: <BedSvg />,
-        },
-        bathroom: {
-          amount: agreement?.propertyUnits?.numberOfBathrooms,
-          icon: <BuildingSvg />,
-        },
         'water bill': {
           amount: 'N/A',
           icon: <WaterBillSvg />,
@@ -55,6 +47,20 @@ const UnitView = () => {
         trash: {
           amount: 'N/A',
           icon: <TrashSvg />,
+        },
+      };
+    }, [agreement]);
+
+  const amenities: Record<ChargeKey, {amount: any; icon: React.JSX.Element}> =
+    useMemo(() => {
+      return {
+        bedrooms: {
+          amount: agreement?.propertyUnits?.numberOfBedrooms,
+          icon: <BedSvg />,
+        },
+        bathroom: {
+          amount: agreement?.propertyUnits?.numberOfBathrooms,
+          icon: <BuildingSvg />,
         },
       };
     }, [agreement]);
@@ -138,6 +144,32 @@ const UnitView = () => {
                 title={charge}
                 value={`${charge === 'rent due date' ? 'Date' : 'KES.'} ${
                   charges[charge]?.amount
+                }`}
+              />
+            ))}
+          </View>
+
+          {/*seperator*/}
+          <Line />
+
+          {/*  list of amenities  */}
+          <View style={styles.chargeList} className={'py-2'}>
+            <Text className={'text-black font-inter-medium'}>Amenities</Text>
+
+            {Object.keys(amenities)?.map((charge, ind) => (
+              <ExploreAmenity
+                key={ind}
+                showCheckBox={false}
+                icon={amenities[charge]?.icon}
+                title={charge}
+                value={`${amenities[charge]?.amount} ${
+                  typeof amenities[charge]?.amount === 'number'
+                    ? amenities[charge]?.amount > 1
+                      ? !charge?.endsWith('s')
+                        ? `${charge}s`
+                        : charge
+                      : charge
+                    : ''
                 }`}
               />
             ))}

@@ -24,7 +24,7 @@ const StatsCard = ({isPending, totals}) => {
             <Text className={'text-base text-white font-inter-semibold'}>
               KES.{' '}
               {!isPending
-                ? numberWithCommas(Number(totals?.totalAmountDebited ?? 0))
+                ? numberWithCommas(Number(totals?.totalDebitedAmount ?? 0))
                 : 0}
             </Text>
           </View>
@@ -37,7 +37,7 @@ const StatsCard = ({isPending, totals}) => {
             <Text className={'text-base text-white font-inter-semibold'}>
               KES.{' '}
               {!isPending
-                ? numberWithCommas(Number(totals?.totalAmountCredited ?? 0))
+                ? numberWithCommas(Number(totals?.totalCreditedAmount ?? 0))
                 : 0}
             </Text>
           </View>
@@ -53,7 +53,7 @@ const StatsCard = ({isPending, totals}) => {
             {!isPending
               ? numberWithCommas(
                   Number(
-                    totals?.totalAmountDebited - totals?.totalAmountCredited ??
+                    totals?.totalDebitedAmount - totals?.totalCreditedAmount ??
                       0,
                   ),
                 )
