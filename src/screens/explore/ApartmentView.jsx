@@ -84,18 +84,6 @@ const ApartmentView = ({route: {params}}) => {
     navigation.goBack();
   };
 
-  const imgs = useMemo(() => {
-    if (isPending) {
-      return ['default'];
-    }
-
-    if (!data?.uploads || data?.uploads?.length === 0) {
-      return ['default'];
-    }
-
-    return data?.uploads.map(item => item?.fileUrl);
-  }, [isPending, data]);
-
   const htmlIframe = useMemo(() => {
     return `<iframe
     width="100%"
@@ -246,7 +234,6 @@ const ApartmentView = ({route: {params}}) => {
                 'flex-row py-3.5 px-6 border border-primary rounded-md items-center'
               }>
               <VirtualTourSvg color={COLORS.primary} />
-
               <Text className={'text-primary text-xs font-inter'}>
                 Virtual Tour
               </Text>
