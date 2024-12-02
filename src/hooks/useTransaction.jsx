@@ -2,11 +2,13 @@ import {useQuery} from '@tanstack/react-query';
 import {useEffect, useState} from 'react';
 import TransactionServices from '../services/TransactionServices';
 import {useAuth} from './index';
+import {useMonthStartAndEndDate} from './useFormatStartAndEndDate';
 
 export const useTotalTransaction = () => {
+  const {startDate, endDate} = useMonthStartAndEndDate();
   const {isPending, error, data, refetch} = useQuery({
     queryKey: ['transaction/totals'],
-    queryFn: () => TransactionServices.getTotalTransactions(),
+    queryFn: () => TransactionServices.getTotalTransactions(startDate, endDate),
   });
 
   return {isPending, error, totals: data, refetch};
@@ -26,12 +28,9 @@ export const useTenantTransaction = size => {
     if (!isPending) {
       let groupedData = [];
       data?.content?.forEach(item => {
-        const month = new Date(item?.transactionDate).toLocaleString(
-          'default',
-          {
-            month: 'long',
-          },
-        );
+        const month = new Date(item?.createdAt).toLocaleString('default', {
+          month: 'long',
+        });
         const existingMonth = groupedData.find(group => group.month === month);
 
         if (existingMonth) {
@@ -42,7 +41,7 @@ export const useTenantTransaction = size => {
       });
       setTransactions(groupedData);
     }
-  }, [data?.data, isPending]);
+  }, [data?.content, isPending]);
 
   return {
     isPending,
@@ -72,12 +71,9 @@ export const useTransactionIn = size => {
     if (!isPending) {
       let groupedData = [];
       data?.content?.forEach(item => {
-        const month = new Date(item?.transactionDate).toLocaleString(
-          'default',
-          {
-            month: 'long',
-          },
-        );
+        const month = new Date(item?.createdAt).toLocaleString('default', {
+          month: 'long',
+        });
         const existingMonth = groupedData.find(group => group.month === month);
 
         if (existingMonth) {
@@ -88,7 +84,7 @@ export const useTransactionIn = size => {
       });
       setTransactions(groupedData);
     }
-  }, [data?.data, isPending]);
+  }, [data?.content, isPending]);
 
   return {
     isPending,
@@ -118,12 +114,9 @@ export const useTransactionOut = size => {
     if (!isPending) {
       let groupedData = [];
       data?.content?.forEach(item => {
-        const month = new Date(item?.transactionDate).toLocaleString(
-          'default',
-          {
-            month: 'long',
-          },
-        );
+        const month = new Date(item?.createdAt).toLocaleString('default', {
+          month: 'long',
+        });
         const existingMonth = groupedData.find(group => group.month === month);
 
         if (existingMonth) {
@@ -134,7 +127,7 @@ export const useTransactionOut = size => {
       });
       setTransactions(groupedData);
     }
-  }, [data?.data, isPending]);
+  }, [data?.content, isPending]);
 
   return {
     isPending,
