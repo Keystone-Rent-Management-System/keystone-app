@@ -40,6 +40,11 @@ const InvoiceReceiptModal = forwardRef((props, ref) => {
             title={'Payment Details'}
             amt={'Code'}
           />
+          <InvoiceBillItem
+            txtClassName={'font-sometypemono text-13'}
+            title={'Bank Account Name'}
+            amt={props?.receipt?.bankName}
+          />
 
           <InvoiceBillItem
             txtClassName={'font-sometypemono text-13'}

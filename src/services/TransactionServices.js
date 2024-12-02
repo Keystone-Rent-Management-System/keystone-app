@@ -1,3 +1,4 @@
+import {buildQueryParams} from '../utils/buildQueryParams';
 import AxiosUtility, {setAuthToken} from './AxiosServices';
 
 /**
@@ -71,10 +72,11 @@ const getTransactionsOut = async (page, size) => {
   return res;
 };
 
-const getTotalTransactions = async () => {
+const getTotalTransactions = async (startDate, endDate) => {
   setAuthToken(AxiosUtility);
+  const queryParams = buildQueryParams({startDate, endDate});
   const {data: res} = await AxiosUtility.get(
-    '/transactions/total-transactions',
+    `/search/credit-debit-transactions/summary?${queryParams}`,
   );
   return res;
 };

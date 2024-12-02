@@ -1,11 +1,10 @@
 import React, {useCallback} from 'react';
-import {Image, Text, ToastAndroid, View} from 'react-native';
+import {Text, ToastAndroid, View} from 'react-native';
 
 import COLORS from '@/constants/Theme';
 import {CButton} from './index';
 import {CloseSvg} from '@/assets/icons';
 import {DownloadSvg} from '@/assets/icons/receipt';
-import logo from '@/assets/images/logo.png';
 import numberWithCommas from '../../utils/numberWithCommas';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import {renderHtmlTemplate} from '../../utils/htmlToPdf';
@@ -72,14 +71,8 @@ const ReceiptTemplate = ({
         </View>
       </View>
 
-      <Image
-        className={'h-16 w-28 object-cover mx-auto'}
-        source={logo}
-        alt={'logo'}
-      />
-
       <Text className={'font-sometypemono text-black text-xl mx-auto'}>
-        KES. {numberWithCommas(Number(receipt?.totalAmount))}
+        KES. {numberWithCommas(Number(receipt?.paidAmount))}
       </Text>
 
       <Text className={'text-black font-sometypemono text-xs mt-2 text-center'}>

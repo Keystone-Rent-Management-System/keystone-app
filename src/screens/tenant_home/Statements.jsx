@@ -6,6 +6,7 @@ import {ExportStatementModal} from '../../components/modals';
 import {useStatement} from '../../hooks';
 import Layout from '../../components/Layout';
 import {useActiveStatement} from '../../hooks/useStatement';
+import numberConverter from '../../utils/numberConverter';
 
 const Statements = () => {
   const exportModalRef = useRef();
@@ -54,7 +55,7 @@ const Statements = () => {
           <BalanceDisplayItem
             loading={isPendingActive}
             title={'Closing Balance'}
-            value={activeStatement?.endingBalance?.toString()}
+            value={numberConverter(activeStatement?.endingBalance)}
           />
         </View>
 
@@ -93,12 +94,12 @@ const renderItem = (item, handlePress = () => {}) => (
     key={item?.id}
     invoiceNumber={
       item?.payment
-        ? `Transaction: ${item?.transactionCode}`
+        ? `Transaction: ${item?.payment?.transactions?.transactionCode}`
         : `Invoice ${item?.invoices?.invoiceNumber}`
     }
     date={item?.createdAt}
     startingBalance={item?.startingBalance ?? 0}
-    paymentAmount={item?.endingBalance ?? 0}
+    paymentAmount={numberConverter(item?.endingBalance) ?? 0}
   />
 );
 
