@@ -117,17 +117,56 @@ export const renderHtmlTemplate = (receiptDetails: IReceiptDetails) => {
         font-size: 18px;
         color: #000;
       }
+      .separator {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        justify-content: space-between;
+        margin: 20px 0;
+      }
+      .separator .circle {
+        background-color: #000;
+        height: 24px;
+        width: 24px;
+        border-radius: 50%;
+        margin-left: -8px;
+      }
+      .separator .line {
+        display: flex;
+        flex: 1;
+        justify-content: space-between;
+        align-items: center;
+        gap: 4px;
+      }
+      .separator .line .dot {
+        background-color: #000;
+        height: 4px;
+        width: 14px;
+        border-radius: 50%;
+      }
+      .separator .circle:last-child {
+        margin-left: 0;
+      }
+      .timestamp-section {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 12px 32px;
+        margin-top: 20px;
+      }
+      .timestamp-time,
+      .timestamp-date {
+        font-size: 15px;
+        color: #000;
+        font-weight: 400;
+      }
     </style>
   </head>
   <body>
     <div class="container">
-      <div>
-        <img src="/src/assets/images/receipt_logo.png" alt="" />
-      </div>
-
       <div class="header">
         <!-- title -->
-        <h2>KES. ${numberWithCommas(Number(receiptDetails?.totalAmount))}</h2>
+        <h2>KES. ${numberWithCommas(Number(receiptDetails?.paidAmount))}</h2>
         <p>For Invoice <a>${receiptDetails.invoiceNumber}</a></p>
       </div>
 
@@ -147,29 +186,51 @@ export const renderHtmlTemplate = (receiptDetails: IReceiptDetails) => {
 
         <div class="xstack">
           <div class="">
-            <label for="#">Payment Method</label>
-            <span>${receiptDetails.bankName}</span>
+            <span>Bank Account Name</span>
           </div>
 
           <div class="">
-            <label for="#">Code</label>
+            <span>${receiptDetails.bankName}</span>
+          </div>
+        </div>
+
+        <div class="xstack">
+          <div class="">
+            <span>Mpesa Paybill</span>
+          </div>
+
+          <div class="">
             <span>${receiptDetails.bankMpesaPaybillNumber}</span>
           </div>
         </div>
 
         <div class="xstack">
           <div class="">
-            <label for="#">Account Number</label>
-
-            <span >${receiptDetails.accountNumber}</span>
+            <span>Account Number</span>
           </div>
           
           <div class="">
-            <label for="#">Transaction Date</label>
-            <span >${moment(receiptDetails?.updatedAt).format(
-              'DD MMMM YYYY HH:mm',
-            )}</span>
+            <span>${receiptDetails.accountNumber}</span>
           </div>
+        </div>
+
+        <div class="separator">
+          <div class="circle"></div>
+          <div class="line">
+            ${Array(24)
+              .fill('')
+              .map(() => '<div class="dot"></div>')
+              .join('')}
+          </div>
+          <div class="circle"></div>
+        </div>
+        <div class="timestamp-section">
+          <span class="timestamp-time">${moment(
+            receiptDetails?.updatedAt,
+          ).format('hh:mm A')}</span>
+          <span class="timestamp-date">${moment(
+            receiptDetails?.updatedAt,
+          ).format('DD MMMM YYYY')}</span>
         </div>
       </div>
     </div>

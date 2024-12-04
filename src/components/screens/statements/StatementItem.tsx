@@ -46,7 +46,7 @@ const StatementItem = ({
         {/*Row 2*/}
         <View className={'flex flex-row justify-between'}>
           <Text className={'text-zinc-400 text-xs font-inter'}>
-            {startingBalance && `Starting Bal: KES ${startingBalance}`}
+            {`Starting Bal: KES ${startingBalance}`}
           </Text>
 
           <Text className={'text-black text-[13px] font-inter-semibold'}>
