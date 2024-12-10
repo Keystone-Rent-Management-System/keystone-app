@@ -1,7 +1,7 @@
 import React from 'react';
 import {CButton, Layout} from '../../../components';
 import {FlagSvg, UserSvg} from '../../../assets/icons';
-import {StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {object, string} from 'yup';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {useForm} from 'react-hook-form';
@@ -35,55 +35,57 @@ const Profile = () => {
 
   return (
     <Layout ClassName={'p-4'}>
-      <View className={'flex-col '} style={styles.container}>
-        {/* <Uploader /> */}
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        <View className={'flex-col '} style={styles.container}>
+          {/* <Uploader /> */}
 
-        <ControlledInput
-          label={'Enter First Name'}
-          icon={<UserSvg />}
-          placeholder={'Enter first name'}
-          labelClassName={'text-primary text-13'}
-          ClassName={'border border-border_grey px-2'}
-          InputClassName={'text-[13px] px-2 text-gray-600 '}
-          name={'firstName'}
-          control={control}
-        />
+          <ControlledInput
+            label={'Enter First Name'}
+            icon={<UserSvg />}
+            placeholder={'Enter first name'}
+            labelClassName={'text-primary text-13'}
+            ClassName={'border border-border_grey px-2'}
+            InputClassName={'text-[13px] px-2 text-gray-600 '}
+            name={'firstName'}
+            control={control}
+          />
 
-        <ControlledInput
-          label={'Enter Last Name'}
-          icon={<UserSvg />}
-          placeholder={'Enter last name'}
-          labelClassName={'text-primary text-13'}
-          ClassName={'border border-border_grey px-2'}
-          InputClassName={'text-[13px] px-2 text-gray-600 '}
-          name={'lastName'}
-          control={control}
-        />
+          <ControlledInput
+            label={'Enter Last Name'}
+            icon={<UserSvg />}
+            placeholder={'Enter last name'}
+            labelClassName={'text-primary text-13'}
+            ClassName={'border border-border_grey px-2'}
+            InputClassName={'text-[13px] px-2 text-gray-600 '}
+            name={'lastName'}
+            control={control}
+          />
 
-        <ControlledInput
-          label={'Phone Number'}
-          icon={<PrePhone />}
-          placeholder={'Enter number'}
-          labelClassName={'text-primary text-13'}
-          ClassName={'border border-border_grey px-2'}
-          InputClassName={'text-[13px] px-2 text-gray-600 '}
-          name={'phoneNumber'}
-          keyboardType={'number-pad'}
-          control={control}
-        />
+          <ControlledInput
+            label={'Phone Number'}
+            icon={<PrePhone />}
+            placeholder={'Enter number'}
+            labelClassName={'text-primary text-13'}
+            ClassName={'border border-border_grey px-2'}
+            InputClassName={'text-[13px] px-2 text-gray-600 '}
+            name={'phoneNumber'}
+            keyboardType={'number-pad'}
+            control={control}
+          />
 
-        <ControlledInput
-          label={'ID Number'}
-          icon={<UserSvg />}
-          placeholder={'Enter ID Number'}
-          labelClassName={'text-primary text-13'}
-          ClassName={'border border-border_grey px-2'}
-          InputClassName={'text-[13px] px-2 text-gray-600 '}
-          name={'identificationNumber'}
-          keyboardType={'number-pad'}
-          control={control}
-        />
-      </View>
+          <ControlledInput
+            label={'ID Number'}
+            icon={<UserSvg />}
+            placeholder={'Enter ID Number'}
+            labelClassName={'text-primary text-13'}
+            ClassName={'border border-border_grey px-2'}
+            InputClassName={'text-[13px] px-2 text-gray-600 '}
+            name={'identificationNumber'}
+            keyboardType={'number-pad'}
+            control={control}
+          />
+        </View>
+      </ScrollView>
 
       <CButton
         ClassName={
@@ -117,5 +119,8 @@ const styles = StyleSheet.create({
   },
   prePhone: {
     gap: 3,
+  },
+  contentContainer: {
+    paddingBottom: 80,
   },
 });
