@@ -10,7 +10,7 @@ interface IProfileStore {
   updateProfile: (ProfileKey: ProfileKey, value: Profile[ProfileKey]) => void;
 }
 
-export const useNotificationStore = create(
+export const useProfileStore = create(
   persist<IProfileStore>(
     set => ({
       profile: null,
