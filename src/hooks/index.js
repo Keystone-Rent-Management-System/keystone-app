@@ -4,7 +4,6 @@ import {usePropertyListing} from './usePropertyListing';
 import useAuth, {
   useVerifyEmail,
   useRegister,
-  useLogin,
   useRequestPasswordReset,
   useResetPassword,
   useChangePassword,
@@ -26,6 +25,7 @@ import {useProperty, usePropertyUnits} from './useProperty';
 import {useTotalTransaction, useTenantTransaction} from './useTransaction';
 import {useStatement, useActiveStatement} from './useStatement';
 import {useUnit} from './useUnit';
+import {useLogin} from './useLogin';
 
 export {
   useHelp,

@@ -1,21 +1,21 @@
-import React, {useEffect} from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
-import useGlobals from '../provider/store/useGlobals';
 import {useNavigation} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import React, {useEffect} from 'react';
+import useGlobals from '../provider/store/useGlobals';
 
 import {
-  Payments,
-  TenantHome,
   InvoiceReceipt,
-  Statements,
   LandlordHome,
+  Payments,
+  Statements,
+  TenantHome,
   Units,
 } from '@/screens';
-import InvoiceTopTabNav from './InvoiceTopTabNav';
-import COLORS from '../constants/Theme';
 import {View} from 'react-native';
-import {useAuth} from '../hooks';
 import {LoadingModal} from '../components/modals';
+import COLORS from '../constants/Theme';
+import {useAuth} from '../hooks';
+import InvoiceTopTabNav from './InvoiceTopTabNav';
 import PropertyStack from './PropertyStack';
 import StatementStack from './StatementStack';
 import TransactionTopTabNav from './TransactionTopTabNav';
