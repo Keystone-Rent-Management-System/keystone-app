@@ -64,10 +64,14 @@ const resetPassword = async data => {
  * Gets tenant profile
  * @returns {Promise<any>}
  */
-const getProfile = async data => {
+const getProfile = async token => {
   setAuthToken(AxiosUtility);
 
-  const {data: res} = await AxiosUtility.get('/manage-profile/me', data);
+  const {data: res} = await AxiosUtility.get('/manage-profile/me', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   return res;
 };

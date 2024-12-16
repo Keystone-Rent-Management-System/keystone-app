@@ -5,14 +5,23 @@ import {useNavigation} from '@react-navigation/native';
 import useGlobals from '../provider/store/useGlobals';
 import {getError} from '../utils/getError';
 import NotificationService from '../services/Notification';
+import {useProfileStore} from '../provider/store/profile';
 
 const useAuth = () => {
+  const {profile} = useProfileStore();
+
   const {isPending, error, data, refetch} = useQuery({
     queryKey: ['user', 'profile'],
     queryFn: () => AuthServices.getProfile(),
+    enabled: !profile?.userId, // fetch only if profile is not in store
   });
 
-  return {isPending, error, profile: data, refetch};
+  return {
+    isPending: profile?.userId ? false : isPending,
+    error,
+    profile: profile?.userId ? profile : data,
+    refetch,
+  };
 };
 
 export const useVerifyEmail = () => {
@@ -125,33 +134,6 @@ export const useChangePassword = () => {
   };
 
   return {changePasswordMutation, handleChangePassword};
-};
-
-export const useLogin = () => {
-  const navigation = useNavigation();
-  const {updateAuth} = useGlobals(data => data);
-
-  const loginMutation = useMutation({
-    mutationKey: ['login'],
-    mutationFn: AuthServices.login,
-    onSuccess: res => {
-      updateAuth(res);
-      NotificationService.registerDeviceToken().then();
-
-      navigation.navigate('bottom-nav');
-      //   register device token
-    },
-    onError: err => {
-      ToastAndroid.show('Login failed ' + getError(err), ToastAndroid.SHORT);
-    },
-  });
-
-  const handleSignin = props => {
-    Keyboard.dismiss();
-    loginMutation.mutate(props);
-  };
-
-  return {loginMutation, handleSignin};
 };
 
 export const useRequestPasswordReset = () => {
