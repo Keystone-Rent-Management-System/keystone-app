@@ -98,7 +98,7 @@ const renderItem = (item, handlePress = () => {}) => (
         : `Invoice ${item?.invoices?.invoiceNumber}`
     }
     date={item?.createdAt}
-    startingBalance={item?.startingBalance ?? 0}
+    startingBalance={numberConverter(item?.startingBalance) ?? 0}
     paymentAmount={numberConverter(item?.endingBalance) ?? 0}
   />
 );
