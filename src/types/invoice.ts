@@ -1,3 +1,5 @@
+type INVOICE_PAYMENT_STATUS = 'PAID' | 'UNPAID';
+
 export interface Invoice {
   id: string;
   createdAt: string;
@@ -21,7 +23,9 @@ export interface Invoice {
   bankMpesaPaybillNumber: string;
   accountHolderName: string;
   accountNumber: string;
-  paymentStatus: string;
+  paymentStatus: INVOICE_PAYMENT_STATUS;
   currentStatus: string;
   totalAmount: number;
 }
+
+export type INVOICE_STATUS = 'PAID' | 'UNPAID' | 'ALL';
