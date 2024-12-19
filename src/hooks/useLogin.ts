@@ -18,7 +18,7 @@ export const useLogin = () => {
     mutationFn: login,
     onSuccess: res => {
       const {userProfile, ...rest} = res;
-      console.log('USER IS::', rest);
+
       updateAuth(rest);
 
       saveProfile(userProfile);
