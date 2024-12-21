@@ -93,8 +93,7 @@ const PaymentAllocation = forwardRef((props, ref) => {
       );
       props?.handleCloseModal();
     },
-    onError: err => {
-      console.log('ERROR IS::', err);
+    onError: _err => {
       ToastAndroid.show('Error: Failed to verify payment', ToastAndroid.LONG);
     },
   });
