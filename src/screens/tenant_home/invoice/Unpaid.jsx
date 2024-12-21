@@ -64,7 +64,7 @@ export const renderInvoiceItem = (item, handlePress = () => {}) => {
       amount={numberConverter(item?.totalAmount)}
       isPartial={item?.paymentStatus?.toLowerCase() === 'paid_partially'}
       handlePress={() => handlePress(item?.id)}
-      paymentStatus={item?.paymentStatus || ''}
+      paymentStatus={item?.currentStatus || ''}
     />
   );
 };

@@ -17,7 +17,7 @@ const ListingItem = ({
   paymentStatus,
 }) => {
   const isInactive = useMemo(() => {
-    return paymentStatus?.toLowerCase() === 'paid';
+    return paymentStatus?.toLowerCase() === 'inactive';
   }, [paymentStatus]);
 
   return (

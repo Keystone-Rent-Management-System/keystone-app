@@ -19,7 +19,7 @@ const All = () => {
     invoiceQuery: {isPending, isRefetching, refetch},
     invoices,
     handleLoadMore,
-  } = useFetchInvoice('PAID');
+  } = useFetchInvoice('ALL');
 
   return (
     //   @ts-ignore: missing element children
