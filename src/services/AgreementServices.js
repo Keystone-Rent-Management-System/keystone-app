@@ -20,10 +20,15 @@ const getAgreements = async (page, size) => {
  * Fetches active agreement
  * @returns {Promise<Agreement>}
  */
-const getActiveAgreement = async () => {
+const getActiveAgreement = async token => {
   setAuthToken(AxiosUtility);
   const {data: res} = await AxiosUtility.get(
     '/tenants/current-active-agreement',
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
   );
 
   return res;

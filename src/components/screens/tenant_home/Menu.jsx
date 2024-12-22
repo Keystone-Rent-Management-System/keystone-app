@@ -185,7 +185,7 @@ const financeOptions = [
     icon: <InvoiceSvg />,
     text: 'Invoices',
     screen: {
-      name: 'invoice_top_tabs',
+      name: 'invoices',
     },
   },
   {

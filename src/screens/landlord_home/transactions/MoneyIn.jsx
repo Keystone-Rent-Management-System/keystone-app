@@ -1,11 +1,9 @@
-import React, {useCallback, useRef, useState} from 'react';
-import {Layout, StatementItem} from '../../../components';
+import React, {useState} from 'react';
 import {ActivityIndicator, SectionList, Text, View} from 'react-native';
+import {Layout, StatementItem} from '../../../components';
 import {useTransactionIn} from '../../../hooks/useTransaction';
 
 const MoneyIn = () => {
-  const exportModalRef = useRef();
-
   const [size, setSize] = useState(20);
 
   const {isPending, isRefetching, transactions, totalElements, refetch} =
@@ -16,16 +14,6 @@ const MoneyIn = () => {
       refetch();
     }
   };
-
-  const handleOpenExportModal = useCallback(() => {
-    exportModalRef.current?.expand();
-  }, []);
-
-  const handleCloseExportModal = useCallback(() => {
-    exportModalRef.current?.close();
-  }, []);
-
-  console.log('DATA IS::', transactions);
 
   return (
     <>

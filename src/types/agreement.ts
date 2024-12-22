@@ -76,6 +76,12 @@ interface IAddress {
   country?: string;
 }
 
+interface Amenity {
+  id: string;
+  createdAt: string;
+  name: string;
+}
+
 interface IProperty {
   id: string;
   createdAt: string;
@@ -88,7 +94,7 @@ interface IProperty {
   description: string;
   referenceCode: string;
   address: IAddress;
-  amenities: any[];
+  amenities: Amenity[];
   latitude: number;
   longitude: number;
   propertyContacts: IPropertyContacts;

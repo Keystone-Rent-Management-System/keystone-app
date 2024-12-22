@@ -3,8 +3,8 @@ import React, {useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {FlashList} from '@shopify/flash-list';
 
-import {Layout, ListingItem} from '@/components';
-import {InvoiceSvg} from '@/assets/icons';
+import {Layout, ListingItem} from '../../../components';
+import {InvoiceSvg} from '../../../assets/icons';
 import moment from 'moment';
 import {useUnPaidInvoice} from '../../../hooks';
 import numberConverter from '../../../utils/numberConverter';
@@ -52,13 +52,19 @@ const Unpaid = () => {
 export const renderInvoiceItem = (item, handlePress = () => {}) => {
   return (
     <ListingItem
-      icon={<InvoiceSvg size={'24'} />}
+      icon={
+        <InvoiceSvg
+          color={item.paymentStatus === 'PAID' ? '#00000090' : null}
+          size={24}
+        />
+      }
       title={item?.propertyName?.split('-')[0]}
       customDate={moment(item?.updatedAt)?.format('Do MMMM, YYYY')}
       unit={item?.propertyName?.split('-')[1]}
       amount={numberConverter(item?.totalAmount)}
       isPartial={item?.paymentStatus?.toLowerCase() === 'paid_partially'}
       handlePress={() => handlePress(item?.id)}
+      paymentStatus={item?.currentStatus || ''}
     />
   );
 };

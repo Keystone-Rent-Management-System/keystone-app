@@ -3,6 +3,7 @@ import {useMutation, useQuery} from '@tanstack/react-query';
 import AgreementServices from '../services/AgreementServices';
 import {getError} from '../utils/getError';
 import {IAgreement} from '../types/agreement';
+import {useActiveAgreement} from '../provider/store';
 
 export const useAgrement = () => {
   const {isPending, error, data, refetch} = useQuery({
@@ -16,15 +17,18 @@ export const useAgrement = () => {
 };
 
 export const useActiveAgrement = () => {
+  const {activeAgreement} = useActiveAgreement();
+
   const {isPending, error, data, refetch} = useQuery({
     queryKey: ['active_agreement'],
     queryFn: () => AgreementServices.getActiveAgreement(),
+    enabled: !activeAgreement?.id,
   });
 
-  const agreement = data ?? null;
+  const agreement = activeAgreement?.id ? activeAgreement : data ?? null;
 
   return {
-    isPending,
+    isPending: activeAgreement?.id ? false : isPending,
     error,
     agreement: agreement as IAgreement,
     agreementRefetch: refetch,
