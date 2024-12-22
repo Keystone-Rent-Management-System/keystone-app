@@ -15,10 +15,10 @@ import {View} from 'react-native';
 import {LoadingModal} from '../components/modals';
 import COLORS from '../constants/Theme';
 import {useAuth} from '../hooks';
-import InvoiceTopTabNav from './InvoiceTopTabNav';
 import PropertyStack from './PropertyStack';
 import StatementStack from './StatementStack';
 import TransactionTopTabNav from './TransactionTopTabNav';
+import {InvoiceAll} from '../screens';
 
 const Stack = createStackNavigator();
 
@@ -88,8 +88,8 @@ const HomeStack = () => {
         initialRouteName="home">
         <Stack.Screen name={'home'} component={TenantHome} />
         <Stack.Screen
-          name={'invoice_top_tabs'}
-          component={InvoiceTopTabNav}
+          name={'invoices'}
+          component={InvoiceAll}
           options={{
             headerShown: true,
             title: 'Invoices',

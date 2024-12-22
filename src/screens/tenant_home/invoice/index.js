@@ -4,6 +4,7 @@ import InvoiceUnpaid from './Unpaid';
 import InvoiceView from './View';
 import InvoiceMakePayment from './MakePayment';
 import InvoiceReceipt from './Receipt';
+import InvoiceAll from './All';
 
 export {
   InvoicePaid,
@@ -12,4 +13,5 @@ export {
   InvoiceView,
   InvoiceMakePayment,
   InvoiceReceipt,
+  InvoiceAll,
 };

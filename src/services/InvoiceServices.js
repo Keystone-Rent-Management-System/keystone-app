@@ -1,4 +1,5 @@
 import AxiosUtility, {setAuthToken} from './AxiosServices';
+import {PAGINATION_LIMIT} from '../constants';
 
 /**
  * Fetches all invoices
@@ -8,7 +9,7 @@ import AxiosUtility, {setAuthToken} from './AxiosServices';
  * @param {string} userId current user id
  * @returns {Promise<Invoice[]>}
  */
-const getInvoices = async (page, size, status, userId) => {
+const getInvoices = async (page, size = PAGINATION_LIMIT, status, userId) => {
   setAuthToken(AxiosUtility);
   const {data: res} = await AxiosUtility.get(
     `/invoices/tenant-invoice?page=${page}&size=${size}&paymentStatus=${status}&tenantUserId=${userId}`,
@@ -49,7 +50,11 @@ const getConcerns = async (id, data) => {
   return res;
 };
 
-const getInvoiceAnalytics = async (page, size, propertyUnitName) => {
+const getInvoiceAnalytics = async (
+  page,
+  size = PAGINATION_LIMIT,
+  propertyUnitName,
+) => {
   setAuthToken(AxiosUtility);
   const queryParams = `?page=${page}&size=${size}`;
   let res;

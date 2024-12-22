@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 
 import {Text, TouchableOpacity, View} from 'react-native';
 import moment from 'moment/moment';
@@ -14,7 +14,12 @@ const ListingItem = ({
   isPartial,
   handlePress,
   disabled,
+  paymentStatus,
 }) => {
+  const isInactive = useMemo(() => {
+    return paymentStatus?.toLowerCase() === 'inactive';
+  }, [paymentStatus]);
+
   return (
     <TouchableOpacity
       className={
@@ -31,7 +36,10 @@ const ListingItem = ({
 
       <View className={'flex-1'}>
         <View className={'flex-row justify-between w-full'}>
-          <Text className={'text-primary font-inter-medium text-xs'}>
+          <Text
+            className={` font-inter-medium text-xs ${
+              isInactive ? 'text-[#000000A0]' : 'text-primary'
+            }`}>
             {title}
           </Text>
           {status ? (
@@ -63,8 +71,14 @@ const ListingItem = ({
               </Text>
             ) : null}
             {amount ? (
-              <Text className={'text-black font-inter-medium text-xs'}>
+              <Text
+                className={`text-black font-inter-medium text-xs
+              ${isInactive ? 'text-[#000000A0]' : 'text-black'}
+              `}>
                 KES. {amount}
+                <Text className={`${isInactive ? '' : 'text-green-600'}`}>
+                  {isInactive ? ' (settled)' : ' (open)'}
+                </Text>
               </Text>
             ) : null}
           </View>

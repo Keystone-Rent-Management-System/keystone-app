@@ -7,21 +7,24 @@ import NotificationService from '../services/Notification';
 import useGlobals from '../provider/store/useGlobals';
 import {getError} from '../utils/getError';
 import {useProfileStore} from '../provider/store/profile';
+import AgreementServices from '../services/AgreementServices';
+import {useActiveAgreement} from '../provider/store';
 
 export const useLogin = () => {
   const navigation = useNavigation();
   const {updateAuth} = useGlobals(data => data);
   const {saveProfile} = useProfileStore();
+  const {saveAgreement} = useActiveAgreement();
 
   const loginMutation = useMutation({
     mutationKey: ['login'],
     mutationFn: login,
     onSuccess: res => {
-      const {userProfile, ...rest} = res;
-      console.log('USER IS::', rest);
-      updateAuth(rest);
+      const {userProfile, activeAgreement, ...rest} = res;
 
+      updateAuth(rest);
       saveProfile(userProfile);
+      saveAgreement(activeAgreement);
 
       NotificationService.registerDeviceToken().then();
       // @ts-ignore
@@ -45,8 +48,11 @@ async function login(props: any) {
   // login
   const response = await AuthServices.login(props);
   // Get user profile
-  const userProfile =
-    (await AuthServices.getProfile(response?.access_token)) || {};
+  const [userProfile, activeAgreement] = await Promise.all([
+    AuthServices.getProfile(response?.access_token),
+    AgreementServices.getActiveAgreement(response?.access_token),
+  ]);
+
   // return login response
-  return {...response, userProfile};
+  return {...response, userProfile, activeAgreement};
 }
