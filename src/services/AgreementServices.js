@@ -18,7 +18,7 @@ const getAgreements = async (page, size) => {
 
 /**
  * Fetches active agreement
- * @returns {Promise<Agreement>}
+ * @returns {Promise<import('../types/agreement').IAgreement>}
  */
 const getActiveAgreement = async token => {
   setAuthToken(AxiosUtility);

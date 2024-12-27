@@ -47,7 +47,7 @@ export const useLogin = () => {
 
 const getActiveAgreement = async (response: any) => {
   try {
-    AgreementServices.getActiveAgreement(response?.access_token);
+    return AgreementServices.getActiveAgreement(response?.access_token);
   } catch (_) {
     return DEFAULT_AGREEMENT;
   }
