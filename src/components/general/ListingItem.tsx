@@ -1,7 +1,21 @@
-import React, {useMemo} from 'react';
+import React, {ReactNode, useMemo} from 'react';
 
 import {Text, TouchableOpacity, View} from 'react-native';
 import moment from 'moment/moment';
+
+interface IListingItem {
+  icon: ReactNode;
+  title: string;
+  date: string;
+  unit: string;
+  amount: number;
+  status: string;
+  customDate?: string;
+  isPartial?: boolean;
+  handlePress: () => void;
+  disabled?: boolean;
+  paymentStatus?: string;
+}
 
 const ListingItem = ({
   icon,
@@ -15,9 +29,13 @@ const ListingItem = ({
   handlePress,
   disabled,
   paymentStatus,
-}) => {
+}: IListingItem) => {
   const isInactive = useMemo(() => {
-    return paymentStatus?.toLowerCase() === 'inactive';
+    return status?.toLowerCase() === 'inactive';
+  }, [status]);
+
+  const isPaid = useMemo(() => {
+    return paymentStatus?.toLowerCase() === 'paid';
   }, [paymentStatus]);
 
   return (
@@ -76,8 +94,12 @@ const ListingItem = ({
               ${isInactive ? 'text-[#000000A0]' : 'text-black'}
               `}>
                 KES. {amount}
-                <Text className={`${isInactive ? '' : 'text-green-600'}`}>
-                  {isInactive ? ' (settled)' : ' (open)'}
+                <Text
+                  className={`${
+                    isPaid ? 'text-green-700' : isInactive ? '' : 'text-red-600'
+                  }`}>
+                  {' '}
+                  ({getInvoiceStatus(paymentStatus ?? '', status)})
                 </Text>
               </Text>
             ) : null}
@@ -89,3 +111,22 @@ const ListingItem = ({
 };
 
 export default ListingItem;
+
+function getInvoiceStatus(paymentStatus: string, invoiceStatus: string) {
+  if (
+    paymentStatus?.toLowerCase() === 'unpaid' &&
+    invoiceStatus?.toLowerCase() === 'inactive'
+  ) {
+    return 'Inactive';
+  } else if (
+    paymentStatus?.toLowerCase() === 'paid' &&
+    invoiceStatus?.toLowerCase() === 'inactive'
+  ) {
+    return 'Paid';
+  } else if (
+    paymentStatus?.toLowerCase() === 'unpaid' &&
+    invoiceStatus?.toLowerCase() === 'active'
+  ) {
+    return 'Unpaid';
+  }
+}
