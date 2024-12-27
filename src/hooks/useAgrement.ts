@@ -4,6 +4,7 @@ import AgreementServices from '../services/AgreementServices';
 import {getError} from '../utils/getError';
 import {IAgreement} from '../types/agreement';
 import {useActiveAgreement} from '../provider/store';
+import {useEffect} from 'react';
 
 export const useAgrement = () => {
   const {isPending, error, data, refetch} = useQuery({
@@ -17,7 +18,7 @@ export const useAgrement = () => {
 };
 
 export const useActiveAgrement = () => {
-  const {activeAgreement} = useActiveAgreement();
+  const {activeAgreement, saveAgreement} = useActiveAgreement();
 
   const {isPending, error, data, refetch} = useQuery({
     queryKey: ['active_agreement'],
@@ -26,6 +27,13 @@ export const useActiveAgrement = () => {
   });
 
   const agreement = activeAgreement?.id ? activeAgreement : data ?? null;
+
+  useEffect(() => {
+    if (data?.id) {
+      saveAgreement(data);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   return {
     isPending: activeAgreement?.id ? false : isPending,
