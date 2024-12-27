@@ -147,6 +147,6 @@ export interface IAgreement {
   agreementType: string | null;
   agreementPremises: string | null;
   endDate: string | null;
-  tenants: ITenants;
-  propertyUnits: IPropertyUnits;
+  tenants: ITenants | [];
+  propertyUnits: IPropertyUnits | [];
 }

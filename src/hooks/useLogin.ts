@@ -9,6 +9,7 @@ import {getError} from '../utils/getError';
 import {useProfileStore} from '../provider/store/profile';
 import AgreementServices from '../services/AgreementServices';
 import {useActiveAgreement} from '../provider/store';
+import {DEFAULT_AGREEMENT} from '../constants/agreement';
 
 export const useLogin = () => {
   const navigation = useNavigation();
@@ -44,13 +45,21 @@ export const useLogin = () => {
   return {loginMutation, handleSignin};
 };
 
+const getActiveAgreement = async (response: any) => {
+  try {
+    return AgreementServices.getActiveAgreement(response?.access_token);
+  } catch (_) {
+    return DEFAULT_AGREEMENT;
+  }
+};
+
 async function login(props: any) {
   // login
   const response = await AuthServices.login(props);
   // Get user profile
   const [userProfile, activeAgreement] = await Promise.all([
     AuthServices.getProfile(response?.access_token),
-    AgreementServices.getActiveAgreement(response?.access_token),
+    getActiveAgreement(response),
   ]);
 
   // return login response

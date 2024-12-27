@@ -1,10 +1,10 @@
-import React, {useCallback, useRef} from 'react';
-import {StatementItem} from '../../components';
-import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
 import {FlashList} from '@shopify/flash-list';
+import React, {useCallback, useRef} from 'react';
+import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
+import {StatementItem} from '../../components';
+import Layout from '../../components/Layout';
 import {ExportStatementModal} from '../../components/modals';
 import {useStatement} from '../../hooks';
-import Layout from '../../components/Layout';
 import {useActiveStatement} from '../../hooks/useStatement';
 import numberConverter from '../../utils/numberConverter';
 
@@ -42,19 +42,11 @@ const Statements = () => {
   return (
     <>
       <Layout>
-        <View
-          className={'flex flex-row justify-between px-5 pt-3'}
-          style={{gap: 15}}>
-          {/*  Opening Balance m*/}
-          <BalanceDisplayItem
-            loading={isPendingActive}
-            title={'Opening Balance'}
-            value={activeStatement?.startingBalance?.toString()}
-          />
+        <View className={'flex flex-row justify-between px-5 pt-3'}>
           {/*  Closing Balance  */}
           <BalanceDisplayItem
             loading={isPendingActive}
-            title={'Closing Balance'}
+            title={'Current Balance'}
             value={numberConverter(activeStatement?.endingBalance)}
           />
         </View>
@@ -112,11 +104,7 @@ export const statementStyles = StyleSheet.create({
 
 const BalanceDisplayItem = ({title, value, loading}) => (
   <View
-    style={{
-      elevation: 1,
-      shadowColor: '#000',
-      zIndex: 1,
-    }}
+    style={styles.container}
     className={
       'rounded-xl flex-1 h-24 bg-white p-3 items-center justify-center'
     }>
@@ -133,3 +121,11 @@ const BalanceDisplayItem = ({title, value, loading}) => (
 );
 
 export default Statements;
+
+const styles = StyleSheet.create({
+  container: {
+    elevation: 1,
+    shadowColor: '#000',
+    zIndex: 1,
+  },
+});
