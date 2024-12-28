@@ -54,7 +54,7 @@ export const renderInvoiceItem = (item, handlePress = () => {}) => {
     <ListingItem
       icon={
         <InvoiceSvg
-          color={item.paymentStatus === 'PAID' ? '#00000090' : null}
+          color={item?.currentStatus === 'INACTIVE' ? '#00000090' : null}
           size={24}
         />
       }

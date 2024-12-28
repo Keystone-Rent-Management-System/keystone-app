@@ -44,7 +44,7 @@ const ListingItem = ({
         'mb-4 flex-row space-x-3 pt-2 pb-3 border-b border-b-border_grey'
       }
       disabled={disabled}
-      onPress={handlePress}>
+      onPress={isInactive ? () => {} : handlePress}>
       <View
         className={
           'items-center justify-center h-10 w-10 rounded-full bg-white overflow-hidden border border-border_grey'
@@ -81,6 +81,17 @@ const ListingItem = ({
           <Text className={'font-inter text-2xs text-inactive_text'}>
             {unit}
           </Text>
+          <Text
+            className={`text-xs ${
+              isPaid
+                ? 'text-green-700'
+                : isInactive
+                ? 'text-[#000000A0]'
+                : 'text-red-600'
+            }`}>
+            {' '}
+            {getInvoiceStatus(paymentStatus ?? '', status)}
+          </Text>
 
           <View className={'flex-row'}>
             {isPartial ? (
@@ -94,13 +105,6 @@ const ListingItem = ({
               ${isInactive ? 'text-[#000000A0]' : 'text-black'}
               `}>
                 KES. {amount}
-                <Text
-                  className={`${
-                    isPaid ? 'text-green-700' : isInactive ? '' : 'text-red-600'
-                  }`}>
-                  {' '}
-                  ({getInvoiceStatus(paymentStatus ?? '', status)})
-                </Text>
               </Text>
             ) : null}
           </View>
@@ -117,7 +121,7 @@ function getInvoiceStatus(paymentStatus: string, invoiceStatus: string) {
     paymentStatus?.toLowerCase() === 'unpaid' &&
     invoiceStatus?.toLowerCase() === 'inactive'
   ) {
-    return 'Inactive';
+    return 'Carried forward';
   } else if (
     paymentStatus?.toLowerCase() === 'paid' &&
     invoiceStatus?.toLowerCase() === 'inactive'
@@ -128,5 +132,10 @@ function getInvoiceStatus(paymentStatus: string, invoiceStatus: string) {
     invoiceStatus?.toLowerCase() === 'active'
   ) {
     return 'Unpaid';
+  } else if (
+    paymentStatus?.toLowerCase() === 'paid' &&
+    invoiceStatus?.toLowerCase() === 'active'
+  ) {
+    return 'Paid';
   }
 }
