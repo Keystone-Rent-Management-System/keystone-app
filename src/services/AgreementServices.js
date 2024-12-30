@@ -22,12 +22,13 @@ const getAgreements = async (page, size) => {
  */
 const getActiveAgreement = async token => {
   setAuthToken(AxiosUtility);
+
+  const headers = token ? {Authorization: `Bearer ${token}`} : {};
+
   const {data: res} = await AxiosUtility.get(
     '/tenants/current-active-agreement',
     {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers,
     },
   );
 
