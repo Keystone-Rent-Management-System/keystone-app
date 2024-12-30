@@ -28,6 +28,7 @@ import {ABOUT_URL, PRIVACY_POLICY_URL} from '../../constants';
 import {useAuth} from '../../hooks';
 import useGlobals from '../../provider/store/useGlobals';
 import {useNotificationStore} from '../../provider/store/notification';
+import {ZustandStorage} from '../../provider/store/MMKV';
 
 const More = () => {
   const navigation = useNavigation();
@@ -43,6 +44,7 @@ const More = () => {
   };
 
   const handleSignout = () => {
+    ZustandStorage.clear();
     resetState();
     removeDeviceToken();
     navigation.navigate('bottom-nav', {screen: 'explore_stack'});
