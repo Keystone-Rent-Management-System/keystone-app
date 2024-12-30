@@ -12,7 +12,13 @@ export const ZustandStorage = {
     const value = mmkvStorage.getString(name);
     return value ?? null;
   },
+  getAllKeys: () => {
+    return mmkvStorage.getAllKeys();
+  },
   removeItem: name => {
     return mmkvStorage.delete(name);
+  },
+  clear: () => {
+    return mmkvStorage.clearAll();
   },
 };
