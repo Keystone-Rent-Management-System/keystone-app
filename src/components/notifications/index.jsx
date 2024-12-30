@@ -9,9 +9,7 @@ const checkApplicationPermission = async () => {
       await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
       );
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   }
 };
 
