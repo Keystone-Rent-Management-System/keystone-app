@@ -2,13 +2,12 @@ import axios from 'axios';
 import {mmkvStorage} from '../provider/store/MMKV';
 import useGlobals from '../provider/store/useGlobals';
 import AuthServices from './AuthServices';
+import {Environment, getBaseUrl} from '../constants/general';
 
-// export const DEV = 'https://dev.pallaxlisting.com/api/v1/rms';
-export const UAT = 'https://uat.pallaxlisting.com/api/v1/rms';
-// export const UAT = 'https://uat.pallaxlisting.com/api/v1/rms';
+export const BASE_URL = getBaseUrl(Environment.Uat);
 
 export const AxiosUtility = axios.create({
-  baseURL: `${UAT}`,
+  baseURL: `${BASE_URL}`,
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
