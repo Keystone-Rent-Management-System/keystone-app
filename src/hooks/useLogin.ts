@@ -2,13 +2,14 @@ import {useNavigation} from '@react-navigation/native';
 import {useMutation} from '@tanstack/react-query';
 import {Keyboard, ToastAndroid} from 'react-native';
 
-import {DEFAULT_AGREEMENT} from '../constants/agreement';
 import {useActiveAgreement} from '../provider/store';
 import {useProfileStore} from '../provider/store/profile';
 import useGlobals from '../provider/store/useGlobals';
+import AgreementServices from '../services/AgreementServices';
 import AuthServices from '../services/AuthServices';
 import NotificationService from '../services/Notification';
 import {getError} from '../utils/getError';
+import {DEFAULT_AGREEMENT} from '../constants/agreement';
 
 export const useLogin = () => {
   const navigation = useNavigation();
@@ -45,30 +46,23 @@ export const useLogin = () => {
 };
 
 const getActiveAgreement = async (response: any) => {
-  // try {
-  //   return AgreementServices.getActiveAgreement(response?.access_token);
-  // } catch (_) {
-  //   return DEFAULT_AGREEMENT;
-  // }
-  return DEFAULT_AGREEMENT;
+  try {
+    return await AgreementServices.getActiveAgreement(response?.access_token);
+  } catch (error) {
+    return DEFAULT_AGREEMENT; // Return an empty object if an error occurs
+  }
 };
 
 async function login(props: any) {
-  try {
-    // login
-    const response = await AuthServices.login(props);
-    // Get user profile
-    const [userProfile, activeAgreement] = await Promise.all([
-      AuthServices.getProfile(response?.access_token),
-      getActiveAgreement(response),
-    ]);
+  // login
+  const response = await AuthServices.login(props);
 
-    // return login response
-    if (userProfile && activeAgreement) {
-      return {...response, userProfile, activeAgreement};
-    }
-    return {...response, userProfile: null, activeAgreement: DEFAULT_AGREEMENT};
-  } catch (err) {
-    console.log(err);
-  }
+  // Run getProfile and getActiveAgreement in parallel
+  const [userProfile, activeAgreement] = await Promise.all([
+    AuthServices.getProfile(response?.access_token).catch(() => ({})),
+    getActiveAgreement(response).catch(() => ({})),
+  ]);
+
+  // return login response
+  return {...response, userProfile, activeAgreement};
 }
