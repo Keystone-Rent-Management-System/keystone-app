@@ -3,7 +3,7 @@ import {mmkvStorage} from '../provider/store/MMKV';
 import useGlobals from '../provider/store/useGlobals';
 import AuthServices from './AuthServices';
 
-// export const DEV = 'http://94.156.189.106:8085/api/v1/rms';
+// export const UAT = 'https://dev.pallaxlisting.com/api/v1/rms';
 export const UAT = 'https://uat.pallaxlisting.com/api/v1/rms';
 // export const UAT = 'https://uat.pallaxlisting.com/api/v1/rms';
 
