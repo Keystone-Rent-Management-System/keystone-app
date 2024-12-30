@@ -67,10 +67,10 @@ const resetPassword = async data => {
 const getProfile = async token => {
   setAuthToken(AxiosUtility);
 
+  const headers = token ? {Authorization: `Bearer ${token}`} : {};
+
   const {data: res} = await AxiosUtility.get('/manage-profile/me', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers,
   });
 
   return res;
