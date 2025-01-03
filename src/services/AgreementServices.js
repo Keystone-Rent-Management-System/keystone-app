@@ -5,12 +5,19 @@ import RNFetchBlob from 'rn-fetch-blob';
  * Fetches all agreements
  * @param {number} page
  * @param {number} size
+ * @param {string|null} token
  * @returns {Promise<{content:Agreement[],page:any}>}
  */
-const getAgreements = async (page, size) => {
+const getAgreements = async (page, size, token = null) => {
   setAuthToken(AxiosUtility);
+
+  const headers = token ? {Authorization: `Bearer ${token}`} : {};
+
   const {data: res} = await AxiosUtility.get(
     `/tenants/agreements?page=${page}&size=${size}`,
+    {
+      headers,
+    },
   );
 
   return res;

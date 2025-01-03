@@ -6,9 +6,11 @@ import {IAgreement} from '../types/agreement';
 import {useActiveAgreement} from '../provider/store';
 import {useEffect} from 'react';
 
+export const agreementsKey = ['agreements'];
+
 export const useAgrement = () => {
   const {isPending, error, data, refetch} = useQuery({
-    queryKey: ['agreements'],
+    queryKey: agreementsKey,
     queryFn: () => AgreementServices.getAgreements(0, 200),
   });
 
@@ -43,7 +45,10 @@ export const useActiveAgrement = () => {
   };
 };
 
-export const useAcceptAgrement = (dismiss: any, refetch: any) => {
+export const useAcceptAgrement = (
+  dismiss: any = () => {},
+  refetch: any = () => {},
+) => {
   const acceptAgrementMutation = useMutation({
     mutationKey: ['agreement_current', 'accept'],
     mutationFn: AgreementServices.acceptAgreement,
