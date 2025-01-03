@@ -10,22 +10,24 @@ import AuthServices from '../services/AuthServices';
 import NotificationService from '../services/Notification';
 import {getError} from '../utils/getError';
 import {DEFAULT_AGREEMENT} from '../constants/agreement';
+import {IAgreement} from '../types/agreement';
 
 export const useLogin = () => {
   const navigation = useNavigation();
   const {updateAuth} = useGlobals(data => data);
   const {saveProfile} = useProfileStore();
-  const {saveAgreement} = useActiveAgreement();
+  const {saveAgreement, saveInactiveAgreement} = useActiveAgreement();
 
   const loginMutation = useMutation({
     mutationKey: ['login'],
     mutationFn: login,
     onSuccess: res => {
-      const {userProfile, activeAgreement, ...rest} = res;
+      const {userProfile, activeAgreement, inactiveAgreement, ...rest} = res;
 
       updateAuth(rest);
       saveProfile(userProfile);
       saveAgreement(activeAgreement);
+      saveInactiveAgreement(inactiveAgreement as IAgreement);
 
       NotificationService.registerDeviceToken().then();
       // @ts-ignore
@@ -53,6 +55,14 @@ const getActiveAgreement = async (response: any) => {
   }
 };
 
+const getCurrentAgreement = async (response: any) => {
+  try {
+    return await AgreementServices.getAgreements(0, 5, response?.access_token);
+  } catch (error) {
+    return null;
+  }
+};
+
 async function login(props: any) {
   // login
   const response = await AuthServices.login(props);
@@ -60,9 +70,21 @@ async function login(props: any) {
   // Run getProfile and getActiveAgreement in parallel
   const [userProfile, activeAgreement] = await Promise.all([
     AuthServices.getProfile(response?.access_token).catch(() => ({})),
-    getActiveAgreement(response).catch(() => ({})),
+    getActiveAgreement(response),
   ]);
 
+  // Get the first current agreement if there is no active agreement
+  let inactiveAgreement = null;
+  if (!activeAgreement?.id) {
+    const agreements = await getCurrentAgreement(response);
+    inactiveAgreement = agreements?.content[0] || null;
+  }
+
   // return login response
-  return {...response, userProfile, activeAgreement};
+  return {
+    userProfile,
+    activeAgreement,
+    inactiveAgreement,
+    ...response,
+  };
 }
