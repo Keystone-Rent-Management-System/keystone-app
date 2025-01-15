@@ -1,5 +1,6 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 
+import {ToastAndroid, View} from 'react-native';
 import {
   HomeApartmentTitle,
   HomeHeader,
@@ -8,43 +9,68 @@ import {
   LandlordHomeRefetchCard,
   Layout,
 } from '../../components';
+import AgreementModalSheet from '../../components/modals/Agreement';
 import {useActiveAgrement, useActiveStatement} from '../../hooks';
-import {View} from 'react-native';
+import {useActiveAgreement} from '../../provider/store';
 
 const Home = () => {
   const {isPending, agreement, agreementRefetch} = useActiveAgrement();
   const {activeStatement, refetch} = useActiveStatement();
+  const {inactiveAgreement} = useActiveAgreement();
+  const agreementModalRef = useRef();
+
+  const handleOpenAgreement = () => {
+    ToastAndroid.show('You need to accept the agreement', ToastAndroid.SHORT);
+    agreementModalRef?.current?.present();
+  };
+
+  useEffect(() => {
+    if (!agreement?.id && inactiveAgreement?.id) {
+      handleOpenAgreement();
+    }
+  }, [agreement?.id, inactiveAgreement]);
 
   return (
-    <Layout ClassName={'px-4'}>
-      {/* Header */}
-      <HomeHeader />
-      {!isPending && agreement ? (
-        <View>
-          {/*apartment title */}
-          <HomeApartmentTitle
-            agreement={agreement}
+    <>
+      <Layout ClassName={'px-4'}>
+        {/* Header */}
+        <HomeHeader />
+        {!isPending && agreement ? (
+          <View>
+            {/*apartment title */}
+            <HomeApartmentTitle
+              agreement={agreement}
+              refetch={() => {
+                agreementRefetch();
+                refetch();
+              }}
+            />
+
+            {/* stats card */}
+            <HomeStatsCard statement={activeStatement} agreement={agreement} />
+          </View>
+        ) : (
+          <LandlordHomeRefetchCard
             refetch={() => {
               agreementRefetch();
               refetch();
             }}
           />
+        )}
 
-          {/* stats card */}
-          <HomeStatsCard statement={activeStatement} agreement={agreement} />
-        </View>
-      ) : (
-        <LandlordHomeRefetchCard
-          refetch={() => {
-            agreementRefetch();
-            refetch();
-          }}
+        {/* Finance & payments */}
+        <HomeMenu
+          hasInactiveAgreement={!agreement?.id && inactiveAgreement?.id}
+          handleAcceptAgreement={handleOpenAgreement}
         />
-      )}
+      </Layout>
 
-      {/* Finance & payments */}
-      <HomeMenu />
-    </Layout>
+      <AgreementModalSheet
+        agreement={inactiveAgreement}
+        ref={agreementModalRef}
+        type={'pending'}
+      />
+    </>
   );
 };
 

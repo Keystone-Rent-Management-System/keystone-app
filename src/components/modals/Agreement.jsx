@@ -1,21 +1,38 @@
-import React, {useRef, useState} from 'react';
-
+import React, {forwardRef, useImperativeHandle, useRef, useState} from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
+import {useQueryClient} from '@tanstack/react-query';
+import CheckBox from '@react-native-community/checkbox';
+import {BottomSheetScrollView, useBottomSheetModal} from '@gorhom/bottom-sheet';
+
 import CustomBottomSheetModal from './CustomBottomSheetModal';
 import {CButton} from '../general';
 import {CloseSvg} from '../../assets/icons';
-import {BottomSheetScrollView, useBottomSheetModal} from '@gorhom/bottom-sheet';
 import PdfPreview from '../screens/agreement/pdf-preview';
-import CheckBox from '@react-native-community/checkbox';
 import COLORS from '../../constants/Theme';
+import {useAcceptAgrement} from '../../hooks';
+import {agreementsKey} from '../../hooks/useAgrement';
 
-const AgreementModalSheet = props => {
+const AgreementModalSheet = forwardRef((props, ref) => {
   const agreementModalRef = useRef();
   const [isSelected, setSelection] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleOpenAgreement = data => {
     agreementModalRef?.current?.present();
   };
+
+  const {dismiss} = useBottomSheetModal();
+  const refetch = () => queryClient.invalidateQueries(agreementsKey);
+
+  const {acceptAgrementMutation, handleAcceptAgreement} = useAcceptAgrement(
+    dismiss,
+    refetch,
+  );
+
+  useImperativeHandle(ref, () => ({
+    present: () => agreementModalRef.current.present(),
+    dismiss: () => dismiss(),
+  }));
 
   return (
     <>
@@ -23,10 +40,12 @@ const AgreementModalSheet = props => {
       <TouchableOpacity onPress={handleOpenAgreement}>
         {props?.children}
       </TouchableOpacity>
+
       <CustomBottomSheetModal
         ref={agreementModalRef}
         snapPoints={['50%', '99%']}
         handleComponent={() => renderSheetHeader(props?.type)}>
+        {/* eslint-disable-next-line react-native/no-inline-styles */}
         <BottomSheetScrollView style={{flexDirection: 'row'}}>
           <PdfPreview agreementId={props.agreement?.id} />
         </BottomSheetScrollView>
@@ -61,11 +80,11 @@ const AgreementModalSheet = props => {
               <CButton
                 ClassName={'bg-primary text-white'}
                 disabled={!isSelected}
-                isLoading={props?.acceptAgrementMutation.isPending}
-                onPress={() => props?.handleAcceptAgreement(props.agreement.id)}
+                isLoading={acceptAgrementMutation.isPending}
+                onPress={() => handleAcceptAgreement(props.agreement.id)}
                 textClassName={'text-white font'}
                 text={
-                  props.acceptAgrementMutation.isPending
+                  acceptAgrementMutation.isPending
                     ? 'Accepting...'
                     : 'I agree to the terms'
                 }
@@ -76,7 +95,7 @@ const AgreementModalSheet = props => {
       </CustomBottomSheetModal>
     </>
   );
-};
+});
 export default AgreementModalSheet;
 
 const renderSheetHeader = type => <SheetHeader type={type} />;
