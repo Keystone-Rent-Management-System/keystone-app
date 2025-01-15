@@ -121,7 +121,7 @@ function getInvoiceStatus(paymentStatus: string, invoiceStatus: string) {
     paymentStatus?.toLowerCase() === 'unpaid' &&
     invoiceStatus?.toLowerCase() === 'inactive'
   ) {
-    return 'Carried forward';
+    return '';
   } else if (
     paymentStatus?.toLowerCase() === 'paid' &&
     invoiceStatus?.toLowerCase() === 'inactive'
