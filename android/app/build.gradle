@@ -80,8 +80,8 @@ android {
         applicationId "com.pallax_app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 22
-        versionName "1.1.4"
+        versionCode 24
+        versionName "1.2.1"
     }
     signingConfigs {
         debug {

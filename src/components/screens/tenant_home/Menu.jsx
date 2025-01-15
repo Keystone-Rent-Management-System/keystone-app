@@ -10,6 +10,8 @@ import {
   StatementsSvg,
 } from '@/assets/icons';
 import {useNavigation} from '@react-navigation/native';
+import {useActiveAgrement, useHelp} from '../../../hooks';
+import Helper from '../../../utils/Helper';
 import {
   GeneralRepairsModal,
   GetHelpModal,
@@ -18,10 +20,8 @@ import {
   RequestExtensionModal,
   RequestRepairModal,
 } from '../../modals';
-import {useActiveAgrement, useHelp} from '../../../hooks';
-import Helper from '../../../utils/Helper';
 
-const Menu = () => {
+const Menu = ({hasInactiveAgreement, handleAcceptAgreement}) => {
   const navigation = useNavigation();
 
   const extensionModalRef = useRef();
@@ -86,7 +86,11 @@ const Menu = () => {
                 key={ind}
                 icon={opt.icon}
                 text={opt.text}
-                handlePress={() => handleNavigate(opt?.screen)}
+                handlePress={() =>
+                  hasInactiveAgreement
+                    ? handleAcceptAgreement()
+                    : handleNavigate(opt?.screen)
+                }
               />
             ))}
           </View>
@@ -105,7 +109,9 @@ const Menu = () => {
                 text={opt.text}
                 disabled={isPending}
                 handlePress={
-                  opt.text === 'Help'
+                  hasInactiveAgreement
+                    ? handleAcceptAgreement
+                    : opt.text === 'Help'
                     ? handleHelp
                     : opt.text === 'Extension'
                     ? handleOpenExtensionModal

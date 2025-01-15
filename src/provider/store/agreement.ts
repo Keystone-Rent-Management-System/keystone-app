@@ -5,7 +5,9 @@ import {ZustandStorage} from './MMKV';
 
 interface IAgreementStore {
   activeAgreement: IAgreement | null;
-  saveAgreement: (profile: IAgreement) => void;
+  inactiveAgreement: IAgreement | null;
+  saveAgreement: (agreement: IAgreement) => void;
+  saveInactiveAgreement: (inactiveAgreement: IAgreement | null) => void;
   clearAgreement: () => void;
 }
 
@@ -13,7 +15,9 @@ export const useActiveAgreement = create(
   persist<IAgreementStore>(
     set => ({
       activeAgreement: null,
+      inactiveAgreement: null,
       saveAgreement: agreement => set({activeAgreement: agreement}),
+      saveInactiveAgreement: agreement => set({inactiveAgreement: agreement}),
       clearAgreement: () => set({activeAgreement: null}),
     }),
     {
