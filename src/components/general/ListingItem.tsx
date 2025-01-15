@@ -82,7 +82,7 @@ const ListingItem = ({
             {unit}
           </Text>
           <Text
-            className={`text-xs ${
+            className={`text-xs font-inter ${
               isPaid
                 ? 'text-green-700'
                 : isInactive
