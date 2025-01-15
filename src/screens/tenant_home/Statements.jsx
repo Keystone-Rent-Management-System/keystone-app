@@ -92,6 +92,12 @@ const renderItem = (item, handlePress = () => {}) => (
     date={item?.createdAt}
     startingBalance={numberConverter(item?.startingBalance) ?? 0}
     paymentAmount={numberConverter(item?.endingBalance) ?? 0}
+    charge={
+      !item?.payment?.id
+        ? String(numberConverter(item?.invoices?.totalAmount) || 0)
+        : '0'
+    }
+    payment={String(numberConverter(item?.payment?.amountPaid || 0))}
   />
 );
 

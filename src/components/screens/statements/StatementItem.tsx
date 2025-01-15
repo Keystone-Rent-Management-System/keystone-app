@@ -8,6 +8,8 @@ interface IStatementItem {
   startingBalance: string;
   date: string;
   paymentAmount: string;
+  charge: string;
+  payment: string;
   handlePress?: () => void;
 }
 
@@ -16,6 +18,8 @@ const StatementItem = ({
   startingBalance,
   date,
   paymentAmount,
+  charge,
+  payment,
 }: IStatementItem) => {
   return (
     <Pressable
@@ -51,6 +55,17 @@ const StatementItem = ({
 
           <Text className={'text-black text-[13px] font-inter-semibold'}>
             KES {paymentAmount}
+          </Text>
+        </View>
+
+        {/*Row 3*/}
+        <View className={'flex flex-row justify-between'}>
+          <Text className={'text-zinc-400 text-xs font-inter'}>
+            {`Charge(Cr): KES ${charge ?? 0}`}
+          </Text>
+
+          <Text className={'text-zinc-400 text-xs font-inter'}>
+            {`Payment(Dr): KES ${payment ?? 0}`}
           </Text>
         </View>
       </View>
