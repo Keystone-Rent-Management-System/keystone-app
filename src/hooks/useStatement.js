@@ -1,10 +1,9 @@
 import {useInfiniteQuery, useQuery} from '@tanstack/react-query';
-import StatementServices from '../services/StatementServices';
-import {useActiveAgrement} from './useAgrement';
-import {PAGINATION_LIMIT} from '../constants';
-import {getNextPageParam, returnPaginationData} from '../utils/pagination';
 import React, {useCallback, useMemo} from 'react';
 import {ActivityIndicator} from 'react-native';
+import StatementServices from '../services/StatementServices';
+import {getNextPageParam, returnPaginationData} from '../utils/pagination';
+import {useActiveAgrement} from './useAgrement';
 
 export const useStatement = size => {
   const {agreement} = useActiveAgrement();
@@ -22,11 +21,7 @@ export const useStatement = size => {
   } = useInfiniteQuery({
     queryKey: ['statements'],
     queryFn: async ({pageParam}) =>
-      StatementServices.getStatements(
-        agreement?.id,
-        pageParam ?? 0,
-        PAGINATION_LIMIT,
-      ),
+      StatementServices.getStatements(agreement?.id, pageParam ?? 0, 6),
     initialPageParam: 0,
     getNextPageParam: props => getNextPageParam(props),
   });
