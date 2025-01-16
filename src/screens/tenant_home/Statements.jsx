@@ -7,10 +7,12 @@ import {ExportStatementModal} from '../../components/modals';
 import {useStatement} from '../../hooks';
 import {useActiveStatement} from '../../hooks/useStatement';
 import numberConverter from '../../utils/numberConverter';
+import {useNavigation} from '@react-navigation/native';
 
 const Statements = () => {
   const exportModalRef = useRef();
   const dateModalRef = useRef();
+  const navigation = useNavigation();
 
   const {
     isPending,
@@ -39,6 +41,13 @@ const Statements = () => {
     dateModalRef.current?.expand();
   }, []);
 
+  const handleNavigate = item => {
+    if (item?.payment?.id) {
+      return null;
+    }
+    navigation.navigate('invoice_view', {id: item?.invoices?.id});
+  };
+
   return (
     <>
       <Layout>
@@ -62,7 +71,7 @@ const Statements = () => {
           contentContainerStyle={statementStyles.list}
           refreshing={isPending}
           data={statements}
-          renderItem={({item}) => renderItem(item)}
+          renderItem={({item}) => renderItem(item, handleNavigate)}
           estimatedItemSize={100}
           onRefresh={refetch}
           onEndReached={handleLoadMore}
@@ -98,6 +107,7 @@ const renderItem = (item, handlePress = () => {}) => (
         : '0'
     }
     payment={String(numberConverter(item?.payment?.amountPaid || 0))}
+    handlePress={() => handlePress(item)}
   />
 );
 
