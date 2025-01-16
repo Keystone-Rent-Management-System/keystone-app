@@ -44,7 +44,7 @@ const ListingItem = ({
         'mb-4 flex-row space-x-3 pt-2 pb-3 border-b border-b-border_grey'
       }
       disabled={disabled}
-      onPress={isInactive ? () => {} : handlePress}>
+      onPress={handlePress}>
       <View
         className={
           'items-center justify-center h-10 w-10 rounded-full bg-white overflow-hidden border border-border_grey'
