@@ -85,6 +85,7 @@ const renderItem = ({item}, handlePress) => (
     date={moment(item?.createdAt)?.format('Do MMMM, YYYY')}
     paymentMethod={item?.methodOfPayment}
     amount={numberWithCommas(Number(item.amountDebited))}
+    invoiceNumber={item?.invoiceNumber}
     handlePress={handlePress}
   />
 );

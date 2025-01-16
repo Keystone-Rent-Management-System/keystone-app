@@ -26,12 +26,19 @@ const PaymentItem = props => {
         </View>
 
         <View className={'flex-row justify-between w-full mt-2'}>
-          <Text className={'font-inter text-2xs text-inactive_text'}>
+          <Text className={'font-inter text-xs text-inactive_text'}>
             {props?.paymentMethod}
           </Text>
           <Text className={'text-black font-inter-medium text-xs'}>
             KES. {props.amount}
           </Text>
+        </View>
+
+        <View className={'flex-row justify-between w-full mt-2'}>
+          <Text className={'font-inter text-xs text-inactive_text'}>
+            Invoice: {props?.invoiceNumber}
+          </Text>
+          <Text className={'text-black font-inter-medium text-xs'}> </Text>
         </View>
       </View>
     </TouchableOpacity>
