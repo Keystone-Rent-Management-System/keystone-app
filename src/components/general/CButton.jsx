@@ -5,7 +5,7 @@ const CButtonFill = ({
   ClassName = '',
   textClassName = '',
   text = '',
-  children,
+  children = undefined,
   isLoading = false,
   disabled = false,
   ...rest
