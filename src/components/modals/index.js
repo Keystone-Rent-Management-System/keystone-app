@@ -10,6 +10,7 @@ import ExportStatementModal from './ExportStatement';
 import RequestExtensionModal from './RequestExtension';
 import AgreementModal from './Agreement';
 import LoadingModal from './LoadingModal';
+import StatementFilterModal from './statement-filter';
 
 export {
   CustomBottomSheet,
@@ -24,5 +25,6 @@ export {
   RequestExtensionModal,
   AgreementModal,
   LoadingModal,
+  StatementFilterModal,
 };
 export * from './help';
