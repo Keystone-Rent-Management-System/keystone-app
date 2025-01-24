@@ -1,4 +1,6 @@
-import {IFromEndDate} from '../utils/statement';
+import moment from 'moment';
+import {IFlattendenedStatement, IStatement} from '../types/statement';
+import {getFlattenedStatements, IFromEndDate} from '../utils/statement';
 import AxiosUtility, {setAuthToken} from './AxiosServices';
 
 /**
@@ -73,15 +75,29 @@ const fetchCurrentStatement = async (
   return res;
 };
 
-async function getFilteredStatements(dateRange: IFromEndDate) {
+async function getFilteredStatements(
+  dateRange: IFromEndDate,
+): Promise<IFlattendenedStatement[] | []> {
   setAuthToken(AxiosUtility);
-  console.log('HITT:::', dateRange);
+
+  const startDate = moment
+    .min(moment(dateRange.from), moment(dateRange.to))
+    .format('YYYY-MM-DD');
+  const endDate = moment
+    .max(moment(dateRange.from), moment(dateRange.to))
+    .format('YYYY-MM-DD');
 
   const {data: res} = await AxiosUtility.get(
-    `/statements/currentStatement?startDate=${dateRange.from}&endDate=${dateRange.to}`,
+    `/statements/tenant/filter?startDate=${startDate}&endDate=${endDate}`,
   );
 
-  return res;
+  const flattenedResponse: IFlattendenedStatement[] =
+    res?.content?.length &&
+    res?.content.flatMap((statement: IStatement) =>
+      getFlattenedStatements(statement),
+    );
+
+  return flattenedResponse || [];
 }
 
 const StatementServices = {
