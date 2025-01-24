@@ -66,6 +66,7 @@ export const renderInvoiceItem = (item, handlePress = () => {}) => {
       handlePress={() => handlePress(item?.id)}
       paymentStatus={item?.paymentStatus || ''}
       status={item?.currentStatus}
+      balance={item?.dueAmount}
     />
   );
 };
