@@ -177,14 +177,14 @@ const InvoiceView = ({route: {params}}) => {
             <View className={'h-20 w-full'} />
           </ScrollView>
 
-          {!isInactive ? (
-            <InvoiceFooter
-              handlePrompt={handleOpenPaymentInstrictionsModal}
-              hasConcern={hasConcern}
-              status={status}
-              handleViewReceipt={handleOpenReceiptModal}
-            />
-          ) : null}
+          {/*{!isInactive ? (*/}
+          <InvoiceFooter
+            handlePrompt={handleOpenPaymentInstrictionsModal}
+            hasConcern={hasConcern}
+            status={status}
+            handleViewReceipt={handleOpenReceiptModal}
+          />
+          {/*) : null}*/}
         </Layout>
       )}
 
