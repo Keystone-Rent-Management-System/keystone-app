@@ -18,7 +18,8 @@ interface ITenants {
   createdBy: string | null;
   modifiedBy: string | null;
   deleted: boolean;
-  tenantUser: ITenantUser;
+  tenantUser?: ITenantUser;
+  user?: ITenantUser;
 }
 
 interface IPropertyContacts {
