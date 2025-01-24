@@ -27,7 +27,7 @@ const Statements = ({params}) => {
 
     enabled: !!route?.params?.dateRange,
   });
-  console.log('DATA IS:::', data);
+
   const source = {
     html: `
       <div style="padding: 10px; border-width: 0.5px; border-color: #00000020;">
