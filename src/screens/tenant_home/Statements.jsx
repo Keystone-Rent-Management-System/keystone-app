@@ -1,239 +1,170 @@
-import React from 'react';
-import {useWindowDimensions} from 'react-native';
-import RenderHTML from 'react-native-render-html';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import {useQuery} from '@tanstack/react-query';
+import moment from 'moment';
+import React, {useCallback, useEffect} from 'react';
+import {ActivityIndicator, Text, ToastAndroid} from 'react-native';
 
 import Layout from '../../components/Layout';
+import COLORS from '../../constants/Theme';
+import {useActiveAgrement} from '../../hooks';
+import StatementServices from '../../services/StatementServices';
+import {getError} from '../../utils/getError';
+import Helper from '../../utils/Helper';
+import {getStatementDetails} from '../../utils/statement';
 
-const Statements = () => {
-  const {width} = useWindowDimensions();
+const Statements = ({params}) => {
+  const {agreement} = useActiveAgrement();
+  const route = useRoute();
+  const dateRange = route.params?.dateRange;
+  const navigation = useNavigation();
 
+  const {tenants, propertyUnits} = agreement;
+
+  const {data, error, isError} = useQuery({
+    queryKey: ['statements', JSON.stringify(params || '_')],
+    queryFn: () =>
+      StatementServices.getFilteredStatements(route?.params?.dateRange, 0, 500),
+
+    enabled: !!route?.params?.dateRange,
+  });
+  console.log('DATA IS:::', data);
   const source = {
     html: `
       <div style="padding: 10px; border-width: 0.5px; border-color: #00000020;">
-        <!--  Header    -->
-        <header>
-          <div style="display: flex; flex-direction: row; justify-content: space-between; color:black; ">
-            <h4 style="font-weight: 500; font-size: 12px;">BLESKET KE LIMITED</h4>
-            
-            <h4 style="color: #022374; font-size: 12px;">STATEMENT</h4>
-          </div>
+      <!--  Header    -->
+      <header>
+        <div style="display: flex; flex-direction: row; justify-content: space-between; color:black; margin-bottom:3px">
+        
+          <h4 style="font-weight: 500; font-size: 20px; flex:1;">BLESKET KE LIMITED</h4>
           
-          <!--    Details      -->
-          <div style="display: flex; flex-direction: row; justify-content: space-between; color:black;">
-            <div style="display: flex; flex-direction: column;"> 
-              <div style="margin-bottom:3px; font-size: 10px; font-weight: 500;"> 
-                Eric Pekmah
-              </div>
-              <div style="margin-bottom:3px; font-size: 10px; font-weight: 500;"> 
-                ericpekmah@gmail.com
-              </div>
-               <div style="margin-bottom:3px; font-size: 10px; font-weight: 500;"> 
-                +254 712 345 678
-              </div>
-              <span style="margin-bottom:3px; font-size: 10px; font-weight: 500;"> 
-                Unit: 1101
-              </span>
+          <h4 style="color: #022374; font-size: 20px; flex:1;">STATEMENT</h4>
+        </div> 
+        
+        <!--    Details      -->
+        <div style="display: flex; flex-direction: row; justify-content: space-between; color:black;">
+          <div style="display: flex; flex-direction: column;"> 
+            <div style="margin-bottom:3px; font-size: 18px; font-weight: 500;"> 
+              ${tenants?.user?.firstName} ${tenants?.user?.lastName}
             </div>
-            <div style="max-width: 50%"> 
-              <div style="display: flex; flex-direction: row; width: 80%"> 
-                <div style="color: #00000080; min-width: 50px; font-size: 10px; font-weight: 400; margin-right: 10px;"> Property: </div>
-                <span style="color: #000; font-size: 10px; font-weight: 400; text-wrap: wrap;"> Mowlem Residence, Nairobi, Karen </span>
-              </div>
-              <div style="display: flex; flex-direction: row; width: 80%"> 
-                <div style="color: #00000080; min-width: 50px; font-size: 10px; font-weight: 400; margin-right: 10px;"> Statement: </div>
-                <span style="color: #000; font-size: 10px; font-weight: 400; text-wrap: wrap;"> 1st January 2025</span>
-              </div>
-              <div style="display: flex; flex-direction: row; width: 80%"> 
-                <div style="color: #00000080; min-width: 50px; font-size: 10px; font-weight: 400; margin-right: 10px;"> Period: </div>
-                <span style="color: #000; font-size: 10px; font-weight: 400; text-wrap: wrap;"> 30th July 2025 </span>
-              </div>
+            <div style="margin-bottom:3px; font-size: 18px; font-weight: 500;"> 
+              ${tenants?.user?.email}
+            </div>
+            <div style="margin-bottom:3px; font-size: 18px; font-weight: 500;"> 
+              ${tenants?.user?.phoneNumber}
+            </div>
+            <span style="margin-bottom:3px; font-size: 18px; font-weight: 500;"> 
+              Unit: ${propertyUnits?.name}
+            </span>
+          </div>
+          <div style="max-width: 50%"> 
+            <div style="display: flex; flex-direction: row; gap:10px;"> 
+              <div style="color: #00000080; min-width: 50px; font-size: 18px; font-weight: 400;"> Property: </div>
+              <span style="color: #000; font-size: 18px; font-weight: 400; text-wrap: wrap;"> ${
+                propertyUnits?.property?.name
+              }, ${propertyUnits?.property?.address?.line} </span>
+            </div>
+            <div style="display: flex; flex-direction: row; width: 80%"> 
+              <div style="color: #00000080; min-width: 50px; font-size: 18px; font-weight: 400; margin-right: 10px;"> Statement: </div>
+              <span style="color: #000; font-size: 18px; font-weight: 400; text-wrap: wrap;"> ${moment(
+                dateRange?.to,
+              ).format('DD MMM YYYY')}</span>
+            </div>
+            <div style="display: flex; flex-direction: row; width: 80%"> 
+              <div style="color: #00000080; min-width: 50px; font-size: 18px; font-weight: 400; margin-right: 10px;"> Period: </div>
+              <span style="color: #000; font-size: 18px; font-weight: 400; text-wrap: wrap;"> ${moment(
+                dateRange?.from,
+              ).format('DD MMM YYYY')} to ${moment(dateRange?.to).format(
+      'DD MMM YYYY',
+    )}</span>
             </div>
           </div>
-          
-          <div style="padding-top:8px; padding-bottom: 8px; margin-top: 10px; border-top-width: 0.5px; border-color: #00000020;">
-            <!--    Title     -->
-            <p style="text-align: center; margin: 0; font-size: 10px; font-weight: 500; color: black;">TENTANT STATEMENT FOR THE PERIOD 01/01/2025 TO 30/12/2025</p>
-          </div>
-        </header>
-        <div>
-         <table>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: black; border-top-width: 0.5px; border-bottom-width: 0.5px;">
-            <th style="font-weight: 500; font-size: 10px; color: black;">Date</th>
-            <th style="font-weight: 500; font-size: 10px; color: black;">TXT No</th>
-            <th style="font-weight: 500; font-size: 10px; color: black;">Details</th>
-            <th style="font-weight: 500; font-size: 10px; color: black;">Charge</th>
-            <th style="font-weight: 500; font-size: 10px; color: black;">Payment</th>
-            <th style="font-weight: 500; font-size: 10px; color: black;">R.Balance</th>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">01/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX001</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 1</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">100</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">50</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">50</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">02/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX002</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 2</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">200</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">100</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">150</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">03/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX003</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 3</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">300</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">150</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">200</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">04/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX004</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 4</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">400</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">200</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">250</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">05/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX005</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 5</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">500</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">250</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">300</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">06/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX006</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 6</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">600</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">300</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">350</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">07/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX007</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 7</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">700</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">350</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">400</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">08/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX008</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 8</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">800</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">400</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">450</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">09/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX009</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 9</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">900</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">450</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">500</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">10/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX010</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 10</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">1000</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">500</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">550</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">01/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX001</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 1</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">100</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">50</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">50</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">02/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX002</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 2</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">200</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">100</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">150</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">03/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX003</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 3</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">300</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">150</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">200</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">04/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX004</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 4</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">400</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">200</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">250</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">05/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX005</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 5</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">500</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">250</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">300</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">06/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX006</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 6</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">600</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">300</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">350</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">07/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX007</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 7</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">700</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">350</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">400</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">08/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX008</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 8</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">800</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">400</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">450</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">09/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX009</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 9</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">900</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">450</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">500</td>
-          </tr>
-          <tr style="padding-top: 3px; padding-bottom: 3px; border-color: #00000060; border-bottom-width: 0.5px;">
-            <td style="font-weight: 400; font-size: 10px; color: black;">10/01/2025</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">TX010</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">Detail 10</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">1000</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">500</td>
-            <td style="font-weight: 400; font-size: 10px; color: black;">550</td>
-          </tr>
-         </table>
         </div>
-      </div>
+        
+        <div style="padding-top:8px; padding-bottom: 8px; margin-top: 10px; border-top-width: 0.5px; border-color: #00000020;">
+          <!--    Title     -->
+          <p style="text-align: center; margin: 0; font-size: 18px; font-weight: 500; color: black;">TENTANT STATEMENT FOR THE PERIOD ${moment(
+            dateRange?.from,
+          ).format('D/MM/yyyy')} TO ${moment(dateRange?.to).format(
+      'D/MM/yyyy',
+    )}</p>
+        </div>
+      </header>
+      <table style="width: 100%;">
+        <!--    Header Row    -->
+        <tr style="display: flex; gap: 10px; padding: 5px; border-color: black; border-top-width: 0.5px; border-bottom-width: 0.5px;">
+          <th style="flex: 1; font-weight: 500; font-size: 18px; color: black; text-align: left;">Date</th>
+          <th style="flex: 1; font-weight: 500; font-size: 18px; color: black; text-align: left;">TXT No</th>
+          <th style="flex: 1; font-weight: 500; font-size: 18px; color: black; text-align: left;">Details</th>
+          <th style="flex: 1; font-weight: 500; font-size: 18px; color: black; text-align: left;">Charge</th>
+          <th style="flex: 1; font-weight: 500; font-size: 18px; color: black; text-align: left;">Payment</th>
+          <th style="flex: 1; font-weight: 500; font-size: 18px; color: black; text-align: left;">R.Balance</th>
+        </tr>
+        ${
+          data &&
+          data
+            ?.map(statement => {
+              return `
+          <tr style="display: flex; gap: 10px; padding: 5px; border-color: #00000060; border-bottom-width: 0.5px;">
+            <td style="flex: 1; font-weight: 400; font-size: 18px; color: black;">
+              ${statement?.timeOfDayLabel}
+            </td>
+            <td style="flex: 1; font-weight: 400; font-size: 18px; color: black;">
+              ${statement?.transaction.invoice_details?.invoice_number}
+            </td>
+            <td style="flex: 1; font-weight: 400; font-size: 18px; color: black;">
+              ${getStatementDetails(statement?.transaction?.invoice_details)}
+            </td>
+            <td style="flex: 1; font-weight: 400; font-size: 18px; color: black;">
+              KES ${statement?.transaction?.invoice_details?.total_amount ?? 0}
+            </td>
+            <td style="flex: 1; font-weight: 400; font-size: 18px; color: black;">
+              KES ${statement?.transaction?.payment_details?.paid_amount ?? 0}
+            </td>
+            <td style="flex: 1; font-weight: 400; font-size: 18px; color: black;">
+              KES ${statement?.transaction?.payment_details?.balance ?? 0}
+            </td>
+          </tr>`;
+            })
+            .join('')
+        }
+      </table>
+    </div>
     `,
   };
 
+  const createPDF = useCallback(async () => {
+    const fileName = `${moment(dateRange?.from).format('DMMyy')}${moment(
+      dateRange?.to,
+    ).format('DMMyy')}`;
+
+    try {
+      await Helper.generatePdf(source?.html, fileName);
+
+      ToastAndroid.show('Invoice saved to Downloads', ToastAndroid.LONG);
+      navigation.goBack();
+    } catch (e) {
+      ToastAndroid.show('Invoice Download Error', ToastAndroid.LONG);
+      navigation.goBack();
+    }
+  }, [dateRange?.from, dateRange?.to, navigation, source?.html]);
+
+  useEffect(() => {
+    if (data) {
+      createPDF();
+    }
+  }, [createPDF, data]);
+
+  useEffect(() => {
+    if (isError) {
+      ToastAndroid.show(`Failed to Generate statement.${getError(error)}`);
+      navigation.goBack();
+    }
+  }, [error, isError, navigation]);
+
   return (
-    <Layout ClassName={'px-3'}>
-      <RenderHTML contentWidth={width} source={source} />
+    <Layout ClassName={'px-3 flex-1 justify-center items-center'}>
+      <ActivityIndicator color={COLORS.primary} size={50} />
+      <Text className="text-primary mt-5">Generating Statement ...</Text>
     </Layout>
   );
 };
