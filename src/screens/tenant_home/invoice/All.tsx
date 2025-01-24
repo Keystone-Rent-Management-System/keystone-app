@@ -1,11 +1,11 @@
-import React from 'react';
-import {ActivityIndicator, Text} from 'react-native';
-import {FlashList} from '@shopify/flash-list';
 import {useNavigation} from '@react-navigation/native';
+import {FlashList} from '@shopify/flash-list';
+import React from 'react';
+import {ActivityIndicator} from 'react-native';
 
 import {EmptyInvoiceList, Layout} from '../../../components';
-import {invoiceStyles, renderInvoiceItem} from './Unpaid';
 import {useFetchInvoice} from '../../../hooks/useFetchInvoice.ts';
+import {invoiceStyles, renderInvoiceItem} from './Unpaid';
 
 const All = () => {
   const navigation = useNavigation();
@@ -28,8 +28,7 @@ const All = () => {
         // ListHeaderComponent={<Header />}
         contentContainerStyle={invoiceStyles.list}
         refreshing={isPending || isRefetching}
-        // data={invoices}
-        data={[]}
+        data={invoices}
         renderItem={({item}) =>
           renderInvoiceItem(item, () => handleNavigate(item.id))
         }

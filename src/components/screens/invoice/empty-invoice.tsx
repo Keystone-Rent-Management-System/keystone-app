@@ -9,10 +9,12 @@ export default function EmptyInvoice() {
       <View className="p-6 rounded-full bg-slate-50  ">
         <InvoiceSvg size={40} />
       </View>
-      <Text className="text-xl font-medium text-black mb-2">
+      <Text className="text-xl font-medium text-black mb-2 font-inter-medium">
         No Invoices Found!
       </Text>
-      <Text className="text-center">Sorry! you have no invoices to show.</Text>
+      <Text className="text-center font-inter">
+        Sorry! you have no invoices to show.
+      </Text>
     </View>
   );
 }
