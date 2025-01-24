@@ -1,17 +1,17 @@
 import BottomSheet from '@gorhom/bottom-sheet';
+import {useNavigation} from '@react-navigation/native';
 import React, {forwardRef, useCallback, useMemo, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 
 import {CloseSvg} from '../../assets/icons';
-import {CButton} from '../general';
-import CustomBottomSheet from './CustomBottomSheet';
-import {StatementDatePicker} from '../screens';
 import {
   Duration,
   getFromAndEndDateFromDuration,
   IFromEndDate,
 } from '../../utils/statement';
+import {CButton} from '../general';
+import {StatementDatePicker} from '../screens';
+import CustomBottomSheet from './CustomBottomSheet';
 
 interface IStatementFilterProps {
   handleCloseFilter: () => void;
@@ -41,19 +41,13 @@ const StatementFilter = forwardRef<BottomSheet, IStatementFilterProps>(
 
     const handleFromChange = useCallback((date: Date) => {
       setFromEndDate(prev => {
-        if (prev) {
-          return {...prev, from: date};
-        }
-        return {from: date, to: new Date()};
+        return {...prev, from: date};
       });
     }, []);
 
     const handleToChange = useCallback((date: Date) => {
       setFromEndDate(prev => {
-        if (prev) {
-          return {...prev, to: date};
-        }
-        return {from: new Date(), to: date};
+        return {...prev, to: date};
       });
     }, []);
 
@@ -130,6 +124,7 @@ const StatementFilter = forwardRef<BottomSheet, IStatementFilterProps>(
               label={'Start Date'}
               placeholder={'Select Date'}
               setValue={handleFromChange}
+              value={fromEndDate?.from}
             />
 
             {/* Separator */}
@@ -139,6 +134,7 @@ const StatementFilter = forwardRef<BottomSheet, IStatementFilterProps>(
               label={'End Date'}
               placeholder={'Select Date'}
               setValue={handleToChange}
+              value={fromEndDate?.to}
             />
           </View>
         </ScrollView>
