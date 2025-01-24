@@ -1,5 +1,6 @@
 import React from 'react';
 import {Text, View} from 'react-native';
+import moment from 'moment';
 
 import {CDatePicker} from '../../general';
 import {CalendarSvg} from '../../../assets/icons';
@@ -30,7 +31,7 @@ const StatementDatePicker = ({
           className={`${
             value ? 'text-gray-800' : 'text-gray-600'
           } font-inter text-[13px]`}>
-          {value ? value.toDateString() : placeholder}
+          {value ? moment(value).format('MM DD YYYY') : placeholder}
         </Text>
 
         <CalendarSvg />
