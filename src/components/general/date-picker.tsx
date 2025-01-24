@@ -40,6 +40,7 @@ const CDatePicker = ({dateValue, setDateValue, children}: IDatePickerProps) => {
         date={dateValue || date}
         onConfirm={_handleConfirm}
         onCancel={_handleCancel}
+        mode="date"
       />
     </View>
   );

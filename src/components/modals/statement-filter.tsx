@@ -1,12 +1,17 @@
 import BottomSheet from '@gorhom/bottom-sheet';
-import React, {forwardRef} from 'react';
+import {useNavigation} from '@react-navigation/native';
+import React, {forwardRef, useCallback, useMemo, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 
 import {CloseSvg} from '../../assets/icons';
+import {
+  Duration,
+  getFromAndEndDateFromDuration,
+  IFromEndDate,
+} from '../../utils/statement';
 import {CButton} from '../general';
-import CustomBottomSheet from './CustomBottomSheet';
 import {StatementDatePicker} from '../screens';
-import {useNavigation} from '@react-navigation/native';
+import CustomBottomSheet from './CustomBottomSheet';
 
 interface IStatementFilterProps {
   handleCloseFilter: () => void;
@@ -15,11 +20,49 @@ interface IStatementFilterProps {
 const StatementFilter = forwardRef<BottomSheet, IStatementFilterProps>(
   ({handleCloseFilter}, ref) => {
     const navigation = useNavigation<any>();
+    const [selectedDuration, setSelectedDuration] = useState<Duration | null>(
+      null,
+    );
+    const [fromEndDate, setFromEndDate] = useState<IFromEndDate | null>(null);
 
-    const handleGenerateStatement = () => {
-      handleCloseFilter();
-      navigation.navigate('statements');
+    const chosenDateRange: IFromEndDate | null = useMemo(() => {
+      if (selectedDuration) {
+        return getFromAndEndDateFromDuration(selectedDuration);
+      } else if (fromEndDate?.from && fromEndDate?.to) {
+        return fromEndDate;
+      }
+      return null;
+    }, [selectedDuration, fromEndDate]);
+
+    const handleDurationSelection = (duration: Duration) => {
+      setSelectedDuration(duration);
+      setFromEndDate(null);
     };
+
+    const handleFromChange = useCallback((date: Date) => {
+      setFromEndDate(prev => {
+        return {...prev, from: date};
+      });
+    }, []);
+
+    const handleToChange = useCallback((date: Date) => {
+      setFromEndDate(prev => {
+        return {...prev, to: date};
+      });
+    }, []);
+
+    const handleResetState = useCallback(() => {
+      setSelectedDuration(null);
+      setFromEndDate(null);
+    }, []);
+
+    const handleGenerateStatement = useCallback(() => {
+      handleCloseFilter();
+      navigation.navigate('statements', {dateRange: chosenDateRange});
+
+      // Reset the state
+      handleResetState();
+    }, [handleCloseFilter, navigation, chosenDateRange, handleResetState]);
 
     return (
       <CustomBottomSheet
@@ -33,9 +76,20 @@ const StatementFilter = forwardRef<BottomSheet, IStatementFilterProps>(
           <View className="flex flex-row flex-wrap gap-3">
             {monthFilters.map(filter => (
               <CButton
-                textClassName="text-primary font-inter text-[13px]"
-                ClassName={'border border-[#DEDEDE] py-2 px-3 mb-1'}
+                textClassName={`font-inter text-[13px] ${
+                  filter?.value === selectedDuration
+                    ? 'text-white'
+                    : 'text-primary'
+                } `}
+                ClassName={`border ${
+                  filter?.value === selectedDuration
+                    ? 'border-primary bg-primary'
+                    : 'border-[#DEDEDE]'
+                } py-2 px-3 mb-1`}
                 text={filter.text}
+                onPress={() =>
+                  handleDurationSelection(filter.value as Duration)
+                }
               />
             ))}
           </View>
@@ -69,11 +123,18 @@ const StatementFilter = forwardRef<BottomSheet, IStatementFilterProps>(
             <StatementDatePicker
               label={'Start Date'}
               placeholder={'Select Date'}
+              setValue={handleFromChange}
+              value={fromEndDate?.from}
             />
+
+            {/* Separator */}
             <View className={'h-3 w-full'} />
+
             <StatementDatePicker
               label={'End Date'}
               placeholder={'Select Date'}
+              setValue={handleToChange}
+              value={fromEndDate?.to}
             />
           </View>
         </ScrollView>
@@ -85,6 +146,7 @@ const StatementFilter = forwardRef<BottomSheet, IStatementFilterProps>(
             textClassName={'text-white font-inter-semibold text-base'}
             text={'Generate Statement'}
             onPress={handleGenerateStatement}
+            disabled={!chosenDateRange}
           />
         </View>
       </CustomBottomSheet>
@@ -114,13 +176,18 @@ const renderSheetHeader = (handleClose: () => void) => (
   </View>
 );
 
-const monthFilters = [
+type MonthFilter = {
+  text: string;
+  value: Duration;
+};
+
+const monthFilters: MonthFilter[] = [
   {text: 'This Month', value: 'this_month'},
   {text: '2 Months', value: '2_months'},
   {text: '4 Months', value: '4_months'},
   {text: '6 Months', value: '6_months'},
-  {text: '1 Year', value: '1_year'},
-  {text: '2 Years', value: '2_year'},
+  {text: '1 Year', value: '1_years'},
+  {text: '2 Years', value: '2_years'},
 ];
 
 const styles = StyleSheet.create({

@@ -6,9 +6,8 @@ import {CButton} from './index';
 import {CloseSvg} from '@/assets/icons';
 import {DownloadSvg} from '@/assets/icons/receipt';
 import numberWithCommas from '../../utils/numberWithCommas';
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import {renderHtmlTemplate} from '../../utils/htmlToPdf';
-import RNFetchBlob from 'rn-fetch-blob';
+import Helper from '../../utils/Helper';
 
 const noOfEllipse = Array(35).fill('_');
 
@@ -22,23 +21,14 @@ const ReceiptTemplate = ({
 }) => {
   const createPDF = useCallback(async () => {
     const fileName = receipt?.invoiceNumber ?? 'Invoice';
-    let options = {
-      html: renderHtmlTemplate(receipt),
-      fileName: fileName,
-      directory: 'Documents',
-      base64: true,
-    };
-    let file = await RNHTMLtoPDF.convert(options);
-    let filePath = RNFetchBlob.fs.dirs.DownloadDir + '/' + fileName + '.pdf';
 
-    RNFetchBlob.fs
-      .writeFile(filePath, file.base64, 'base64')
-      .then(res => {
-        ToastAndroid.show('Invoice saved to Downloads', ToastAndroid.LONG);
-      })
-      .catch(() =>
-        ToastAndroid.show('Invoice Download Error', ToastAndroid.LONG),
-      );
+    try {
+      await Helper.generatePdf(renderHtmlTemplate(receipt), fileName);
+
+      ToastAndroid.show('Invoice saved to Downloads', ToastAndroid.LONG);
+    } catch (e) {
+      ToastAndroid.show('Invoice Download Error', ToastAndroid.LONG);
+    }
   }, [receipt]);
 
   return (
