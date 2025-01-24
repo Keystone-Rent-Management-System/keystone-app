@@ -1,4 +1,10 @@
 import moment from 'moment';
+import {
+  IFlattendenedStatement,
+  IInvoiceDetails,
+  IStatement,
+  ITransaction,
+} from '../types/statement';
 
 export type Duration =
   | 'today'
@@ -9,8 +15,8 @@ export type Duration =
   | `${number}_years`;
 
 export interface IFromEndDate {
-  from: Date;
-  to: Date;
+  from?: Date;
+  to?: Date;
 }
 
 /**
@@ -75,4 +81,47 @@ export function getFromAndEndDateFromDuration(
   }
 
   return {from: from.toDate(), to: to.toDate()};
+}
+
+/**
+ * Flattens the filter statements response
+ * @param {IStatement} statement - statement argument of IStatement type
+ * @returns {IFlattendenedStatement[]} - list of flattened statements {timeOfDayLabel:"",transactions:[]} -> [{timeOfDayLabel:"",transaction:{}}]
+ */
+export function getFlattenedStatements(
+  statement: IStatement,
+): IFlattendenedStatement[] {
+  return statement.transactions.map((transaction: ITransaction) => ({
+    timeOfDayLabel: statement.timeOfDayLabel,
+    transaction,
+  }));
+}
+
+/**
+ * Composes payment details
+ * @param {IInvoiceDetails} invoiceDetails invoice type argument
+ * @returns {string|null}
+ */
+export function getStatementDetails(
+  invoiceDetails: IInvoiceDetails,
+): string | null {
+  const paymentTypes: string[] = [];
+
+  if (invoiceDetails.rent_amount) {
+    paymentTypes.push('Rent Payment');
+  }
+  if (invoiceDetails.water_fee_amount) {
+    paymentTypes.push('Water Payment');
+  }
+  if (invoiceDetails.security) {
+    paymentTypes.push('Security Payment');
+  }
+  if (invoiceDetails.garbage_fee_amount) {
+    paymentTypes.push('Garbage Payment');
+  }
+  if (invoiceDetails.penalized_amount) {
+    paymentTypes.push('Penalty Payment');
+  }
+
+  return paymentTypes.length > 0 ? paymentTypes.join(' & ') : null;
 }
