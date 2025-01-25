@@ -55,8 +55,6 @@ const InvoiceView = ({route: {params}}) => {
 
   const {invoiceIsPending, invoice} = useSpecificInvoice(params?.id);
 
-  console.log('INVOICE IS::', JSON.stringify(invoice, null, 2));
-
   const {concernsIsPending, concerns, refetch} = useGetConcerns(params?.id);
 
   const {onSubmit} = useRaiseConcern(
