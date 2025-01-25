@@ -83,6 +83,9 @@ const InvoiceView = ({route: {params}}) => {
   );
 
   const isInactive = useMemo(() => {
+    if (!invoice?.currentStatus) {
+      return true;
+    }
     return invoice?.currentStatus?.toLowerCase() === 'inactive';
   }, [invoice?.currentStatus]);
 
@@ -203,14 +206,14 @@ const InvoiceView = ({route: {params}}) => {
             <View className={'h-20 w-full'} />
           </ScrollView>
 
-          {/*{!isInactive ? (*/}
-          <InvoiceFooter
-            handlePrompt={handleOpenPaymentInstrictionsModal}
-            hasConcern={hasConcern}
-            status={status}
-            handleViewReceipt={handleOpenReceiptModal}
-          />
-          {/*) : null}*/}
+          {!isInactive && status === 'unpaid' ? (
+            <InvoiceFooter
+              handlePrompt={handleOpenPaymentInstrictionsModal}
+              hasConcern={hasConcern}
+              status={status}
+              handleViewReceipt={handleOpenReceiptModal}
+            />
+          ) : null}
         </Layout>
       )}
 
