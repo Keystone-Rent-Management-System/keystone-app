@@ -70,12 +70,21 @@ const getInvoiceAnalytics = async (
   return res.data;
 };
 
+const searchInvoices = async () => {
+  setAuthToken(AxiosUtility);
+
+  const res = await AxiosUtility.get('/search/tenant/invoices');
+
+  return res.data;
+};
+
 const InvoiceServices = {
   getInvoices,
   getInvoice,
   raiseConcern,
   getConcerns,
   getInvoiceAnalytics,
+  searchInvoices,
 };
 
 export default InvoiceServices;
