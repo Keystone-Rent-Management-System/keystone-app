@@ -23,11 +23,13 @@ import {
 } from '../../../hooks';
 import numberConverter from '../../../utils/numberConverter';
 import numberWithCommas from '../../../utils/numberWithCommas';
+import {ConsolidatedInvoicesModal} from '../../../components/modals';
 
 const InvoiceView = ({route: {params}}) => {
   const concernModalRef = useRef();
   const receiptModalRef = useRef();
   const paymentInstrictionsRef = useRef();
+  const consolidatedInvoiceRef = useRef();
 
   const handleOpenConcernModal = useCallback(() => {
     concernModalRef.current?.expand();
@@ -51,6 +53,14 @@ const InvoiceView = ({route: {params}}) => {
 
   const handleClosePaymentInstrictionsModal = useCallback(() => {
     paymentInstrictionsRef.current?.close();
+  }, []);
+
+  const handleOpenConsolidatedInvoiceModal = useCallback(() => {
+    consolidatedInvoiceRef.current?.expand();
+  }, []);
+
+  const handleCloseConsolidatedInvoiceModal = useCallback(() => {
+    consolidatedInvoiceRef.current?.close();
   }, []);
 
   const {invoiceIsPending, invoice} = useSpecificInvoice(params?.id);
@@ -139,7 +149,11 @@ const InvoiceView = ({route: {params}}) => {
             />
             <InvoiceBillItem
               title={'Consolidated Invoices'}
-              customAmt={<InvoiceSequenceLink />}
+              customAmt={
+                <InvoiceSequenceLink
+                  onPress={handleOpenConsolidatedInvoiceModal}
+                />
+              }
             />
             <InvoiceBillItem
               containerClassName={'mt-3 border-t border-gray-200 py-3'}
@@ -238,6 +252,12 @@ const InvoiceView = ({route: {params}}) => {
         ref={paymentInstrictionsRef}
         handleCloseModal={handleClosePaymentInstrictionsModal}
       />
+
+      <ConsolidatedInvoicesModal
+        ref={consolidatedInvoiceRef}
+        handleCloseFilter={handleCloseConsolidatedInvoiceModal}
+        invoice={invoice}
+      />
     </>
   );
 };
@@ -246,7 +266,7 @@ export default InvoiceView;
 
 const InvoiceSequenceLink = ({onPress, number}) => (
   <TouchableOpacity onPress={onPress}>
-    <Text className="text-primary underline">
+    <Text className="text-primary underline font-inter text-sm">
       Invoice Sequence{number && `(${number})`}
     </Text>
   </TouchableOpacity>

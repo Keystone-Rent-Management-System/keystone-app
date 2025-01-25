@@ -11,6 +11,7 @@ import RequestExtensionModal from './RequestExtension';
 import AgreementModal from './Agreement';
 import LoadingModal from './LoadingModal';
 import StatementFilterModal from './statement-filter';
+import ConsolidatedInvoicesModal from './consolidated-invoices';
 
 export {
   CustomBottomSheet,
@@ -26,5 +27,6 @@ export {
   AgreementModal,
   LoadingModal,
   StatementFilterModal,
+  ConsolidatedInvoicesModal,
 };
 export * from './help';
