@@ -1,5 +1,11 @@
 import React, {useCallback, useMemo, useRef} from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import {
   InvoiceBillItem,
@@ -9,14 +15,14 @@ import {
 } from '@/components';
 import {InvoiceConcernModal, InvoiceReceiptModal} from '@/components/modals';
 import moment from 'moment';
+import PaymentInstructions from '../../../components/modals/PaymentInstructions';
 import {
   useGetConcerns,
   useRaiseConcern,
   useSpecificInvoice,
 } from '../../../hooks';
-import numberWithCommas from '../../../utils/numberWithCommas';
-import PaymentInstructions from '../../../components/modals/PaymentInstructions';
 import numberConverter from '../../../utils/numberConverter';
+import numberWithCommas from '../../../utils/numberWithCommas';
 
 const InvoiceView = ({route: {params}}) => {
   const concernModalRef = useRef();
@@ -48,6 +54,8 @@ const InvoiceView = ({route: {params}}) => {
   }, []);
 
   const {invoiceIsPending, invoice} = useSpecificInvoice(params?.id);
+
+  console.log('INVOICE IS::', JSON.stringify(invoice, null, 2));
 
   const {concernsIsPending, concerns, refetch} = useGetConcerns(params?.id);
 
@@ -104,7 +112,9 @@ const InvoiceView = ({route: {params}}) => {
           />
 
           {/*  Scroll section*/}
-          <ScrollView className={'pt-20 px-4 z-0'}>
+          <ScrollView
+            contentContainerStyle={styles.contentContainer}
+            className={'pt-20 px-4 z-0'}>
             <InvoiceBillItem
               txtClassName={'font-inter text-inactive_text'}
               title={'Bill'}
@@ -127,10 +137,26 @@ const InvoiceView = ({route: {params}}) => {
               amt={numberWithCommas(Number(invoice?.securityFeeAmount)) ?? 0}
             />
             <InvoiceBillItem
-              containerClassName={'mt-3 border-t border-gray-200 py-5'}
-              txtClassName={'font-inter-semibold text-black text-13'}
-              title={'Total'}
-              amt={numberWithCommas(Number(invoice?.totalAmount))}
+              title={'Consolidated Invoices'}
+              customAmt={<InvoiceSequenceLink />}
+            />
+            <InvoiceBillItem
+              containerClassName={'mt-3 border-t border-gray-200 py-3'}
+              txtClassName={'font-inter-semibold text-black text-sm'}
+              title={'Total Amount'}
+              amt={`ksh ${numberWithCommas(Number(invoice?.totalAmount))}`}
+            />
+            <InvoiceBillItem
+              containerClassName={'border-t border-gray-200 py-3'}
+              txtClassName={'font-inter-semibold text-black text-sm'}
+              title={'Paid Amount'}
+              amt={`ksh ${numberWithCommas(Number(invoice?.paidAmount ?? 0))}`}
+            />
+            <InvoiceBillItem
+              containerClassName={'border-t border-gray-200 py-3'}
+              txtClassName={'font-inter-semibold text-black text-sm'}
+              title={'Balance'}
+              amt={`ksh ${numberWithCommas(Number(invoice?.dueAmount ?? 0))}`}
             />
 
             {isPartiallyPaid ? (
@@ -216,3 +242,17 @@ const InvoiceView = ({route: {params}}) => {
 };
 
 export default InvoiceView;
+
+const InvoiceSequenceLink = ({onPress, number}) => (
+  <TouchableOpacity onPress={onPress}>
+    <Text className="text-primary underline">
+      Invoice Sequence{number && `(${number})`}
+    </Text>
+  </TouchableOpacity>
+);
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    paddingBottom: 30,
+  },
+});
