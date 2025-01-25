@@ -93,7 +93,9 @@ const ListingItem = ({
           <View className="">
             {isActive && (
               <View className="px-3 py-1 rounded-full bg-green-100">
-                <Text className="text-2xs text-green-800">Active</Text>
+                <Text className="text-2xs font-inter text-green-800">
+                  Active
+                </Text>
               </View>
             )}
           </View>
