@@ -1,4 +1,7 @@
 import BottomSheet from '@gorhom/bottom-sheet';
+import {useNavigation} from '@react-navigation/native';
+import {FlashList} from '@shopify/flash-list';
+import moment from 'moment';
 import React, {forwardRef} from 'react';
 import {
   StyleSheet,
@@ -7,9 +10,6 @@ import {
   TouchableOpacityProps,
   View,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {FlashList} from '@shopify/flash-list';
-import moment from 'moment';
 
 import {CloseSvg, InvoiceSvg} from '../../assets/icons';
 import {Invoice} from '../../types/invoice';
@@ -46,14 +46,14 @@ const ConsolidatedInvoices = forwardRef<BottomSheet, IConsolidatedInvoices>(
 
           <FlashList
             contentContainerStyle={styles.contentContainer}
-            data={dummyConsolidatedInvoices}
+            data={invoice.invoiceItemIds ?? []}
             renderItem={({item, index}) => (
               <ConsolidatedInvoiceItem
                 key={index}
-                invoiceNumber={item?.invoiceNumber}
-                balance={item?.balance}
-                date={new Date()}
-                unit={item?.unit}
+                invoiceNumber={item?.invoice_number}
+                balance={item?.due_amount}
+                date={moment(item.created_at).format('Do MMM YYYY')}
+                unit={item?.property_name}
                 onPress={() => handleNavigate(item.id)}
               />
             )}
@@ -97,7 +97,7 @@ interface IConsolidatedInvoiceItemProps extends TouchableOpacityProps {
   invoiceNumber: string;
   unit: string;
   balance: number;
-  date: Date;
+  date: Date | string;
 }
 
 const ConsolidatedInvoiceItem = ({
@@ -133,7 +133,7 @@ const ConsolidatedInvoiceItem = ({
       </View>
 
       <View className={'flex-row justify-between w-full mt-2'}>
-        <Text className={'font-inter text-2xs text-black'}>Unit {unit}</Text>
+        <Text className={'font-inter text-2xs text-black'}>{unit}</Text>
 
         <View className={'flex-row'}>
           <Text className={'text-[#ED3776] font-inter-medium text-sm'}>
