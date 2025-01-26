@@ -26,6 +26,15 @@ export interface Invoice {
   paymentStatus: INVOICE_PAYMENT_STATUS;
   currentStatus: string;
   totalAmount: number;
+  invoiceItemIds?: IConsolidatedInvoice[] | [];
+}
+
+export interface IConsolidatedInvoice {
+  id: string;
+  created_at: Date;
+  due_amount: number;
+  property_name: string;
+  invoice_number: string;
 }
 
 export type INVOICE_STATUS = 'PAID' | 'UNPAID' | 'ALL';

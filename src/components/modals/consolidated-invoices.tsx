@@ -1,4 +1,7 @@
 import BottomSheet from '@gorhom/bottom-sheet';
+import {useNavigation} from '@react-navigation/native';
+import {FlashList} from '@shopify/flash-list';
+import moment from 'moment';
 import React, {forwardRef} from 'react';
 import {
   StyleSheet,
@@ -7,9 +10,6 @@ import {
   TouchableOpacityProps,
   View,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {FlashList} from '@shopify/flash-list';
-import moment from 'moment';
 
 import {CloseSvg, InvoiceSvg} from '../../assets/icons';
 import {Invoice} from '../../types/invoice';
@@ -37,7 +37,7 @@ const ConsolidatedInvoices = forwardRef<BottomSheet, IConsolidatedInvoices>(
         snapPoints={['81%', '81%']}
         handleComponent={() => renderSheetHeader(handleCloseFilter)}>
         <View className="px-5 py-2 flex-1">
-          <Text className="text-gray-500 font-inter">
+          <Text className="text-gray-500 font-inter leading-5">
             This shows the aggregated invoices for the invoice:{' '}
             <Text className="text-primary text-13 font-inter-medium">
               {invoice?.invoiceNumber}
@@ -46,14 +46,14 @@ const ConsolidatedInvoices = forwardRef<BottomSheet, IConsolidatedInvoices>(
 
           <FlashList
             contentContainerStyle={styles.contentContainer}
-            data={dummyConsolidatedInvoices}
+            data={invoice?.invoiceItemIds ?? []}
             renderItem={({item, index}) => (
               <ConsolidatedInvoiceItem
                 key={index}
-                invoiceNumber={item?.invoiceNumber}
-                balance={item?.balance}
-                date={new Date()}
-                unit={item?.unit}
+                invoiceNumber={item?.invoice_number}
+                balance={item?.due_amount}
+                date={item?.created_at}
+                unit={item?.property_name}
                 onPress={() => handleNavigate(item.id)}
               />
             )}
@@ -127,16 +127,16 @@ const ConsolidatedInvoiceItem = ({
 
         {date ? (
           <Text className={'font-inter text-2xs text-inactive_text'}>
-            {moment(date).format('MMM DD YYYY')}
+            {moment(date).format('Do MMM YYYY')}
           </Text>
         ) : null}
       </View>
 
       <View className={'flex-row justify-between w-full mt-2'}>
-        <Text className={'font-inter text-2xs text-black'}>Unit {unit}</Text>
+        <Text className={'font-inter text-[11px] text-black'}>{unit}</Text>
 
         <View className={'flex-row'}>
-          <Text className={'text-[#ED3776] font-inter-medium text-sm'}>
+          <Text className={'text-[#ED3776] font-inter-medium text-xs'}>
             Balance: KES. {balance}{' '}
           </Text>
         </View>
@@ -144,41 +144,3 @@ const ConsolidatedInvoiceItem = ({
     </View>
   </TouchableOpacity>
 );
-
-const dummyConsolidatedInvoices = [
-  {
-    id: '921606be-d993-4870-98f4-7dbcea704fcf',
-    invoiceNumber: 'PLX-03134888',
-    date: new Date(),
-    unit: 'ML322',
-    balance: 8400,
-  },
-  {
-    id: '85eff2da-02e2-4f15-9663-a4e93e3ba7cb',
-    invoiceNumber: 'PLX-02534888',
-    date: new Date(),
-    unit: 'ML352',
-    balance: 8400,
-  },
-  {
-    id: '85eff2da-02e2-4f15-9663-a4e93e3ba7cb',
-    invoiceNumber: 'PLX-031565588',
-    date: new Date(),
-    unit: 'ML212',
-    balance: 8400,
-  },
-  {
-    id: '85eff2da-02e2-4f15-9663-a4e93e3ba7cb',
-    invoiceNumber: 'PLX-03134888',
-    date: new Date(),
-    unit: 'ML322',
-    balance: 8400,
-  },
-  {
-    id: '85eff2da-02e2-4f15-9663-a4e93e3ba7cb',
-    invoiceNumber: 'PLX-03134888',
-    date: new Date(),
-    unit: 'ML322',
-    balance: 8400,
-  },
-];
