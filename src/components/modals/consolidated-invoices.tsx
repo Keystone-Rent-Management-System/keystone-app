@@ -37,7 +37,7 @@ const ConsolidatedInvoices = forwardRef<BottomSheet, IConsolidatedInvoices>(
         snapPoints={['81%', '81%']}
         handleComponent={() => renderSheetHeader(handleCloseFilter)}>
         <View className="px-5 py-2 flex-1">
-          <Text className="text-gray-500 font-inter">
+          <Text className="text-gray-500 font-inter leading-5">
             This shows the aggregated invoices for the invoice:{' '}
             <Text className="text-primary text-13 font-inter-medium">
               {invoice?.invoiceNumber}
@@ -46,13 +46,13 @@ const ConsolidatedInvoices = forwardRef<BottomSheet, IConsolidatedInvoices>(
 
           <FlashList
             contentContainerStyle={styles.contentContainer}
-            data={invoice.invoiceItemIds ?? []}
+            data={invoice?.invoiceItemIds ?? []}
             renderItem={({item, index}) => (
               <ConsolidatedInvoiceItem
                 key={index}
                 invoiceNumber={item?.invoice_number}
                 balance={item?.due_amount}
-                date={moment(item.created_at).format('Do MMM YYYY')}
+                date={item?.created_at}
                 unit={item?.property_name}
                 onPress={() => handleNavigate(item.id)}
               />
@@ -97,7 +97,7 @@ interface IConsolidatedInvoiceItemProps extends TouchableOpacityProps {
   invoiceNumber: string;
   unit: string;
   balance: number;
-  date: Date | string;
+  date: Date;
 }
 
 const ConsolidatedInvoiceItem = ({
@@ -127,16 +127,16 @@ const ConsolidatedInvoiceItem = ({
 
         {date ? (
           <Text className={'font-inter text-2xs text-inactive_text'}>
-            {moment(date).format('MMM DD YYYY')}
+            {moment(date).format('Do MMM YYYY')}
           </Text>
         ) : null}
       </View>
 
       <View className={'flex-row justify-between w-full mt-2'}>
-        <Text className={'font-inter text-2xs text-black'}>{unit}</Text>
+        <Text className={'font-inter text-[11px] text-black'}>{unit}</Text>
 
         <View className={'flex-row'}>
-          <Text className={'text-[#ED3776] font-inter-medium text-sm'}>
+          <Text className={'text-[#ED3776] font-inter-medium text-xs'}>
             Balance: KES. {balance}{' '}
           </Text>
         </View>
