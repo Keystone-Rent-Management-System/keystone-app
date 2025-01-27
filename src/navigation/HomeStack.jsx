@@ -18,7 +18,7 @@ import {useAuth} from '../hooks';
 import PropertyStack from './PropertyStack';
 import StatementStack from './StatementStack';
 import TransactionTopTabNav from './TransactionTopTabNav';
-import {InvoiceAll} from '../screens';
+import {InvoiceAll, PaymentReceipt} from '../screens';
 
 const Stack = createStackNavigator();
 
@@ -139,6 +139,19 @@ const HomeStack = () => {
           options={{
             headerShown: true,
             title: 'My Payments',
+            headerTitleStyle: {
+              color: COLORS.primary,
+              fontSize: 18,
+              fontFamily: 'Inter-SemiBold',
+            },
+          }}
+        />
+        <Stack.Screen
+          name={'payment_receipt'}
+          component={PaymentReceipt}
+          options={{
+            headerShown: true,
+            title: 'Receipt',
             headerTitleStyle: {
               color: COLORS.primary,
               fontSize: 18,
