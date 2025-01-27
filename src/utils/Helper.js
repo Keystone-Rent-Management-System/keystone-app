@@ -83,6 +83,13 @@ export async function generatePdf(html, fileName) {
   return filePath;
 }
 
+export const formatToKES = amount => {
+  return new Intl.NumberFormat('en-KE', {
+    style: 'currency',
+    currency: 'KES',
+  }).format(amount);
+};
+
 const Helper = {
   renderSingularPlural,
   getGreetings,

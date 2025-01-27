@@ -1,14 +1,16 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Layout} from '@/components';
 import {ActivityIndicator, SectionList, Text, View} from 'react-native';
-import numberWithCommas from '../../utils/numberWithCommas';
+import numberWithCommas from '../../../utils/numberWithCommas';
 import moment from 'moment';
 import {BillsSvg} from '@/assets/icons';
-import {EmptyInvoiceList, PaymentItem} from '../../components';
-import {useTenantTransaction} from '../../hooks';
+import {EmptyInvoiceList, PaymentItem} from '../../../components';
+import {useTenantTransaction} from '../../../hooks';
+import {useNavigation} from '@react-navigation/native';
 
-const Payments = () => {
+const Index = () => {
   const [size, setSize] = useState(20);
+  const navigation = useNavigation();
 
   const {isPending, isRefetching, transactions, totalElements, refetch} =
     useTenantTransaction(size);
@@ -20,19 +22,12 @@ const Payments = () => {
     }
   };
 
-  // const renderYears = ({item, index, isActive}) => {
-  //   return (
-  //     <SelectorButton
-  //       key={index}
-  //       ClassName={'py-0'}
-  //       isActive={isActive}
-  //       text={item}
-  //       handlePress={() => {
-  //         setActive(index);
-  //       }}
-  //     />
-  //   );
-  // };
+  const handleViewPayment = useCallback(
+    item => {
+      navigation.navigate('payment_receipt', {payment: item});
+    },
+    [navigation],
+  );
 
   return (
     <>
@@ -41,7 +36,7 @@ const Payments = () => {
           sections={transactions}
           keyExtractor={item => item?.id}
           estimatedItemSize={20}
-          renderItem={renderItem}
+          renderItem={props => renderItem(props, handleViewPayment)}
           renderSectionHeader={renderHeader}
           refreshing={isRefetching}
           onRefresh={refetch}
@@ -71,7 +66,7 @@ const renderItem = ({item}, handlePress) => (
     paymentMethod={item?.methodOfPayment}
     amount={numberWithCommas(Number(item.amountDebited))}
     invoiceNumber={item?.invoiceNumber}
-    handlePress={handlePress}
+    handlePress={() => handlePress(item)}
   />
 );
 
@@ -83,11 +78,11 @@ const renderHeader = ({section}) => (
   </View>
 );
 
-export default Payments;
+export default Index;
 
 const renderEmptyPayment = () => (
   <EmptyInvoiceList
-    title={'No Payments Found!'}
+    title={'No Index Found!'}
     subTitle={'You haven’t made any transaction yet.'}
   />
 );
