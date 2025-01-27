@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
 import {Layout} from '@/components';
 import {ActivityIndicator, SectionList, Text, View} from 'react-native';
-import numberWithCommas from '../../utils/numberWithCommas';
+import numberWithCommas from '../../../utils/numberWithCommas';
 import moment from 'moment';
 import {BillsSvg} from '@/assets/icons';
-import {EmptyInvoiceList, PaymentItem} from '../../components';
-import {useTenantTransaction} from '../../hooks';
+import {EmptyInvoiceList, PaymentItem} from '../../../components';
+import {useTenantTransaction} from '../../../hooks';
 
-const Payments = () => {
+const Index = () => {
   const [size, setSize] = useState(20);
 
   const {isPending, isRefetching, transactions, totalElements, refetch} =
@@ -83,11 +83,11 @@ const renderHeader = ({section}) => (
   </View>
 );
 
-export default Payments;
+export default Index;
 
 const renderEmptyPayment = () => (
   <EmptyInvoiceList
-    title={'No Payments Found!'}
+    title={'No Index Found!'}
     subTitle={'You haven’t made any transaction yet.'}
   />
 );
