@@ -50,4 +50,9 @@ const All = () => {
 
 export default All;
 
-const renderEmptyInvoice = () => <EmptyInvoiceList />;
+const renderEmptyInvoice = () => (
+  <EmptyInvoiceList
+    title={'No Invoices Found!'}
+    subTitle={'Sorry! you have no invoices to show.'}
+  />
+);
