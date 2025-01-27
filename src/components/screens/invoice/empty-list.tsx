@@ -1,8 +1,8 @@
-import {View, Text} from 'react-native';
+import {Text, View} from 'react-native';
 import React from 'react';
 import {InvoiceSvg} from '../../../assets/icons';
 
-export default function EmptyInvoice() {
+export default function EmptyList() {
   return (
     <View className="flex-1 items-center justify-center min-h-[80vh] pb-20">
       {/* <View  */}
