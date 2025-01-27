@@ -1,7 +1,8 @@
 import React from 'react';
-import {ScrollView, Text, View} from 'react-native';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import moment from 'moment';
 import {formatToKES} from '../../../utils/Helper';
+import {PrintSvg, ShareSvg} from '../../../assets/icons/payment';
 
 const Receipt = ({route: {params}}: {route: any}) => {
   const invoice: any = params?.payment;
@@ -91,6 +92,22 @@ const Receipt = ({route: {params}}: {route: any}) => {
             Thank you for choosing to stay with us.
           </Text>
         </View>
+      </View>
+
+      <View className={'flex-row gap-5 justify-center py-3 pb-12'}>
+        <TouchableOpacity
+          className={
+            'justify-center items-center h-14 aspect-square rounded-full border-primary border-[1.5px]'
+          }>
+          <PrintSvg />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className={
+            'justify-center items-center h-14 aspect-square rounded-full border-primary border-[1.5px]'
+          }>
+          <ShareSvg />
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
