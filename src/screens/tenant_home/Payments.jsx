@@ -4,7 +4,7 @@ import {ActivityIndicator, SectionList, Text, View} from 'react-native';
 import numberWithCommas from '../../utils/numberWithCommas';
 import moment from 'moment';
 import {BillsSvg} from '@/assets/icons';
-import {PaymentItem} from '../../components';
+import {EmptyInvoiceList, PaymentItem} from '../../components';
 import {useTenantTransaction} from '../../hooks';
 
 const Payments = () => {
@@ -37,37 +37,22 @@ const Payments = () => {
   return (
     <>
       <Layout ClassName={'p-4 relative'}>
-        {/*<View>*/}
-        {/*  <FlatList*/}
-        {/*    className={'h-8'}*/}
-        {/*    data={years}*/}
-        {/*    renderItem={({item, index}) =>*/}
-        {/*      renderYears({*/}
-        {/*        item,*/}
-        {/*        index,*/}
-        {/*        isActive: active === index,*/}
-        {/*      })*/}
-        {/*    }*/}
-        {/*    horizontal={true}*/}
-        {/*    showsHorizontalScrollIndicator={false}*/}
-        {/*  />*/}
-        {/*</View>*/}
-
         <SectionList
           sections={transactions}
           keyExtractor={item => item?.id}
           estimatedItemSize={20}
           renderItem={renderItem}
           renderSectionHeader={renderHeader}
-          refreshing={isPending || isRefetching}
+          refreshing={isRefetching}
           onRefresh={refetch}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
           ListFooterComponent={
-            isRefetching ? (
+            isPending ? (
               <ActivityIndicator color={'#022374'} size="large" />
             ) : null
           }
+          ListEmptyComponent={renderEmptyPayment}
         />
       </Layout>
     </>
@@ -99,3 +84,10 @@ const renderHeader = ({section}) => (
 );
 
 export default Payments;
+
+const renderEmptyPayment = () => (
+  <EmptyInvoiceList
+    title={'No Payments Found!'}
+    subTitle={'You haven’t made any transaction yet.'}
+  />
+);
