@@ -52,7 +52,7 @@ const PdfViewer = ({
 
   return (
     <View
-      className={'flex-1 w-[100%] p-0'}
+      className={'w-[100%] p-0'}
       style={{width: Dimensions.get('window').width}}>
       <Pdf source={source} style={styles.pdf} />
     </View>
@@ -66,15 +66,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 0,
     padding: 0,
-    height: '100%',
     backgroundColor: '#f0f0f0',
   },
   pdf: {
-    flex: 1,
     padding: 3,
     borderWidth: 5,
     borderColor: 'white',
-    height: '100%',
+    height: Dimensions.get('window').height * 0.7,
   },
 });
 
