@@ -88,7 +88,7 @@ async function getFilteredStatements(
     .format('YYYY-MM-DD');
 
   const {data: res} = await AxiosUtility.get(
-    `/statements/tenant/filter?startDate=${startDate}&endDate=${endDate}`,
+    `/statements/tenant/filter?startDate=${startDate}&endDate=${endDate}&page=0&size=1000`,
   );
 
   const flattenedResponse: IFlattendenedStatement[] =

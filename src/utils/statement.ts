@@ -108,19 +108,20 @@ export function getStatementDetails(
   const paymentTypes: string[] = [];
 
   if (invoiceDetails.rent_amount) {
-    paymentTypes.push('Rent Payment');
+    // if type is payment
+    paymentTypes.push('Rent Invoice');
   }
   if (invoiceDetails.water_fee_amount) {
-    paymentTypes.push('Water Payment');
+    paymentTypes.push('Water Invoice');
   }
   if (invoiceDetails.security) {
-    paymentTypes.push('Security Payment');
+    paymentTypes.push('Security Invoice');
   }
   if (invoiceDetails.garbage_fee_amount) {
-    paymentTypes.push('Garbage Payment');
+    paymentTypes.push('Garbage Invoice');
   }
   if (invoiceDetails.penalized_amount) {
-    paymentTypes.push('Penalty Payment');
+    paymentTypes.push('Penalty Invoice');
   }
 
   return paymentTypes.length > 0 ? paymentTypes.join(' & ') : null;

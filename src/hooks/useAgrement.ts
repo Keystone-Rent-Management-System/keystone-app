@@ -23,7 +23,7 @@ export const useActiveAgrement = () => {
   const {activeAgreement, saveAgreement} = useActiveAgreement();
 
   const {isPending, error, data, refetch} = useQuery({
-    queryKey: ['active_agreement'],
+    queryKey: ['active_agreement', activeAgreement?.id],
     queryFn: () => AgreementServices.getActiveAgreement(),
     enabled: !activeAgreement?.id,
   });
