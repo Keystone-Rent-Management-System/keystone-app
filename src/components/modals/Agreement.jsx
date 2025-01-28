@@ -2,7 +2,7 @@ import React, {forwardRef, useImperativeHandle, useRef, useState} from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
 import {useQueryClient} from '@tanstack/react-query';
 import CheckBox from '@react-native-community/checkbox';
-import {BottomSheetScrollView, useBottomSheetModal} from '@gorhom/bottom-sheet';
+import {useBottomSheetModal} from '@gorhom/bottom-sheet';
 
 import CustomBottomSheetModal from './CustomBottomSheetModal';
 import {CButton} from '../general';
@@ -43,12 +43,9 @@ const AgreementModalSheet = forwardRef((props, ref) => {
 
       <CustomBottomSheetModal
         ref={agreementModalRef}
-        snapPoints={['50%', '99%']}
+        snapPoints={['90%', '99%']}
         handleComponent={() => renderSheetHeader(props?.type)}>
-        {/* eslint-disable-next-line react-native/no-inline-styles */}
-        <BottomSheetScrollView style={{flexDirection: 'row'}}>
-          <PdfPreview agreementId={props.agreement?.id} />
-        </BottomSheetScrollView>
+        <PdfPreview agreementId={props.agreement?.id} />
 
         {props.type === 'agreed' ? (
           <View className={'py-5 pb-10 w-full flex-row justify-center'}>
@@ -60,7 +57,7 @@ const AgreementModalSheet = forwardRef((props, ref) => {
           </View>
         ) : (
           props?.type === 'pending' && (
-            <View className={'w-full pb-5 px-5 '}>
+            <View className={'w-full py-5 pb-5 px-5 mt-10'}>
               <View
                 className={
                   'py-5 w-full flex flex-row items-start justify-center gap-1'
