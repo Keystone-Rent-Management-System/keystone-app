@@ -1,5 +1,6 @@
 import React from 'react';
 import {TouchableOpacity, View, Text} from 'react-native';
+import {formatToKES} from '../../../utils/Helper';
 
 const PaymentItem = props => {
   return (
@@ -30,7 +31,7 @@ const PaymentItem = props => {
             {props?.paymentMethod}
           </Text>
           <Text className={'text-black font-inter-medium text-xs'}>
-            KES. {props.amount}
+            {formatToKES(props.amount)}
           </Text>
         </View>
 
