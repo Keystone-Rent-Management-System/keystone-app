@@ -55,7 +55,7 @@ export const useActiveStatement = () => {
 
   const {data, error, isError, isPending, refetch} = useQuery({
     queryKey: ['active-statement'],
-    queryFn: async () => StatementServices.fetchActiveStatement(agreement?.id),
+    queryFn: async () => StatementServices.fetchCurrentStatement(agreement?.id),
     enabled: !!agreement?.id,
   });
 
