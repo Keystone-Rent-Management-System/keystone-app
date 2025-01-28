@@ -1,6 +1,7 @@
 import React, {ReactNode} from 'react';
 
 import {Text, TouchableOpacity, View} from 'react-native';
+import {formatToKES} from '../../utils/Helper';
 
 interface IAgreementListingItem {
   icon: ReactNode;
@@ -57,7 +58,7 @@ const AgreementListingItem = ({
                 className={`text-black font-inter-medium text-xs
               ${'text-black'}
               `}>
-                KES. {amount}
+                {formatToKES(amount)}
               </Text>
             ) : null}
           </View>
