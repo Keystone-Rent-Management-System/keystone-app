@@ -9,8 +9,9 @@ import COLORS from '../../constants/Theme';
 import {useActiveAgrement} from '../../hooks';
 import StatementServices from '../../services/StatementServices';
 import {getError} from '../../utils/getError';
-import Helper from '../../utils/Helper';
+import Helper, {formatToKES} from '../../utils/Helper';
 import {getStatementDetails} from '../../utils/statement';
+import {numberCurrencyConverter} from '../../utils/numberConverter';
 
 const Statements = ({params}) => {
   const {agreement} = useActiveAgrement();
@@ -106,22 +107,48 @@ const Statements = ({params}) => {
               return `
           <tr style="display: flex; gap: 10px; padding: 5px; border-color: #00000060; border-bottom-width: 0.5px;">
             <td style="flex: 1; font-weight: 400; font-size: 18px; color: black;">
-              ${statement?.timeOfDayLabel}
+              ${moment(statement?.transaction?.statement_date).format(
+                'Do MMMM YYYY',
+              )}
             </td>
             <td style="flex: 1; font-weight: 400; font-size: 18px; color: black;">
-              ${statement?.transaction.invoice_details?.invoice_number}
+              ${
+                statement?.transaction?.payment_details?.transaction_code ||
+                statement?.transaction.invoice_details?.invoice_number
+              }
             </td>
             <td style="flex: 1; font-weight: 400; font-size: 18px; color: black;">
-              ${getStatementDetails(statement?.transaction?.invoice_details)}
+              ${
+                statement?.transaction?.payment_details?.transaction_code
+                  ? `Payment made on ${moment(
+                      statement?.transaction?.payment_details?.created_at,
+                    ).format('Do/MMM/yyyy')}`
+                  : getStatementDetails(statement?.transaction?.invoice_details)
+              }
             </td>
             <td style="flex: 1; font-weight: 400; font-size: 18px; color: black;">
-              KES ${statement?.transaction?.invoice_details?.total_amount ?? 0}
+              ${
+                !statement?.transaction?.payment_details?.transaction_code
+                  ? formatToKES(
+                      statement?.transaction?.invoice_details?.total_amount ??
+                        0,
+                    )
+                  : ''
+              }
             </td>
             <td style="flex: 1; font-weight: 400; font-size: 18px; color: black;">
-              KES ${statement?.transaction?.payment_details?.paid_amount ?? 0}
+              ${
+                statement?.transaction?.payment_details?.transaction_code
+                  ? formatToKES(
+                      statement?.transaction?.payment_details?.paid_amount ?? 0,
+                    )
+                  : ''
+              }
             </td>
             <td style="flex: 1; font-weight: 400; font-size: 18px; color: black;">
-              KES ${statement?.transaction?.payment_details?.balance ?? 0}
+              ${numberCurrencyConverter(
+                statement?.transaction?.payment_details?.balance ?? 0,
+              )}
             </td>
           </tr>`;
             })
