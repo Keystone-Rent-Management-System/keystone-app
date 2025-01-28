@@ -140,10 +140,10 @@ const Statements = ({params}) => {
     try {
       await Helper.generatePdf(source?.html, fileName);
 
-      ToastAndroid.show('Invoice saved to Downloads', ToastAndroid.LONG);
+      ToastAndroid.show('Statement saved to Downloads', ToastAndroid.LONG);
       navigation.goBack();
     } catch (e) {
-      ToastAndroid.show('Invoice Download Error', ToastAndroid.LONG);
+      ToastAndroid.show('Statement Download Error', ToastAndroid.LONG);
       navigation.goBack();
     }
   }, [dateRange?.from, dateRange?.to, navigation, source?.html]);
