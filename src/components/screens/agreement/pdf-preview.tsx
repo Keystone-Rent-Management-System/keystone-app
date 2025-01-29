@@ -40,8 +40,11 @@ const PdfViewer = ({
   if (isPending) {
     return (
       <View
-        style={{width: Dimensions.get('window').width}}
-        className={'flex flex-col items-center py-16 '}>
+        style={{
+          width: Dimensions.get('window').width,
+          height: Dimensions.get('window').height * 0.8,
+        }}
+        className={'flex flex-col items-center py-16'}>
         <ActivityIndicator color={'#022374'} size="small" />
         <Text className={'text-primary font-inter-semibold text-sm mt-3'}>
           Fetching agreement...
@@ -72,7 +75,7 @@ const styles = StyleSheet.create({
     padding: 3,
     borderWidth: 5,
     borderColor: 'white',
-    height: Dimensions.get('window').height * 0.7,
+    height: Dimensions.get('window').height * 0.8,
   },
 });
 
