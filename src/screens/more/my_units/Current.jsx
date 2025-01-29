@@ -1,13 +1,14 @@
-import React from 'react';
 import {useNavigation} from '@react-navigation/native';
-import moment from 'moment/moment';
 import {FlashList} from '@shopify/flash-list';
+import moment from 'moment/moment';
+import React from 'react';
 
-import {Layout, ListingItem} from '@/components';
-import {invoiceStyles} from '../../tenant_home/invoice/Unpaid';
 import {HomeSvg} from '@/assets/icons';
+import {Layout} from '@/components';
 import COLORS from '@/constants/Theme';
+import {AgreementListingItem} from '../../../components';
 import {useAgrement} from '../../../hooks';
+import {invoiceStyles} from '../../tenant_home/invoice/Unpaid';
 
 const Current = () => {
   const navigation = useNavigation();
@@ -43,7 +44,7 @@ const Current = () => {
 
 export const renderUnitListItem = (item, handlePress = () => {}) => {
   return (
-    <ListingItem
+    <AgreementListingItem
       icon={<HomeSvg color={COLORS.primary} size={'24'} />}
       title={item?.propertyUnits?.property?.name}
       customDate={

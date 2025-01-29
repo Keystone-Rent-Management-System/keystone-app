@@ -1,13 +1,15 @@
-import React, {memo} from 'react';
-import {Pressable, Text, View} from 'react-native';
-import {StatementsSvg} from '../../../assets/icons';
 import moment from 'moment';
+import React, {memo} from 'react';
+import {Text, TouchableOpacity, View} from 'react-native';
+import {StatementsSvg} from '../../../assets/icons';
 
 interface IStatementItem {
   invoiceNumber: string;
   startingBalance: string;
   date: string;
   paymentAmount: string;
+  charge: string;
+  payment: string;
   handlePress?: () => void;
 }
 
@@ -16,10 +18,14 @@ const StatementItem = ({
   startingBalance,
   date,
   paymentAmount,
+  charge,
+  payment,
+  handlePress,
 }: IStatementItem) => {
   return (
-    <Pressable
-      className={'flex-row space-x-2 py-3.5 border-b border-border_grey'}>
+    <TouchableOpacity
+      className={'flex-row space-x-2 py-3.5 border-b border-border_grey'}
+      onPress={handlePress}>
       {/*  text  */}
       <View
         className={
@@ -53,8 +59,26 @@ const StatementItem = ({
             KES {paymentAmount}
           </Text>
         </View>
+
+        {/*Row 3*/}
+        <View className={'flex flex-row justify-between'}>
+          <Text className={'text-zinc-400 text-xs font-inter'}>
+            {`Charge(Cr): KES ${charge ?? 0}`}
+          </Text>
+
+          <Text className={'text-zinc-400 text-xs font-inter'}>
+            {`Payment(Dr): KES ${payment ?? 0}`}
+          </Text>
+        </View>
+
+        {/*Row 4*/}
+        <View className={'flex flex-row justify-between'}>
+          <Text className={'text-zinc-400 text-xs font-inter'}>
+            {`Details: KES ${charge ?? 0}`}
+          </Text>
+        </View>
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

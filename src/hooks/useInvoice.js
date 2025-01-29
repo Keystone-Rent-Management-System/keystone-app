@@ -47,8 +47,9 @@ export const usePaidInvoice = size => {
 
 export const useSpecificInvoice = id => {
   const {isPending, error, data} = useQuery({
-    queryKey: ['invoice'],
+    queryKey: ['invoice', id],
     queryFn: () => InvoiceServices.getInvoice(id),
+    enabled: !!id,
   });
 
   const invoice = data || null;
@@ -85,8 +86,9 @@ export const useRaiseConcern = (id, handleCloseConcernModal, refetch) => {
 
 export const useGetConcerns = id => {
   const {isPending, error, data, refetch} = useQuery({
-    queryKey: ['invoice_concerns'],
+    queryKey: ['invoice_concerns', id],
     queryFn: () => InvoiceServices.getConcerns(id),
+    enabled: !!id,
   });
 
   const concerns = data?.content || null;

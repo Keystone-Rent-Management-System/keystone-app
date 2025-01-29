@@ -1,11 +1,11 @@
+import {useNavigation} from '@react-navigation/native';
+import {FlashList} from '@shopify/flash-list';
 import React from 'react';
 import {ActivityIndicator} from 'react-native';
-import {FlashList} from '@shopify/flash-list';
-import {useNavigation} from '@react-navigation/native';
 
-import {Layout} from '../../../components';
-import {invoiceStyles, renderInvoiceItem} from './Unpaid';
+import {EmptyInvoiceList, Layout} from '../../../components';
 import {useFetchInvoice} from '../../../hooks/useFetchInvoice.ts';
+import {invoiceStyles, renderInvoiceItem} from './Unpaid';
 
 const All = () => {
   const navigation = useNavigation();
@@ -37,6 +37,7 @@ const All = () => {
         onRefresh={refetch}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
+        ListEmptyComponent={renderEmptyInvoice}
         ListFooterComponent={
           isRefetching ? (
             <ActivityIndicator color={'#022374'} size="large" />
@@ -48,3 +49,10 @@ const All = () => {
 };
 
 export default All;
+
+const renderEmptyInvoice = () => (
+  <EmptyInvoiceList
+    title={'No Invoices Found!'}
+    subTitle={'Sorry! you have no invoices to show.'}
+  />
+);

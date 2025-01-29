@@ -1,5 +1,12 @@
 import React, {useCallback, useMemo, useRef} from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import {
   InvoiceBillItem,
@@ -9,19 +16,22 @@ import {
 } from '@/components';
 import {InvoiceConcernModal, InvoiceReceiptModal} from '@/components/modals';
 import moment from 'moment';
+import {ConsolidatedInvoicesModal} from '../../../components/modals';
+import PaymentInstructions from '../../../components/modals/PaymentInstructions';
+import COLORS from '../../../constants/Theme';
 import {
   useGetConcerns,
   useRaiseConcern,
   useSpecificInvoice,
 } from '../../../hooks';
-import numberWithCommas from '../../../utils/numberWithCommas';
-import PaymentInstructions from '../../../components/modals/PaymentInstructions';
 import numberConverter from '../../../utils/numberConverter';
+import numberWithCommas from '../../../utils/numberWithCommas';
 
 const InvoiceView = ({route: {params}}) => {
   const concernModalRef = useRef();
   const receiptModalRef = useRef();
   const paymentInstrictionsRef = useRef();
+  const consolidatedInvoiceRef = useRef();
 
   const handleOpenConcernModal = useCallback(() => {
     concernModalRef.current?.expand();
@@ -45,6 +55,14 @@ const InvoiceView = ({route: {params}}) => {
 
   const handleClosePaymentInstrictionsModal = useCallback(() => {
     paymentInstrictionsRef.current?.close();
+  }, []);
+
+  const handleOpenConsolidatedInvoiceModal = useCallback(() => {
+    consolidatedInvoiceRef.current?.expand();
+  }, []);
+
+  const handleCloseConsolidatedInvoiceModal = useCallback(() => {
+    consolidatedInvoiceRef.current?.close();
   }, []);
 
   const {invoiceIsPending, invoice} = useSpecificInvoice(params?.id);
@@ -74,6 +92,13 @@ const InvoiceView = ({route: {params}}) => {
     [invoice?.paymentStatus],
   );
 
+  const isInactive = useMemo(() => {
+    if (!invoice?.currentStatus) {
+      return true;
+    }
+    return invoice?.currentStatus?.toLowerCase() === 'inactive';
+  }, [invoice?.currentStatus]);
+
   const status = useMemo(
     () =>
       invoice?.paymentStatus?.toLowerCase() === 'unpaid'
@@ -83,129 +108,176 @@ const InvoiceView = ({route: {params}}) => {
         : invoice?.paymentStatus?.toLowerCase() === 'paid' && 'paid',
     [invoice?.paymentStatus],
   );
+
+  if (invoiceIsPending) {
+    return (
+      <Layout ClassName={'px-3 flex-1 justify-center items-center'}>
+        <ActivityIndicator color={COLORS.primary} size={50} />
+        <Text className="text-primary mt-5 font-inter-medium">
+          Loading Invoice ...
+        </Text>
+      </Layout>
+    );
+  }
+
   return (
     <>
-      {!invoiceIsPending && (
-        <Layout ClassName={'relative'}>
-          <InvoiceHeader
-            invoiceAmount={numberConverter(invoice?.dueAmount)}
-            invoiceTitle={invoice?.propertyName?.split('-')[0]}
-            invoiceUnit={invoice?.propertyName?.split('-')[1]}
-            hasConcern={hasConcern}
-            isPartial={isPartiallyPaid}
-            invoiceNo={invoice?.invoiceNumber}
-            userInvoiced={invoice?.billedTo}
-            invoiceDate={moment(invoice?.updatedAt).format('Do MMM, YYYY')}
+      <Layout ClassName={'relative'}>
+        <InvoiceHeader
+          invoiceAmount={numberConverter(invoice?.dueAmount)}
+          invoiceTitle={invoice?.propertyName?.split('-')[0]}
+          invoiceUnit={invoice?.propertyName?.split('-')[1]}
+          hasConcern={hasConcern}
+          isPartial={isPartiallyPaid}
+          invoiceNo={invoice?.invoiceNumber}
+          userInvoiced={invoice?.billedTo}
+          invoiceDate={moment(invoice?.updatedAt).format('Do MMM, YYYY')}
+        />
+
+        {/*  Scroll section*/}
+        <ScrollView
+          contentContainerStyle={styles.contentContainer}
+          className={'pt-20 px-4 z-0'}>
+          <InvoiceBillItem
+            txtClassName={'font-inter text-inactive_text'}
+            title={'Bill'}
+            amt={'Total'}
+          />
+          <InvoiceBillItem
+            title={'Rent'}
+            amt={numberWithCommas(Number(invoice?.rentAmount)) ?? 0}
+          />
+          <InvoiceBillItem
+            title={'Water'}
+            amt={numberWithCommas(Number(invoice?.waterFeeAmount)) ?? 0}
+          />
+          <InvoiceBillItem
+            title={'Garbage'}
+            amt={numberWithCommas(Number(invoice?.garbageFeeAmount)) ?? 0}
+          />
+          <InvoiceBillItem
+            title={'Security'}
+            amt={numberWithCommas(Number(invoice?.securityFeeAmount)) ?? 0}
+          />
+          <InvoiceBillItem
+            title={'Consolidated Invoices'}
+            customAmt={
+              <InvoiceSequenceLink
+                onPress={handleOpenConsolidatedInvoiceModal}
+              />
+            }
+          />
+          <InvoiceBillItem
+            containerClassName={'mt-3 border-t border-gray-200 py-3'}
+            txtClassName={'font-inter-semibold text-black text-sm'}
+            title={'Total Amount'}
+            amt={`ksh ${numberWithCommas(Number(invoice?.totalAmount))}`}
+          />
+          <InvoiceBillItem
+            containerClassName={'border-t border-gray-200 py-3'}
+            txtClassName={'font-inter-semibold text-black text-sm'}
+            title={'Paid Amount'}
+            amt={`ksh ${numberWithCommas(Number(invoice?.paidAmount ?? 0))}`}
+          />
+          <InvoiceBillItem
+            containerClassName={'border-t border-gray-200 py-3'}
+            txtClassName={'font-inter-semibold text-black text-sm'}
+            title={'Balance'}
+            amt={`ksh ${numberWithCommas(Number(invoice?.dueAmount ?? 0))}`}
           />
 
-          {/*  Scroll section*/}
-          <ScrollView className={'pt-20 px-4 z-0'} style={{elevation: 0}}>
+          {isPartiallyPaid ? (
             <InvoiceBillItem
-              txtClassName={'font-inter text-inactive_text'}
-              title={'Bill'}
-              amt={'Total'}
+              containerClassName={'py-3 border-y border-border_grey'}
+              txtClassName={'font-inter'}
+              title={'Partially Paid'}
+              customAmt={
+                <View className={'items-center'}>
+                  <Text className={'text-11 font-inter text-inactive_text '}>
+                    {moment(invoice?.updatedAt).format('HH:MMa Do MMMM, YYYY')}
+                  </Text>
+                  <Text
+                    className={'text-13 font-inter-semibold text-black mt-2'}>
+                    KES. {numberWithCommas(Number(invoice?.paidAmount))}
+                  </Text>
+                </View>
+              }
             />
-            <InvoiceBillItem
-              title={'Rent'}
-              amt={numberWithCommas(Number(invoice?.rentAmount)) ?? 0}
-            />
-            <InvoiceBillItem
-              title={'Water'}
-              amt={numberWithCommas(Number(invoice?.waterFeeAmount)) ?? 0}
-            />
-            <InvoiceBillItem
-              title={'Garbage'}
-              amt={numberWithCommas(Number(invoice?.garbageFeeAmount)) ?? 0}
-            />
-            <InvoiceBillItem
-              title={'Security'}
-              amt={numberWithCommas(Number(invoice?.securityFeeAmount)) ?? 0}
-            />
-            <InvoiceBillItem
-              containerClassName={'mt-3 border-t border-gray-200 py-5'}
-              txtClassName={'font-inter-semibold text-black text-13'}
-              title={'Total'}
-              amt={numberWithCommas(Number(invoice?.totalAmount))}
-            />
+          ) : null}
 
-            {isPartiallyPaid ? (
-              <InvoiceBillItem
-                containerClassName={'py-3 border-y border-border_grey'}
-                txtClassName={'font-inter'}
-                title={'Partially Paid'}
-                customAmt={
-                  <View className={'items-center'}>
-                    <Text className={'text-11 font-inter text-inactive_text '}>
-                      {moment(invoice?.updatedAt).format(
-                        'HH:MMa Do MMMM, YYYY',
-                      )}
-                    </Text>
-                    <Text
-                      className={'text-13 font-inter-semibold text-black mt-2'}>
-                      KES. {numberWithCommas(Number(invoice?.paidAmount))}
-                    </Text>
-                  </View>
-                }
-              />
-            ) : null}
+          {!hasConcern && (isUnpaid || isPartiallyPaid) ? (
+            <View>
+              <Text className={'text-sm font-inter-semibold text-black mt-4'}>
+                Does this invoice have an issue?
+              </Text>
 
-            {!hasConcern && (isUnpaid || isPartiallyPaid) ? (
-              <View>
-                <Text className={'text-sm font-inter-semibold text-black mt-4'}>
-                  Does this invoice have an issue?
-                </Text>
+              <Text className={'font-inter text-xs leading-5 mt-1 text-grey_1'}>
+                The invoice has a discrepancy to what you expected,{' '}
+                <TouchableOpacity onPress={handleOpenConcernModal}>
+                  <Text
+                    className={
+                      'underline text-xs text-primary font-inter-semibold'
+                    }>
+                    Raise Concern
+                  </Text>
+                </TouchableOpacity>
+              </Text>
+            </View>
+          ) : null}
+          <View className={'h-20 w-full'} />
+        </ScrollView>
 
-                <Text
-                  className={'font-inter text-xs leading-5 mt-1 text-grey_1'}>
-                  The invoice has a discrepancy to what you expected,{' '}
-                  <TouchableOpacity onPress={handleOpenConcernModal}>
-                    <Text
-                      className={
-                        'underline text-xs text-primary font-inter-semibold'
-                      }>
-                      Raise Concern
-                    </Text>
-                  </TouchableOpacity>
-                </Text>
-              </View>
-            ) : null}
-            <View className={'h-20 w-full'} />
-          </ScrollView>
-
+        {!isInactive && status === 'unpaid' ? (
           <InvoiceFooter
             handlePrompt={handleOpenPaymentInstrictionsModal}
             hasConcern={hasConcern}
             status={status}
             handleViewReceipt={handleOpenReceiptModal}
           />
-        </Layout>
-      )}
+        ) : null}
+      </Layout>
 
       <InvoiceConcernModal
         ref={concernModalRef}
         handleCloseModal={handleCloseConcernModal}
         handleRaiseConcern={handleRaiseConcern}
       />
-
       <InvoiceReceiptModal
         receipt={invoice}
         ref={receiptModalRef}
         handleCloseModal={handleCloseReceiptModal}
       />
-
       {/* <InvoicePaymentInstrictionsModal
         invoice={invoice}
         ref={paymentInstrictionsRef}
         handleCloseModal={handleClosePaymentInstrictionsModal}
       /> */}
-
       <PaymentInstructions
         invoice={invoice}
         ref={paymentInstrictionsRef}
         handleCloseModal={handleClosePaymentInstrictionsModal}
+      />
+      <ConsolidatedInvoicesModal
+        ref={consolidatedInvoiceRef}
+        handleCloseFilter={handleCloseConsolidatedInvoiceModal}
+        invoice={invoice}
       />
     </>
   );
 };
 
 export default InvoiceView;
+
+const InvoiceSequenceLink = ({onPress, number}) => (
+  <TouchableOpacity onPress={onPress}>
+    <Text className="text-primary underline font-inter text-sm">
+      Invoice Sequence{number && `(${number})`}
+    </Text>
+  </TouchableOpacity>
+);
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    paddingBottom: 30,
+  },
+});

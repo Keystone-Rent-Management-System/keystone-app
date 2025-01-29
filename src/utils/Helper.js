@@ -1,6 +1,8 @@
 import {Linking} from 'react-native';
 import {PALLAX_SUPPORT_NUMBER} from '../constants';
 import moment from 'moment';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const renderSingularPlural = (num, render, nullRender = '') =>
   parseInt(num, 10) > 1 ? render : nullRender;
@@ -66,6 +68,28 @@ const calculateDaysRemaining = sampleDate => {
   return moment(sampleDate).diff(currentDate, 'days').toString();
 };
 
+export async function generatePdf(html, fileName) {
+  let options = {
+    html,
+    fileName,
+    directory: 'Documents',
+    base64: true,
+  };
+  let file = await RNHTMLtoPDF.convert(options);
+  let filePath = RNFetchBlob.fs.dirs.DownloadDir + '/' + fileName + '.pdf';
+
+  await RNFetchBlob.fs.writeFile(filePath, file.base64, 'base64');
+
+  return filePath;
+}
+
+export const formatToKES = amount => {
+  return new Intl.NumberFormat('en-KE', {
+    style: 'currency',
+    currency: 'KES',
+  }).format(amount);
+};
+
 const Helper = {
   renderSingularPlural,
   getGreetings,
@@ -77,6 +101,7 @@ const Helper = {
   getCurrentMonthInNumberForm,
   getCurrentYear,
   calculateDaysRemaining,
+  generatePdf,
 };
 
 export default Helper;

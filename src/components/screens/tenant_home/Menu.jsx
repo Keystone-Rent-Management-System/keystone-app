@@ -19,12 +19,15 @@ import {
   PaymentAllocationModal,
   RequestExtensionModal,
   RequestRepairModal,
+  StatementFilterModal,
 } from '../../modals';
 
 const Menu = ({hasInactiveAgreement, handleAcceptAgreement}) => {
   const navigation = useNavigation();
 
   const extensionModalRef = useRef();
+  const statementFilterModalRef = useRef();
+
   const {
     getHelpRef,
     makeComplaintRef,
@@ -58,6 +61,14 @@ const Menu = ({hasInactiveAgreement, handleAcceptAgreement}) => {
     extensionModalRef.current?.close();
   }, []);
 
+  const handleOpenStatementFilterModal = useCallback(() => {
+    statementFilterModalRef.current?.expand();
+  }, []);
+
+  const handleCloseStatementFilterModal = useCallback(() => {
+    statementFilterModalRef.current?.close();
+  }, []);
+
   const handleNavigate = screen => {
     if (screen?.name) {
       navigation.navigate(screen?.name);
@@ -89,6 +100,8 @@ const Menu = ({hasInactiveAgreement, handleAcceptAgreement}) => {
                 handlePress={() =>
                   hasInactiveAgreement
                     ? handleAcceptAgreement()
+                    : opt.text === 'Statements'
+                    ? handleOpenStatementFilterModal()
                     : handleNavigate(opt?.screen)
                 }
               />
@@ -157,6 +170,11 @@ const Menu = ({hasInactiveAgreement, handleAcceptAgreement}) => {
       <PaymentAllocationModal
         ref={paymentAllocationRef}
         handleCloseModal={handleClosePaymentAllocationModal}
+      />
+
+      <StatementFilterModal
+        handleCloseFilter={handleCloseStatementFilterModal}
+        ref={statementFilterModalRef}
       />
     </>
   );

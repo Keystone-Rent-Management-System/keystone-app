@@ -2,7 +2,7 @@ import React, {useCallback, useRef, useState} from 'react';
 // import moment from 'moment';
 import {FlashList} from '@shopify/flash-list';
 
-import {Layout, ListingItem} from '../../../components';
+import {AgreementListingItem, Layout, ListingItem} from '../../../components';
 import {AgreementSvg} from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
 import {invoiceStyles} from '../../tenant_home/invoice/Unpaid';
@@ -63,7 +63,7 @@ const Current = () => {
           handleIssueTermination={() => handleIssueTermination(item?.id)}
           handleAcceptAgreement={handleAcceptAgreement}
           acceptAgrementMutation={acceptAgrementMutation}>
-          <ListingItem
+          <AgreementListingItem
             key={item?.id}
             icon={<AgreementSvg color={COLORS.primary} size={'24'} />}
             id={item?.id}

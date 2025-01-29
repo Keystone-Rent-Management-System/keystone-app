@@ -26,7 +26,7 @@ const HeaderSection = ({
 
   return (
     <LinearGradient
-      className={`h-2/5 bg-primary relative rounded-b-[30px] z-10`}
+      className={'h-1/3 bg-primary relative rounded-b-[30px] z-10'}
       colors={[COLORS.primary, COLORS.gradient_2]}>
       <TouchableOpacity
         className={
