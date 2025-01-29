@@ -43,12 +43,12 @@ const AgreementModalSheet = forwardRef((props, ref) => {
 
       <CustomBottomSheetModal
         ref={agreementModalRef}
-        snapPoints={['90%', '99%']}
+        snapPoints={['99%', '99%']}
         handleComponent={() => renderSheetHeader(props?.type)}>
         <PdfPreview agreementId={props.agreement?.id} />
 
         {props.type === 'agreed' ? (
-          <View className={'py-5 pb-10 w-full flex-row justify-center'}>
+          <View className={'py-5 mt-8 w-full flex-row justify-center'}>
             <TouchableOpacity onPress={props?.handleIssueTermination}>
               <Text className={'text-red-700 font-inter-semibold'}>
                 Issue Termination Notice
@@ -57,7 +57,7 @@ const AgreementModalSheet = forwardRef((props, ref) => {
           </View>
         ) : (
           props?.type === 'pending' && (
-            <View className={'w-full py-5 pb-5 px-5 mt-10'}>
+            <View className={'w-full px-5'}>
               <View
                 className={
                   'py-5 w-full flex flex-row items-start justify-center gap-1'
