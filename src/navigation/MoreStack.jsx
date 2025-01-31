@@ -19,7 +19,7 @@ const MoreStack = () => {
       <Stack.Screen
         name={'more__complains'}
         component={Complains}
-        options={{...commonOptionsWithHeader, title: 'My Complains'}}
+        options={{...commonOptionsWithHeader, title: 'My Complaints'}}
       />
     </Stack.Navigator>
   );
