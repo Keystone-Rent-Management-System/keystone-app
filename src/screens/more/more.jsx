@@ -29,6 +29,7 @@ import {useAuth} from '../../hooks';
 import useGlobals from '../../provider/store/useGlobals';
 import {useNotificationStore} from '../../provider/store/notification';
 import {ZustandStorage} from '../../provider/store/MMKV';
+import {ComplainSvg} from '../../assets/icons';
 
 const More = () => {
   const navigation = useNavigation();
@@ -224,6 +225,11 @@ const navList = [
     icon: <AgreementSvg />,
     title: 'Privacy Policy',
     link: PRIVACY_POLICY_URL,
+  },
+  {
+    icon: <ComplainSvg size="20" />,
+    title: 'Complains',
+    screen: 'more__complains',
   },
   {
     icon: <LogoutSvg size={'24'} color={COLORS.primary} />,
