@@ -3,6 +3,7 @@ import {Text, View} from 'react-native';
 
 import {Indicator} from '../../../screens/notifications';
 import COLORS from '../../../constants/Theme';
+import {formatToKES} from '../../../utils/Helper';
 
 const DetailsPane = ({
   title,
@@ -45,15 +46,15 @@ const DetailsPane = ({
       style={{backgroundColor: COLORS.primary_bg_pale}}
       className={'flex-1 rounded-xl p-3 h-full'}>
       <Text className={'text-2xs font-inter text-inactive_text uppercase'}>
-        Amount
+        {parseInt(amount, 9) > 0 ? 'Arrears' : 'Balance'}
       </Text>
 
       <Text className={'text-base font-inter-semibold text-black'}>
-        KES. {amount}
+        {formatToKES(amount)}
       </Text>
 
       <View className={'flex-row space-x-2 items-center pt-4'}>
-        <Indicator />
+        <Indicator isArrears={parseInt(amount, 9) > 0} />
 
         <Text className={'text-2xs font-inter text-black  '}>
           {invoiceDate}
