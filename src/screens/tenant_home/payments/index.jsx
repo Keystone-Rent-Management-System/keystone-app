@@ -1,12 +1,14 @@
 import React, {useCallback, useState} from 'react';
-import {Layout} from '@/components';
 import {ActivityIndicator, SectionList, Text, View} from 'react-native';
-import numberWithCommas from '../../../utils/numberWithCommas';
 import moment from 'moment';
+import {useNavigation} from '@react-navigation/native';
+
+import {Layout} from '@/components';
 import {BillsSvg} from '@/assets/icons';
+import numberWithCommas from '../../../utils/numberWithCommas';
 import {EmptyInvoiceList, PaymentItem} from '../../../components';
 import {useTenantTransaction} from '../../../hooks';
-import {useNavigation} from '@react-navigation/native';
+import {LoadingLayout} from '../invoice/All';
 
 const Index = () => {
   const [size, setSize] = useState(20);
@@ -28,6 +30,10 @@ const Index = () => {
     },
     [navigation],
   );
+
+  if (isPending) {
+    return <LoadingLayout text={'Loading Payments...'} />;
+  }
 
   return (
     <>
@@ -82,7 +88,7 @@ export default Index;
 
 const renderEmptyPayment = () => (
   <EmptyInvoiceList
-    title={'No Index Found!'}
+    title={'No Payment Found!'}
     subTitle={'You haven’t made any transaction yet.'}
   />
 );

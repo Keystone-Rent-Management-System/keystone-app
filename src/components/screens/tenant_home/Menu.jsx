@@ -145,36 +145,43 @@ const Menu = ({hasInactiveAgreement, handleAcceptAgreement}) => {
         handleRequestRepair={handleRequestRepair}
         handleGeneralAssistance={handleGeneralAssistance}
         handlePaymentAllocation={handlePaymentAllocation}
+        key={1}
       />
 
       <MakeComplaintModal
         ref={makeComplaintRef}
         handleCloseModal={handleCloseMakeComplaintModal}
+        key={2}
       />
 
       <RequestRepairModal
         ref={requestRepairRef}
         handleCloseModal={handleCloseRequestRepairModal}
+        key={3}
       />
 
       <GeneralRepairsModal
         ref={generalAssistanceRef}
         handleCloseModal={handleCloseGeneralAssistanceModal}
+        key={4}
       />
 
       <RequestExtensionModal
         ref={extensionModalRef}
         handleCloseModal={handleCloseExtensionModal}
+        key={5}
       />
 
       <PaymentAllocationModal
         ref={paymentAllocationRef}
         handleCloseModal={handleClosePaymentAllocationModal}
+        key={6}
       />
 
       <StatementFilterModal
         handleCloseFilter={handleCloseStatementFilterModal}
         ref={statementFilterModalRef}
+        key={7}
       />
     </>
   );
