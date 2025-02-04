@@ -1,8 +1,10 @@
 import {Linking} from 'react-native';
-import {PALLAX_SUPPORT_NUMBER} from '../constants';
 import moment from 'moment';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import RNFetchBlob from 'rn-fetch-blob';
+import FileViewer from 'react-native-file-viewer';
+
+import {PALLAX_SUPPORT_NUMBER} from '../constants';
 
 const renderSingularPlural = (num, render, nullRender = '') =>
   parseInt(num, 10) > 1 ? render : nullRender;
@@ -79,6 +81,12 @@ export async function generatePdf(html, fileName) {
   let filePath = RNFetchBlob.fs.dirs.DownloadDir + '/' + fileName + '.pdf';
 
   await RNFetchBlob.fs.writeFile(filePath, file.base64, 'base64');
+
+  // Open the generated PDF file
+  await FileViewer.open(filePath, {
+    showOpenWithDialog: true,
+    showAppsSuggestions: true,
+  });
 
   return filePath;
 }
