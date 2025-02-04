@@ -17,3 +17,8 @@ export const DOMAINS: Domain = {
 export const getBaseUrl = (env: Environment = Environment.Uat) => {
   return `https://${DOMAINS[env]}/api/v1/rms`;
 };
+
+export const queryRefetchIntervalOptions = {
+  queryRefetchInterval: 1000 * 60 * 5,
+  queryRefetchIntervalInBackground: true,
+};

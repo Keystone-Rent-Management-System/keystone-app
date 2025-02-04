@@ -1,8 +1,10 @@
-import {View, Text, TouchableOpacity} from 'react-native';
 import React from 'react';
-import {ArrowDownUpSvg} from '../../../assets/icons';
+import {ActivityIndicator, Text, TouchableOpacity, View} from 'react-native';
 
-const ApartmentTitle = ({agreement, refetch}) => {
+import {ArrowDownUpSvg} from '../../../assets/icons';
+import COLORS from '../../../constants/Theme';
+
+const ApartmentTitle = ({agreement, refetch, isLoading}) => {
   return (
     <View className={'flex-row '}>
       <View className={'flex-1'}>
@@ -17,11 +19,16 @@ const ApartmentTitle = ({agreement, refetch}) => {
       </View>
 
       <TouchableOpacity
-        className={
-          'flex-row items-center justify-center bg-bg_pale rounded-lg h-10 w-10'
-        }
-        onPress={refetch}>
-        <ArrowDownUpSvg />
+        className={`flex-row items-center justify-center bg-bg_pale rounded-lg h-10 w-10 ${
+          isLoading ? 'opacity-90' : ''
+        }`}
+        onPress={refetch}
+        disabled={isLoading}>
+        {isLoading ? (
+          <ActivityIndicator size={25} color={COLORS.primary} />
+        ) : (
+          <ArrowDownUpSvg />
+        )}
       </TouchableOpacity>
     </View>
   );
