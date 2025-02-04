@@ -96,9 +96,9 @@ const ListingItem = ({
 
           <Text
             className={`text-gray-400 font-inter-medium text-11
-            ${balance && balance > 0 ? 'text-red-400' : 'text-green-700'}
+            ${balance && balance > 0 ? 'text-red-600' : 'text-green-700'}
             `}>
-            {balance && balance > 0 ? 'Arrears:' : 'Balance:'}
+            {balance && balance > 0 ? 'Arrears: ' : 'Balance: '}
             {formatToKES(balance)}
           </Text>
         </View>
