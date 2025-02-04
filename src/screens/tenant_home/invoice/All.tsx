@@ -37,7 +37,7 @@ const All = () => {
         renderItem={({item}) =>
           renderInvoiceItem(item, () => handleNavigate(item.id))
         }
-        keyExtractor={item => item?.id}
+        keyExtractor={(_, index) => index.toString()}
         estimatedItemSize={20}
         onRefresh={refetch}
         onEndReached={handleLoadMore}

@@ -1,15 +1,14 @@
+import {FlashList} from '@shopify/flash-list';
+import {useQuery} from '@tanstack/react-query';
+import moment from 'moment';
 import React, {useCallback} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
-// import {ExtensionSvg, InvoiceSvg} from '@/assets/icons';
-import {Layout} from '../../components';
-import COLORS from '../../constants/Theme';
-import moment from 'moment';
-import {FlashList} from '@shopify/flash-list';
-import {useQuery} from '@tanstack/react-query';
-import NotificationService from '../../services/Notification';
 import {ExtensionSvg, InvoiceSvg} from '../../assets/icons';
+import {Layout} from '../../components';
 import EmptyList from '../../components/general/EmptyList.tsx';
+import COLORS from '../../constants/Theme';
+import NotificationService from '../../services/Notification';
 
 const Notifications = () => {
   const {
@@ -75,9 +74,19 @@ const renderItem = ({item}: {item: any}) => (
 
 export default Notifications;
 
-export const Indicator = ({isRead = false}) => (
+export const Indicator = ({isRead = undefined, isArrears = undefined}) => (
   <View
-    className={`h-2 w-2  rounded-full ${isRead ? 'bg-none' : 'bg-red-600'}`}
+    className={`h-2 w-2  rounded-full ${
+      isRead === true
+        ? 'bg-none'
+        : isRead === false
+        ? 'bg-red-600'
+        : isArrears === false
+        ? 'bg-green-600'
+        : isArrears === true
+        ? 'bg-red-600'
+        : 'bg-none'
+    }`}
   />
 );
 
