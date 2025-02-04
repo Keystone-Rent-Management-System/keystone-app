@@ -78,12 +78,6 @@ const ListingItem = ({
               ${'text-black'}
               `}>
                 KES. {amount}{' '}
-                <Text
-                  className={
-                    'text-[#000000A0] font-inter-medium capitalize text-xs'
-                  }>
-                  ({paymentStatus})
-                </Text>
               </Text>
             ) : null}
           </View>
