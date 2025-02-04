@@ -23,7 +23,7 @@ export const useAgrement = () => {
 export const useActiveAgrement = () => {
   const {activeAgreement, saveAgreement} = useActiveAgreement();
 
-  const {isPending, error, data, refetch} = useQuery({
+  const {isPending, error, data, refetch, isFetching} = useQuery({
     queryKey: ['active_agreement', activeAgreement?.id],
     queryFn: () => AgreementServices.getActiveAgreement(),
     enabled: !activeAgreement?.id,
@@ -44,6 +44,7 @@ export const useActiveAgrement = () => {
     error,
     agreement: agreement as IAgreement,
     agreementRefetch: refetch,
+    isFetching,
   };
 };
 

@@ -14,8 +14,17 @@ import {useActiveAgrement, useActiveStatement} from '../../hooks';
 import {useActiveAgreement} from '../../provider/store';
 
 const Home = () => {
-  const {isPending, agreement, agreementRefetch} = useActiveAgrement();
-  const {activeStatement, refetch} = useActiveStatement();
+  const {
+    isPending,
+    agreement,
+    agreementRefetch,
+    isFetching: isActiveAgreementFetching,
+  } = useActiveAgrement();
+  const {
+    activeStatement,
+    refetch,
+    isFetching: isActiveStatementFetching,
+  } = useActiveStatement();
   const {inactiveAgreement} = useActiveAgreement();
   const agreementModalRef = useRef();
 
@@ -44,6 +53,7 @@ const Home = () => {
                 agreementRefetch();
                 refetch();
               }}
+              isLoading={isActiveAgreementFetching || isActiveStatementFetching}
             />
 
             {/* stats card */}
