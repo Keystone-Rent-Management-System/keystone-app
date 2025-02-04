@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from 'react';
-
 import {ToastAndroid, View} from 'react-native';
+
 import {
   HomeApartmentTitle,
   HomeHeader,
