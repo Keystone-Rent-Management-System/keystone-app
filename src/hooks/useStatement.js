@@ -1,6 +1,8 @@
 import {useInfiniteQuery, useQuery} from '@tanstack/react-query';
 import React, {useCallback, useMemo} from 'react';
 import {ActivityIndicator} from 'react-native';
+
+import {queryRefetchIntervalOptions} from '../constants/general';
 import StatementServices from '../services/StatementServices';
 import {getNextPageParam, returnPaginationData} from '../utils/pagination';
 import {useActiveAgrement} from './useAgrement';
@@ -57,6 +59,7 @@ export const useActiveStatement = () => {
     queryKey: ['active-statement'],
     queryFn: async () => StatementServices.fetchCurrentStatement(agreement?.id),
     enabled: !!agreement?.id,
+    ...queryRefetchIntervalOptions,
   });
 
   return {

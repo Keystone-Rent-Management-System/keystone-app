@@ -5,6 +5,7 @@ import {getError} from '../utils/getError';
 import {IAgreement} from '../types/agreement';
 import {useActiveAgreement} from '../provider/store';
 import {useEffect} from 'react';
+import {queryRefetchIntervalOptions} from '../constants/general';
 
 export const agreementsKey = ['agreements'];
 
@@ -26,6 +27,7 @@ export const useActiveAgrement = () => {
     queryKey: ['active_agreement', activeAgreement?.id],
     queryFn: () => AgreementServices.getActiveAgreement(),
     enabled: !activeAgreement?.id,
+    ...queryRefetchIntervalOptions,
   });
 
   const agreement = activeAgreement?.id ? activeAgreement : data ?? null;
