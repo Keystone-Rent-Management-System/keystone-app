@@ -24,7 +24,7 @@ import {
   useRaiseConcern,
   useSpecificInvoice,
 } from '../../../hooks';
-import numberConverter from '../../../utils/numberConverter';
+import {formatToKES} from '../../../utils/Helper';
 import numberWithCommas from '../../../utils/numberWithCommas';
 
 const InvoiceView = ({route: {params}}) => {
@@ -124,7 +124,7 @@ const InvoiceView = ({route: {params}}) => {
     <>
       <Layout ClassName={'relative'}>
         <InvoiceHeader
-          invoiceAmount={numberConverter(invoice?.dueAmount)}
+          invoiceAmount={invoice?.dueAmount}
           invoiceTitle={invoice?.propertyName?.split('-')[0]}
           invoiceUnit={invoice?.propertyName?.split('-')[1]}
           hasConcern={hasConcern}
@@ -181,8 +181,16 @@ const InvoiceView = ({route: {params}}) => {
           />
           <InvoiceBillItem
             containerClassName={'border-t border-gray-200 py-3'}
-            txtClassName={'font-inter-semibold text-black text-sm'}
-            title={'Balance'}
+            txtClassName={`font-inter-semibold text-sm
+              ${
+                parseInt(invoice?.dueAmount ?? 0, 9) > 0
+                  ? 'text-red-600'
+                  : 'text-green-600'
+              }
+              `}
+            title={
+              parseInt(invoice?.dueAmount ?? 0, 9) > 0 ? 'Arrears' : 'Balance'
+            }
             amt={`ksh ${numberWithCommas(Number(invoice?.dueAmount ?? 0))}`}
           />
 
@@ -198,7 +206,7 @@ const InvoiceView = ({route: {params}}) => {
                   </Text>
                   <Text
                     className={'text-13 font-inter-semibold text-black mt-2'}>
-                    KES. {numberWithCommas(Number(invoice?.paidAmount))}
+                    {formatToKES(Number(invoice?.paidAmount))}
                   </Text>
                 </View>
               }
