@@ -14,40 +14,48 @@ export const useTotalTransaction = () => {
   return {isPending, error, totals: data, refetch};
 };
 
+const handleGetTransactions = async (page, size, userId) => {
+  const data = await TransactionServices.getTenantTransactions(0, size, userId);
+
+  // Group transactions by month
+  let groupedData = await new Promise(resolve => {
+    let tempGroupedData = [];
+    data?.content?.forEach(item => {
+      const month = new Date(item?.createdAt).toLocaleString('default', {
+        month: 'long',
+      });
+      const existingMonth = tempGroupedData.find(
+        group => group.month === month,
+      );
+
+      if (existingMonth) {
+        existingMonth.data.push(item);
+      } else {
+        tempGroupedData.push({month, data: [item]});
+      }
+    });
+    resolve(tempGroupedData);
+  });
+
+  return {
+    totalElements: data?.totalElements,
+    groupedData,
+  };
+};
+
 export const useTenantTransaction = size => {
   const {profile} = useAuth();
-  const [transactions, setTransactions] = useState([]);
 
   const {isPending, isRefetching, error, data, refetch} = useQuery({
     queryKey: ['transactions/tenant'],
-    queryFn: () =>
-      TransactionServices.getTenantTransactions(0, size, profile?.userId),
+    queryFn: () => handleGetTransactions(0, size, profile?.userId),
   });
-
-  useEffect(() => {
-    if (!isPending) {
-      let groupedData = [];
-      data?.content?.forEach(item => {
-        const month = new Date(item?.createdAt).toLocaleString('default', {
-          month: 'long',
-        });
-        const existingMonth = groupedData.find(group => group.month === month);
-
-        if (existingMonth) {
-          existingMonth.data.push(item);
-        } else {
-          groupedData.push({month, data: [item]});
-        }
-      });
-      setTransactions(groupedData);
-    }
-  }, [data?.content, isPending]);
 
   return {
     isPending,
     isRefetching,
     error,
-    transactions,
+    transactions: data?.groupedData,
     totalElements: data?.totalElements,
     refetch,
   };
