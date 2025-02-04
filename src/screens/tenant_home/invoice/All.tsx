@@ -1,9 +1,10 @@
 import {useNavigation} from '@react-navigation/native';
 import {FlashList} from '@shopify/flash-list';
 import React from 'react';
-import {ActivityIndicator} from 'react-native';
+import {ActivityIndicator, Text} from 'react-native';
 
 import {EmptyInvoiceList, Layout} from '../../../components';
+import COLORS from '../../../constants/Theme.js';
 import {useFetchInvoice} from '../../../hooks/useFetchInvoice.ts';
 import {invoiceStyles, renderInvoiceItem} from './Unpaid';
 
@@ -20,6 +21,10 @@ const All = () => {
     invoices,
     handleLoadMore,
   } = useFetchInvoice('ALL');
+
+  if (isPending) {
+    return <LoadingLayout text={'Loading Invoices...'} />;
+  }
 
   return (
     //   @ts-ignore: missing element children
@@ -55,4 +60,11 @@ const renderEmptyInvoice = () => (
     title={'No Invoices Found!'}
     subTitle={'Sorry! you have no invoices to show.'}
   />
+);
+
+export const LoadingLayout = ({text}: {text: string}) => (
+  <Layout ClassName={'px-3 flex-1 justify-center items-center'}>
+    <ActivityIndicator color={COLORS.primary} size={50} />
+    <Text className="text-primary mt-5 font-inter-medium">{text}</Text>
+  </Layout>
 );
