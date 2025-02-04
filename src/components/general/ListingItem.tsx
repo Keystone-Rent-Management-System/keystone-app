@@ -28,7 +28,6 @@ const ListingItem = ({
   isPartial,
   handlePress,
   disabled,
-  paymentStatus,
   balance,
   status,
 }: IListingItem) => {
