@@ -25,7 +25,6 @@ import {
   useSpecificInvoice,
 } from '../../../hooks';
 import {formatToKES} from '../../../utils/Helper';
-import numberWithCommas from '../../../utils/numberWithCommas';
 
 const InvoiceView = ({route: {params}}) => {
   const concernModalRef = useRef();
@@ -145,27 +144,27 @@ const InvoiceView = ({route: {params}}) => {
           />
           <InvoiceBillItem
             title={'Rent'}
-            amt={numberWithCommas(Number(invoice?.rentAmount)) ?? 0}
+            amt={formatToKES(Number(invoice?.rentAmount)) ?? 0}
           />
           <InvoiceBillItem
             title={'Deposit'}
-            amt={numberWithCommas(Number(invoice?.deposit)) ?? 0}
+            amt={formatToKES(Number(invoice?.deposit)) ?? 0}
           />
           <InvoiceBillItem
             title={'Water'}
-            amt={numberWithCommas(Number(invoice?.waterFeeAmount)) ?? 0}
+            amt={formatToKES(Number(invoice?.waterFeeAmount)) ?? 0}
           />
           <InvoiceBillItem
             title={'Garbage'}
-            amt={numberWithCommas(Number(invoice?.garbageFeeAmount)) ?? 0}
+            amt={formatToKES(Number(invoice?.garbageFeeAmount)) ?? 0}
           />
           <InvoiceBillItem
             title={'Security'}
-            amt={numberWithCommas(Number(invoice?.securityFeeAmount)) ?? 0}
+            amt={formatToKES(Number(invoice?.securityFeeAmount)) ?? 0}
           />
           <InvoiceBillItem
             title={'Penalty'}
-            amt={numberWithCommas(Number(invoice?.penalizedAmount)) ?? 0}
+            amt={formatToKES(Number(invoice?.penalizedAmount)) ?? 0}
           />
           <InvoiceBillItem
             title={'Consolidated Invoices'}
@@ -179,7 +178,7 @@ const InvoiceView = ({route: {params}}) => {
             containerClassName={'mt-3 border-t border-gray-200 py-3'}
             txtClassName={'font-inter-semibold text-black text-sm'}
             title={'Total Amount'}
-            amt={`ksh ${numberWithCommas(Number(invoice?.totalAmount))}`}
+            amt={`${formatToKES(Number(invoice?.totalAmount))}`}
           />
           <InvoiceBillItem
             containerClassName={'border-t border-gray-200 py-3'}
