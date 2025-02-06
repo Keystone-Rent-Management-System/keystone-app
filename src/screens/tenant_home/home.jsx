@@ -41,7 +41,7 @@ const Home = () => {
 
   return (
     <>
-      <Layout ClassName={'px-4'}>
+      <Layout isScrollable ClassName={'px-4'}>
         {/* Header */}
         <HomeHeader />
         {!isPending && agreement ? (
