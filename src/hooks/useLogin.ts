@@ -35,7 +35,7 @@ export const useLogin = () => {
       //   register device token
     },
     onError: err => {
-      ToastAndroid.show('Login failed ' + getError(err), ToastAndroid.SHORT);
+      ToastAndroid.show('Login Error: ' + getError(err), ToastAndroid.SHORT);
     },
   });
 

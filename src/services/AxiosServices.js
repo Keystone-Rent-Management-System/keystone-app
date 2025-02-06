@@ -4,7 +4,7 @@ import useGlobals from '../provider/store/useGlobals';
 import AuthServices from './AuthServices';
 import {Environment, getBaseUrl} from '../constants/general';
 
-export const BASE_URL = getBaseUrl(Environment.Uat);
+export const BASE_URL = getBaseUrl(Environment.Dev);
 
 export const AxiosUtility = axios.create({
   baseURL: `${BASE_URL}`,
@@ -34,6 +34,11 @@ AxiosUtility.interceptors.response.use(
   response => response,
   async error => {
     const originalRequest = error.config;
+    // Check if the URL includes '/login'
+    if (originalRequest.url.includes('login')) {
+      console.log(originalRequest.url);
+      return Promise.reject(error);
+    }
 
     // check if error is 401 and request has not been retried
     if (error.response.status === 401 && !originalRequest._retry) {
