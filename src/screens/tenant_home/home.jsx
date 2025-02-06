@@ -34,7 +34,11 @@ const Home = () => {
   };
 
   useEffect(() => {
-    if (!agreement?.id && inactiveAgreement?.id) {
+    if (
+      !agreement?.id &&
+      inactiveAgreement?.id &&
+      inactiveAgreement?.status?.toLocaleLowerCase() !== 'terminated'
+    ) {
       handleOpenAgreement();
     }
   }, [agreement?.id, inactiveAgreement]);
