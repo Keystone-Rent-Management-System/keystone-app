@@ -1,10 +1,17 @@
 import React from "react";
 import { ScrollView, View } from "react-native";
 
-const Layout = ({ children, ClassName, isScrollable = false }) => {
+const Layout = ({
+  children,
+  ClassName,
+  isScrollable = false,
+  scrollViewProps,
+}) => {
   if (isScrollable) {
     return (
-      <ScrollView className={`flex-1 relative bg-bg ${ClassName}`}>
+      <ScrollView
+        className={`flex-1 relative bg-bg ${ClassName}`}
+        {...scrollViewProps}>
         {children}
       </ScrollView>
     );
