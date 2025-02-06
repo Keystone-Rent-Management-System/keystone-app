@@ -47,7 +47,8 @@ const AgreementModalSheet = forwardRef((props, ref) => {
         handleComponent={() => renderSheetHeader(props?.type)}>
         <PdfPreview agreementId={props.agreement?.id} />
 
-        {props.type === 'agreed' ? (
+        {props?.agreement?.status?.toLocaleLowerCase() ===
+        'terminated' ? null : props.type === 'agreed' ? (
           <View className={'py-5 mt-8 w-full flex-row justify-center'}>
             <TouchableOpacity onPress={props?.handleIssueTermination}>
               <Text className={'text-red-700 font-inter-semibold'}>
