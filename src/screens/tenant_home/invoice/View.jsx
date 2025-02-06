@@ -148,6 +148,10 @@ const InvoiceView = ({route: {params}}) => {
             amt={numberWithCommas(Number(invoice?.rentAmount)) ?? 0}
           />
           <InvoiceBillItem
+            title={'Deposit'}
+            amt={numberWithCommas(Number(invoice?.deposit)) ?? 0}
+          />
+          <InvoiceBillItem
             title={'Water'}
             amt={numberWithCommas(Number(invoice?.waterFeeAmount)) ?? 0}
           />
@@ -158,6 +162,10 @@ const InvoiceView = ({route: {params}}) => {
           <InvoiceBillItem
             title={'Security'}
             amt={numberWithCommas(Number(invoice?.securityFeeAmount)) ?? 0}
+          />
+          <InvoiceBillItem
+            title={'Penalty'}
+            amt={numberWithCommas(Number(invoice?.penalizedAmount)) ?? 0}
           />
           <InvoiceBillItem
             title={'Consolidated Invoices'}
@@ -177,7 +185,7 @@ const InvoiceView = ({route: {params}}) => {
             containerClassName={'border-t border-gray-200 py-3'}
             txtClassName={'font-inter-semibold text-black text-sm'}
             title={'Paid Amount'}
-            amt={`ksh ${numberWithCommas(Number(invoice?.paidAmount ?? 0))}`}
+            amt={` ${formatToKES(Number(invoice?.paidAmount ?? 0))}`}
           />
           <InvoiceBillItem
             containerClassName={'border-t border-gray-200 py-3'}
@@ -191,7 +199,7 @@ const InvoiceView = ({route: {params}}) => {
             title={
               parseInt(invoice?.dueAmount ?? 0, 9) > 0 ? 'Arrears' : 'Balance'
             }
-            amt={`ksh ${numberWithCommas(Number(invoice?.dueAmount ?? 0))}`}
+            amt={` ${formatToKES(Number(invoice?.dueAmount ?? 0))}`}
           />
 
           {isPartiallyPaid ? (
