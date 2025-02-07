@@ -90,7 +90,10 @@ const ApartmentView = ({route: {params}}) => {
     height="100%"
     frameborder='0'
     allowfullscreen
-    src=${listing?.matterportUrl || 'https://matterport.com/en-gb/media/5989'}
+    src=${
+      listing?.matterportUrl ||
+      'https://tour.virtualaccess.co.ke/tours/YTI7Hk-iA'
+    }
 />`;
   }, [listing?.matterportUrl]);
 
