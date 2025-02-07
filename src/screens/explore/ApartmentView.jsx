@@ -249,7 +249,11 @@ const ApartmentView = ({route: {params}}) => {
 
           <View className={'mt-3'} style={styles.chargeList}>
             {listing?.property?.amenities?.map((amenity, ind) => (
-              <ExploreAmenity key={ind} showCheckBox={false} title={amenity} />
+              <ExploreAmenity
+                key={ind}
+                showCheckBox={false}
+                title={amenity?.name}
+              />
             ))}
           </View>
 
