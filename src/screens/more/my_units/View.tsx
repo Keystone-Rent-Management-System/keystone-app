@@ -14,6 +14,7 @@ import {useActiveAgrement} from '../../../hooks';
 import {useActiveStatement} from '../../../hooks/useStatement';
 import {IPropertyContacts} from '../../../types/property.ts';
 import AgreementModalSheet from '../../../components/modals/Agreement';
+import {formatToKES} from '../../../utils/Helper';
 
 type ChargeKey = string;
 
@@ -29,11 +30,11 @@ const UnitView = () => {
     useMemo(() => {
       return {
         deposit: {
-          amount: agreement?.propertyUnits?.deposit,
+          amount: formatToKES(Number(agreement?.propertyUnits?.deposit)),
           icon: <BuildingSvg />,
         },
         rent: {
-          amount: agreement?.propertyUnits?.rent,
+          amount: formatToKES(Number(agreement?.propertyUnits?.rent)),
           icon: <BuildingSvg />,
         },
         'rent due date': {
@@ -93,9 +94,13 @@ const UnitView = () => {
 
           {/*  balance section  */}
           <View className={'pb-3'}>
-            <Text className={'text-black font-inter-semibold'}>Balance</Text>
+            <Text className={'text-black font-inter-semibold'}>
+              {activeStatement?.endingBalance < 0
+                ? 'Advance Balance'
+                : 'Arrears'}{' '}
+            </Text>
             <Text className={'text-black font-inter-bold text-base mt-2'}>
-              KES {activeStatement?.endingBalance}
+              {formatToKES(Number(activeStatement?.endingBalance || 0))}
             </Text>
           </View>
 
@@ -142,7 +147,7 @@ const UnitView = () => {
                 showCheckBox={false}
                 icon={charges[charge]?.icon}
                 title={charge}
-                value={`${charge === 'rent due date' ? 'Date' : 'KES.'} ${
+                value={`${charge === 'rent due date' ? 'Date' : ''} ${
                   charges[charge]?.amount
                 }`}
               />
@@ -183,7 +188,7 @@ const UnitView = () => {
           <LandlordItem
             name={`${propertyContactPerson?.contactName}`}
             phoneNumber={propertyContactPerson?.phoneNumber}
-            rent={agreement?.propertyUnits?.rent?.toString()}
+            rent={formatToKES(Number(agreement?.propertyUnits?.rent))}
             ClassName={'px-0'}
           />
 
