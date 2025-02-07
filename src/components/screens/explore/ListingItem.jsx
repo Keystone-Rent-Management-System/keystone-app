@@ -35,8 +35,6 @@ const ListingItem = props => {
 
   const {data} = useFetchSavedUnits();
 
-  console.log('DATA IS:::', data, props.id);
-
   const liked = useMemo(() => {
     return data?.some(unit => unit.unit_id === props.id);
   }, [data, props.id]);
