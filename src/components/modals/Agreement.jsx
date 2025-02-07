@@ -43,53 +43,65 @@ const AgreementModalSheet = forwardRef((props, ref) => {
 
       <CustomBottomSheetModal
         ref={agreementModalRef}
-        snapPoints={['99%', '99%']}
+        snapPoints={['98%', '98%']}
+        enableDynamicSizing={false}
         handleComponent={() => renderSheetHeader(props?.type)}>
-        <PdfPreview agreementId={props.agreement?.id} />
+        <View
+          className={`overflow-hidden ${
+            props.type === 'agreed' ? 'h-auto' : 'h-5/6'
+          }`}>
+          <PdfPreview agreementId={props.agreement?.id} />
+        </View>
 
-        {props?.agreement?.status?.toLocaleLowerCase() ===
-        'terminated' ? null : props.type === 'agreed' ? (
-          <View className={'py-5 mt-8 w-full flex-row justify-center'}>
-            <TouchableOpacity onPress={props?.handleIssueTermination}>
-              <Text className={'text-red-700 font-inter-semibold'}>
-                Issue Termination Notice
-              </Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          props?.type === 'pending' && (
-            <View className={'w-full px-5'}>
-              <View
-                className={
-                  'py-5 w-full flex flex-row items-start justify-center gap-1'
-                }>
-                <CheckBox
-                  disabled={false}
-                  value={isSelected}
-                  onValueChange={newValue => setSelection(newValue)}
-                  tintColors={{true: COLORS.primary, false: COLORS.primary}}
-                  tintColor={COLORS.primary}
-                  onFillColor={COLORS.primary}
-                />
-                <Text className={'text-black mx-8 font-inter text-xs'}>
-                  By checking here you confirm that you have read the agreement.{' '}
+        <View className="">
+          {props?.agreement?.status?.toLocaleLowerCase() ===
+          'terminated' ? null : props.type === 'agreed' ? (
+            <View
+              className={
+                'py-5 mt-0 w-full flex-row justify-center border-t border-gray-200'
+              }>
+              <TouchableOpacity onPress={props?.handleIssueTermination}>
+                <Text className={'text-red-700 font-inter-semibold'}>
+                  Issue Termination Notice
                 </Text>
-              </View>
-              <CButton
-                ClassName={'bg-primary text-white'}
-                disabled={!isSelected}
-                isLoading={acceptAgrementMutation.isPending}
-                onPress={() => handleAcceptAgreement(props.agreement.id)}
-                textClassName={'text-white font'}
-                text={
-                  acceptAgrementMutation.isPending
-                    ? 'Accepting...'
-                    : 'I agree to the terms'
-                }
-              />
+              </TouchableOpacity>
             </View>
-          )
-        )}
+          ) : (
+            props?.type === 'pending' && (
+              <View className={'w-full px-5'}>
+                <View
+                  className={
+                    'py-5 w-full flex flex-row items-start justify-center gap-1'
+                  }>
+                  <CheckBox
+                    disabled={false}
+                    value={isSelected}
+                    onValueChange={newValue => setSelection(newValue)}
+                    tintColors={{true: COLORS.primary, false: COLORS.primary}}
+                    tintColor={COLORS.primary}
+                    onFillColor={COLORS.primary}
+                  />
+                  <Text className={'text-black mx-8 font-inter text-xs'}>
+                    By checking here you confirm that you have read the
+                    agreement.{' '}
+                  </Text>
+                </View>
+                <CButton
+                  ClassName={'bg-primary text-white'}
+                  disabled={!isSelected}
+                  isLoading={acceptAgrementMutation.isPending}
+                  onPress={() => handleAcceptAgreement(props.agreement.id)}
+                  textClassName={'text-white font'}
+                  text={
+                    acceptAgrementMutation.isPending
+                      ? 'Accepting...'
+                      : 'I agree to the terms'
+                  }
+                />
+              </View>
+            )
+          )}
+        </View>
       </CustomBottomSheetModal>
     </>
   );
