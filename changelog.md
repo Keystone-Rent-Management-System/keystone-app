@@ -1,3 +1,18 @@
+## v1.3.1 (2025-02--8)
+
+### Fix
+- Fixed login error message
+- Fixed home screen scrollability
+- Fixed agreement pop up after termination
+- Fix saving same unit multiple times
+
+### Change
+- Listing map view
+- Interpretation of current tenant balance
+- Addition of deposit and penalty amount to invoice details
+- Remove invoice status
+- Added proper understanding of invoice balance
+
 ## v1.3.0 (2025-01-29)
 
 ### Feat
