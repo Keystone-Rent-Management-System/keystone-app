@@ -1,8 +1,8 @@
-import {View, Text, Image, StyleSheet} from 'react-native';
-import React from 'react';
 import COLORS from '@/constants/Theme';
-import numberWithCommas from '../../../utils/numberWithCommas';
-import numberConverter from '../../../utils/numberConverter';
+import React from 'react';
+import {Image, StyleSheet, Text, View} from 'react-native';
+
+import {formatToKES} from '../../../utils/Helper';
 
 const StatsCard = ({statement, agreement}) => {
   const currentDate = new Date();
@@ -19,11 +19,11 @@ const StatsCard = ({statement, agreement}) => {
         {/* Balance */}
         <View>
           <Text style={styles.cartLabel} className={' font-inter text-xs'}>
-            {statement?.endingBalance < 0 ? 'Advance Balance' : 'Balance'}{' '}
+            {statement?.endingBalance < 0 ? 'Advance Balance' : 'Arrears'}{' '}
           </Text>
 
           <Text className={'text-lg text-white font-inter-semibold'}>
-            KES. {numberConverter(Number(statement?.endingBalance || 0))}
+            {formatToKES(Number(statement?.endingBalance || 0))}
           </Text>
         </View>
 
@@ -46,7 +46,7 @@ const StatsCard = ({statement, agreement}) => {
             </Text>
 
             <Text className={'text-11 text-white font-inter-semibold'}>
-              KES. {numberWithCommas(Number(agreement?.propertyUnits?.rent))}/Mo
+              {formatToKES(Number(agreement?.propertyUnits?.rent))}/Mo
             </Text>
           </View>
         </View>

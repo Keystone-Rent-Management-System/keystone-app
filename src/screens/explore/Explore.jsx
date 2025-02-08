@@ -84,37 +84,40 @@ const Explore = () => {
     setMode(prev => (prev === 'map' ? 'list' : 'map'));
   };
 
-  const renderListingItem = ({item}) => {
-    const firstPropertyImage = item?.uploads?.at(0)?.fileUrl;
+  const renderListingItem = useCallback(
+    ({item}) => {
+      const firstPropertyImage = item?.uploads?.at(0)?.fileUrl;
 
-    const {
-      houseType,
-      user,
-      property,
-      rent,
-      balconies,
-      numberOfBedrooms,
-      numberOfBathrooms,
-      listingId: id,
-    } = item;
+      const {
+        houseType,
+        user,
+        property,
+        rent,
+        balconies,
+        numberOfBedrooms,
+        numberOfBathrooms,
+        listingId: id,
+      } = item;
 
-    return (
-      <ExploreListingItem
-        title={item?.property?.name}
-        userType={user}
-        category={houseType}
-        location={`${property?.address?.line ?? ''}`}
-        price={rent}
-        balconies={balconies}
-        bedrooms={numberOfBedrooms}
-        bathrooms={numberOfBathrooms}
-        image={firstPropertyImage ?? ''}
-        id={id}
-        handlePress={() => handleViewApartment(id)}
-        data={item}
-      />
-    );
-  };
+      return (
+        <ExploreListingItem
+          title={item?.property?.name}
+          userType={user}
+          category={houseType}
+          location={`${property?.address?.line ?? ''}`}
+          price={rent}
+          balconies={balconies}
+          bedrooms={numberOfBedrooms}
+          bathrooms={numberOfBathrooms}
+          image={firstPropertyImage ?? ''}
+          id={id}
+          handlePress={() => handleViewApartment(id)}
+          data={item}
+        />
+      );
+    },
+    [handleViewApartment],
+  );
 
   return (
     <Layout ClassName={'relative'}>

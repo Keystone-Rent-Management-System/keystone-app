@@ -1,7 +1,8 @@
 import React, {ReactNode, useMemo} from 'react';
-
 import moment from 'moment/moment';
 import {Text, TouchableOpacity, View} from 'react-native';
+
+import {formatToKES} from '../../utils/Helper';
 
 interface IListingItem {
   icon: ReactNode;
@@ -28,7 +29,6 @@ const ListingItem = ({
   isPartial,
   handlePress,
   disabled,
-  paymentStatus,
   balance,
   status,
 }: IListingItem) => {
@@ -78,12 +78,6 @@ const ListingItem = ({
               ${'text-black'}
               `}>
                 KES. {amount}{' '}
-                <Text
-                  className={
-                    'text-[#000000A0] font-inter-medium capitalize text-xs'
-                  }>
-                  ({paymentStatus})
-                </Text>
               </Text>
             ) : null}
           </View>
@@ -100,8 +94,12 @@ const ListingItem = ({
             )}
           </View>
 
-          <Text className={'text-gray-400 font-inter-medium text-11'}>
-            Balance: {balance}
+          <Text
+            className={`text-gray-400 font-inter-medium text-11
+            ${balance && balance > 0 ? 'text-red-600' : 'text-green-700'}
+            `}>
+            {balance && balance > 0 ? 'Arrears: ' : 'Balance: '}
+            {formatToKES(balance)}
           </Text>
         </View>
       </View>

@@ -5,6 +5,7 @@ import {getError} from '../utils/getError';
 import {IAgreement} from '../types/agreement';
 import {useActiveAgreement} from '../provider/store';
 import {useEffect} from 'react';
+import {queryRefetchIntervalOptions} from '../constants/general';
 
 export const agreementsKey = ['agreements'];
 
@@ -22,10 +23,11 @@ export const useAgrement = () => {
 export const useActiveAgrement = () => {
   const {activeAgreement, saveAgreement} = useActiveAgreement();
 
-  const {isPending, error, data, refetch} = useQuery({
+  const {isPending, error, data, refetch, isFetching} = useQuery({
     queryKey: ['active_agreement', activeAgreement?.id],
     queryFn: () => AgreementServices.getActiveAgreement(),
     enabled: !activeAgreement?.id,
+    ...queryRefetchIntervalOptions,
   });
 
   const agreement = activeAgreement?.id ? activeAgreement : data ?? null;
@@ -42,6 +44,7 @@ export const useActiveAgrement = () => {
     error,
     agreement: agreement as IAgreement,
     agreementRefetch: refetch,
+    isFetching,
   };
 };
 

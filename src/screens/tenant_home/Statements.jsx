@@ -83,7 +83,7 @@ const Statements = ({params}) => {
         
         <div style="padding-top:8px; padding-bottom: 8px; margin-top: 10px; border-top-width: 0.5px; border-color: #00000020;">
           <!--    Title     -->
-          <p style="text-align: center; margin: 0; font-size: 18px; font-weight: 500; color: black;">TENTANT STATEMENT FOR THE PERIOD ${moment(
+          <p style="text-align: center; margin: 0; font-size: 18px; font-weight: 500; color: black;">TENANT STATEMENT FOR THE PERIOD ${moment(
             dateRange?.from,
           ).format('D/MM/yyyy')} TO ${moment(dateRange?.to).format(
       'D/MM/yyyy',

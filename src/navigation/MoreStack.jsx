@@ -2,6 +2,7 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {More, MoreAccountDetails} from '../screens';
 import COLORS from '../constants/Theme';
+import Complains from '../screens/more/landlord/complains';
 
 const Stack = createStackNavigator();
 const MoreStack = () => {
@@ -13,19 +14,26 @@ const MoreStack = () => {
       <Stack.Screen
         name={'more__account_details'}
         component={MoreAccountDetails}
-        options={{
-          headerShown: true,
-          title: '',
-          headerTitleStyle: {
-            color: COLORS.primary,
-            fontSize: 18,
-            fontFamily: 'Inter-SemiBold',
-            marginHorizontal: 'auto',
-          },
-        }}
+        options={commonOptionsWithHeader}
+      />
+      <Stack.Screen
+        name={'more__complains'}
+        component={Complains}
+        options={{...commonOptionsWithHeader, title: 'My Complaints'}}
       />
     </Stack.Navigator>
   );
 };
 
 export default MoreStack;
+
+const commonOptionsWithHeader = {
+  headerShown: true,
+  title: '',
+  headerTitleStyle: {
+    color: COLORS.primary,
+    fontSize: 18,
+    fontFamily: 'Inter-SemiBold',
+    marginHorizontal: 'auto',
+  },
+};

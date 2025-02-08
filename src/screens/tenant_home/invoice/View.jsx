@@ -24,8 +24,7 @@ import {
   useRaiseConcern,
   useSpecificInvoice,
 } from '../../../hooks';
-import numberConverter from '../../../utils/numberConverter';
-import numberWithCommas from '../../../utils/numberWithCommas';
+import {formatToKES} from '../../../utils/Helper';
 
 const InvoiceView = ({route: {params}}) => {
   const concernModalRef = useRef();
@@ -124,7 +123,7 @@ const InvoiceView = ({route: {params}}) => {
     <>
       <Layout ClassName={'relative'}>
         <InvoiceHeader
-          invoiceAmount={numberConverter(invoice?.dueAmount)}
+          invoiceAmount={invoice?.dueAmount}
           invoiceTitle={invoice?.propertyName?.split('-')[0]}
           invoiceUnit={invoice?.propertyName?.split('-')[1]}
           hasConcern={hasConcern}
@@ -145,19 +144,29 @@ const InvoiceView = ({route: {params}}) => {
           />
           <InvoiceBillItem
             title={'Rent'}
-            amt={numberWithCommas(Number(invoice?.rentAmount)) ?? 0}
+            amt={formatToKES(Number(invoice?.rentAmount)) ?? 0}
           />
+          {invoice?.deposit ? (
+            <InvoiceBillItem
+              title={'Deposit'}
+              amt={formatToKES(Number(invoice?.deposit)) ?? 0}
+            />
+          ) : null}
           <InvoiceBillItem
             title={'Water'}
-            amt={numberWithCommas(Number(invoice?.waterFeeAmount)) ?? 0}
+            amt={formatToKES(Number(invoice?.waterFeeAmount)) ?? 0}
           />
           <InvoiceBillItem
             title={'Garbage'}
-            amt={numberWithCommas(Number(invoice?.garbageFeeAmount)) ?? 0}
+            amt={formatToKES(Number(invoice?.garbageFeeAmount)) ?? 0}
           />
           <InvoiceBillItem
             title={'Security'}
-            amt={numberWithCommas(Number(invoice?.securityFeeAmount)) ?? 0}
+            amt={formatToKES(Number(invoice?.securityFeeAmount)) ?? 0}
+          />
+          <InvoiceBillItem
+            title={'Penalty'}
+            amt={formatToKES(Number(invoice?.penalizedAmount)) ?? 0}
           />
           <InvoiceBillItem
             title={'Consolidated Invoices'}
@@ -171,19 +180,27 @@ const InvoiceView = ({route: {params}}) => {
             containerClassName={'mt-3 border-t border-gray-200 py-3'}
             txtClassName={'font-inter-semibold text-black text-sm'}
             title={'Total Amount'}
-            amt={`ksh ${numberWithCommas(Number(invoice?.totalAmount))}`}
+            amt={`${formatToKES(Number(invoice?.totalAmount))}`}
           />
           <InvoiceBillItem
             containerClassName={'border-t border-gray-200 py-3'}
             txtClassName={'font-inter-semibold text-black text-sm'}
             title={'Paid Amount'}
-            amt={`ksh ${numberWithCommas(Number(invoice?.paidAmount ?? 0))}`}
+            amt={` ${formatToKES(Number(invoice?.paidAmount ?? 0))}`}
           />
           <InvoiceBillItem
             containerClassName={'border-t border-gray-200 py-3'}
-            txtClassName={'font-inter-semibold text-black text-sm'}
-            title={'Balance'}
-            amt={`ksh ${numberWithCommas(Number(invoice?.dueAmount ?? 0))}`}
+            txtClassName={`font-inter-semibold text-sm
+              ${
+                parseInt(invoice?.dueAmount ?? 0, 9) > 0
+                  ? 'text-red-600'
+                  : 'text-green-600'
+              }
+              `}
+            title={
+              parseInt(invoice?.dueAmount ?? 0, 9) > 0 ? 'Arrears' : 'Balance'
+            }
+            amt={` ${formatToKES(Number(invoice?.dueAmount ?? 0))}`}
           />
 
           {isPartiallyPaid ? (
@@ -198,7 +215,7 @@ const InvoiceView = ({route: {params}}) => {
                   </Text>
                   <Text
                     className={'text-13 font-inter-semibold text-black mt-2'}>
-                    KES. {numberWithCommas(Number(invoice?.paidAmount))}
+                    {formatToKES(Number(invoice?.paidAmount))}
                   </Text>
                 </View>
               }

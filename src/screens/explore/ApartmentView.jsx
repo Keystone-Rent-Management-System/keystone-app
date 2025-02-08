@@ -53,12 +53,15 @@ const ApartmentView = ({route: {params}}) => {
 
   const region = useMemo(
     () => ({
-      latitude: listing?.property?.latitude ?? -1.2881012218277417,
-      longitude: listing?.property?.longitude ?? 36.82609607136736,
+      latitude: listing?.property?.address?.latitude ?? -1.2881012218277417,
+      longitude: listing?.property?.address?.longitude ?? 36.82609607136736,
       latitudeDelta: 0.015,
       longitudeDelta: 0.015,
     }),
-    [listing?.property?.latitude, listing?.property?.longitude],
+    [
+      listing?.property?.address?.latitude,
+      listing?.property?.address?.longitude,
+    ],
   );
 
   const handleViewTour = () => {
@@ -90,7 +93,10 @@ const ApartmentView = ({route: {params}}) => {
     height="100%"
     frameborder='0'
     allowfullscreen
-    src=${listing?.matterportUrl || 'https://matterport.com/en-gb/media/5989'}
+    src=${
+      listing?.matterportUrl ||
+      'https://tour.virtualaccess.co.ke/tours/YTI7Hk-iA'
+    }
 />`;
   }, [listing?.matterportUrl]);
 
@@ -209,21 +215,22 @@ const ApartmentView = ({route: {params}}) => {
             {`${listing?.property?.address?.line}`}
           </Text>
 
-          {!!listing?.property?.latitude && (
-            <View className={'h-32 my-3 bg-bg_grey'}>
-              {!isPending && (
-                <MapView className={'flex-1'} region={region}>
-                  <Marker
-                    coordinate={{
-                      latitude: listing?.property?.latitude,
-                      longitude: listing?.property?.longitude,
-                    }}>
-                    <HouseMapMarker />
-                  </Marker>
-                </MapView>
-              )}
-            </View>
-          )}
+          {listing?.property?.address?.latitude &&
+            listing?.property?.address?.longitude && (
+              <View className={'h-32 my-3 bg-bg_grey'}>
+                {!isPending && (
+                  <MapView className={'flex-1'} region={region}>
+                    <Marker
+                      coordinate={{
+                        latitude: listing?.property?.address?.latitude,
+                        longitude: listing?.property?.address?.longitude,
+                      }}>
+                      <HouseMapMarker />
+                    </Marker>
+                  </MapView>
+                )}
+              </View>
+            )}
 
           {/* Virtual tour button */}
           <View className={'flex-row justify-center '}>
@@ -249,7 +256,11 @@ const ApartmentView = ({route: {params}}) => {
 
           <View className={'mt-3'} style={styles.chargeList}>
             {listing?.property?.amenities?.map((amenity, ind) => (
-              <ExploreAmenity key={ind} showCheckBox={false} title={amenity} />
+              <ExploreAmenity
+                key={ind}
+                showCheckBox={false}
+                title={amenity?.name}
+              />
             ))}
           </View>
 

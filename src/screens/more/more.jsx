@@ -29,8 +29,11 @@ import {useAuth} from '../../hooks';
 import useGlobals from '../../provider/store/useGlobals';
 import {useNotificationStore} from '../../provider/store/notification';
 import {ZustandStorage} from '../../provider/store/MMKV';
+import {ComplainSvg} from '../../assets/icons';
+import {useQueryClient} from '@tanstack/react-query';
 
 const More = () => {
+  const queryClient = useQueryClient();
   const navigation = useNavigation();
   const {
     state: {auth},
@@ -44,6 +47,7 @@ const More = () => {
   };
 
   const handleSignout = () => {
+    queryClient.clear();
     ZustandStorage.clear();
     resetState();
     removeDeviceToken();
@@ -224,6 +228,11 @@ const navList = [
     icon: <AgreementSvg />,
     title: 'Privacy Policy',
     link: PRIVACY_POLICY_URL,
+  },
+  {
+    icon: <ComplainSvg size="20" />,
+    title: 'Complains',
+    screen: 'more__complains',
   },
   {
     icon: <LogoutSvg size={'24'} color={COLORS.primary} />,
