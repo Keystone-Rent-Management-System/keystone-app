@@ -146,10 +146,12 @@ const InvoiceView = ({route: {params}}) => {
             title={'Rent'}
             amt={formatToKES(Number(invoice?.rentAmount)) ?? 0}
           />
-          <InvoiceBillItem
-            title={'Deposit'}
-            amt={formatToKES(Number(invoice?.deposit)) ?? 0}
-          />
+          {invoice?.deposit ? (
+            <InvoiceBillItem
+              title={'Deposit'}
+              amt={formatToKES(Number(invoice?.deposit)) ?? 0}
+            />
+          ) : null}
           <InvoiceBillItem
             title={'Water'}
             amt={formatToKES(Number(invoice?.waterFeeAmount)) ?? 0}
