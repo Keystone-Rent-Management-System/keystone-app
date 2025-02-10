@@ -1,5 +1,6 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
+import * as Sentry from '@sentry/react-native';
 
 import BottomNav from './BottomNav';
 import {ApartmentSearch, ApartmentView, InvoiceView} from '@/screens';
@@ -26,6 +27,14 @@ import useGlobals from '../provider/store/useGlobals';
 const Stack = createStackNavigator();
 const MainNav = () => {
   const {auth} = useGlobals(data => data.state);
+
+  useEffect(() => {
+    if (auth?.access_token) {
+      Sentry.setUser({email: '', id: auth.access_token});
+    } else {
+      Sentry.setUser({email: null, id: null});
+    }
+  }, [auth]);
 
   return (
     <Stack.Navigator

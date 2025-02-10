@@ -1,8 +1,10 @@
-import {Linking} from 'react-native';
-import {PALLAX_SUPPORT_NUMBER} from '../constants';
+import * as Sentry from '@sentry/react-native';
 import moment from 'moment';
+import {Linking} from 'react-native';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import RNFetchBlob from 'rn-fetch-blob';
+
+import {PALLAX_SUPPORT_NUMBER} from '../constants';
 
 const renderSingularPlural = (num, render, nullRender = '') =>
   parseInt(num, 10) > 1 ? render : nullRender;
@@ -88,6 +90,12 @@ export const formatToKES = amount => {
     style: 'currency',
     currency: 'KES',
   }).format(Math.abs(amount));
+};
+
+export const handleReportError = error => {
+  // if (ENVIRON === APP_MODE.production) {
+  Sentry.captureException(error);
+  // }
 };
 
 const Helper = {
