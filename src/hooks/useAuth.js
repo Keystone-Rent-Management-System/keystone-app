@@ -6,6 +6,7 @@ import useGlobals from '../provider/store/useGlobals';
 import {getError} from '../utils/getError';
 import NotificationService from '../services/Notification';
 import {useProfileStore} from '../provider/store/profile';
+import formatPhone from '../utils/formatPhone';
 
 const useAuth = () => {
   const {profile} = useProfileStore();
@@ -91,14 +92,14 @@ export const useRegister = () => {
     // update details to global state incase mutation is not successful
     const {firstName, lastName, phoneNumber, identificationNumber} = props;
     updateRegisteringUser(props);
+    const formattedPhoneNumber = formatPhone(phoneNumber);
 
     registerTenantMutation.mutateAsync({
       firstName: firstName,
       lastName: lastName,
       identificationType: 'NATIONAL_ID',
       identificationNumber: identificationNumber,
-      phoneNumber:
-        phoneNumber.length === 9 ? '0' + phoneNumber.toString() : phoneNumber,
+      phoneNumber: formattedPhoneNumber,
       email: registering_user.email,
       token: registering_user.token,
       password: registering_user.password,
