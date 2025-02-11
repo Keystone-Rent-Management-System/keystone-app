@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Alert,
   FlatList,
-  Linking,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -24,13 +23,14 @@ import {Layout, ProfileView} from '@/components';
 import COLORS from '@/constants/Theme';
 import Helper from '@/utils/Helper';
 import {useNavigation} from '@react-navigation/native';
+import {useQueryClient} from '@tanstack/react-query';
+import {ComplainSvg} from '../../assets/icons';
 import {ABOUT_URL, PRIVACY_POLICY_URL} from '../../constants';
 import {useAuth} from '../../hooks';
-import useGlobals from '../../provider/store/useGlobals';
-import {useNotificationStore} from '../../provider/store/notification';
 import {ZustandStorage} from '../../provider/store/MMKV';
-import {ComplainSvg} from '../../assets/icons';
-import {useQueryClient} from '@tanstack/react-query';
+import {useNotificationStore} from '../../provider/store/notification';
+import useGlobals from '../../provider/store/useGlobals';
+import {openLinkInBrowser} from '../../utils/openLinkInBrowser';
 
 const More = () => {
   const queryClient = useQueryClient();
@@ -153,7 +153,7 @@ const renderNavItem = ({item}, handleNavigate, token, signout) => {
       : handleNavigate(item?.screen ?? '');
   };
   const handleOpenLink = () => {
-    Linking.openURL(item?.link);
+    openLinkInBrowser(item?.link);
   };
 
   return (

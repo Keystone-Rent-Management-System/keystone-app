@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef} from 'react';
 import {ToastAndroid, View} from 'react-native';
 
 import {
@@ -65,6 +65,7 @@ const Home = () => {
     agreement,
     agreementRefetch,
     isFetching: isActiveAgreementFetching,
+    isAgreed,
   } = useActiveAgrement();
   const {
     activeStatement,
@@ -75,27 +76,33 @@ const Home = () => {
   const {inactiveAgreement} = useActiveAgreement();
   const agreementModalRef = useRef();
 
-  const handleOpenAgreement = () => {
-    ToastAndroid.show('You need to accept the agreement', ToastAndroid.SHORT);
-    agreementModalRef?.current?.present();
-  };
-
-  useEffect(() => {
-    if (
+  const hasInactiveAgreement = useMemo(
+    () =>
       !agreement?.id &&
       inactiveAgreement?.id &&
-      inactiveAgreement?.status?.toLocaleLowerCase() !== 'terminated'
-    ) {
+      inactiveAgreement?.status?.toLocaleLowerCase() !== 'terminated',
+    [agreement, inactiveAgreement],
+  );
+
+  const handleOpenAgreement = useCallback(() => {
+    if (hasInactiveAgreement) {
+      ToastAndroid.show('You need to accept the agreement', ToastAndroid.SHORT);
+      agreementModalRef?.current?.present();
+    }
+  }, [hasInactiveAgreement]);
+
+  useEffect(() => {
+    if (hasInactiveAgreement) {
       handleOpenAgreement();
     }
-  }, [agreement?.id, inactiveAgreement]);
+  }, [handleOpenAgreement, hasInactiveAgreement]);
 
   return (
     <>
       <Layout isScrollable ClassName={'px-4'}>
         {/* Header */}
         <HomeHeader />
-        {!isPending && agreement ? (
+        {!isPending && isAgreed ? (
           <View>
             {/*apartment title */}
             <HomeApartmentTitle
@@ -121,7 +128,7 @@ const Home = () => {
 
         {/* Finance & payments */}
         <HomeMenu
-          hasInactiveAgreement={!agreement?.id && inactiveAgreement?.id}
+          hasInactiveAgreement={hasInactiveAgreement}
           handleAcceptAgreement={handleOpenAgreement}
           handleOpenHelpModal={handleOpenHelpModal}
           handleOpenExtensionModal={handleOpenExtensionModal}

@@ -1,6 +1,6 @@
 {
   "name": "pallax_app",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -19,6 +19,7 @@
     "@react-navigation/material-top-tabs": "^6.6.14",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.4.1",
+    "@sentry/react-native": "^6.6.0",
     "@shopify/flash-list": "^1.7.1",
     "@tanstack/react-query": "^5.56.2",
     "@uidotdev/usehooks": "^2.4.1",
