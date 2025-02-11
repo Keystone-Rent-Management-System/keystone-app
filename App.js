@@ -15,12 +15,9 @@ import * as Sentry from '@sentry/react-native';
 
 Sentry.init({
   dsn: 'https://6d592da0b347029be2400ab07f106938@o4506602287595520.ingest.us.sentry.io/4508793734955008',
-  // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing.
-  // We recommend adjusting this value in production.
-  tracesSampleRate: 1.0,
-  // profilesSampleRate is relative to tracesSampleRate.
-  // Here, we'll capture profiles for 100% of transactions.
-  profilesSampleRate: 1.0,
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
+  integrations: [Sentry.mobileReplayIntegration()],
 });
 function App() {
   return (
