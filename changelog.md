@@ -1,3 +1,12 @@
+## v1.3.2 (2025-02-11)
+
+### Feat
+- Added sentry to capture app errors
+
+### Fix
+- Fixed pop of terminated agreement
+- Fixed validation of user phone number
+
 ## v1.3.1 (2025-02--8)
 
 ### Fix
