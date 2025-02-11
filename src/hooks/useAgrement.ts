@@ -39,7 +39,10 @@ export const useActiveAgrement = () => {
   }, [data]);
 
   const isAgreed = useMemo(() => {
-    return agreement?.status?.toLocaleLowerCase() === 'agreed';
+    return (
+      agreement?.status?.toLocaleLowerCase() === 'agreed' ||
+      agreement?.status?.toLocaleLowerCase() === 'accepted'
+    );
   }, [agreement]);
 
   return {
