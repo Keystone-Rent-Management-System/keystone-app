@@ -65,6 +65,7 @@ const Home = () => {
     agreement,
     agreementRefetch,
     isFetching: isActiveAgreementFetching,
+    isAgreed,
   } = useActiveAgrement();
   const {
     activeStatement,
@@ -95,7 +96,7 @@ const Home = () => {
       <Layout isScrollable ClassName={'px-4'}>
         {/* Header */}
         <HomeHeader />
-        {!isPending && agreement ? (
+        {!isPending && isAgreed ? (
           <View>
             {/*apartment title */}
             <HomeApartmentTitle
