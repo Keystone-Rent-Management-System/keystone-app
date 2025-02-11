@@ -12,7 +12,12 @@ import {useRegister} from '../../../hooks';
 const schema = object({
   firstName: string().required().min(1),
   lastName: string().required().min(1),
-  phoneNumber: string().required().length(9),
+  phoneNumber: string()
+    .required()
+    .matches(
+      /^(2547\d{8}|2541\d{8}|07\d{8}|01\d{8})$/,
+      'Phone number must be in the format 2547..., 2541..., +254..., 07..., or 01...',
+    ),
   identificationNumber: string().required().min(6),
 });
 
