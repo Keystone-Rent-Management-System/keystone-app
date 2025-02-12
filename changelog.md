@@ -1,3 +1,11 @@
+## v1.3.2 (2025-02-12)
+
+### Fix
+- Fixed view of invoice, statement, payment help section contact and extension after termination
+
+### Change
+- Added validation of a 9 digit phone number
+
 ## v1.3.2 (2025-02-11)
 
 ### Feat
