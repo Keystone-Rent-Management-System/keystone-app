@@ -76,7 +76,7 @@ const Home = () => {
   const {inactiveAgreement} = useActiveAgreement();
   const agreementModalRef = useRef();
 
-  const hasInactiveAgreement = useMemo(
+  const hasUnacceptedInactiveAgreement = useMemo(
     () =>
       !agreement?.id &&
       inactiveAgreement?.id &&
@@ -84,18 +84,33 @@ const Home = () => {
     [agreement, inactiveAgreement],
   );
 
+  const hasTerminatedInactiveAgreement = useMemo(
+    () =>
+      !agreement?.id &&
+      inactiveAgreement?.id &&
+      inactiveAgreement?.status?.toLocaleLowerCase() === 'terminated',
+    [agreement, inactiveAgreement],
+  );
+
   const handleOpenAgreement = useCallback(() => {
-    if (hasInactiveAgreement) {
+    if (hasTerminatedInactiveAgreement) {
+      ToastAndroid.show(
+        'Your agreement has been terminated. Please contact your landlord',
+        ToastAndroid.SHORT,
+      );
+    }
+
+    if (hasUnacceptedInactiveAgreement) {
       ToastAndroid.show('You need to accept the agreement', ToastAndroid.SHORT);
       agreementModalRef?.current?.present();
     }
-  }, [hasInactiveAgreement]);
+  }, [hasTerminatedInactiveAgreement, hasUnacceptedInactiveAgreement]);
 
   useEffect(() => {
-    if (hasInactiveAgreement) {
+    if (hasUnacceptedInactiveAgreement) {
       handleOpenAgreement();
     }
-  }, [handleOpenAgreement, hasInactiveAgreement]);
+  }, [handleOpenAgreement, hasUnacceptedInactiveAgreement]);
 
   return (
     <>
@@ -128,7 +143,9 @@ const Home = () => {
 
         {/* Finance & payments */}
         <HomeMenu
-          hasInactiveAgreement={hasInactiveAgreement}
+          hasInactiveAgreement={
+            hasTerminatedInactiveAgreement || hasUnacceptedInactiveAgreement
+          }
           handleAcceptAgreement={handleOpenAgreement}
           handleOpenHelpModal={handleOpenHelpModal}
           handleOpenExtensionModal={handleOpenExtensionModal}
