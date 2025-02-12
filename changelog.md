@@ -1,4 +1,4 @@
-## v1.3.2 (2025-02-12)
+## v1.3.3 (2025-02-12)
 
 ### Fix
 - Fixed view of invoice, statement, payment help section contact and extension after termination
