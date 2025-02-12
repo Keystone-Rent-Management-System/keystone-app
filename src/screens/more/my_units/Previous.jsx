@@ -14,7 +14,7 @@ const Previous = () => {
   const navigation = useNavigation();
 
   const handleNavigate = id => {
-    navigation.navigate('my_units__view', {unitId: id});
+    navigation.navigate('my_units__view', {agreementId: id, type: 'previous'});
   };
 
   const {isPending, agreements, refetch} = useAgrement();
@@ -53,7 +53,7 @@ export const renderUnitListItem = (item, handlePress = () => {}) => {
       }
       unit={item?.propertyUnits?.name}
       amount={item?.propertyUnits?.rent}
-      handlePress={() => handlePress(item?.propertyUnits?.id)}
+      handlePress={() => handlePress(item?.id)}
     />
   );
 };
