@@ -10,7 +10,7 @@ import {
   WaterBillSvg,
 } from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
-import {useActiveAgrement} from '../../../hooks';
+import {useActiveAgrement, useAgrement} from '../../../hooks';
 import {useActiveStatement} from '../../../hooks/useStatement';
 import {IPropertyContacts} from '../../../types/property.ts';
 import AgreementModalSheet from '../../../components/modals/Agreement';
@@ -18,9 +18,19 @@ import {formatToKES} from '../../../utils/Helper';
 
 type ChargeKey = string;
 
-const UnitView = () => {
-  const {isPending, agreement} = useActiveAgrement();
+const UnitView = ({route: {params}}: any) => {
+  const {agreements} = useAgrement();
+  const {isPending, agreement: _agreement} = useActiveAgrement();
   const {isPending: isPendingActive, activeStatement} = useActiveStatement();
+
+  const agreement = useMemo(() => {
+    if (params?.type === 'previous') {
+      // filter agreements to get the one with the same id as the one passed in the params
+      return agreements.find(agr => agr.id === params?.agreementId) || null;
+    }
+
+    return _agreement;
+  }, [_agreement, agreements, params?.type, params?.agreementId]);
 
   const propertyContactPerson: IPropertyContacts = useMemo(() => {
     return agreement?.propertyUnits?.property?.propertyContacts || {};
@@ -68,11 +78,11 @@ const UnitView = () => {
 
   return (
     <Layout isScrollable={true} ClassName={'p-5'}>
-      {isPending || isPendingActive ? (
+      {params?.type !== 'previous' && (isPending || isPendingActive) ? (
         <View className={'flex flex-row justify-center py-16'}>
           <ActivityIndicator color={'#022374'} size="small" />
           <Text className={'text-primary font-inter-semibold text-sm'}>
-            Loading...
+            Loadingsss...
           </Text>
         </View>
       ) : (
