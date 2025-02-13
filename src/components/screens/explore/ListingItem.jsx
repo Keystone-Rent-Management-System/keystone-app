@@ -154,8 +154,8 @@ const ListingItem = props => {
           <Text
             style={{color: COLORS.text_color}}
             className={'font-inter-semibold text-xs'}>
-            KES. {numberWithCommas(Number(props.price))} /
-            <Text className={'text-11 text-grey_1 font-inter'}> Month</Text>
+            KES. {numberWithCommas(Number(props.price))}
+            {/*/ <Text className={'text-11 text-grey_1 font-inter'}> Month</Text> */}
           </Text>
         </View>
       </View>
