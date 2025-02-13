@@ -1,3 +1,8 @@
+## v1.3.4 (2025-02-13)
+
+### Fix
+- Fixed webpage view of about us and privacy policy
+
 ## v1.3.3 (2025-02-12)
 
 ### Fix
