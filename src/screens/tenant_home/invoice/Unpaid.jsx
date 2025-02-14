@@ -59,7 +59,7 @@ export const renderInvoiceItem = (item, handlePress = () => {}) => {
         />
       }
       title={item?.propertyName?.split('-')[0]}
-      customDate={moment(item?.updatedAt)?.format('Do MMMM, YYYY')}
+      customDate={moment(item?.createdAt)?.format('Do MMMM, YYYY')}
       unit={item?.propertyName?.split('-')[1]}
       amount={numberConverter(item?.totalAmount)}
       isPartial={item?.paymentStatus?.toLowerCase() === 'paid_partially'}
