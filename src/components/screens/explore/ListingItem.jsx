@@ -155,7 +155,7 @@ const ListingItem = props => {
             style={{color: COLORS.text_color}}
             className={'font-inter-semibold text-xs'}>
             KES. {numberWithCommas(Number(props.price))}
-            {props?.puropse.toLocaleLowerCase() === 'rent' && (
+            {props?.puropse?.toLocaleLowerCase() === 'rent' && (
               <Text className={'text-11 text-grey_1 font-inter'}>/ Month</Text>
             )}
           </Text>
