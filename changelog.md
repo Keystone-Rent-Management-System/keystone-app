@@ -1,3 +1,12 @@
+## v1.3.4 (2025-02-20)
+
+### Fix
+- Fixed proper instruction for a specific invoice
+
+### Change
+- Added ability to change phone number
+
+
 ## v1.3.4 (2025-02-13)
 
 ### Fix
