@@ -8,11 +8,13 @@ import NotificationService from '../services/Notification';
 import {useProfileStore} from '../provider/store/profile';
 import formatPhone from '../utils/formatPhone';
 
+export const profileQueryKey = ['user', 'profile'];
+
 const useAuth = () => {
   const {profile} = useProfileStore();
 
   const {isPending, error, data, refetch} = useQuery({
-    queryKey: ['user', 'profile'],
+    queryKey: profileQueryKey,
     queryFn: () => AuthServices.getProfile(),
     enabled: !profile?.userId, // fetch only if profile is not in store
   });
