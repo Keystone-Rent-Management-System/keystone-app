@@ -1,10 +1,11 @@
+import {zodResolver} from '@hookform/resolvers/zod';
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useMemo} from 'react';
-import {Text, ToastAndroid, TouchableOpacity, View} from 'react-native';
-import {zodResolver} from '@hookform/resolvers/zod';
 import {useForm} from 'react-hook-form';
+import {Text, ToastAndroid, TouchableOpacity, View} from 'react-native';
 import {object, z} from 'zod';
 
+import {useMutation} from '@tanstack/react-query';
 import {
   EditSvg,
   EmailSvg,
@@ -16,9 +17,8 @@ import {DetailsHeader, Layout} from '../../../components';
 import {LabelledCInput} from '../../../components/general/input/CInput';
 import ControlledInput from '../../../components/general/input/ControlledInput';
 import {useAuth} from '../../../hooks';
-import {useMutation, useQueryClient} from '@tanstack/react-query';
 import ProfileServices from '../../../services/ProfileServices';
-import {profileQueryKey} from '../../../hooks/useAuth';
+import {getError} from '../../../utils/getError';
 
 export type AccountFormData = {
   phoneNumber: string;
@@ -35,8 +35,7 @@ const schema = object({
 
 const Details = () => {
   const navigation = useNavigation<any>();
-  const {isPending, profile} = useAuth();
-  const queryClient = useQueryClient();
+  const {isPending, profile, refetch} = useAuth();
 
   const {handleSubmit, control, watch} = useForm<AccountFormData>({
     resolver: zodResolver(schema),
@@ -61,14 +60,20 @@ const Details = () => {
     mutationFn: async (data: any) => {
       if (hasPhoneChanged) {
         await ProfileServices.updatePhoneNumber(data.phoneNumber);
+        await refetch();
       } else {
         return;
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: profileQueryKey});
       ToastAndroid.show('Profile updated successfully', ToastAndroid.SHORT);
       navigation.goBack();
+    },
+    onError: error => {
+      ToastAndroid.show(
+        'Failed to update phone number. ' + getError(error),
+        ToastAndroid.SHORT,
+      );
     },
   });
 
