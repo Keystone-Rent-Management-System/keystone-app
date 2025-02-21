@@ -74,7 +74,7 @@ const StatementFilter = forwardRef<BottomSheet, IStatementFilterProps>(
           contentContainerStyle={styles.contentContainer}>
           {/* months filter */}
           <View className="flex flex-row flex-wrap gap-3">
-            {monthFilters.map(filter => (
+            {monthFilters.map((filter, ind) => (
               <CButton
                 textClassName={`font-inter text-[13px] ${
                   filter?.value === selectedDuration
@@ -90,6 +90,7 @@ const StatementFilter = forwardRef<BottomSheet, IStatementFilterProps>(
                 onPress={() =>
                   handleDurationSelection(filter.value as Duration)
                 }
+                key={ind}
               />
             ))}
           </View>
