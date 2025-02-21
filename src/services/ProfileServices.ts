@@ -8,7 +8,7 @@ import AxiosUtility, {setAuthToken} from './AxiosServices';
 const updatePhoneNumber = async (newPhoneNumber: string): Promise<any> => {
   setAuthToken(AxiosUtility);
 
-  const {data: res} = await AxiosUtility.post(
+  const {data: res} = await AxiosUtility.put(
     `/profile/user/phoneNumber?phoneNumber=${newPhoneNumber}`,
   );
 
