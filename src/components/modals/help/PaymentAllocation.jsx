@@ -14,6 +14,8 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {CameraSvg, CloseSvg} from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
 import HelpServices from '../../../services/help';
+import {getError} from '../../../utils/getError';
+import {compressImage} from '../../../utils/payment';
 import {CButton} from '../../general';
 import {CustomBottomSheet} from '../index';
 
@@ -26,8 +28,6 @@ const PaymentAllocation = forwardRef((props, ref) => {
       {
         mediaType: 'photo',
         includeBase64: false,
-        maxHeight: 1000,
-        maxWidth: 1000,
       },
       response => {
         if (response.didCancel) {
@@ -39,7 +39,8 @@ const PaymentAllocation = forwardRef((props, ref) => {
         setImage(response?.uri);
       },
     );
-    setImage(img?.assets?.at(0));
+
+    compressImage(img.assets?.at(0), setImage);
   };
 
   const renderImage = () => {
@@ -94,7 +95,10 @@ const PaymentAllocation = forwardRef((props, ref) => {
       props?.handleCloseModal();
     },
     onError: _err => {
-      ToastAndroid.show('Error: Failed to verify payment', ToastAndroid.LONG);
+      ToastAndroid.show(
+        'Error: Failed to verify payment ' + getError(_err),
+        ToastAndroid.LONG,
+      );
     },
   });
 
