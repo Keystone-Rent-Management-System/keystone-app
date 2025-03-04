@@ -7,22 +7,30 @@ import {getError} from '../utils/getError';
 import NotificationService from '../services/Notification';
 import {useProfileStore} from '../provider/store/profile';
 import formatPhone from '../utils/formatPhone';
+import {useEffect} from 'react';
 
 export const profileQueryKey = ['user', 'profile'];
 
 const useAuth = () => {
-  const {profile} = useProfileStore();
+  const {profile, saveProfile} = useProfileStore();
 
-  const {isPending, error, data, refetch} = useQuery({
+  const {isPending, error, data, refetch, isSuccess} = useQuery({
     queryKey: profileQueryKey,
     queryFn: () => AuthServices.getProfile(),
     enabled: !profile?.userId, // fetch only if profile is not in store
   });
 
+  useEffect(() => {
+    saveProfile(data);
+  }, [data, isSuccess, saveProfile]);
+
   return {
     isPending: profile?.userId ? false : isPending,
     error,
-    profile: profile?.userId ? profile : data,
+    profile: {
+      ...profile,
+      ...data,
+    },
     refetch,
   };
 };

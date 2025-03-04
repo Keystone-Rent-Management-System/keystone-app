@@ -1,4 +1,12 @@
-## v1.3.4 (2025-02-20)
+## v1.3.6 (2025-03-04)
+
+### Fix
+- Fixed change of phone number
+
+### Change
+- Added optimization of image upload
+
+## v1.3.5 (2025-02-20)
 
 ### Fix
 - Fixed proper instruction for a specific invoice
