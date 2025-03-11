@@ -10,6 +10,7 @@ import PropertySvg from './property.js';
 import UnitSvg from './unit.js';
 import TransactionSvg from './transaction.js';
 import CameraSvg from './camera.js';
+import RefreshSvg from './refresh.tsx';
 
 export {
   ArrowDownUpSvg,
@@ -24,4 +25,5 @@ export {
   UnitSvg,
   TransactionSvg,
   CameraSvg,
+  RefreshSvg,
 };

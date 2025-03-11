@@ -141,11 +141,8 @@ const PaymentAllocation = forwardRef((props, ref) => {
             className={
               'text-black font-inter border border-border_grey w-full rounded-xl text-xs px-3'
             }
-            placeholder={'Enter a transaction code'}
-            placeholderTextColor={COLORS.border_grey}
-            style={{
-              textAlignVertical: 'top',
-            }}
+            placeholder={'(e.g.TCB488B...)'}
+            placeholderTextColor={COLORS.grey_1}
             onChangeText={setCode}
             value={code}
           />
