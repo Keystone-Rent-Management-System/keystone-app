@@ -1,7 +1,7 @@
 import React from 'react';
 import {ActivityIndicator, Text, TouchableOpacity, View} from 'react-native';
 
-import {ArrowDownUpSvg} from '../../../assets/icons';
+import {RefreshSvg} from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
 
 const ApartmentTitle = ({agreement, refetch, isLoading}) => {
@@ -27,7 +27,7 @@ const ApartmentTitle = ({agreement, refetch, isLoading}) => {
         {isLoading ? (
           <ActivityIndicator size={25} color={COLORS.primary} />
         ) : (
-          <ArrowDownUpSvg />
+          <RefreshSvg />
         )}
       </TouchableOpacity>
     </View>

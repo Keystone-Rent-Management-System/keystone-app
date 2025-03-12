@@ -1,7 +1,7 @@
 import {Image} from 'react-native-compressor';
 import * as ImagePicker from 'react-native-image-picker';
 
-interface IImage {
+export interface IImage {
   uri: string;
   name: string;
   type: string;
