@@ -1,5 +1,7 @@
-import React, {forwardRef, useState} from 'react';
+import React, {forwardRef, useCallback, useRef, useState} from 'react';
 
+import {CloseSvg} from '@/assets/icons';
+import {useMutation} from '@tanstack/react-query';
 import {
   Image,
   ScrollView,
@@ -10,39 +12,30 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {launchCamera} from 'react-native-image-picker';
-import {CustomBottomSheet} from '../index';
-import {CButton} from '../../general';
-import {CloseSvg} from '@/assets/icons';
-import COLORS from '../../../constants/Theme';
 import {CameraSvg} from '../../../assets/icons';
-import {useMutation} from '@tanstack/react-query';
+import COLORS from '../../../constants/Theme';
 import HelpServices from '../../../services/help';
+import {CButton} from '../../general';
+import {CustomBottomSheet} from '../index';
+import SelectPhotoOptions from '../select-photo-options';
 
 const RequestRepair = forwardRef((props, ref) => {
   // saves image
   const [image, setImage] = useState(null);
   const [message, setMessage] = useState('');
+  const selectImageRef = useRef(null);
 
-  const handleCamera = async () => {
-    const img = await launchCamera(
-      {
-        mediaType: 'photo',
-        maxHeight: 1000,
-        maxWidth: 1000,
-      },
-      response => {
-        if (response.didCancel) {
-          return;
-        }
-        if (response.errorCode) {
-          return;
-        }
-        setImage(response.uri);
-      },
-    );
-    setImage(img?.assets?.at(0));
+  const handleOpenImageModal = () => {
+    selectImageRef.current?.expand();
   };
+
+  const handleCloseImageModal = () => {
+    selectImageRef.current?.close();
+  };
+
+  const handleClear = useCallback(() => {
+    setImage(null);
+  }, []);
 
   const renderImage = () => {
     if (image?.uri) {
@@ -102,51 +95,60 @@ const RequestRepair = forwardRef((props, ref) => {
   };
 
   return (
-    <CustomBottomSheet
-      snapPoints={['70%', '70%']}
-      ref={ref}
-      handleComponent={() => renderSheetHeader(props.handleCloseModal)}
-      onChange={props.handleSheetChanges}>
-      <ScrollView className={'px-4'}>
-        <Text className={'text-xs font-inter text-grey_1 mb-2'}>
-          Report or request for repair. The management will receive the
-          notification.
-        </Text>
-
-        <View className={'flex-col items-start w-full py-3'}>
-          <Text className={'text-black my-1.5 font-inter text-xs'}>
-            What would you like to be repair ?
+    <>
+      <CustomBottomSheet
+        snapPoints={['70%', '70%']}
+        ref={ref}
+        handleComponent={() => renderSheetHeader(props.handleCloseModal)}
+        onChange={props.handleSheetChanges}>
+        <ScrollView className={'px-4'}>
+          <Text className={'text-xs font-inter text-grey_1 mb-2'}>
+            Report or request for repair. The management will receive the
+            notification.
           </Text>
-          <TextInput
-            className={
-              'text-black border border-border_grey w-full rounded-xl font-inter text-xs px-3'
-            }
-            numberOfLines={3}
-            placeholder={'List of repairs'}
-            placeholderTextColor={COLORS.border_grey}
-            style={styles.textArea}
-            value={message}
-            onChangeText={setMessage}
-          />
 
-          <TouchableOpacity
-            className={
-              'flex flex-col justify-center items-center h-40 bg-border_grey w-full rounded-xl my-3'
-            }
-            onPress={handleCamera}>
-            {renderImage()}
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-      <CButton
-        disabled={requestRepairMutation.isPending}
-        ClassName={'bg-primary text-white py-3.5 mx-5 mb-3'}
-        onPress={handleRequestRepair}>
-        <Text className={'text-white font-inter text-13 '}>
-          {requestRepairMutation?.isPending ? 'saving...' : 'Submit'}
-        </Text>
-      </CButton>
-    </CustomBottomSheet>
+          <View className={'flex-col items-start w-full py-3'}>
+            <Text className={'text-black my-1.5 font-inter text-xs'}>
+              What would you like to be repair ?
+            </Text>
+            <TextInput
+              className={
+                'text-black border border-border_grey w-full rounded-xl font-inter text-xs px-3'
+              }
+              numberOfLines={3}
+              placeholder={'List of repairs'}
+              placeholderTextColor={COLORS.border_grey}
+              style={styles.textArea}
+              value={message}
+              onChangeText={setMessage}
+            />
+
+            <TouchableOpacity
+              className={
+                'flex flex-col justify-center items-center h-40 bg-border_grey w-full rounded-xl my-3'
+              }
+              onPress={handleOpenImageModal}>
+              {renderImage()}
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+        <CButton
+          disabled={requestRepairMutation.isPending}
+          ClassName={'bg-primary text-white py-3.5 mx-5 mb-3'}
+          onPress={handleRequestRepair}>
+          <Text className={'text-white font-inter text-13 '}>
+            {requestRepairMutation?.isPending ? 'saving...' : 'Submit'}
+          </Text>
+        </CButton>
+      </CustomBottomSheet>
+
+      <SelectPhotoOptions
+        ref={selectImageRef}
+        handleClose={handleCloseImageModal}
+        setImage={setImage}
+        handleClear={handleClear}
+      />
+    </>
   );
 });
 
