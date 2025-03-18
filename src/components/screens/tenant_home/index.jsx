@@ -3,6 +3,7 @@ import HomeApartmentTitle from './ApartmentTitle';
 import HomeStatsCard from './StatsCard';
 import HomeMenu from './Menu';
 import ExtensionDropDown from './ExtensionDropDown';
+import UnitSelector from './unit-selector';
 
 export {
   HomeHeader,
@@ -10,5 +11,6 @@ export {
   HomeStatsCard,
   HomeMenu,
   ExtensionDropDown,
+  UnitSelector,
 };
 export * from './help';
