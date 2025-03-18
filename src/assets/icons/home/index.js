@@ -1,4 +1,4 @@
-import ArrowDownUpSvg from './arrowDownUp.js';
+import ArrowDownUpSvg from './arrowDownUp.tsx';
 import BillsSvg from './bills.js';
 import CallSvg from './call.js';
 import ExtensionSvg from './extension.js';

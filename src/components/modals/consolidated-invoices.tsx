@@ -35,7 +35,9 @@ const ConsolidatedInvoices = forwardRef<BottomSheet, IConsolidatedInvoices>(
       <CustomBottomSheet
         ref={ref}
         snapPoints={['81%', '81%']}
-        handleComponent={() => renderSheetHeader(handleCloseFilter)}>
+        handleComponent={() =>
+          renderSheetHeader('Consolidated Invoices', handleCloseFilter)
+        }>
         <View className="px-5 py-2 flex-1">
           <Text className="text-gray-500 font-inter leading-5">
             This shows the aggregated invoices for the invoice:{' '}
@@ -73,15 +75,16 @@ const styles = StyleSheet.create({
   },
 });
 
-const renderSheetHeader = (handleClose: () => void) => (
+export const renderSheetHeader = (
+  title: string = 'Consolidated Invoices',
+  handleClose: () => void,
+) => (
   <View className={'border-b border-border_grey mx-5'}>
     <View
       className={
         'top-0 bg-none py-3 z-50 flex-row justify-between items-center'
       }>
-      <Text className={'font-inter-semibold text-lg text-black'}>
-        Consolidated Invoices
-      </Text>
+      <Text className={'font-inter-semibold text-lg text-black'}>{title}</Text>
 
       <CButton
         ClassName={'rounded-full bg-gray-200 h-8 w-8 p-0 '}
