@@ -4,7 +4,7 @@ import useGlobals from '../provider/store/useGlobals';
 import AuthServices from './AuthServices';
 import {Environment, getBaseUrl} from '../constants/general';
 
-export const BASE_URL = getBaseUrl(Environment.Uat);
+export const BASE_URL = getBaseUrl(Environment.Production);
 
 export const AxiosUtility = axios.create({
   baseURL: `${BASE_URL}`,

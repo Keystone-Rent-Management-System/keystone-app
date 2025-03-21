@@ -1,3 +1,12 @@
+## v1.3.7 (2025-03-21)
+
+### Change
+- Changed refresh button icon
+- Add multi-unit view via the app
+- Ability to upload repair request via the app
+- Changed app logo
+- Changed app font
+
 ## v1.3.6 (2025-03-04)
 
 ### Fix
@@ -13,7 +22,6 @@
 
 ### Change
 - Added ability to change phone number
-
 
 ## v1.3.4 (2025-02-13)
 
