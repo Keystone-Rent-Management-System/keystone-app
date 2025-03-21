@@ -40,40 +40,40 @@ const StatementItem = ({
         {/*  Row 1  */}
         <View className={'flex flex-row justify-between'}>
           {/*column 1 */}
-          <Text className={'text-primary text-sm font-inter-semibold'}>
+          <Text className={'text-primary text-sm font-open-sauce-sans-semibold'}>
             {invoiceNumber}
           </Text>
 
-          <Text className={'text-zinc-400 text-xs font-inter'}>
+          <Text className={'text-zinc-400 text-xs font-open-sauce-sans'}>
             {moment(date).format('DD MMM YY')}
           </Text>
         </View>
 
         {/*Row 2*/}
         <View className={'flex flex-row justify-between'}>
-          <Text className={'text-zinc-400 text-xs font-inter'}>
+          <Text className={'text-zinc-400 text-xs font-open-sauce-sans'}>
             {`Starting Bal: KES ${startingBalance}`}
           </Text>
 
-          <Text className={'text-black text-[13px] font-inter-semibold'}>
+          <Text className={'text-black text-[13px] font-open-sauce-sans-semibold'}>
             KES {paymentAmount}
           </Text>
         </View>
 
         {/*Row 3*/}
         <View className={'flex flex-row justify-between'}>
-          <Text className={'text-zinc-400 text-xs font-inter'}>
+          <Text className={'text-zinc-400 text-xs font-open-sauce-sans'}>
             {`Charge(Cr): KES ${charge ?? 0}`}
           </Text>
 
-          <Text className={'text-zinc-400 text-xs font-inter'}>
+          <Text className={'text-zinc-400 text-xs font-open-sauce-sans'}>
             {`Payment(Dr): KES ${payment ?? 0}`}
           </Text>
         </View>
 
         {/*Row 4*/}
         <View className={'flex flex-row justify-between'}>
-          <Text className={'text-zinc-400 text-xs font-inter'}>
+          <Text className={'text-zinc-400 text-xs font-open-sauce-sans'}>
             {`Details: KES ${charge ?? 0}`}
           </Text>
         </View>

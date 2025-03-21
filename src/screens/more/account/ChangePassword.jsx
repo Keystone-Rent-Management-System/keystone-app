@@ -84,7 +84,7 @@ const ChangePassword = () => {
         }
         isLoading={changePasswordMutation.isPending}
         onPress={handleSubmit(handleChangePassword)}>
-        <Text className={'text-white font-inter text-13 '}>
+        <Text className={'text-white font-open-sauce-sans text-13 '}>
           {changePasswordMutation.isPending ? 'Changing' : 'Change Password'}
         </Text>
       </CButton>

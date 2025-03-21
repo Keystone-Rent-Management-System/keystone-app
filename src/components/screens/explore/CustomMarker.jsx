@@ -9,7 +9,7 @@ const CustomMarker = ({text, handlePress, isCurrent}) => (
     } relative mb-1.5`}
     onPress={handlePress}>
     <Text
-      className={`font-inter-medium ${
+      className={`font-open-sauce-sans-medium ${
         isCurrent ? 'text-white' : 'text-black'
       } shadow text-2xs`}>
       KES {text}

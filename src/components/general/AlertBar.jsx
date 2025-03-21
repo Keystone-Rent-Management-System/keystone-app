@@ -16,7 +16,7 @@ const AlertBar = ({type = 'warning', message, icon}) => {
       {icon}
       <Text
         style={{color: alertColors[type]?.text}}
-        className={'text-black font-inter text-xs'}>
+        className={'text-black font-open-sauce-sans text-xs'}>
         {message}
       </Text>
     </View>

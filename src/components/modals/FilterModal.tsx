@@ -143,7 +143,7 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
           <RightArrowSvg size={'18'} />
         </TouchableOpacity>
 
-        <Text className={'font-inter-semibold text-15 text-black'}>Filter</Text>
+        <Text className={'font-open-sauce-sans-semibold text-15 text-black'}>Filter</Text>
 
         <View className={'p-2 bg-none w-4'} />
       </View>
@@ -160,7 +160,7 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
             {/* Location input */}
             <LabelledCInput
               label={'Location'}
-              ClassName={'border-border_grey rounded-lg font-inter px-2'}
+              ClassName={'border-border_grey rounded-lg font-open-sauce-sans px-2'}
               placeHolder={'Search Location'}
               placeholderTextColor={COLORS.border_grey}
               labelClassName={''}
@@ -175,7 +175,7 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
             <LabelledCInput
               label={'Price Range'}
               value={'Include all charges required to move in'}
-              ClassName={'border-border_grey rounded-lg font-inter px-2'}
+              ClassName={'border-border_grey rounded-lg font-open-sauce-sans px-2'}
               InputClassName={'text-xs'}
               placeHolder={'Search Location'}
               placeholderTextColor={COLORS.border_grey}
@@ -224,7 +224,7 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
             />
 
             {/* House size filters */}
-            <Text className={'font-inter-medium text-black '}>House Size</Text>
+            <Text className={'font-open-sauce-sans-medium text-black '}>House Size</Text>
 
             {houseFilters.map((filt, ind) => (
               <ExploreRoomSelector
@@ -240,7 +240,7 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
             />
 
             {/* House type filters */}
-            <Text className={'font-inter-medium text-black '}>House Type</Text>
+            <Text className={'font-open-sauce-sans-medium text-black '}>House Type</Text>
 
             <View style={styles.houseItem} className={'flex-row mt-3'}>
               {houseTypes.map((item, index) => (
@@ -336,7 +336,7 @@ const SaveFiltersBtn = ({disabled, ...rest}: ISaveFiltersBtnProps) => (
     }`}
     disabled={disabled}
     {...rest}>
-    <Text className={'text-[15px] text-white font-inter-semibold'}>
+    <Text className={'text-[15px] text-white font-open-sauce-sans-semibold'}>
       Apply filters
     </Text>
   </TouchableOpacity>

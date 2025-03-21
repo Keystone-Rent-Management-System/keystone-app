@@ -39,9 +39,9 @@ const ConsolidatedInvoices = forwardRef<BottomSheet, IConsolidatedInvoices>(
           renderSheetHeader('Consolidated Invoices', handleCloseFilter)
         }>
         <View className="px-5 py-2 flex-1">
-          <Text className="text-gray-500 font-inter leading-5">
+          <Text className="text-gray-500 font-open-sauce-sans leading-5">
             This shows the aggregated invoices for the invoice:{' '}
-            <Text className="text-primary text-13 font-inter-medium">
+            <Text className="text-primary text-13 font-open-sauce-sans-medium">
               {invoice?.invoiceNumber}
             </Text>
           </Text>
@@ -84,7 +84,7 @@ export const renderSheetHeader = (
       className={
         'top-0 bg-none py-3 z-50 flex-row justify-between items-center'
       }>
-      <Text className={'font-inter-semibold text-lg text-black'}>{title}</Text>
+      <Text className={'font-open-sauce-sans-semibold text-lg text-black'}>{title}</Text>
 
       <CButton
         ClassName={'rounded-full bg-gray-200 h-8 w-8 p-0 '}
@@ -124,22 +124,22 @@ const ConsolidatedInvoiceItem = ({
 
     <View className={'flex-1'}>
       <View className={'flex-row justify-between w-full'}>
-        <Text className={` font-inter-medium text-xs ${'text-primary'}`}>
+        <Text className={` font-open-sauce-sans-medium text-xs ${'text-primary'}`}>
           {invoiceNumber}
         </Text>
 
         {date ? (
-          <Text className={'font-inter text-2xs text-inactive_text'}>
+          <Text className={'font-open-sauce-sans text-2xs text-inactive_text'}>
             {moment(date).format('Do MMM YYYY')}
           </Text>
         ) : null}
       </View>
 
       <View className={'flex-row justify-between w-full mt-2'}>
-        <Text className={'font-inter text-[11px] text-black'}>{unit}</Text>
+        <Text className={'font-open-sauce-sans text-[11px] text-black'}>{unit}</Text>
 
         <View className={'flex-row'}>
-          <Text className={'text-[#ED3776] font-inter-medium text-xs'}>
+          <Text className={'text-[#ED3776] font-open-sauce-sans-medium text-xs'}>
             Balance: KES. {balance}{' '}
           </Text>
         </View>

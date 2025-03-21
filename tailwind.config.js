@@ -22,10 +22,10 @@ module.exports = {
         bg_green: COLORS.bg_green,
       },
       fontFamily: {
-        inter: ['Inter-Regular'],
-        'inter-bold': ['Inter-Bold'],
-        'inter-semibold': ['Inter-SemiBold'],
-        'inter-medium': ['Inter-Medium'],
+        'open-sauce-sans': ['OpenSauceSans-Regular'],
+        'open-sauce-sans-bold': ['OpenSauceSans-Bold'],
+        'open-sauce-sans-semibold': ['OpenSauceSans-SemiBold'],
+        'open-sauce-sans-medium': ['OpenSauceSans-Medium'],
         sometypemono: ['SometypeMono-Medium'],
       },
       fontSize: {

@@ -13,7 +13,7 @@ const PartialPayment = forwardRef((props, ref) => {
       handleComponent={() => renderSheetHeader(props.handleCloseModal)}
       onChange={props.handleSheetChanges}>
       <View className={'px-4'}>
-        <Text className={'font-inter text-xs text-grey_1'}>
+        <Text className={'font-open-sauce-sans text-xs text-grey_1'}>
           Add the amount you are paying. The amount payable is{' '}
           <Text className={'font-semibold text-black'}>KES. 30,000</Text>
         </Text>
@@ -30,7 +30,7 @@ const PartialPayment = forwardRef((props, ref) => {
         <CButton
           ClassName={'bg-primary text-white py-3.5'}
           onPress={props.handleProceed}>
-          <Text className={'text-white font-inter text-13'}>Proceed</Text>
+          <Text className={'text-white font-open-sauce-sans text-13'}>Proceed</Text>
         </CButton>
       </View>
     </CustomBottomSheet>
@@ -42,7 +42,7 @@ const renderSheetHeader = handleClose => (
     className={
       ' top-0 bg-none px-4 py-3 z-50  flex-row justify-between items-end'
     }>
-    <Text className={'font-inter-semibold text-lg text-black'}>
+    <Text className={'font-open-sauce-sans-semibold text-lg text-black'}>
       Amount Paying
     </Text>
 

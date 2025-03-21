@@ -90,12 +90,12 @@ const More = () => {
             <View>
               <Text
                 className={
-                  'text-xs font-inter mb-0.5 flex text-white flex-row items-center'
+                  'text-xs font-open-sauce-sans mb-0.5 flex text-white flex-row items-center'
                 }>
                 {Helper.getGreetings()} <WavingSvg />
               </Text>
 
-              <Text className={'font-inter-semibold text-sm text-white'}>
+              <Text className={'font-open-sauce-sans-semibold text-sm text-white'}>
                 {profile?.name}
               </Text>
             </View>
@@ -134,7 +134,7 @@ const More = () => {
       )}
 
       <View className={'flex-row justify-center p-3'}>
-        <Text className={'text-gray-300 font-inter text-13'}>
+        <Text className={'text-gray-300 font-open-sauce-sans text-13'}>
           Version {VersionCheck.getCurrentVersion()}
         </Text>
       </View>
@@ -162,7 +162,7 @@ const renderNavItem = ({item}, handleNavigate, token, signout) => {
       onPress={item?.link ? handleOpenLink : handlePress}>
       <View className={'items-center justify-center h-6 w-6 mr-3'}>{icon}</View>
 
-      <Text className={'text-black font-inter text-sm'}>{title}</Text>
+      <Text className={'text-black font-open-sauce-sans text-sm'}>{title}</Text>
     </TouchableOpacity>
   );
 };

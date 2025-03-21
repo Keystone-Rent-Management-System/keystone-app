@@ -15,11 +15,11 @@ const BillItem = props => (
     {/*  text  */}
     <View className={'flex-1'}>
       <View className={'flex-row justify-between flex-1 items-center'}>
-        <Text className={'text-primary capitalize text-xs font-inter-semibold'}>
+        <Text className={'text-primary capitalize text-xs font-open-sauce-sans-semibold'}>
           {props?.title}
         </Text>
 
-        <Text className={'text-black text-xs font-inter-semibold'}>
+        <Text className={'text-black text-xs font-open-sauce-sans-semibold'}>
           KES {props?.amount}
         </Text>
       </View>

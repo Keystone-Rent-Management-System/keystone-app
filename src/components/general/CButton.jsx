@@ -19,7 +19,7 @@ const CButtonFill = ({
       }`}
       {...rest}>
       {text ? (
-        <Text className={`font-inter-medium ${textClassName}`}>{text}</Text>
+        <Text className={`font-open-sauce-sans-medium ${textClassName}`}>{text}</Text>
       ) : (
         children
       )}

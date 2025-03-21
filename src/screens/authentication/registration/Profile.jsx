@@ -117,7 +117,7 @@ const PrePhone = () => (
   <View className={'flex-row items-center'} style={styles.prePhone}>
     <FlagSvg />
 
-    <Text className={'text-neutral-500 font-inter text-[13px]'}>+254</Text>
+    <Text className={'text-neutral-500 font-open-sauce-sans text-[13px]'}>+254</Text>
   </View>
 );
 

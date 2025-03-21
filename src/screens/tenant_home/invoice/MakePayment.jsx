@@ -15,11 +15,11 @@ const MakePayment = () => {
         className={'h-20 w-20 mb-5'}
       />
 
-      <Text className={'text-2xl font-inter-semibold text-black'}>
+      <Text className={'text-2xl font-open-sauce-sans-semibold text-black'}>
         Processing Payment
       </Text>
 
-      <Text className={'font-inter text-grey_1 text-13 mt-2'}>
+      <Text className={'font-open-sauce-sans text-grey_1 text-13 mt-2'}>
         We sent you an Mpesa Prompt
       </Text>
 

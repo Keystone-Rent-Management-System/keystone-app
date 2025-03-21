@@ -26,7 +26,7 @@ const renderSheetHeader = handleClose => (
     className={
       ' top-0 bg-none px-4 py-3 z-50  flex-row justify-between items-end'
     }>
-    <Text className={'font-inter-semibold text-lg text-black'}>
+    <Text className={'font-open-sauce-sans-semibold text-lg text-black'}>
       Export Statement
     </Text>
 

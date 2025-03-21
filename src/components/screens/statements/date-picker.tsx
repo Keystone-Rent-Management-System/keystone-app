@@ -21,7 +21,7 @@ const StatementDatePicker = ({
   return (
     <CDatePicker dateValue={value} setDateValue={setValue}>
       {/*  label  */}
-      <Text className={'text-black font-inter mb-2 text-sm '}>{label}</Text>
+      <Text className={'text-black font-open-sauce-sans mb-2 text-sm '}>{label}</Text>
       {/*  selector  */}
       <View
         className={
@@ -30,7 +30,7 @@ const StatementDatePicker = ({
         <Text
           className={`${
             value ? 'text-gray-800' : 'text-gray-600'
-          } font-inter text-[13px]`}>
+          } font-open-sauce-sans text-[13px]`}>
           {value ? moment(value).format('MM DD YYYY') : placeholder}
         </Text>
 

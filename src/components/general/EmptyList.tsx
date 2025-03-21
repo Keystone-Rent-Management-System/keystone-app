@@ -16,7 +16,7 @@ const EmptyList = ({
   return (
     <View
       className={
-        'h-80 flex flex-col font-inter justify-center items-center gap-3'
+        'h-80 flex flex-col font-open-sauce-sans justify-center items-center gap-3'
       }>
       <Image
         source={emptyImage}
@@ -25,10 +25,10 @@ const EmptyList = ({
       />
 
       <View className={'text-center flex items-center'}>
-        <Text className={'text-gray-500 text-sm font-inter-medium'}>
+        <Text className={'text-gray-500 text-sm font-open-sauce-sans-medium'}>
           {title}
         </Text>
-        <Text className={'text-gray-500 text-xs font-inter mt-1'}>
+        <Text className={'text-gray-500 text-xs font-open-sauce-sans mt-1'}>
           {message}
         </Text>
       </View>

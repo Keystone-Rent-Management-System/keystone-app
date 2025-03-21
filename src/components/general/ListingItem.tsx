@@ -52,29 +52,29 @@ const ListingItem = ({
 
       <View className={'flex-1'}>
         <View className={'flex-row justify-between w-full'}>
-          <Text className={` font-inter-medium text-xs ${'text-primary'}`}>
+          <Text className={` font-open-sauce-sans-medium text-xs ${'text-primary'}`}>
             {title}
           </Text>
 
           {customDate ? (
-            <Text className={'font-inter text-2xs text-inactive_text'}>
+            <Text className={'font-open-sauce-sans text-2xs text-inactive_text'}>
               {customDate ? customDate : moment(date).format('MMM DD YYYY')}
             </Text>
           ) : null}
         </View>
 
         <View className={'flex-row justify-between w-full mt-2'}>
-          <Text className={'font-inter text-2xs text-black'}>Unit {unit}</Text>
+          <Text className={'font-open-sauce-sans text-2xs text-black'}>Unit {unit}</Text>
 
           <View className={'flex-row'}>
             {isPartial ? (
-              <Text className={'text-green-400 font-inter-medium text-11'}>
+              <Text className={'text-green-400 font-open-sauce-sans-medium text-11'}>
                 Partial .&nbsp;
               </Text>
             ) : null}
             {amount ? (
               <Text
-                className={`text-black font-inter-medium text-xs
+                className={`text-black font-open-sauce-sans-medium text-xs
               ${'text-black'}
               `}>
                 KES. {amount}{' '}
@@ -87,7 +87,7 @@ const ListingItem = ({
           <View className="">
             {isActive && (
               <View className="px-3 py-1 rounded-full bg-green-100">
-                <Text className="text-2xs font-inter text-green-800">
+                <Text className="text-2xs font-open-sauce-sans text-green-800">
                   Active
                 </Text>
               </View>
@@ -95,7 +95,7 @@ const ListingItem = ({
           </View>
 
           <Text
-            className={`text-gray-400 font-inter-medium text-11
+            className={`text-gray-400 font-open-sauce-sans-medium text-11
             ${balance && balance > 0 ? 'text-red-600' : 'text-green-700'}
             `}>
             {balance && balance > 0 ? 'Arrears: ' : 'Balance: '}

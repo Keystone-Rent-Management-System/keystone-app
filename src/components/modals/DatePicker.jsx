@@ -53,7 +53,7 @@ const DatePicker = forwardRef((props, ref) => {
   return (
     <>
       <View className={'flex-col items-start w-full'}>
-        <Text className={'text-grey_1 my-1.5 font-inter text-xs'}>
+        <Text className={'text-grey_1 my-1.5 font-open-sauce-sans text-xs'}>
           Select Start and End Date
         </Text>
         <TouchableOpacity
@@ -62,7 +62,7 @@ const DatePicker = forwardRef((props, ref) => {
           }
           onPress={handleOpenDateModal}>
           <View className={'flex-1'}>
-            <Text className={'text-gray-500 font-inter text-xs mr-2'}>
+            <Text className={'text-gray-500 font-open-sauce-sans text-xs mr-2'}>
               {range?.startDate && range?.endDate
                 ? `${range?.startDate || ''} - ${range?.endDate || ''}`
                 : 'select date '}

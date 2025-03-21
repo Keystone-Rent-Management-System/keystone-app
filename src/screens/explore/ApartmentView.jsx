@@ -142,14 +142,14 @@ const ApartmentView = ({route: {params}}) => {
           onPress={handleViewTour}>
           <VirtualTourSvg color={COLORS.white} />
 
-          <Text className={'text-white text-11 font-inter'}>Virtual Tour</Text>
+          <Text className={'text-white text-11 font-open-sauce-sans'}>Virtual Tour</Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView>
         {/* apartment primary details  */}
         <View className={'px-4 border-b border-border_grey'}>
-          <Text className={'text-black font-inter-semibold mt-2'}>
+          <Text className={'text-black font-open-sauce-sans-semibold mt-2'}>
             {listing?.property.name}
           </Text>
 
@@ -206,12 +206,12 @@ const ApartmentView = ({route: {params}}) => {
 
         {/* Location details */}
         <View className={'px-4 py-6 border-b border-border_grey'}>
-          <Text className={'text-sm font-inter-medium text-black'}>
+          <Text className={'text-sm font-open-sauce-sans-medium text-black'}>
             Where is the unit located
           </Text>
 
           <Text
-            className={'text-grey_1 font-inter my-1.5 text-[13px] leading-6'}>
+            className={'text-grey_1 font-open-sauce-sans my-1.5 text-[13px] leading-6'}>
             {`${listing?.property?.address?.line}`}
           </Text>
 
@@ -241,7 +241,7 @@ const ApartmentView = ({route: {params}}) => {
                 'flex-row py-3.5 px-6 border border-primary rounded-md items-center'
               }>
               <VirtualTourSvg color={COLORS.primary} />
-              <Text className={'text-primary text-xs font-inter'}>
+              <Text className={'text-primary text-xs font-open-sauce-sans'}>
                 Virtual Tour
               </Text>
             </TouchableOpacity>
@@ -250,7 +250,7 @@ const ApartmentView = ({route: {params}}) => {
 
         {/* amenities */}
         <View className={'px-4 py-5'}>
-          <Text className={'text-black font-inter-medium'}>
+          <Text className={'text-black font-open-sauce-sans-medium'}>
             Amenities Available
           </Text>
 

@@ -35,7 +35,7 @@ const Email = () => {
 
       <Text
         className={
-          'text-xs font-inter text-grey_1 my-5 tracking-wide leading-4'
+          'text-xs font-open-sauce-sans text-grey_1 my-5 tracking-wide leading-4'
         }>
         Creating an account means you agree with the
         <Text className={'text-primary underline'}>

@@ -17,7 +17,7 @@ const Bills = () => {
 
       {/*  bills categories */}
 
-      <Text className={'font-inter-semibold text-base text-black mt-2'}>
+      <Text className={'font-open-sauce-sans-semibold text-base text-black mt-2'}>
         Bill Categories
       </Text>
 

@@ -46,7 +46,7 @@ const PdfViewer = ({
         }}
         className={'flex flex-col items-center py-16'}>
         <ActivityIndicator color={'#022374'} size="small" />
-        <Text className={'text-primary font-inter-semibold text-sm mt-3'}>
+        <Text className={'text-primary font-open-sauce-sans-semibold text-sm mt-3'}>
           Fetching agreement...
         </Text>
       </View>
