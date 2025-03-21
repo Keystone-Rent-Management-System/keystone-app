@@ -17,7 +17,7 @@ const UnitSelector = (props: IUnitSelector) => {
   return (
     <TouchableOpacity className={'flex-1'} {...props}>
       <View className="flex-row items-center gap-2">
-        <Text className={'text-black font-inter-medium text-15'}>
+        <Text className={'text-black font-open-sauce-sans-medium text-15'}>
           {/* @ts-ignore */}
           {agreement?.propertyUnits?.property?.name}
         </Text>
@@ -26,7 +26,7 @@ const UnitSelector = (props: IUnitSelector) => {
         <FontAwesome5Icon name="angle-down" color={'black'} size={20} />
       </View>
 
-      <Text className={'text-xs mt-1 font-inter text-black'}>
+      <Text className={'text-xs mt-1 font-open-sauce-sans text-black'}>
         {/* @ts-ignore */}
         Unit {agreement?.propertyUnits?.name}
       </Text>

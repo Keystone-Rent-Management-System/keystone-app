@@ -69,7 +69,7 @@ const Login = () => {
         onPress={handleForgotPassword}>
         <Text
           className={
-            'text-[13px] font-inter text-primary text-right underline'
+            'text-[13px] font-open-sauce-sans text-primary text-right underline'
           }>
           Forgot password?
         </Text>
@@ -88,12 +88,12 @@ const Login = () => {
 
       <Text
         className={
-          'font-inter text-[13px] absolute bottom-12 inset-x-0 text-center'
+          'font-open-sauce-sans text-[13px] absolute bottom-12 inset-x-0 text-center'
         }
         style={styles.haveNoAccount}>
         Don't have an accounts?{' '}
         <Text
-          className={'font-inter-medium underline text-primary'}
+          className={'font-open-sauce-sans-medium underline text-primary'}
           onPress={handleRegister}>
           Sign Up
         </Text>

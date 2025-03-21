@@ -12,7 +12,7 @@ const PaymentInstructions = forwardRef((props, ref) => {
       handleComponent={() => renderSheetHeader(props.handleCloseModal)}
       onChange={props.handleSheetChanges}>
       <View className={'px-4'}>
-        <Text className={'font-inter text-xs text-grey_1'}>
+        <Text className={'font-open-sauce-sans text-xs text-grey_1'}>
           Use the payment instructions below to make payment to invoice:{' '}
           <Text
             className={
@@ -23,7 +23,7 @@ const PaymentInstructions = forwardRef((props, ref) => {
         </Text>
 
         <View className={'py-5'}>
-          <Text className={'font-inter text-xs text-gray-700'}>
+          <Text className={'font-open-sauce-sans text-xs text-gray-700'}>
             Go to your mpesa menu select Lipa na M-PESA:
           </Text>
           <PaymentInstruction
@@ -40,7 +40,7 @@ const PaymentInstructions = forwardRef((props, ref) => {
           />
         </View>
         <View className="mt-5">
-          <Text className={'font-inter text-xs text-gray-700'}>
+          <Text className={'font-open-sauce-sans text-xs text-gray-700'}>
             After using the instructions above to make a payment, you can return
             to the app and view your payment statement and receipt if you have
             completed the payment to the invoice:{' '}
@@ -62,7 +62,7 @@ const renderSheetHeader = handleClose => (
     className={
       'top-0 bg-none px-4 py-3 z-50  flex-row justify-between items-end'
     }>
-    <Text className={'font-inter-semibold text-lg text-black'}>
+    <Text className={'font-open-sauce-sans-semibold text-lg text-black'}>
       Payment Instructions
     </Text>
 
@@ -80,11 +80,11 @@ const PaymentInstruction = ({title, value}) => (
       <View className={'mr-2'}>
         <CheckSvg />
       </View>
-      <Text className={'text-xs font-inter text-black ml-1 capitalize'}>
+      <Text className={'text-xs font-open-sauce-sans text-black ml-1 capitalize'}>
         {title}:
       </Text>
     </View>
-    <Text className={'text-black font-inter-medium text-12'}>{value}</Text>
+    <Text className={'text-black font-open-sauce-sans-medium text-12'}>{value}</Text>
   </View>
 );
 

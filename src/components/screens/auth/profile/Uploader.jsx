@@ -39,11 +39,11 @@ const Uploader = () => {
       )}
 
       <View className={'justify-center'} style={styles.profileCard}>
-        <Text className={'text-primary font-inter-medium text-sm'}>
+        <Text className={'text-primary font-open-sauce-sans-medium text-sm'}>
           Add profile photo
         </Text>
 
-        <Text className={'text-neutral-500 font-inter text-xs'}>
+        <Text className={'text-neutral-500 font-open-sauce-sans text-xs'}>
           upload or take new photo
         </Text>
       </View>
@@ -51,7 +51,7 @@ const Uploader = () => {
       <TouchableOpacity
         className={'rounded-full border border-neutral-100 px-3 m-auto'}
         onPress={handleUpload}>
-        <Text className={'text-primary font-inter-medium text-xs'}>Add</Text>
+        <Text className={'text-primary font-open-sauce-sans-medium text-xs'}>Add</Text>
       </TouchableOpacity>
     </TouchableOpacity>
   );

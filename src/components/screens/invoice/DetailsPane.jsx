@@ -20,23 +20,23 @@ const DetailsPane = ({
     }>
     <View className={'flex-1'}>
       <View className={'flex-row items-center justify-between'}>
-        <Text className={'text-2xs font-inter text-inactive_text uppercase'}>
+        <Text className={'text-2xs font-open-sauce-sans text-inactive_text uppercase'}>
           Invoice For
         </Text>
 
         {hasConcern ? <ConcernTag text={'Concern'} /> : null}
       </View>
 
-      <Text className={'text-base font-inter-semibold text-black'}>
+      <Text className={'text-base font-open-sauce-sans-semibold text-black'}>
         {userInvoiced}
       </Text>
 
       <View className={'mt-4'}>
-        <Text className={'text-xs font-inter-medium text-inactive_text'}>
+        <Text className={'text-xs font-open-sauce-sans-medium text-inactive_text'}>
           {title}
         </Text>
 
-        <Text className={'text-xs font-inter-medium text-inactive_text mt-0.5'}>
+        <Text className={'text-xs font-open-sauce-sans-medium text-inactive_text mt-0.5'}>
           {unit}
         </Text>
       </View>
@@ -45,18 +45,18 @@ const DetailsPane = ({
     <View
       style={{backgroundColor: COLORS.primary_bg_pale}}
       className={'flex-1 rounded-xl p-3 h-full'}>
-      <Text className={'text-2xs font-inter text-inactive_text uppercase'}>
+      <Text className={'text-2xs font-open-sauce-sans text-inactive_text uppercase'}>
         {parseInt(amount, 9) > 0 ? 'Arrears' : 'Balance'}
       </Text>
 
-      <Text className={'text-base font-inter-semibold text-black'}>
+      <Text className={'text-base font-open-sauce-sans-semibold text-black'}>
         {formatToKES(amount)}
       </Text>
 
       <View className={'flex-row space-x-2 items-center pt-4'}>
         <Indicator isArrears={parseInt(amount, 9) > 0} />
 
-        <Text className={'text-2xs font-inter text-black  '}>
+        <Text className={'text-2xs font-open-sauce-sans text-black  '}>
           {invoiceDate}
         </Text>
       </View>
@@ -68,6 +68,6 @@ export default DetailsPane;
 
 const ConcernTag = ({text}) => (
   <View className={'rounded-full h-5 px-2 bg-red-100 flex-row items-center'}>
-    <Text className={'text-red-700 text-[9px] font-inter-medium'}>{text}</Text>
+    <Text className={'text-red-700 text-[9px] font-open-sauce-sans-medium'}>{text}</Text>
   </View>
 );

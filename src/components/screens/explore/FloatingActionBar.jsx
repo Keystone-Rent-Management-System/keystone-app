@@ -6,19 +6,19 @@ const FloatingActionBar = ({amount}) => (
     style={styles.floatingBar}
     className={'absolute inset-x-0 bottom-0 bg-bg px-4 py-3 flex-row '}>
     <View className={'flex-1'}>
-      <Text className={'text-xs font-inter text-inactive_text'}>
+      <Text className={'text-xs font-open-sauce-sans text-inactive_text'}>
         First installment Amount
       </Text>
 
-      <Text className={'text-lg font-inter text-black'}>
-        KES. <Text className={'font-inter-semibold '}>{amount}</Text>
+      <Text className={'text-lg font-open-sauce-sans text-black'}>
+        KES. <Text className={'font-open-sauce-sans-semibold '}>{amount}</Text>
       </Text>
     </View>
 
     <View className={'flex-1'}>
       <TouchableOpacity
         className={'bg-primary py-3.5 rounded-lg items-center px-4'}>
-        <Text className={'text-xs text-white font-inter-medium'}>
+        <Text className={'text-xs text-white font-open-sauce-sans-medium'}>
           Contact Pallax
         </Text>
       </TouchableOpacity>

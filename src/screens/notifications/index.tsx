@@ -55,12 +55,12 @@ const renderItem = ({item}: {item: any}) => (
     {/* message */}
     <View className={'flex-1'}>
       <Text
-        className={`font-inter  text-xs ${
+        className={`font-open-sauce-sans  text-xs ${
           item.read ? 'text-inactive_text' : 'text-black'
         }`}>
         {item.message || item?.body}
       </Text>
-      <Text className={'font-inter text-inactive_text text-11 mt-1.5'}>
+      <Text className={'font-open-sauce-sans text-inactive_text text-11 mt-1.5'}>
         {moment(item.time || item?.createdAt).fromNow()}
       </Text>
     </View>

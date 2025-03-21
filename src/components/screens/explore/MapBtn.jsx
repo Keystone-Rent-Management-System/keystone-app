@@ -12,7 +12,7 @@ const MapBtn = ({mode, handlePress}) => {
           'p-2.5 rounded-full px-8 shadow-lg flex-row bg-active_text mx-auto'
         }
         onPress={handlePress}>
-        <Text className={'text-xs text-white font-inter mr-1'}>
+        <Text className={'text-xs text-white font-open-sauce-sans mr-1'}>
           {mode === 'map' ? 'List' : 'Map'}
         </Text>
 

@@ -10,8 +10,8 @@ const BottomTabBtn = ({icon, text, isCurrent}) => {
       <Text
         className={` text-11 ${
           isCurrent
-            ? 'text-primary font-inter-medium'
-            : 'text-grey_1 font-inter'
+            ? 'text-primary font-open-sauce-sans-medium'
+            : 'text-grey_1 font-open-sauce-sans'
         }`}>
         {text}
       </Text>

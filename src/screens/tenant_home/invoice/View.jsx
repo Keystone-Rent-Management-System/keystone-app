@@ -112,7 +112,7 @@ const InvoiceView = ({route: {params}}) => {
     return (
       <Layout ClassName={'px-3 flex-1 justify-center items-center'}>
         <ActivityIndicator color={COLORS.primary} size={50} />
-        <Text className="text-primary mt-5 font-inter-medium">
+        <Text className="text-primary mt-5 font-open-sauce-sans-medium">
           Loading Invoice ...
         </Text>
       </Layout>
@@ -138,7 +138,7 @@ const InvoiceView = ({route: {params}}) => {
           contentContainerStyle={styles.contentContainer}
           className={'pt-20 px-4 z-0'}>
           <InvoiceBillItem
-            txtClassName={'font-inter text-inactive_text'}
+            txtClassName={'font-open-sauce-sans text-inactive_text'}
             title={'Bill'}
             amt={'Total'}
           />
@@ -178,19 +178,19 @@ const InvoiceView = ({route: {params}}) => {
           />
           <InvoiceBillItem
             containerClassName={'mt-3 border-t border-gray-200 py-3'}
-            txtClassName={'font-inter-semibold text-black text-sm'}
+            txtClassName={'font-open-sauce-sans-semibold text-black text-sm'}
             title={'Total Amount'}
             amt={`${formatToKES(Number(invoice?.totalAmount))}`}
           />
           <InvoiceBillItem
             containerClassName={'border-t border-gray-200 py-3'}
-            txtClassName={'font-inter-semibold text-black text-sm'}
+            txtClassName={'font-open-sauce-sans-semibold text-black text-sm'}
             title={'Paid Amount'}
             amt={` ${formatToKES(Number(invoice?.paidAmount ?? 0))}`}
           />
           <InvoiceBillItem
             containerClassName={'border-t border-gray-200 py-3'}
-            txtClassName={`font-inter-semibold text-sm
+            txtClassName={`font-open-sauce-sans-semibold text-sm
               ${
                 parseInt(invoice?.dueAmount ?? 0, 9) > 0
                   ? 'text-red-600'
@@ -206,15 +206,15 @@ const InvoiceView = ({route: {params}}) => {
           {isPartiallyPaid ? (
             <InvoiceBillItem
               containerClassName={'py-3 border-y border-border_grey'}
-              txtClassName={'font-inter'}
+              txtClassName={'font-open-sauce-sans'}
               title={'Partially Paid'}
               customAmt={
                 <View className={'items-center'}>
-                  <Text className={'text-11 font-inter text-inactive_text '}>
+                  <Text className={'text-11 font-open-sauce-sans text-inactive_text '}>
                     {moment(invoice?.updatedAt).format('HH:MMa Do MMMM, YYYY')}
                   </Text>
                   <Text
-                    className={'text-13 font-inter-semibold text-black mt-2'}>
+                    className={'text-13 font-open-sauce-sans-semibold text-black mt-2'}>
                     {formatToKES(Number(invoice?.paidAmount))}
                   </Text>
                 </View>
@@ -224,16 +224,16 @@ const InvoiceView = ({route: {params}}) => {
 
           {!hasConcern && (isUnpaid || isPartiallyPaid) ? (
             <View>
-              <Text className={'text-sm font-inter-semibold text-black mt-4'}>
+              <Text className={'text-sm font-open-sauce-sans-semibold text-black mt-4'}>
                 Does this invoice have an issue?
               </Text>
 
-              <Text className={'font-inter text-xs leading-5 mt-1 text-grey_1'}>
+              <Text className={'font-open-sauce-sans text-xs leading-5 mt-1 text-grey_1'}>
                 The invoice has a discrepancy to what you expected,{' '}
                 <TouchableOpacity onPress={handleOpenConcernModal}>
                   <Text
                     className={
-                      'underline text-xs text-primary font-inter-semibold'
+                      'underline text-xs text-primary font-open-sauce-sans-semibold'
                     }>
                     Raise Concern
                   </Text>
@@ -287,7 +287,7 @@ export default InvoiceView;
 
 const InvoiceSequenceLink = ({onPress, number}) => (
   <TouchableOpacity onPress={onPress}>
-    <Text className="text-primary underline font-inter text-sm">
+    <Text className="text-primary underline font-open-sauce-sans text-sm">
       Invoice Sequence{number && `(${number})`}
     </Text>
   </TouchableOpacity>

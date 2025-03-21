@@ -13,7 +13,7 @@ const HouseTypeItem = ({icon, text, isCurrent, handleChoose}) => {
       onPress={handleChoose}>
       {icon}
 
-      <Text className={'text-black text-xs mt-6 font-inter'}>{text}</Text>
+      <Text className={'text-black text-xs mt-6 font-open-sauce-sans'}>{text}</Text>
     </TouchableOpacity>
   );
 };

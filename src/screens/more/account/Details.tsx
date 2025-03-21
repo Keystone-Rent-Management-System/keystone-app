@@ -146,7 +146,7 @@ const Details = () => {
           <LockSvg />
 
           <View className={'flex-1'}>
-            <Text className={'text-xs font-inter text-primary'}>
+            <Text className={'text-xs font-open-sauce-sans text-primary'}>
               Change Password
             </Text>
           </View>
@@ -165,7 +165,7 @@ const AvatarSection = ({data}: any) => (
       className={
         'h-16 w-16 bg-primary rounded-full justify-center items-center relative'
       }>
-      <Text className={'text-white font-inter-semibold text-lg'}>{`${data?.name
+      <Text className={'text-white font-open-sauce-sans-semibold text-lg'}>{`${data?.name
         ?.split(' ')[0]
         ?.charAt(0)}${data?.name?.split(' ')[1]?.charAt(0)}`}</Text>
       <TouchableOpacity

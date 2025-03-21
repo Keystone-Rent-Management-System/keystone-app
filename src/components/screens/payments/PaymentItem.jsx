@@ -18,28 +18,28 @@ const PaymentItem = props => {
 
       <View className={'flex-1'}>
         <View className={'flex-row justify-between w-full'}>
-          <Text className={'text-primary font-inter-medium text-xs'}>
+          <Text className={'text-primary font-open-sauce-sans-medium text-xs'}>
             {props.transactionCode}
           </Text>
-          <Text className={'font-inter text-2xs text-inactive_text'}>
+          <Text className={'font-open-sauce-sans text-2xs text-inactive_text'}>
             {props.date}
           </Text>
         </View>
 
         <View className={'flex-row justify-between w-full mt-2'}>
-          <Text className={'font-inter text-xs text-inactive_text'}>
+          <Text className={'font-open-sauce-sans text-xs text-inactive_text'}>
             {props?.paymentMethod}
           </Text>
-          <Text className={'text-black font-inter-medium text-xs'}>
+          <Text className={'text-black font-open-sauce-sans-medium text-xs'}>
             {formatToKES(props.amount)}
           </Text>
         </View>
 
         <View className={'flex-row justify-between w-full mt-2'}>
-          <Text className={'font-inter text-xs text-inactive_text'}>
+          <Text className={'font-open-sauce-sans text-xs text-inactive_text'}>
             Invoice: {props?.invoiceNumber}
           </Text>
-          <Text className={'text-black font-inter-medium text-xs'}> </Text>
+          <Text className={'text-black font-open-sauce-sans-medium text-xs'}> </Text>
         </View>
       </View>
     </TouchableOpacity>

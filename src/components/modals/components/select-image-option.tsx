@@ -17,7 +17,7 @@ export const SelectImageOption = ({
     {...rest}>
     <Text
       className={cn(
-        'text-gray-800 leading-5 text-base font-inter-medium',
+        'text-gray-800 leading-5 text-base font-open-sauce-sans-medium',
         textClassName,
       )}>
       {title}

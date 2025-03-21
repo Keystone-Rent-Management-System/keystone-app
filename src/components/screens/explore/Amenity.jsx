@@ -26,13 +26,13 @@ const Amenity = ({
         <View className={showCheckBox ? 'mx-2' : 'mr-2'}>{icon}</View>
 
         {/*  text*/}
-        <Text className={'text-xs font-inter text-black ml-1 capitalize'}>
+        <Text className={'text-xs font-open-sauce-sans text-black ml-1 capitalize'}>
           {title}
         </Text>
       </View>
 
       {/*  */}
-      <Text className={'text-black font-inter-medium text-13'}>{value}</Text>
+      <Text className={'text-black font-open-sauce-sans-medium text-13'}>{value}</Text>
     </View>
   );
 };

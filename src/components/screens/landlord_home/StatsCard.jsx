@@ -17,11 +17,11 @@ const StatsCard = ({isPending, totals}) => {
         <View className={'flex-1 items-center flex-row justify-around'}>
           {/* Balance */}
           <View className={'flex-1 flex-row items-center gap-1'}>
-            <Text style={styles.cartLabel} className={' font-inter text-xs'}>
+            <Text style={styles.cartLabel} className={' font-open-sauce-sans text-xs'}>
               Debit:{' '}
             </Text>
 
-            <Text className={'text-base text-white font-inter-semibold'}>
+            <Text className={'text-base text-white font-open-sauce-sans-semibold'}>
               KES.{' '}
               {!isPending
                 ? numberWithCommas(Number(totals?.totalDebitedAmount ?? 0))
@@ -30,11 +30,11 @@ const StatsCard = ({isPending, totals}) => {
           </View>
 
           <View className={'flex-1 flex-row items-center gap-1'}>
-            <Text style={styles.cartLabel} className={' font-inter text-xs'}>
+            <Text style={styles.cartLabel} className={' font-open-sauce-sans text-xs'}>
               Credit:{' '}
             </Text>
 
-            <Text className={'text-base text-white font-inter-semibold'}>
+            <Text className={'text-base text-white font-open-sauce-sans-semibold'}>
               KES.{' '}
               {!isPending
                 ? numberWithCommas(Number(totals?.totalCreditedAmount ?? 0))
@@ -44,11 +44,11 @@ const StatsCard = ({isPending, totals}) => {
         </View>
         {/* Balance */}
         <View className={'flex-1 flex-row items-center gap-1'}>
-          <Text style={styles.cartLabel} className={' font-inter text-xs'}>
+          <Text style={styles.cartLabel} className={' font-open-sauce-sans text-xs'}>
             Balance{' '}
           </Text>
 
-          <Text className={'text-base text-white font-inter-semibold'}>
+          <Text className={'text-base text-white font-open-sauce-sans-semibold'}>
             KES.{' '}
             {!isPending
               ? numberWithCommas(

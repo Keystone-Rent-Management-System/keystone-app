@@ -57,7 +57,7 @@ const UnitStatements = ({route: {params}}) => {
         {/*  onPress={handleOpenExportModal}>*/}
         {/*  <StatementListSvg h={'20'} color={COLORS.primary} />*/}
 
-        {/*  <Text className={'text-primary text-xs font-inter-medium'}>*/}
+        {/*  <Text className={'text-primary text-xs font-open-sauce-sans-medium'}>*/}
         {/*    Export Statement*/}
         {/*  </Text>*/}
         {/*</CButton>*/}

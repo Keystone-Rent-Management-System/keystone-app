@@ -65,6 +65,6 @@ const renderEmptyInvoice = () => (
 export const LoadingLayout = ({text}: {text: string}) => (
   <Layout ClassName={'px-3 flex-1 justify-center items-center'}>
     <ActivityIndicator color={COLORS.primary} size={50} />
-    <Text className="text-primary mt-5 font-inter-medium">{text}</Text>
+    <Text className="text-primary mt-5 font-open-sauce-sans-medium">{text}</Text>
   </Layout>
 );
