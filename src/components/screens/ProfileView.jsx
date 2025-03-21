@@ -18,7 +18,7 @@ export const ProfileView = ({
   ) : (
     <View
       className={`rounded-full h-12 w-12 justify-center items-center p-2 ${containerClassName}`}>
-      <Text className={` font-inter-bold text-xl ${textClassName}`}>
+      <Text className={` font-open-sauce-sans-bold text-xl ${textClassName}`}>
         {text}
       </Text>
     </View>

@@ -21,7 +21,7 @@ const GetHelp = forwardRef((props, ref) => {
       handleComponent={() => renderSheetHeader(props.handleCloseModal)}
       onChange={props.handleSheetChanges}>
       <ScrollView className={'px-4'}>
-        <Text className={'text-xs font-inter text-grey_1 mb-2'}>
+        <Text className={'text-xs font-open-sauce-sans text-grey_1 mb-2'}>
           What kind of help would you like support with. Select the most
           appropriate type of Help
         </Text>
@@ -47,7 +47,7 @@ const renderSheetHeader = handleClose => (
     className={
       ' top-0 bg-none px-4 py-3 z-50  flex-row justify-between items-end'
     }>
-    <Text className={'font-inter-semibold text-lg text-black'}>Get Help</Text>
+    <Text className={'font-open-sauce-sans-semibold text-lg text-black'}>Get Help</Text>
 
     <CButton
       ClassName={'rounded-full bg-gray-200 h-8 w-8 p-0 '}

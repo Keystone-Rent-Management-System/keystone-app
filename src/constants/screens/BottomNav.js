@@ -68,6 +68,6 @@ export default screens;
 
 const CustomHeader = ({title}) => (
   <View className={'shadow-xl p-4 bg-bg border-b border-slate-50'}>
-    <Text className={'font-inter-semibold text-lg text-black '}>{title}</Text>
+    <Text className={'font-open-sauce-sans-semibold text-lg text-black '}>{title}</Text>
   </View>
 );

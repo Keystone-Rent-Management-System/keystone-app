@@ -23,7 +23,7 @@ const Menu = () => {
     <>
       <View className={'py-8 px-4'}>
         <View>
-          <Text className={'font-inter-medium text-13 text-ctext mb-3'}>
+          <Text className={'font-open-sauce-sans-medium text-13 text-ctext mb-3'}>
             Property profile
           </Text>
 
@@ -39,7 +39,7 @@ const Menu = () => {
           </View>
         </View>
         <View className={'mt-8'}>
-          <Text className={'font-inter-medium text-13 text-ctext mb-3'}>
+          <Text className={'font-open-sauce-sans-medium text-13 text-ctext mb-3'}>
             Finance & Payments
           </Text>
 
@@ -56,7 +56,7 @@ const Menu = () => {
         </View>
 
         <View className={'mt-8'}>
-          <Text className={'font-inter-medium text-13 text-ctext mb-3'}>
+          <Text className={'font-open-sauce-sans-medium text-13 text-ctext mb-3'}>
             Assistance
           </Text>
 
@@ -87,7 +87,7 @@ const MenuBtn = ({icon, text, handlePress}) => (
       {icon}
     </TouchableOpacity>
 
-    <Text className={'mt-3 text-inactive_text font-inter text-xs'}>{text}</Text>
+    <Text className={'mt-3 text-inactive_text font-open-sauce-sans text-xs'}>{text}</Text>
   </View>
 );
 

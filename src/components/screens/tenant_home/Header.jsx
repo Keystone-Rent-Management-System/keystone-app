@@ -21,12 +21,12 @@ const Header = () => {
         <View className={'ml-1.5'}>
           <Text
             className={
-              'text-11 font-inter mb-0.5 flex text-black flex-row items-center'
+              'text-11 font-open-sauce-sans mb-0.5 flex text-black flex-row items-center'
             }>
             {Helper.getGreetings()} <WavingSvg />
           </Text>
 
-          <Text className={'font-inter-semibold text-13 text-black'}>
+          <Text className={'font-open-sauce-sans-semibold text-13 text-black'}>
             {' '}
             {profile?.name}{' '}
           </Text>

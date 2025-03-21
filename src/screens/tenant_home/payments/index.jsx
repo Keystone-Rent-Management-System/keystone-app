@@ -78,7 +78,7 @@ const renderItem = ({item}, handlePress) => (
 
 const renderHeader = ({section}) => (
   <View className={'pb-2 px-4 mt-3'}>
-    <Text className={'font-inter-semibold text-grey_1 capitalize'}>
+    <Text className={'font-open-sauce-sans-semibold text-grey_1 capitalize'}>
       {section?.month}
     </Text>
   </View>

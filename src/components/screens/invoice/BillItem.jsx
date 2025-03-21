@@ -11,13 +11,13 @@ export const BillItem = ({
   <View className={`flex-row justify-between py-2.5 ${containerClassName}`}>
     <View>
       <Text
-        className={`font-inter text-black text-xs capitalize ${txtClassName}`}>
+        className={`font-open-sauce-sans text-black text-xs capitalize ${txtClassName}`}>
         {title}
       </Text>
     </View>
 
     {amt ? (
-      <Text className={`font-inter text-black text-xs ${txtClassName}`}>
+      <Text className={`font-open-sauce-sans text-black text-xs ${txtClassName}`}>
         {amt}
       </Text>
     ) : (

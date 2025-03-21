@@ -54,7 +54,7 @@ const FilterButton = ({icon, text, isCurrent, handlePress}) => (
       {icon(isCurrent ? COLORS.primary : COLORS.grey_1)}
     </View>
     <Text
-      className={`text-11 font-inter ${
+      className={`text-11 font-open-sauce-sans ${
         isCurrent ? 'text-primary' : 'text-grey_1'
       }`}>
       {text}

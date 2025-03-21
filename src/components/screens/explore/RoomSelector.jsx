@@ -22,7 +22,7 @@ const RoomSelector = ({
 
   return (
     <View className={` flex flex-col mt-2 ${containerClassName}`}>
-      <Text className={`font-inter text-xs text-black mb-3 ${labelClassName}`}>
+      <Text className={`font-open-sauce-sans text-xs text-black mb-3 ${labelClassName}`}>
         {filterName}
       </Text>
 
@@ -63,7 +63,7 @@ export const SelectorButton = ({
     <Text
       className={`text-xs ${
         isActive ? 'text-white' : 'text-black'
-      } font-inter`}>
+      } font-open-sauce-sans`}>
       {text}
     </Text>
   </TouchableOpacity>

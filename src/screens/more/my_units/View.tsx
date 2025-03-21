@@ -81,7 +81,7 @@ const UnitView = ({route: {params}}: any) => {
       {params?.type !== 'previous' && (isPending || isPendingActive) ? (
         <View className={'flex flex-row justify-center py-16'}>
           <ActivityIndicator color={'#022374'} size="small" />
-          <Text className={'text-primary font-inter-semibold text-sm'}>
+          <Text className={'text-primary font-open-sauce-sans-semibold text-sm'}>
             Loadingsss...
           </Text>
         </View>
@@ -90,10 +90,10 @@ const UnitView = ({route: {params}}: any) => {
           {/* title section*/}
           <View className={'flex-row space-x-3 pb-3'}>
             <View className={''}>
-              <Text className={'font-inter-bold text-base text-black mb-2'}>
+              <Text className={'font-open-sauce-sans-bold text-base text-black mb-2'}>
                 {agreement.propertyUnits.property.name}
               </Text>
-              <Text className={'font-inter text-xs text-grey_1'}>
+              <Text className={'font-open-sauce-sans text-xs text-grey_1'}>
                 Unit {agreement.propertyUnits.name}
               </Text>
             </View>
@@ -104,12 +104,12 @@ const UnitView = ({route: {params}}: any) => {
 
           {/*  balance section  */}
           <View className={'pb-3'}>
-            <Text className={'text-black font-inter-semibold'}>
+            <Text className={'text-black font-open-sauce-sans-semibold'}>
               {activeStatement?.endingBalance < 0
                 ? 'Advance Balance'
                 : 'Arrears'}{' '}
             </Text>
-            <Text className={'text-black font-inter-bold text-base mt-2'}>
+            <Text className={'text-black font-open-sauce-sans-bold text-base mt-2'}>
               {formatToKES(Number(activeStatement?.endingBalance || 0))}
             </Text>
           </View>
@@ -123,7 +123,7 @@ const UnitView = ({route: {params}}: any) => {
               <AgreementSvg color={COLORS.primary} size={'25'} />
 
               <View className={'flex-1'}>
-                <Text className={'text-sm text-primary font-inter-medium'}>
+                <Text className={'text-sm text-primary font-open-sauce-sans-medium'}>
                   View Agreement
                 </Text>
               </View>
@@ -137,9 +137,9 @@ const UnitView = ({route: {params}}: any) => {
 
           {/*  location  */}
           <View className={'py-2'}>
-            <Text className={'text-black font-inter-semibold'}>Location</Text>
+            <Text className={'text-black font-open-sauce-sans-semibold'}>Location</Text>
 
-            <Text className={'font-inter text-xs text-grey_1 mt-2'}>
+            <Text className={'font-open-sauce-sans text-xs text-grey_1 mt-2'}>
               {agreement.propertyUnits.property?.address?.line},{' '}
             </Text>
           </View>
@@ -149,7 +149,7 @@ const UnitView = ({route: {params}}: any) => {
 
           {/*  list of charges  */}
           <View style={styles.chargeList} className={'py-2'}>
-            <Text className={'text-black font-inter-medium'}>Charges</Text>
+            <Text className={'text-black font-open-sauce-sans-medium'}>Charges</Text>
 
             {Object.keys(charges)?.map((charge, ind) => (
               <ExploreAmenity
@@ -169,7 +169,7 @@ const UnitView = ({route: {params}}: any) => {
 
           {/*  list of amenities  */}
           <View style={styles.chargeList} className={'py-2'}>
-            <Text className={'text-black font-inter-medium'}>Amenities</Text>
+            <Text className={'text-black font-open-sauce-sans-medium'}>Amenities</Text>
 
             {Object.keys(amenities)?.map((charge, ind) => (
               <ExploreAmenity
@@ -193,7 +193,7 @@ const UnitView = ({route: {params}}: any) => {
           {/*seperator*/}
           <Line />
 
-          <Text className={'text-black font-inter-semibold'}>Contacts</Text>
+          <Text className={'text-black font-open-sauce-sans-semibold'}>Contacts</Text>
           {/*  landlord details  */}
           <LandlordItem
             name={`${propertyContactPerson?.contactName}`}

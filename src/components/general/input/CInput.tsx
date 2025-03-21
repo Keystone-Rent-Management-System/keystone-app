@@ -46,7 +46,7 @@ const CInput = ({
         maxLength={maxL}
         placeholder={placeHolder}
         placeholderTextColor={placeholderTextColor}
-        className={` font-inter flex-1 text-black ${InputClassName} `}
+        className={` font-open-sauce-sans flex-1 text-black ${InputClassName} `}
         {...rest}
       />
       {rightElement}
@@ -74,7 +74,7 @@ export const PasswordCInput = ({
   ...props
 }: IPasswordCInputProps) => (
   <View className={` flex flex-col ${containerClassName}`}>
-    <Text className={`${labelClassName} font-inter-medium text-black mb-2 -2 `}>
+    <Text className={`${labelClassName} font-open-sauce-sans-medium text-black mb-2 -2 `}>
       {label}
     </Text>
     <CInput
@@ -95,7 +95,7 @@ export const PasswordCInput = ({
     />
     {hasError && (
       <Text
-        className={`${labelClassName} font-inter text-xs text-red-500 mt-2 `}>
+        className={`${labelClassName} font-open-sauce-sans text-xs text-red-500 mt-2 `}>
         {error}
       </Text>
     )}
@@ -118,13 +118,13 @@ export const LabelledCInput = ({
   ...props
 }: ILabelledCInputProps) => (
   <View className={` flex flex-col ${containerClassName}`}>
-    <Text className={`font-inter-medium text-black mb-2 ${labelClassName}`}>
+    <Text className={`font-open-sauce-sans-medium text-black mb-2 ${labelClassName}`}>
       {label}
     </Text>
     <CInput hasError={hasError} {...props} />
     {hasError && (
       <Text
-        className={` ${labelClassName} font-inter text-xs text-red-500 mt-2`}>
+        className={` ${labelClassName} font-open-sauce-sans text-xs text-red-500 mt-2`}>
         {error}
       </Text>
     )}

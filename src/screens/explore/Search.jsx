@@ -38,7 +38,7 @@ const Search = props => {
         <CInput
           ClassName={'rounded-full flex-1 overflow-hidden border-border_grey'}
           InputClassName={
-            'placeholder-grey_1 flex-1 p-1.5 px-3 font-inter text-13'
+            'placeholder-grey_1 flex-1 p-1.5 px-3 font-open-sauce-sans text-13'
           }
           placeHolder={'what are you looking for?'}
           placeholderTextColor={COLORS.inactive_text}
@@ -67,7 +67,7 @@ const renderSuggestionItem = (item, handleApartmentView) => (
 
       <Text
         className={
-          'text-black font-inter text-xs w-11/12'
+          'text-black font-open-sauce-sans text-xs w-11/12'
         }>{`${item?.property?.name}, ${item?.property?.address?.line}`}</Text>
     </View>
   </TouchableOpacity>

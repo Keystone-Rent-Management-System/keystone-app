@@ -1,22 +1,14 @@
 import React from 'react';
-import {ActivityIndicator, Text, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, TouchableOpacity, View} from 'react-native';
 
 import {RefreshSvg} from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
+import UnitSelector from './unit-selector';
 
-const ApartmentTitle = ({agreement, refetch, isLoading}) => {
+const ApartmentTitle = ({handleSelect, refetch, isLoading}) => {
   return (
     <View className={'flex-row '}>
-      <View className={'flex-1'}>
-        <Text className={'text-black font-inter-medium text-15'}>
-          {agreement?.propertyUnits?.property?.name}
-        </Text>
-
-        <Text className={'text-xs mt-1 font-inter text-black'}>
-          {' '}
-          Unit {agreement?.propertyUnits?.name}
-        </Text>
-      </View>
+      <UnitSelector onPress={handleSelect} />
 
       <TouchableOpacity
         className={`flex-row items-center justify-center bg-bg_pale rounded-lg h-10 w-10 ${

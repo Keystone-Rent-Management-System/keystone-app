@@ -20,11 +20,13 @@ import {
   RequestExtensionModal,
   RequestRepairModal,
   StatementFilterModal,
+  UnitSelectionModal,
 } from '../../components/modals';
 
 const Home = () => {
   const extensionModalRef = useRef();
   const statementFilterModalRef = useRef();
+  const selectUnitRef = useRef();
 
   const {
     getHelpRef,
@@ -58,6 +60,14 @@ const Home = () => {
 
   const handleCloseStatementFilterModal = useCallback(() => {
     statementFilterModalRef.current?.close();
+  }, []);
+
+  const handleOpenUnitModal = useCallback(() => {
+    selectUnitRef.current?.expand();
+  }, []);
+
+  const handleCloseUnitModal = useCallback(() => {
+    selectUnitRef.current?.close();
   }, []);
 
   const {
@@ -127,6 +137,7 @@ const Home = () => {
                 refetch();
               }}
               isLoading={isActiveAgreementFetching || isActiveStatementFetching}
+              handleSelect={handleOpenUnitModal}
             />
 
             {/* stats card */}
@@ -201,6 +212,11 @@ const Home = () => {
         handleCloseFilter={handleCloseStatementFilterModal}
         ref={statementFilterModalRef}
         key={7}
+      />
+
+      <UnitSelectionModal
+        ref={selectUnitRef}
+        handleCloseFilter={handleCloseUnitModal}
       />
     </>
   );

@@ -71,7 +71,7 @@ export default function Verification({navigation, route: {params}}) {
         key={index}
         style={styles.otpBox}
         onChangeText={val => handleOtpChange(0, val)}>
-        <Text className={'text-xl font-inter-semibold text-primary'}>
+        <Text className={'text-xl font-open-sauce-sans-semibold text-primary'}>
           {digit}
         </Text>
       </Pressable>
@@ -90,7 +90,7 @@ export default function Verification({navigation, route: {params}}) {
       />
 
       <View className={'flex-1'}>
-        <Text className={'font-inter text-xs text-neutral-500 my-3'}>
+        <Text className={'font-open-sauce-sans text-xs text-neutral-500 my-3'}>
           Enter the 6 digit PIN code sent to
           <Text className={'text-black'}>
             &nbsp;{reset_password?.email}&nbsp;
@@ -101,10 +101,10 @@ export default function Verification({navigation, route: {params}}) {
           {codeArray?.map(fillCodeDigitInput)}
         </View>
 
-        <Text className={'font-inter text-xs text-neutral-500 my-3'}>
+        <Text className={'font-open-sauce-sans text-xs text-neutral-500 my-3'}>
           Didn’t get the PIN? Chek your email or
           <Text
-            className={'text-primary font-inter-medium underline'}
+            className={'text-primary font-open-sauce-sans-medium underline'}
             onPress={() => navigation.navigate('auth__recovery_email')}>
             {' '}
             Request Pin

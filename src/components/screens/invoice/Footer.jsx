@@ -14,7 +14,7 @@ const Footer = ({handlePrompt, hasConcern, status, handleViewReceipt}) => (
         <View className="flex-row items-center justify-center gap-x-2">
           <DownloadSvg />
 
-          <Text className={'text-primary font-inter text-[13px] mt-1'}>
+          <Text className={'text-primary font-open-sauce-sans text-[13px] mt-1'}>
             View Receipt
           </Text>
         </View>
@@ -26,13 +26,13 @@ const Footer = ({handlePrompt, hasConcern, status, handleViewReceipt}) => (
             ClassName={
               'bg-none border border-primary flex-1 mr-5 mx-auto cursor-default'
             }
-            textClassName={'text-primary font-inter text-sm'}
+            textClassName={'text-primary font-open-sauce-sans text-sm'}
             text={'To be resolved'}
           />
         ) : (
           <CButton
             ClassName={'bg-primary flex-1'}
-            textClassName={'text-white font-inter text-sm'}
+            textClassName={'text-white font-open-sauce-sans text-sm'}
             text={'View payment instructions'}
             onPress={handlePrompt}
           />

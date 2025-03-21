@@ -69,7 +69,7 @@ export const Header = () => (
         <SearchSvg size={'18'} />
       </View>
     }
-    InputClassName={'placeholder-grey_1 flex-1 p-2 px-0 font-inter text-xs'}
+    InputClassName={'placeholder-grey_1 flex-1 p-2 px-0 font-open-sauce-sans text-xs'}
     placeHolder={'Search unit'}
     placeholderTextColor={COLORS.inactive_text}
     showSoftInputOnFocus={false}

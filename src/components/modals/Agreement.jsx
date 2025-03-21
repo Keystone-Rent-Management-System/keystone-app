@@ -61,7 +61,7 @@ const AgreementModalSheet = forwardRef((props, ref) => {
                 'py-5 mt-0 w-full flex-row justify-center border-t border-gray-200'
               }>
               <TouchableOpacity onPress={props?.handleIssueTermination}>
-                <Text className={'text-red-700 font-inter-semibold'}>
+                <Text className={'text-red-700 font-open-sauce-sans-semibold'}>
                   Issue Termination Notice
                 </Text>
               </TouchableOpacity>
@@ -81,7 +81,7 @@ const AgreementModalSheet = forwardRef((props, ref) => {
                     tintColor={COLORS.primary}
                     onFillColor={COLORS.primary}
                   />
-                  <Text className={'text-black mx-8 font-inter text-xs'}>
+                  <Text className={'text-black mx-8 font-open-sauce-sans text-xs'}>
                     By checking here you confirm that you have read the
                     agreement.{' '}
                   </Text>
@@ -119,7 +119,7 @@ const SheetHeader = () => {
       }>
       <View className={'flex-row'}>
         <Text
-          className={'font-inter-semibold text-lg text-black mr-2 uppercase'}>
+          className={'font-open-sauce-sans-semibold text-lg text-black mr-2 uppercase'}>
           Tenancy Agreement
         </Text>
       </View>

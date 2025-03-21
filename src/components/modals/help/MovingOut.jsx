@@ -22,7 +22,7 @@ const MovingOut = forwardRef((props, ref) => {
       handleComponent={() => renderSheetHeader(props.handleCloseModal)}
       onChange={props.handleSheetChanges}>
       <ScrollView className={'px-4 min-h-[180px]'}>
-        <Text className={'text-xs font-inter text-grey_1 mb-2'}>
+        <Text className={'text-xs font-open-sauce-sans text-grey_1 mb-2'}>
           Issue notice to move out, kindly note that the notice should be given
           out{' '}
           <Text className={'font-bold text-black'}>
@@ -34,7 +34,7 @@ const MovingOut = forwardRef((props, ref) => {
 
         <View className={'py-3 mb-2'}>
           <View className={'flex-col items-start w-full'}>
-            <Text className={'text-black my-1.5 font-inter text-xs'}>
+            <Text className={'text-black my-1.5 font-open-sauce-sans text-xs'}>
               When would you like to move out?
             </Text>
             <TouchableOpacity
@@ -42,7 +42,7 @@ const MovingOut = forwardRef((props, ref) => {
                 'p-1 border border-gray-300 rounded-xl h-14 flex-row items-center px-3 w-full'
               }>
               <View className={'flex-1'}>
-                <Text className={'text-gray-500 font-inter text-13 mr-2'}>
+                <Text className={'text-gray-500 font-open-sauce-sans text-13 mr-2'}>
                   {selected ? selected : 'select date '}
                 </Text>
               </View>
@@ -82,7 +82,7 @@ const MovingOut = forwardRef((props, ref) => {
             vacationDate: selected,
           })
         }>
-        <Text className={'text-white font-inter text-13 '}>Issue Notice</Text>
+        <Text className={'text-white font-open-sauce-sans text-13 '}>Issue Notice</Text>
       </CButton>
     </CustomBottomSheet>
   );
@@ -93,7 +93,7 @@ const renderSheetHeader = handleClose => (
     className={
       ' top-0 bg-none px-4 py-3 z-50  flex-row justify-between items-end'
     }>
-    <Text className={'font-inter-semibold text-lg text-black'}>
+    <Text className={'font-open-sauce-sans-semibold text-lg text-black'}>
       Moving out notice
     </Text>
 
