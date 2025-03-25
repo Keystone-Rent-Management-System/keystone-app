@@ -15,11 +15,11 @@ export default function EmptyList({title, subTitle, icon}: IEmptyList) {
       <View className="p-6 rounded-full bg-slate-50  ">
         {icon ?? <InvoiceSvg size={40} />}
       </View>
-      <Text className="text-lg font-medium text-black mb-2 font-inter-medium">
+      <Text className="text-lg font-medium text-black mb-2 font-open-sauce-sans-medium">
         {title}
         {/*No Invoices Found!*/}
       </Text>
-      <Text className="text-center font-inter text-gray-600">
+      <Text className="text-center font-open-sauce-sans text-gray-600">
         {subTitle}
         {/*Sorry! you have no invoices to show.*/}
       </Text>

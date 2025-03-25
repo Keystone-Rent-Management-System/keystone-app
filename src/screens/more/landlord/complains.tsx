@@ -83,11 +83,11 @@ const ComplaintItem = ({complain}: {complain: IComplain}) => (
     </View>
 
     <View className={'flex-1 flex-col gap-1.5 pr-3'}>
-      <Text className="text-[11px] text-gray-400 font-inter">
+      <Text className="text-[11px] text-gray-400 font-open-sauce-sans">
         {moment(complain.date).format('Do MMM YYYY')}
       </Text>
 
-      <Text className="text-primary font-inter-medium text-[13px] leading-5">
+      <Text className="text-primary font-open-sauce-sans-medium text-[13px] leading-5">
         {complain.title}
       </Text>
 
@@ -102,7 +102,7 @@ const ComplaintItem = ({complain}: {complain: IComplain}) => (
             complain.status?.toLocaleLowerCase() === 'resolved'
               ? 'text-green-700'
               : 'text-gray-600'
-          } text-center font-inter-medium text-[11px]`}>
+          } text-center font-open-sauce-sans-medium text-[11px]`}>
           {complain.status}
         </Text>
       </View>

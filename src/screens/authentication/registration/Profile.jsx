@@ -1,18 +1,26 @@
-import React from 'react';
-import {CButton, Layout} from '../../../components';
-import {FlagSvg, UserSvg} from '../../../assets/icons';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import {object, string} from 'yup';
 import {yupResolver} from '@hookform/resolvers/yup';
+import React from 'react';
 import {useForm} from 'react-hook-form';
-import useGlobals from '../../../provider/store/useGlobals';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
+
+import {object, string} from 'yup';
+import {FlagSvg, UserSvg} from '../../../assets/icons';
+import {CButton, Layout} from '../../../components';
 import ControlledInput from '../../../components/general/input/ControlledInput';
 import {useRegister} from '../../../hooks';
+import useGlobals from '../../../provider/store/useGlobals';
+
+export const phoneNumberSchema = string()
+  .required()
+  .matches(
+    /^(2547\d{8}|2541\d{8}|07\d{8}|01\d{8}|7\d{8}|1\d{8})$/,
+    'Phone number must be in the format 2547..., 2541..., +254..., 07..., or 01...',
+  );
 
 const schema = object({
   firstName: string().required().min(1),
   lastName: string().required().min(1),
-  phoneNumber: string().required().length(9),
+  phoneNumber: phoneNumberSchema,
   identificationNumber: string().required().min(6),
 });
 
@@ -109,7 +117,7 @@ const PrePhone = () => (
   <View className={'flex-row items-center'} style={styles.prePhone}>
     <FlagSvg />
 
-    <Text className={'text-neutral-500 font-inter text-[13px]'}>+254</Text>
+    <Text className={'text-neutral-500 font-open-sauce-sans text-[13px]'}>+254</Text>
   </View>
 );
 

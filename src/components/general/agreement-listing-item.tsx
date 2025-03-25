@@ -38,24 +38,24 @@ const AgreementListingItem = ({
 
       <View className={'flex-1'}>
         <View className={'flex-row justify-between w-full'}>
-          <Text className={` font-inter-medium text-xs ${'text-primary'}`}>
+          <Text className={` font-open-sauce-sans-medium text-xs ${'text-primary'}`}>
             {title}
           </Text>
 
           {customDate ? (
-            <Text className={'font-inter text-2xs text-inactive_text'}>
+            <Text className={'font-open-sauce-sans text-2xs text-inactive_text'}>
               {customDate}
             </Text>
           ) : null}
         </View>
 
         <View className={'flex-row justify-between w-full mt-2'}>
-          <Text className={'font-inter text-2xs text-black'}>Unit {unit}</Text>
+          <Text className={'font-open-sauce-sans text-2xs text-black'}>Unit {unit}</Text>
 
           <View className={'flex-row'}>
             {amount ? (
               <Text
-                className={`text-black font-inter-medium text-xs
+                className={`text-black font-open-sauce-sans-medium text-xs
               ${'text-black'}
               `}>
                 {formatToKES(amount)}

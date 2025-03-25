@@ -11,20 +11,20 @@ const Receipt = ({route: {params}}: {route: any}) => {
     <ScrollView className={'flex-1 bg-bg px-8 pt-5'}>
       {/* receipt */}
       <View className={'p-5 border border-gray-200 pt-9 rounded-xl'}>
-        <Text className={'text-xs font-inter text-center mb-2 text-black'}>
+        <Text className={'text-xs font-open-sauce-sans text-center mb-2 text-black'}>
           {moment(invoice?.createdAt).format('ddd, MMM D, YYYY • h:mm:ss A')}
         </Text>
         <View className="relative px-3 py-1 border-2 border-dashed mt-5">
           <Text
             className={
-              'bg-white p-3 relative text-center -top-7 mx-auto text-black font-inter-medium tracking-wider'
+              'bg-white p-3 relative text-center -top-7 mx-auto text-black font-open-sauce-sans-medium tracking-wider'
             }>
             PAID
           </Text>
 
           <Text
             className={
-              'font-inter-bold text-lg text-center -mt-7 mb-4 text-black'
+              'font-open-sauce-sans-bold text-lg text-center -mt-7 mb-4 text-black'
             }>
             {formatToKES(invoice?.amountDebited ?? 0) ?? 0}
           </Text>
@@ -87,7 +87,7 @@ const Receipt = ({route: {params}}: {route: any}) => {
         <View className={'py-6'}>
           <Text
             className={
-              'font-inter text-xs tracking-wide text-black text-center'
+              'font-open-sauce-sans text-xs tracking-wide text-black text-center'
             }>
             Thank you for choosing to stay with us.
           </Text>
@@ -126,9 +126,9 @@ const TextRow = ({
 }) => {
   return (
     <View className={`flex-row justify-between ${ClassName} `}>
-      <Text className={'text-gray-400 text-xs font-inter '}>{label}</Text>
+      <Text className={'text-gray-400 text-xs font-open-sauce-sans '}>{label}</Text>
 
-      <Text className={'text-gray-900 text-[13px] font-inter-medium'}>
+      <Text className={'text-gray-900 text-[13px] font-open-sauce-sans-medium'}>
         {value}
       </Text>
     </View>

@@ -53,12 +53,15 @@ const ApartmentView = ({route: {params}}) => {
 
   const region = useMemo(
     () => ({
-      latitude: listing?.property?.latitude ?? -1.2881012218277417,
-      longitude: listing?.property?.longitude ?? 36.82609607136736,
+      latitude: listing?.property?.address?.latitude ?? -1.2881012218277417,
+      longitude: listing?.property?.address?.longitude ?? 36.82609607136736,
       latitudeDelta: 0.015,
       longitudeDelta: 0.015,
     }),
-    [listing?.property?.latitude, listing?.property?.longitude],
+    [
+      listing?.property?.address?.latitude,
+      listing?.property?.address?.longitude,
+    ],
   );
 
   const handleViewTour = () => {
@@ -90,7 +93,10 @@ const ApartmentView = ({route: {params}}) => {
     height="100%"
     frameborder='0'
     allowfullscreen
-    src=${listing?.matterportUrl || 'https://matterport.com/en-gb/media/5989'}
+    src=${
+      listing?.matterportUrl ||
+      'https://tour.virtualaccess.co.ke/tours/YTI7Hk-iA'
+    }
 />`;
   }, [listing?.matterportUrl]);
 
@@ -136,14 +142,14 @@ const ApartmentView = ({route: {params}}) => {
           onPress={handleViewTour}>
           <VirtualTourSvg color={COLORS.white} />
 
-          <Text className={'text-white text-11 font-inter'}>Virtual Tour</Text>
+          <Text className={'text-white text-11 font-open-sauce-sans'}>Virtual Tour</Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView>
         {/* apartment primary details  */}
         <View className={'px-4 border-b border-border_grey'}>
-          <Text className={'text-black font-inter-semibold mt-2'}>
+          <Text className={'text-black font-open-sauce-sans-semibold mt-2'}>
             {listing?.property.name}
           </Text>
 
@@ -200,30 +206,31 @@ const ApartmentView = ({route: {params}}) => {
 
         {/* Location details */}
         <View className={'px-4 py-6 border-b border-border_grey'}>
-          <Text className={'text-sm font-inter-medium text-black'}>
+          <Text className={'text-sm font-open-sauce-sans-medium text-black'}>
             Where is the unit located
           </Text>
 
           <Text
-            className={'text-grey_1 font-inter my-1.5 text-[13px] leading-6'}>
+            className={'text-grey_1 font-open-sauce-sans my-1.5 text-[13px] leading-6'}>
             {`${listing?.property?.address?.line}`}
           </Text>
 
-          {!!listing?.property?.latitude && (
+          {listing?.property?.address?.latitude &&
+          listing?.property?.address?.longitude ? (
             <View className={'h-32 my-3 bg-bg_grey'}>
               {!isPending && (
                 <MapView className={'flex-1'} region={region}>
                   <Marker
                     coordinate={{
-                      latitude: listing?.property?.latitude,
-                      longitude: listing?.property?.longitude,
+                      latitude: listing?.property?.address?.latitude,
+                      longitude: listing?.property?.address?.longitude,
                     }}>
                     <HouseMapMarker />
                   </Marker>
                 </MapView>
               )}
             </View>
-          )}
+          ) : null}
 
           {/* Virtual tour button */}
           <View className={'flex-row justify-center '}>
@@ -234,7 +241,7 @@ const ApartmentView = ({route: {params}}) => {
                 'flex-row py-3.5 px-6 border border-primary rounded-md items-center'
               }>
               <VirtualTourSvg color={COLORS.primary} />
-              <Text className={'text-primary text-xs font-inter'}>
+              <Text className={'text-primary text-xs font-open-sauce-sans'}>
                 Virtual Tour
               </Text>
             </TouchableOpacity>
@@ -243,13 +250,17 @@ const ApartmentView = ({route: {params}}) => {
 
         {/* amenities */}
         <View className={'px-4 py-5'}>
-          <Text className={'text-black font-inter-medium'}>
+          <Text className={'text-black font-open-sauce-sans-medium'}>
             Amenities Available
           </Text>
 
           <View className={'mt-3'} style={styles.chargeList}>
             {listing?.property?.amenities?.map((amenity, ind) => (
-              <ExploreAmenity key={ind} showCheckBox={false} title={amenity} />
+              <ExploreAmenity
+                key={ind}
+                showCheckBox={false}
+                title={amenity?.name}
+              />
             ))}
           </View>
 

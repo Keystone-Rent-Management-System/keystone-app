@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef} from 'react';
+import React, {useMemo} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 import {
@@ -10,41 +10,17 @@ import {
   StatementsSvg,
 } from '@/assets/icons';
 import {useNavigation} from '@react-navigation/native';
-import {useActiveAgrement, useHelp} from '../../../hooks';
+import {useActiveAgrement} from '../../../hooks';
 import Helper from '../../../utils/Helper';
-import {
-  GeneralRepairsModal,
-  GetHelpModal,
-  MakeComplaintModal,
-  PaymentAllocationModal,
-  RequestExtensionModal,
-  RequestRepairModal,
-  StatementFilterModal,
-} from '../../modals';
 
-const Menu = ({hasInactiveAgreement, handleAcceptAgreement}) => {
+const Menu = ({
+  hasInactiveAgreement,
+  handleAcceptAgreement,
+  handleOpenHelpModal,
+  handleOpenExtensionModal,
+  handleOpenStatementFilterModal,
+}) => {
   const navigation = useNavigation();
-
-  const extensionModalRef = useRef();
-  const statementFilterModalRef = useRef();
-
-  const {
-    getHelpRef,
-    makeComplaintRef,
-    requestRepairRef,
-    generalAssistanceRef,
-    paymentAllocationRef,
-    handleCloseHelpModal,
-    handleOpenHelpModal,
-    handleMakeComplaint,
-    handleRequestRepair,
-    handlePaymentAllocation,
-    handleGeneralAssistance,
-    handleCloseMakeComplaintModal,
-    handleCloseRequestRepairModal,
-    handleCloseGeneralAssistanceModal,
-    handleClosePaymentAllocationModal,
-  } = useHelp();
 
   const {isPending, agreement} = useActiveAgrement();
 
@@ -52,22 +28,6 @@ const Menu = ({hasInactiveAgreement, handleAcceptAgreement}) => {
     () => agreement?.propertyUnits?.property?.propertyContacts?.phoneNumber,
     [agreement],
   );
-
-  const handleOpenExtensionModal = useCallback(() => {
-    extensionModalRef.current?.expand();
-  }, []);
-
-  const handleCloseExtensionModal = useCallback(() => {
-    extensionModalRef.current?.close();
-  }, []);
-
-  const handleOpenStatementFilterModal = useCallback(() => {
-    statementFilterModalRef.current?.expand();
-  }, []);
-
-  const handleCloseStatementFilterModal = useCallback(() => {
-    statementFilterModalRef.current?.close();
-  }, []);
 
   const handleNavigate = screen => {
     if (screen?.name) {
@@ -87,7 +47,7 @@ const Menu = ({hasInactiveAgreement, handleAcceptAgreement}) => {
     <>
       <View className={'py-8 px-4'}>
         <View>
-          <Text className={'font-inter-medium text-13 text-ctext mb-3'}>
+          <Text className={'font-open-sauce-sans-medium text-13 text-ctext mb-3'}>
             Finance & Payments
           </Text>
 
@@ -110,7 +70,7 @@ const Menu = ({hasInactiveAgreement, handleAcceptAgreement}) => {
         </View>
 
         <View className={'mt-8'}>
-          <Text className={'font-inter-medium text-13 text-ctext mb-3'}>
+          <Text className={'font-open-sauce-sans-medium text-13 text-ctext mb-3'}>
             Assistance
           </Text>
 
@@ -137,52 +97,6 @@ const Menu = ({hasInactiveAgreement, handleAcceptAgreement}) => {
           </View>
         </View>
       </View>
-
-      <GetHelpModal
-        ref={getHelpRef}
-        handleCloseModal={handleCloseHelpModal}
-        handleMakeComplaint={handleMakeComplaint}
-        handleRequestRepair={handleRequestRepair}
-        handleGeneralAssistance={handleGeneralAssistance}
-        handlePaymentAllocation={handlePaymentAllocation}
-        key={1}
-      />
-
-      <MakeComplaintModal
-        ref={makeComplaintRef}
-        handleCloseModal={handleCloseMakeComplaintModal}
-        key={2}
-      />
-
-      <RequestRepairModal
-        ref={requestRepairRef}
-        handleCloseModal={handleCloseRequestRepairModal}
-        key={3}
-      />
-
-      <GeneralRepairsModal
-        ref={generalAssistanceRef}
-        handleCloseModal={handleCloseGeneralAssistanceModal}
-        key={4}
-      />
-
-      <RequestExtensionModal
-        ref={extensionModalRef}
-        handleCloseModal={handleCloseExtensionModal}
-        key={5}
-      />
-
-      <PaymentAllocationModal
-        ref={paymentAllocationRef}
-        handleCloseModal={handleClosePaymentAllocationModal}
-        key={6}
-      />
-
-      <StatementFilterModal
-        handleCloseFilter={handleCloseStatementFilterModal}
-        ref={statementFilterModalRef}
-        key={7}
-      />
     </>
   );
 };
@@ -199,7 +113,7 @@ const MenuBtn = ({icon, text, handlePress, disabled}) => (
       {icon}
     </TouchableOpacity>
 
-    <Text className={'mt-3 text-inactive_text font-inter text-xs'}>{text}</Text>
+    <Text className={'mt-3 text-inactive_text font-open-sauce-sans text-xs'}>{text}</Text>
   </View>
 );
 

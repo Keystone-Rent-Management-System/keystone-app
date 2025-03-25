@@ -23,7 +23,7 @@ const Header = props => {
           </View>
         }
         InputClassName={
-          'placeholder-grey_1 flex-1 p-1.5 px-0 font-inter text-13'
+          'placeholder-grey_1 flex-1 p-1.5 px-0 font-open-sauce-sans text-13'
         }
         placeHolder={'what are you looking for?'}
         placeholderTextColor={COLORS.inactive_text}

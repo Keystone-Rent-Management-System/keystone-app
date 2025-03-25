@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Alert,
   FlatList,
-  Linking,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -24,13 +23,14 @@ import {Layout, ProfileView} from '@/components';
 import COLORS from '@/constants/Theme';
 import Helper from '@/utils/Helper';
 import {useNavigation} from '@react-navigation/native';
+import {useQueryClient} from '@tanstack/react-query';
+import {ComplainSvg} from '../../assets/icons';
 import {ABOUT_URL, PRIVACY_POLICY_URL} from '../../constants';
 import {useAuth} from '../../hooks';
-import useGlobals from '../../provider/store/useGlobals';
-import {useNotificationStore} from '../../provider/store/notification';
 import {ZustandStorage} from '../../provider/store/MMKV';
-import {ComplainSvg} from '../../assets/icons';
-import {useQueryClient} from '@tanstack/react-query';
+import {useNotificationStore} from '../../provider/store/notification';
+import useGlobals from '../../provider/store/useGlobals';
+import {openLinkInBrowser} from '../../utils/openLinkInBrowser';
 
 const More = () => {
   const queryClient = useQueryClient();
@@ -90,12 +90,12 @@ const More = () => {
             <View>
               <Text
                 className={
-                  'text-xs font-inter mb-0.5 flex text-white flex-row items-center'
+                  'text-xs font-open-sauce-sans mb-0.5 flex text-white flex-row items-center'
                 }>
                 {Helper.getGreetings()} <WavingSvg />
               </Text>
 
-              <Text className={'font-inter-semibold text-sm text-white'}>
+              <Text className={'font-open-sauce-sans-semibold text-sm text-white'}>
                 {profile?.name}
               </Text>
             </View>
@@ -134,7 +134,7 @@ const More = () => {
       )}
 
       <View className={'flex-row justify-center p-3'}>
-        <Text className={'text-gray-300 font-inter text-13'}>
+        <Text className={'text-gray-300 font-open-sauce-sans text-13'}>
           Version {VersionCheck.getCurrentVersion()}
         </Text>
       </View>
@@ -153,7 +153,7 @@ const renderNavItem = ({item}, handleNavigate, token, signout) => {
       : handleNavigate(item?.screen ?? '');
   };
   const handleOpenLink = () => {
-    Linking.openURL(item?.link);
+    openLinkInBrowser(item?.link);
   };
 
   return (
@@ -162,7 +162,7 @@ const renderNavItem = ({item}, handleNavigate, token, signout) => {
       onPress={item?.link ? handleOpenLink : handlePress}>
       <View className={'items-center justify-center h-6 w-6 mr-3'}>{icon}</View>
 
-      <Text className={'text-black font-inter text-sm'}>{title}</Text>
+      <Text className={'text-black font-open-sauce-sans text-sm'}>{title}</Text>
     </TouchableOpacity>
   );
 };

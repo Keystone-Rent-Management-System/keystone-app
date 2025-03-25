@@ -1,9 +1,5 @@
-import React, {memo, useCallback, useMemo} from 'react';
+import React, {useCallback, useMemo} from 'react';
 
-import {Pressable, Text, TouchableOpacity, View} from 'react-native';
-import COLORS from '@/constants/Theme';
-import {styled} from 'nativewind';
-import Badge from './Badge';
 import {
   AgentSvg,
   BalconySvg,
@@ -12,11 +8,15 @@ import {
   LikeSvg,
   MapPinSvg,
 } from '@/assets/icons';
+import COLORS from '@/constants/Theme';
 import Helper from '@/utils/Helper';
-import ImageWithSpinner from '../../../components/general/image-with-spinner';
+import {styled} from 'nativewind';
+import {Pressable, Text, TouchableOpacity, View} from 'react-native';
 import {RightArrowSvg} from '../../../assets/icons';
-import numberWithCommas from '../../../utils/numberWithCommas';
+import ImageWithSpinner from '../../../components/general/image-with-spinner';
 import useSavedUnits, {useFetchSavedUnits} from '../../../hooks/useSavedUnits';
+import numberWithCommas from '../../../utils/numberWithCommas';
+import Badge from './Badge';
 
 /**
  * Returns property item for listing
@@ -96,14 +96,14 @@ const ListingItem = props => {
         <View className={'flex-row justify-between'}>
           <Text
             style={{color: COLORS.text_color}}
-            className={'font-inter-semibold'}>
+            className={'font-open-sauce-sans-semibold'}>
             {props.title}
           </Text>
 
           <Badge ClassName={'flex-row bg-c_green_bg space-x-1'}>
             <AgentSvg />
 
-            <Text className={'font-inter text-2xs text-c_green'}>
+            <Text className={'font-open-sauce-sans text-2xs text-c_green'}>
               {props.userType}
             </Text>
           </Badge>
@@ -153,9 +153,11 @@ const ListingItem = props => {
         <View className={'pt-2.5'}>
           <Text
             style={{color: COLORS.text_color}}
-            className={'font-inter-semibold text-xs'}>
-            KES. {numberWithCommas(Number(props.price))} /
-            <Text className={'text-11 text-grey_1 font-inter'}> Month</Text>
+            className={'font-open-sauce-sans-semibold text-xs'}>
+            KES. {numberWithCommas(Number(props.price))}
+            {props?.puropse?.toLocaleLowerCase() === 'rent' && (
+              <Text className={'text-11 text-grey_1 font-open-sauce-sans'}>/ Month</Text>
+            )}
           </Text>
         </View>
       </View>
@@ -163,18 +165,18 @@ const ListingItem = props => {
   );
 };
 
-export default memo(ListingItem);
+export default ListingItem;
 
 export const IconLabel = ({icon, text}) => (
   <View className={'flex-row space-x-2 mr-3'}>
     {icon}
 
-    <Text className={'font-inter text-grey_1 text-xs'}>{text}</Text>
+    <Text className={'font-open-sauce-sans text-grey_1 text-xs'}>{text}</Text>
   </View>
 );
 
 /**
- * @typedef {{
+ * @typedef {
  *   image:string,
  *   title:string,
  *   userType:string,
@@ -187,5 +189,6 @@ export const IconLabel = ({icon, text}) => (
  *   id:string
  *   handlePress:Function
  *   data?:Object
- * }} ListingProperty
+ *   purpose?:string
+ * } ListingProperty
  */

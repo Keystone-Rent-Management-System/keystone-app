@@ -14,7 +14,7 @@ const PaymentMethod = forwardRef((props, ref) => {
       handleComponent={() => renderSheetHeader(props.handleCloseModal)}
       onChange={props.handleSheetChanges}>
       <View className={'px-4'}>
-        <Text className={'font-inter text-xs text-grey_1'}>
+        <Text className={'font-open-sauce-sans text-xs text-grey_1'}>
           Choose from the options available to choose your preferred way of
           Payment
         </Text>
@@ -49,7 +49,7 @@ const renderSheetHeader = handleClose => (
     className={
       ' top-0 bg-none px-4 py-3 z-50  flex-row justify-between items-end'
     }>
-    <Text className={'font-inter-semibold text-lg text-black'}>
+    <Text className={'font-open-sauce-sans-semibold text-lg text-black'}>
       Payment Method
     </Text>
 
@@ -70,8 +70,8 @@ const PayBtn = ({title, desc, handlePress}) => (
     <CheckSvg />
 
     <View className={'flex-1'}>
-      <Text className={'text-black text-13 font-inter-medium'}>{title}</Text>
-      <Text className={'text-xs mt-1 font-inter text-gray-600'}>{desc}</Text>
+      <Text className={'text-black text-13 font-open-sauce-sans-medium'}>{title}</Text>
+      <Text className={'text-xs mt-1 font-open-sauce-sans text-gray-600'}>{desc}</Text>
     </View>
 
     <View className={''}>

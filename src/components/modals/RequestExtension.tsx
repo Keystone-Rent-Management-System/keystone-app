@@ -58,13 +58,13 @@ const RequestExtension = forwardRef((props: IRequestExtension, ref) => {
       onChange={props.handleSheetChanges}>
       <ScrollView className={'px-4 min-h-[180px]'}>
         <View className={'flex-col items-start w-full py-3'}>
-          <Text className={'text-black my-1.5 font-inter text-xs'}>
+          <Text className={'text-black my-1.5 font-open-sauce-sans text-xs'}>
             I would like to request an extension of;
           </Text>
         </View>
         <TextInput
           className={
-            'border border-gray-200 h-11 rounded-lg text-black font-inter text-xs px-2'
+            'border border-gray-200 h-11 rounded-lg text-black font-open-sauce-sans text-xs px-2'
           }
           placeholder={'Enter number of days'}
           placeholderTextColor={'#000000A0'}
@@ -77,7 +77,7 @@ const RequestExtension = forwardRef((props: IRequestExtension, ref) => {
         disabled={selectedDays === 0 || requestExtensionMutation.isPending}
         ClassName={'bg-primary text-white py-3.5 mx-5 mb-3'}
         onPress={requestExtensionMutation.mutate}>
-        <Text className={'text-white font-inter text-13 '}>Send Request</Text>
+        <Text className={'text-white font-open-sauce-sans text-13 '}>Send Request</Text>
       </CButton>
     </CustomBottomSheet>
   );
@@ -89,7 +89,7 @@ const renderSheetHeader = (handleClose: () => void, daysRemaining: string) => (
       className={
         ' top-0 bg-none  py-3 z-50  flex-row justify-between items-end'
       }>
-      <Text className={'font-inter-semibold text-lg text-black'}>
+      <Text className={'font-open-sauce-sans-semibold text-lg text-black'}>
         Request extension
       </Text>
 
@@ -100,9 +100,9 @@ const renderSheetHeader = (handleClose: () => void, daysRemaining: string) => (
       </CButton>
     </View>
 
-    <Text className={'text-xs font-inter text-grey_1 mb-2'}>
+    <Text className={'text-xs font-open-sauce-sans text-grey_1 mb-2'}>
       Your rent is due in{' '}
-      <Text className={'text-xs font-inter-semibold'}>
+      <Text className={'text-xs font-open-sauce-sans-semibold'}>
         {daysRemaining} days
       </Text>
     </Text>

@@ -14,10 +14,10 @@ const HelpItem = props => {
       <CheckSvg size={'28'} color={COLORS.primary} />
 
       <View className={'flex-1'}>
-        <Text className={'text-black font-inter-semibold mb-1'}>
+        <Text className={'text-black font-open-sauce-sans-semibold mb-1'}>
           {props.title}
         </Text>
-        <Text className={'text-grey_1 font-inter text-xs'}>{props.desc}</Text>
+        <Text className={'text-grey_1 font-open-sauce-sans text-xs'}>{props.desc}</Text>
       </View>
 
       <TouchableOpacity className={'mr-2'} onPress={props?.handlePress}>

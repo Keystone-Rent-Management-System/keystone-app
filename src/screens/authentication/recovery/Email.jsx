@@ -22,7 +22,7 @@ const Email = () => {
 
   return (
     <Layout ClassName={'px-4'}>
-      <Text className={'text-xs font-inter text-grey_1 mb-2'}>
+      <Text className={'text-xs font-open-sauce-sans text-grey_1 mb-2'}>
         Confirm that your email is correct and request recovery PIN to reset
         your password
       </Text>

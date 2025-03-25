@@ -74,9 +74,9 @@ const StatementFilter = forwardRef<BottomSheet, IStatementFilterProps>(
           contentContainerStyle={styles.contentContainer}>
           {/* months filter */}
           <View className="flex flex-row flex-wrap gap-3">
-            {monthFilters.map(filter => (
+            {monthFilters.map((filter, ind) => (
               <CButton
-                textClassName={`font-inter text-[13px] ${
+                textClassName={`font-open-sauce-sans text-[13px] ${
                   filter?.value === selectedDuration
                     ? 'text-white'
                     : 'text-primary'
@@ -90,6 +90,7 @@ const StatementFilter = forwardRef<BottomSheet, IStatementFilterProps>(
                 onPress={() =>
                   handleDurationSelection(filter.value as Duration)
                 }
+                key={ind}
               />
             ))}
           </View>
@@ -107,7 +108,7 @@ const StatementFilter = forwardRef<BottomSheet, IStatementFilterProps>(
               }>
               <Text
                 className={
-                  'bg-white py-1 px-4 text-xs text-black font-inter-medium'
+                  'bg-white py-1 px-4 text-xs text-black font-open-sauce-sans-medium'
                 }>
                 OR
               </Text>
@@ -116,7 +117,7 @@ const StatementFilter = forwardRef<BottomSheet, IStatementFilterProps>(
 
           {/* date range */}
           <View>
-            <Text className={'font-inter-semibold text-base text-black mb-4'}>
+            <Text className={'font-open-sauce-sans-semibold text-base text-black mb-4'}>
               Pick the date range
             </Text>
 
@@ -143,7 +144,7 @@ const StatementFilter = forwardRef<BottomSheet, IStatementFilterProps>(
         <View className={'mx-5 absolute inset-x-0 bottom-3'}>
           <CButton
             ClassName={'bg-primary py-3 rounded-lg'}
-            textClassName={'text-white font-inter-semibold text-base'}
+            textClassName={'text-white font-open-sauce-sans-semibold text-base'}
             text={'Generate Statement'}
             onPress={handleGenerateStatement}
             disabled={!chosenDateRange}
@@ -162,7 +163,7 @@ const renderSheetHeader = (handleClose: () => void) => (
       className={
         'top-0 bg-none py-3 z-50 flex-row justify-between items-center'
       }>
-      <Text className={'font-inter-semibold text-lg text-black'}>
+      <Text className={'font-open-sauce-sans-semibold text-lg text-black'}>
         Generate Statement
       </Text>
 

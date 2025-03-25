@@ -34,6 +34,11 @@ AxiosUtility.interceptors.response.use(
   response => response,
   async error => {
     const originalRequest = error.config;
+    // Check if the URL includes '/login'
+    if (originalRequest.url.includes('login')) {
+      console.log(originalRequest.url);
+      return Promise.reject(error);
+    }
 
     // check if error is 401 and request has not been retried
     if (error.response.status === 401 && !originalRequest._retry) {

@@ -14,6 +14,8 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {CameraSvg, CloseSvg} from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
 import HelpServices from '../../../services/help';
+import {getError} from '../../../utils/getError';
+import {compressImage} from '../../../utils/payment';
 import {CButton} from '../../general';
 import {CustomBottomSheet} from '../index';
 
@@ -26,8 +28,6 @@ const PaymentAllocation = forwardRef((props, ref) => {
       {
         mediaType: 'photo',
         includeBase64: false,
-        maxHeight: 1000,
-        maxWidth: 1000,
       },
       response => {
         if (response.didCancel) {
@@ -39,7 +39,8 @@ const PaymentAllocation = forwardRef((props, ref) => {
         setImage(response?.uri);
       },
     );
-    setImage(img?.assets?.at(0));
+
+    compressImage(img.assets?.at(0), setImage);
   };
 
   const renderImage = () => {
@@ -94,7 +95,10 @@ const PaymentAllocation = forwardRef((props, ref) => {
       props?.handleCloseModal();
     },
     onError: _err => {
-      ToastAndroid.show('Error: Failed to verify payment', ToastAndroid.LONG);
+      ToastAndroid.show(
+        'Error: Failed to verify payment ' + getError(_err),
+        ToastAndroid.LONG,
+      );
     },
   });
 
@@ -123,25 +127,22 @@ const PaymentAllocation = forwardRef((props, ref) => {
       handleComponent={() => renderSheetHeader(props.handleCloseModal)}
       onChange={props?.handleSheetChanges}>
       <ScrollView className={'px-4 min-h-[180px]'}>
-        <Text className={'text-xs font-inter text-grey_1 mb-2'}>
+        <Text className={'text-xs font-open-sauce-sans text-grey_1 mb-2'}>
           Input a transaction code that will be used to full fill the payment of
           your invoice.
         </Text>
 
         <View className={'flex-col items-start w-full py-3'}>
-          <Text className={'text-black my-1.5 font-inter text-xs'}>
+          <Text className={'text-black my-1.5 font-open-sauce-sans text-xs'}>
             Enter a transaction code
           </Text>
 
           <TextInput
             className={
-              'text-black font-inter border border-border_grey w-full rounded-xl text-xs px-3'
+              'text-black font-open-sauce-sans border border-border_grey w-full rounded-xl text-xs px-3'
             }
-            placeholder={'Enter a transaction code'}
-            placeholderTextColor={COLORS.border_grey}
-            style={{
-              textAlignVertical: 'top',
-            }}
+            placeholder={'(e.g.TCB488B...)'}
+            placeholderTextColor={COLORS.grey_1}
             onChangeText={setCode}
             value={code}
           />
@@ -162,7 +163,7 @@ const PaymentAllocation = forwardRef((props, ref) => {
         disabled={submitPayment.isPending}
         ClassName={'bg-primary text-white py-3.5 mx-5 mb-3'}
         onPress={handleSubmit}>
-        <Text className={'text-white font-inter text-13 '}>
+        <Text className={'text-white font-open-sauce-sans text-13 '}>
           {submitPayment?.isPending ? 'saving...' : 'Submit'}
         </Text>
       </CButton>
@@ -175,7 +176,7 @@ const renderSheetHeader = handleClose => (
     className={
       ' top-0 bg-none px-4 py-3 z-50  flex-row justify-between items-end'
     }>
-    <Text className={'font-inter-semibold text-lg text-black'}>
+    <Text className={'font-open-sauce-sans-semibold text-lg text-black'}>
       Allocate payment
     </Text>
 

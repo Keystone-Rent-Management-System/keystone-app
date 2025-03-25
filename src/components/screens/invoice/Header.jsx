@@ -40,17 +40,17 @@ const HeaderSection = ({
         {isPartial ? (
           <View className={'flex-row mb-3'}>
             <Badge ClassName={'bg-green-100 px-3'}>
-              <Text className={'text-2xs text-c_green font-inter'}>
+              <Text className={'text-2xs text-c_green font-open-sauce-sans'}>
                 Partially Paid
               </Text>
             </Badge>
           </View>
         ) : null}
-        <Text className="text-white font-inter-semibold text-lg">
+        <Text className="text-white font-open-sauce-sans-semibold text-lg">
           {invoiceTitle}
         </Text>
 
-        <Text className={'font-inter text-slate-200 mt-1 text-13'}>
+        <Text className={'font-open-sauce-sans text-slate-200 mt-1 text-13'}>
           Invoice {invoiceNo}
         </Text>
       </View>

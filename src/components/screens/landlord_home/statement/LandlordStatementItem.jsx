@@ -26,29 +26,29 @@ const LandlordStatementItem = ({
           <StatementListSvg />
         </View>
         <View className={'flex-col gap-y-2'}>
-          <Text className={'text-primary font-inter-medium text-xs'}>
+          <Text className={'text-primary font-open-sauce-sans-medium text-xs'}>
             {title}
           </Text>
-          <Text className={'font-inter text-2xs text-primary'}>
+          <Text className={'font-open-sauce-sans text-2xs text-primary'}>
             Bill:
             <Text className={'text-black'}>KES. {billAmount}</Text>
           </Text>
-          <Text className={'text-xs font-inter text-inactive_text'}>
+          <Text className={'text-xs font-open-sauce-sans text-inactive_text'}>
             {date}
           </Text>
         </View>
       </View>
 
       <View className={'flex-col gap-y-2'}>
-        <Text className={'font-inter text-2xs text-green-600'}>
+        <Text className={'font-open-sauce-sans text-2xs text-green-600'}>
           collected:
           <Text className={'text-black'}>KES. {collectAmount}</Text>
         </Text>
-        <Text className={'font-inter text-2xs text-yellow-500'}>
+        <Text className={'font-open-sauce-sans text-2xs text-yellow-500'}>
           overpaid:
           <Text className={'text-black'}>KES. {overPaid}</Text>
         </Text>
-        <Text className={'font-inter text-2xs text-inactive_text'}>
+        <Text className={'font-open-sauce-sans text-2xs text-inactive_text'}>
           uncollected:
           <Text className={'text-black'}>KES. {unCollectAmount}</Text>
         </Text>

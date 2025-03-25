@@ -10,16 +10,27 @@ import {
   WaterBillSvg,
 } from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
-import {useActiveAgrement} from '../../../hooks';
+import {useActiveAgrement, useAgrement} from '../../../hooks';
 import {useActiveStatement} from '../../../hooks/useStatement';
 import {IPropertyContacts} from '../../../types/property.ts';
 import AgreementModalSheet from '../../../components/modals/Agreement';
+import {formatToKES} from '../../../utils/Helper';
 
 type ChargeKey = string;
 
-const UnitView = () => {
-  const {isPending, agreement} = useActiveAgrement();
+const UnitView = ({route: {params}}: any) => {
+  const {agreements} = useAgrement();
+  const {isPending, agreement: _agreement} = useActiveAgrement();
   const {isPending: isPendingActive, activeStatement} = useActiveStatement();
+
+  const agreement = useMemo(() => {
+    if (params?.type === 'previous') {
+      // filter agreements to get the one with the same id as the one passed in the params
+      return agreements.find(agr => agr.id === params?.agreementId) || null;
+    }
+
+    return _agreement;
+  }, [_agreement, agreements, params?.type, params?.agreementId]);
 
   const propertyContactPerson: IPropertyContacts = useMemo(() => {
     return agreement?.propertyUnits?.property?.propertyContacts || {};
@@ -29,11 +40,11 @@ const UnitView = () => {
     useMemo(() => {
       return {
         deposit: {
-          amount: agreement?.propertyUnits?.deposit,
+          amount: formatToKES(Number(agreement?.propertyUnits?.deposit)),
           icon: <BuildingSvg />,
         },
         rent: {
-          amount: agreement?.propertyUnits?.rent,
+          amount: formatToKES(Number(agreement?.propertyUnits?.rent)),
           icon: <BuildingSvg />,
         },
         'rent due date': {
@@ -67,11 +78,11 @@ const UnitView = () => {
 
   return (
     <Layout isScrollable={true} ClassName={'p-5'}>
-      {isPending || isPendingActive ? (
+      {params?.type !== 'previous' && (isPending || isPendingActive) ? (
         <View className={'flex flex-row justify-center py-16'}>
           <ActivityIndicator color={'#022374'} size="small" />
-          <Text className={'text-primary font-inter-semibold text-sm'}>
-            Loading...
+          <Text className={'text-primary font-open-sauce-sans-semibold text-sm'}>
+            Loadingsss...
           </Text>
         </View>
       ) : (
@@ -79,10 +90,10 @@ const UnitView = () => {
           {/* title section*/}
           <View className={'flex-row space-x-3 pb-3'}>
             <View className={''}>
-              <Text className={'font-inter-bold text-base text-black mb-2'}>
+              <Text className={'font-open-sauce-sans-bold text-base text-black mb-2'}>
                 {agreement.propertyUnits.property.name}
               </Text>
-              <Text className={'font-inter text-xs text-grey_1'}>
+              <Text className={'font-open-sauce-sans text-xs text-grey_1'}>
                 Unit {agreement.propertyUnits.name}
               </Text>
             </View>
@@ -93,9 +104,13 @@ const UnitView = () => {
 
           {/*  balance section  */}
           <View className={'pb-3'}>
-            <Text className={'text-black font-inter-semibold'}>Balance</Text>
-            <Text className={'text-black font-inter-bold text-base mt-2'}>
-              KES {activeStatement?.endingBalance}
+            <Text className={'text-black font-open-sauce-sans-semibold'}>
+              {activeStatement?.endingBalance < 0
+                ? 'Advance Balance'
+                : 'Arrears'}{' '}
+            </Text>
+            <Text className={'text-black font-open-sauce-sans-bold text-base mt-2'}>
+              {formatToKES(Number(activeStatement?.endingBalance || 0))}
             </Text>
           </View>
 
@@ -108,7 +123,7 @@ const UnitView = () => {
               <AgreementSvg color={COLORS.primary} size={'25'} />
 
               <View className={'flex-1'}>
-                <Text className={'text-sm text-primary font-inter-medium'}>
+                <Text className={'text-sm text-primary font-open-sauce-sans-medium'}>
                   View Agreement
                 </Text>
               </View>
@@ -122,9 +137,9 @@ const UnitView = () => {
 
           {/*  location  */}
           <View className={'py-2'}>
-            <Text className={'text-black font-inter-semibold'}>Location</Text>
+            <Text className={'text-black font-open-sauce-sans-semibold'}>Location</Text>
 
-            <Text className={'font-inter text-xs text-grey_1 mt-2'}>
+            <Text className={'font-open-sauce-sans text-xs text-grey_1 mt-2'}>
               {agreement.propertyUnits.property?.address?.line},{' '}
             </Text>
           </View>
@@ -134,7 +149,7 @@ const UnitView = () => {
 
           {/*  list of charges  */}
           <View style={styles.chargeList} className={'py-2'}>
-            <Text className={'text-black font-inter-medium'}>Charges</Text>
+            <Text className={'text-black font-open-sauce-sans-medium'}>Charges</Text>
 
             {Object.keys(charges)?.map((charge, ind) => (
               <ExploreAmenity
@@ -142,7 +157,7 @@ const UnitView = () => {
                 showCheckBox={false}
                 icon={charges[charge]?.icon}
                 title={charge}
-                value={`${charge === 'rent due date' ? 'Date' : 'KES.'} ${
+                value={`${charge === 'rent due date' ? 'Date' : ''} ${
                   charges[charge]?.amount
                 }`}
               />
@@ -154,7 +169,7 @@ const UnitView = () => {
 
           {/*  list of amenities  */}
           <View style={styles.chargeList} className={'py-2'}>
-            <Text className={'text-black font-inter-medium'}>Amenities</Text>
+            <Text className={'text-black font-open-sauce-sans-medium'}>Amenities</Text>
 
             {Object.keys(amenities)?.map((charge, ind) => (
               <ExploreAmenity
@@ -178,12 +193,12 @@ const UnitView = () => {
           {/*seperator*/}
           <Line />
 
-          <Text className={'text-black font-inter-semibold'}>Contacts</Text>
+          <Text className={'text-black font-open-sauce-sans-semibold'}>Contacts</Text>
           {/*  landlord details  */}
           <LandlordItem
             name={`${propertyContactPerson?.contactName}`}
             phoneNumber={propertyContactPerson?.phoneNumber}
-            rent={agreement?.propertyUnits?.rent?.toString()}
+            rent={formatToKES(Number(agreement?.propertyUnits?.rent))}
             ClassName={'px-0'}
           />
 

@@ -43,7 +43,7 @@ const MoneyIn = () => {
         {/*  onPress={handleOpenExportModal}>*/}
         {/*  <StatementListSvg h={'20'} color={COLORS.primary} />*/}
 
-        {/*  <Text className={'text-primary text-xs font-inter-medium'}>*/}
+        {/*  <Text className={'text-primary text-xs font-open-sauce-sans-medium'}>*/}
         {/*    Export Statement*/}
         {/*  </Text>*/}
         {/*</CButton>*/}
@@ -74,7 +74,7 @@ export const renderMoneyItem = ({item}, handlePress) => {
 
 export const renderHeader = ({section}) => (
   <View className={'pb-2 px-4 mt-3'}>
-    <Text className={'font-inter-semibold text-grey_1 capitalize'}>
+    <Text className={'font-open-sauce-sans-semibold text-grey_1 capitalize'}>
       {section?.month}
     </Text>
   </View>

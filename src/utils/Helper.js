@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/react-native';
+import moment from 'moment';
 import {Linking} from 'react-native';
 import moment from 'moment';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
@@ -96,6 +98,12 @@ export const formatToKES = amount => {
     style: 'currency',
     currency: 'KES',
   }).format(Math.abs(amount));
+};
+
+export const handleReportError = error => {
+  // if (ENVIRON === APP_MODE.production) {
+  Sentry.captureException(error);
+  // }
 };
 
 const Helper = {

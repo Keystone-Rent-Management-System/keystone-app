@@ -4,7 +4,7 @@ import AgreementServices from '../services/AgreementServices';
 import {getError} from '../utils/getError';
 import {IAgreement} from '../types/agreement';
 import {useActiveAgreement} from '../provider/store';
-import {useEffect} from 'react';
+import {useEffect, useMemo} from 'react';
 import {queryRefetchIntervalOptions} from '../constants/general';
 
 export const agreementsKey = ['agreements'];
@@ -26,7 +26,6 @@ export const useActiveAgrement = () => {
   const {isPending, error, data, refetch, isFetching} = useQuery({
     queryKey: ['active_agreement', activeAgreement?.id],
     queryFn: () => AgreementServices.getActiveAgreement(),
-    enabled: !activeAgreement?.id,
     ...queryRefetchIntervalOptions,
   });
 
@@ -39,12 +38,20 @@ export const useActiveAgrement = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
+  const isAgreed = useMemo(() => {
+    return (
+      agreement?.status?.toLocaleLowerCase() === 'agreed' ||
+      agreement?.status?.toLocaleLowerCase() === 'accepted'
+    );
+  }, [agreement]);
+
   return {
     isPending: activeAgreement?.id ? false : isPending,
     error,
     agreement: agreement as IAgreement,
     agreementRefetch: refetch,
     isFetching,
+    isAgreed,
   };
 };
 
