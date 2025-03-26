@@ -1,10 +1,12 @@
 import * as Sentry from '@sentry/react-native';
 import moment from 'moment';
-import {Linking} from 'react-native';
+import {Linking, PermissionsAndroid} from 'react-native';
+import FileViewer from 'react-native-file-viewer';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import RNFetchBlob from 'rn-fetch-blob';
 
 import {PALLAX_SUPPORT_NUMBER} from '../constants';
+import {getError} from './getError';
 
 const renderSingularPlural = (num, render, nullRender = '') =>
   parseInt(num, 10) > 1 ? render : nullRender;
@@ -70,19 +72,90 @@ const calculateDaysRemaining = sampleDate => {
   return moment(sampleDate).diff(currentDate, 'days').toString();
 };
 
+async function requestWriteExternalStoragePermission() {
+  try {
+    await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      {
+        title: 'External Storage Permission',
+        message: 'This app needs access to your external storage to save files',
+        buttonPositive: 'OK',
+        buttonNegative: 'Cancel',
+      },
+    );
+  } catch (err) {
+    // console.warn(err);
+    throw new Error(
+      'Failed to request external storage permission',
+      getError(err),
+    );
+  }
+}
+
+let isFileViewerOpen = false; // Flag to prevent duplicate calls
+
 export async function generatePdf(html, fileName) {
-  let options = {
-    html,
-    fileName,
-    directory: 'Documents',
-    base64: true,
-  };
-  let file = await RNHTMLtoPDF.convert(options);
-  let filePath = RNFetchBlob.fs.dirs.DownloadDir + '/' + fileName + '.pdf';
+  const granted = await PermissionsAndroid.check(
+    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+  );
+  if (granted) {
+    return;
+  } else {
+    // Request the permission
+    requestWriteExternalStoragePermission();
+  }
 
-  await RNFetchBlob.fs.writeFile(filePath, file.base64, 'base64');
+  try {
+    if (!html || !fileName) {
+      throw new Error(
+        'Invalid parameters: HTML content or file name is missing.',
+      );
+    }
 
-  return filePath;
+    // Generate the PDF
+    const options = {
+      html,
+      fileName,
+      directory: 'Documents',
+      base64: true,
+    };
+
+    const file = await RNHTMLtoPDF.convert(options);
+    if (!file || !file.base64) {
+      throw new Error('Failed to generate PDF. The file object is invalid.');
+    }
+
+    // Write the file to the Downloads directory
+    const filePath = `${RNFetchBlob.fs.dirs.DownloadDir}/${fileName}.pdf`;
+    await RNFetchBlob.fs.writeFile(filePath, file.base64, 'base64');
+
+    // Ensure FileViewer.open is only called once
+    if (!isFileViewerOpen) {
+      isFileViewerOpen = true;
+      try {
+        await FileViewer.open(filePath, {
+          showOpenWithDialog: true,
+          showAppsSuggestions: true,
+        });
+      } catch (viewerError) {
+        console.error('Error opening the file with FileViewer:', viewerError);
+        throw new Error(
+          'Failed to open the PDF file. Please check your file viewer.',
+        );
+      } finally {
+        isFileViewerOpen = false; // Reset the flag
+      }
+    }
+
+    return filePath;
+  } catch (error) {
+    console.error('Error generating or opening PDF:', error);
+    isFileViewerOpen = false; // Reset the flag in case of an error
+    handleReportError(error); // Report the error to Sentry
+    throw new Error(
+      'Please retry. An error occurred while generating the PDF.',
+    );
+  }
 }
 
 export const formatToKES = amount => {

@@ -1,3 +1,11 @@
+## v1.3.8 (2025-03-26)
+
+### Feat
+- Enhanced export functionality for better experience
+
+### Fix
+- Resolved issue with the export of statements
+
 ## v1.3.7 (2025-03-21)
 
 ### Change
