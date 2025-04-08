@@ -210,11 +210,16 @@ const InvoiceView = ({route: {params}}) => {
               title={'Partially Paid'}
               customAmt={
                 <View className={'items-center'}>
-                  <Text className={'text-11 font-open-sauce-sans text-inactive_text '}>
+                  <Text
+                    className={
+                      'text-11 font-open-sauce-sans text-inactive_text '
+                    }>
                     {moment(invoice?.updatedAt).format('HH:MMa Do MMMM, YYYY')}
                   </Text>
                   <Text
-                    className={'text-13 font-open-sauce-sans-semibold text-black mt-2'}>
+                    className={
+                      'text-13 font-open-sauce-sans-semibold text-black mt-2'
+                    }>
                     {formatToKES(Number(invoice?.paidAmount))}
                   </Text>
                 </View>
@@ -224,11 +229,17 @@ const InvoiceView = ({route: {params}}) => {
 
           {!hasConcern && (isUnpaid || isPartiallyPaid) ? (
             <View>
-              <Text className={'text-sm font-open-sauce-sans-semibold text-black mt-4'}>
+              <Text
+                className={
+                  'text-sm font-open-sauce-sans-semibold text-black mt-4'
+                }>
                 Does this invoice have an issue?
               </Text>
 
-              <Text className={'font-open-sauce-sans text-xs leading-5 mt-1 text-grey_1'}>
+              <Text
+                className={
+                  'font-open-sauce-sans text-xs leading-5 mt-1 text-grey_1'
+                }>
                 The invoice has a discrepancy to what you expected,{' '}
                 <TouchableOpacity onPress={handleOpenConcernModal}>
                   <Text
