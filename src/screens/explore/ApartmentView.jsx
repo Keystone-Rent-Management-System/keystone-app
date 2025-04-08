@@ -142,7 +142,9 @@ const ApartmentView = ({route: {params}}) => {
           onPress={handleViewTour}>
           <VirtualTourSvg color={COLORS.white} />
 
-          <Text className={'text-white text-11 font-open-sauce-sans'}>Virtual Tour</Text>
+          <Text className={'text-white text-11 font-open-sauce-sans'}>
+            Virtual Tour
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -211,7 +213,9 @@ const ApartmentView = ({route: {params}}) => {
           </Text>
 
           <Text
-            className={'text-grey_1 font-open-sauce-sans my-1.5 text-[13px] leading-6'}>
+            className={
+              'text-grey_1 font-open-sauce-sans my-1.5 text-[13px] leading-6'
+            }>
             {`${listing?.property?.address?.line}`}
           </Text>
 
