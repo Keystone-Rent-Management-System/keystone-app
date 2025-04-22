@@ -108,8 +108,36 @@ export interface IPropertyListing {
   property: Property;
 }
 
-export interface IPropertyListingResponse extends IPagination {
-  data: IPropertyListing[];
+export interface IProperty {
+  id: string;
+  userId: string;
+  merchantId: string | null;
+  matterportUrl: string;
+  name: string;
+  referenceCode: string;
+  deposit: number;
+  rent: number;
+  houseType: string;
+  numberOfBedrooms: number;
+  numberOfBathrooms: number;
+  balcony: number;
+  floorNumber: number;
+  squareFoot: string;
+  occupationStatus: string;
+  purpose: string;
+  description: string | null;
+  propertyName: string;
+  county: string;
+  country: string;
+  location: string;
+  longitude: number;
+  latitude: number;
+  propertyUploads: IPropertyListingUpload[];
+}
+
+export interface IPropertyListingResponse {
+  content: IProperty[];
+  page: IPagination;
 }
 
 export interface IFilters {
@@ -123,6 +151,8 @@ export interface IFilters {
 
 interface IPropertyListingUpload {
   fileUrl: string;
+  size: string;
+  id: string;
 }
 
 export interface ISpecificPropertyListing {
