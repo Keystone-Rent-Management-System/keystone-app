@@ -149,7 +149,7 @@ export interface IFilters {
   maxPrice?: number;
 }
 
-interface IPropertyListingUpload {
+export interface IPropertyListingUpload {
   fileUrl: string;
   size: string;
   id: string;

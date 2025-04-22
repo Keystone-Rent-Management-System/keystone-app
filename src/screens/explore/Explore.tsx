@@ -10,14 +10,14 @@ import {
   Layout,
 } from '../../components';
 // import listings from '@/provider/listings';
-import {useNavigation} from '@react-navigation/native';
-import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
-import {ExplorerFilterModal} from '../../components/modals';
-import {usePropertyListing} from '../../hooks';
 import {IProperty, IPropertyListingUpload} from '@/types/property';
 import {getRandomFromArray} from '@/utils';
 import BottomSheet from '@gorhom/bottom-sheet';
+import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
+import {ExplorerFilterModal} from '../../components/modals';
+import {usePropertyListing} from '../../hooks';
 
 const Explore = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
