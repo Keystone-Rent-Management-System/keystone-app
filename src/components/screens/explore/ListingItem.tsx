@@ -13,24 +13,32 @@ import Helper from '@/utils/Helper';
 import {styled} from 'nativewind';
 import {Pressable, Text, TouchableOpacity, View} from 'react-native';
 import {RightArrowSvg} from '../../../assets/icons';
-import ImageWithSpinner from '../../../components/general/image-with-spinner';
+import ImageWithSpinner from '../../general/image-with-spinner';
 import useSavedUnits, {useFetchSavedUnits} from '../../../hooks/useSavedUnits';
 import numberWithCommas from '../../../utils/numberWithCommas';
 import Badge from './Badge';
+import {IProperty} from '@/types/property';
 
-/**
- * Returns property item for listing
- * @param {ListingProperty} props
- * @returns {Element}
- * @constructor
- */
-const ListingItem = props => {
-  const {
-    imgClassName = 'h-60',
-    containerClassName = 'mb-5',
-    textContainerClassName = 'px-0',
-    showBack = false,
-  } = props;
+interface ListingItemProps extends IProperty {
+  imgClassName?: string;
+  containerClassName?: string;
+  textContainerClassName?: string;
+  showBack?: boolean;
+  image?: string;
+
+  handlePress: () => void;
+  handleClose?: () => void;
+}
+
+const ListingItem = ({
+  imgClassName = 'h-60',
+  containerClassName = 'mb-5',
+  textContainerClassName = 'px-0',
+  showBack = false,
+  handlePress,
+  handleClose,
+  ...props
+}: ListingItemProps) => {
   const StyledView = styled(View);
 
   const {data} = useFetchSavedUnits();
@@ -46,13 +54,17 @@ const ListingItem = props => {
       return removeUnitMutation.mutate(props.id);
     }
 
-    saveUnitMutation.mutate({unitId: props.id, data: props.data});
+    saveUnitMutation.mutate({unitId: props.id, data: props});
   }, [liked, props, removeUnitMutation, saveUnitMutation]);
 
+  const fullAddress = useMemo(() => {
+    return `${props?.country || '__'}, ${props?.county || '__'}, ${
+      props?.location || '__'
+    }`;
+  }, [props]);
+
   return (
-    <Pressable
-      className={`mx-1 ${containerClassName}`}
-      onPress={props.handlePress}>
+    <Pressable className={`mx-1 ${containerClassName}`} onPress={handlePress}>
       {/*  image   */}
       <StyledView className={'bg-bg shadow-xl rounded-xl relative'}>
         <ImageWithSpinner
@@ -67,13 +79,13 @@ const ListingItem = props => {
         {showBack && (
           <TouchableOpacity
             hitSlop={{top: 20, bottom: 20, left: 20}}
-            onPress={props?.handleClose}
+            onPress={handleClose}
             className={
               'absolute z-10 top-2 left-2 -rotate-180 bg-white p-1.5 rounded-full'
             }>
             <RightArrowSvg
-              color={liked ? COLORS.white : COLORS.text_color}
-              opacity={liked ? '1' : '0.45'}
+              // color={liked ? COLORS.white : COLORS.text_color}
+              // opacity={liked ? '1' : '0.45'}
               size={'18'}
             />
           </TouchableOpacity>
@@ -97,50 +109,56 @@ const ListingItem = props => {
           <Text
             style={{color: COLORS.text_color}}
             className={'font-open-sauce-sans-semibold'}>
-            {props.title}
+            {props.name}
           </Text>
 
           <Badge ClassName={'flex-row bg-c_green_bg space-x-1'}>
             <AgentSvg />
 
             <Text className={'font-open-sauce-sans text-2xs text-c_green'}>
-              {props.userType}
+              __
             </Text>
           </Badge>
         </View>
 
         {/*  address  */}
         <View className={'flex-row mb-2'}>
-          <IconLabel icon={<MapPinSvg />} text={props.location} />
+          <IconLabel icon={<MapPinSvg />} text={fullAddress} />
         </View>
 
         {/*  bedrooms, bathrooms, balconies*/}
         <View className={'flex-row '}>
-          {props.bedrooms > 0 && (
+          {props.numberOfBedrooms > 0 && (
             <IconLabel
               icon={<BedSvg size={17} />}
               text={
-                props.bedrooms +
-                ` Bedroom${Helper.renderSingularPlural(props.bedrooms, 's')}`
+                props.numberOfBedrooms +
+                ` Bedroom${Helper.renderSingularPlural(
+                  props.numberOfBedrooms,
+                  's',
+                )}`
               }
             />
           )}
-          {props.bathrooms > 0 && (
+          {props.numberOfBathrooms > 0 && (
             <IconLabel
               icon={<BathroomSvg />}
               text={
-                props.bathrooms +
-                ` Bathroom${Helper.renderSingularPlural(props.bathrooms, 's')}`
+                props.numberOfBathrooms +
+                ` Bathroom${Helper.renderSingularPlural(
+                  props.numberOfBathrooms,
+                  's',
+                )}`
               }
             />
           )}
-          {props.balconies > 0 && (
+          {props.balcony > 0 && (
             <IconLabel
               icon={<BalconySvg />}
               text={
-                props.balconies +
+                props.balcony +
                 ` Balcon${Helper.renderSingularPlural(
-                  props.bathrooms,
+                  props.numberOfBathrooms,
                   'ies',
                   'y',
                 )}`
@@ -154,9 +172,11 @@ const ListingItem = props => {
           <Text
             style={{color: COLORS.text_color}}
             className={'font-open-sauce-sans-semibold text-xs'}>
-            KES. {numberWithCommas(Number(props.price))}
-            {props?.puropse?.toLocaleLowerCase() === 'rent' && (
-              <Text className={'text-11 text-grey_1 font-open-sauce-sans'}>/ Month</Text>
+            KES. {numberWithCommas(Number(props.rent))}
+            {props?.purpose?.toLocaleLowerCase() === 'rent' && (
+              <Text className={'text-11 text-grey_1 font-open-sauce-sans'}>
+                / Month
+              </Text>
             )}
           </Text>
         </View>
@@ -167,7 +187,13 @@ const ListingItem = props => {
 
 export default ListingItem;
 
-export const IconLabel = ({icon, text}) => (
+export const IconLabel = ({
+  icon,
+  text,
+}: {
+  icon: React.ReactNode;
+  text: string;
+}) => (
   <View className={'flex-row space-x-2 mr-3'}>
     {icon}
 
