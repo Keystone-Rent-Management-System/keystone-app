@@ -1,5 +1,5 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {FlashList} from '@shopify/flash-list';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 
 import {
   ExploreFilters,
@@ -10,13 +10,17 @@ import {
   Layout,
 } from '../../components';
 // import listings from '@/provider/listings';
-import {ExplorerFilterModal} from '../../components/modals';
+import {IProperty, IPropertyListingUpload} from '@/types/property';
+import {getRandomFromArray} from '@/utils';
+import BottomSheet from '@gorhom/bottom-sheet';
 import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
+import {ExplorerFilterModal} from '../../components/modals';
 import {usePropertyListing} from '../../hooks';
 
 const Explore = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<any>>();
 
   const {
     isPending,
@@ -27,7 +31,6 @@ const Explore = () => {
     isFetchingNextPage,
     fetchNextPage,
     handleAddRemoveFilter,
-    handleSetFilters,
   } = usePropertyListing();
 
   const renderListFooter = useCallback(() => {
@@ -37,7 +40,7 @@ const Explore = () => {
     return null;
   }, [isFetchingNextPage]);
 
-  const filterModalRef = useRef(null);
+  const filterModalRef = useRef<BottomSheet>(null);
 
   const [current, setCurrent] = useState(null);
   const [mode, setMode] = useState('list');
@@ -68,7 +71,7 @@ const Explore = () => {
   }, [navigation]);
 
   const handleViewApartment = useCallback(
-    id => {
+    (id: string) => {
       return navigation.navigate('apartment_view', {apartment: id});
     },
     [navigation],
@@ -85,34 +88,17 @@ const Explore = () => {
   };
 
   const renderListingItem = useCallback(
-    ({item}) => {
-      const firstPropertyImage = item?.uploads?.at(0)?.fileUrl;
-
-      const {
-        houseType,
-        user,
-        property,
-        rent,
-        balconies,
-        numberOfBedrooms,
-        numberOfBathrooms,
-        listingId: id,
-      } = item;
+    ({item}: {item: IProperty}) => {
+      const firstPropertyImage = item?.propertyUploads?.length
+        ? getRandomFromArray<IPropertyListingUpload>(item.propertyUploads)
+            ?.fileUrl
+        : '';
 
       return (
         <ExploreListingItem
-          title={item?.property?.name}
-          userType={user}
-          category={houseType}
-          location={`${property?.address?.line ?? ''}`}
-          price={rent}
-          balconies={balconies}
-          bedrooms={numberOfBedrooms}
-          bathrooms={numberOfBathrooms}
           image={firstPropertyImage ?? ''}
-          id={id}
-          handlePress={() => handleViewApartment(id)}
-          data={item}
+          handlePress={() => handleViewApartment(item?.id)}
+          {...item}
         />
       );
     },
@@ -130,6 +116,8 @@ const Explore = () => {
       {/*  Filters  */}
       <ExploreFilters handleAddRemoveFilter={handleAddRemoveFilter} />
 
+      {/* <Text>{JSON.stringify(listings, null, 2)}</Text> */}
+
       {mode === 'map' ? (
         <ExploreMapView
           current={current}
@@ -144,6 +132,7 @@ const Explore = () => {
             padding: 16,
             paddingBottom: 30,
           }}
+          // data={[]}
           data={listings}
           renderItem={renderListingItem}
           keyExtractor={(_, ind) => ind.toString()}
@@ -161,23 +150,16 @@ const Explore = () => {
       <ExplorerFilterModal
         handleCloseFilter={handleCloseFilter}
         ref={filterModalRef}
-        handleSetFilters={handleSetFilters}
       />
 
       {!!currentProperty && (
         <View
           style={styles.exploreView}
           className={'absolute z-50 inset-x-0 bottom-0 px-3 py-2'}>
+          {/* @ts-ignore */}
           <ExploreListingItem
             image={''}
-            title={currentProperty?.name}
-            userType={'Landlord'}
-            category={currentProperty?.houseType}
             location={`${currentProperty?.property?.country}, ${currentProperty?.property?.county}, ${currentProperty?.property?.neighborhood}`}
-            price={currentProperty?.rent}
-            balconies={5}
-            bedrooms={currentProperty?.numberOfBedrooms}
-            bathrooms={currentProperty?.numberOfBathrooms}
             id={currentProperty?.id}
             showBack
             imgClassName={'h-24 rounded-none'}

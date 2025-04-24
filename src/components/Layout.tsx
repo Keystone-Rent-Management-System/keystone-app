@@ -1,11 +1,16 @@
-import React from "react";
-import { ScrollView, View } from "react-native";
+import React from 'react';
+import {ScrollView, View} from 'react-native';
 
 const Layout = ({
   children,
   ClassName,
   isScrollable = false,
   scrollViewProps,
+}: {
+  children: React.ReactNode;
+  ClassName?: string;
+  isScrollable?: boolean;
+  scrollViewProps?: any;
 }) => {
   if (isScrollable) {
     return (

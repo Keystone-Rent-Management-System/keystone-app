@@ -43,7 +43,7 @@ export const usePropertyListing = () => {
       debouncedSearchQuery,
     ],
     queryFn: async ({pageParam}) =>
-      PropertyListingServices.getPropertyListings(pageParam ?? 0, 5, {
+      PropertyListingServices.getPropertyListings(pageParam ?? 0, 10, {
         ...filters,
         searchKeyword: debouncedSearchQuery,
       }),
