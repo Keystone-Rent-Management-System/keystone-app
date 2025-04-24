@@ -41,7 +41,7 @@
         "react-native-inappbrowser-reborn": "^3.7.0",
         "react-native-linear-gradient": "^2.8.3",
         "react-native-maps": "^1.18.0",
-        "react-native-mmkv": "^2.12.2",
+        "react-native-mmkv": "^3.2.0",
         "react-native-pager-view": "^6.4.1",
         "react-native-pdf": "^6.7.5",
         "react-native-push-notification": "^8.1.1",
@@ -1649,7 +1649,7 @@
 
     "react-native-maps": ["react-native-maps@1.22.1", "", { "dependencies": { "@types/geojson": "^7946.0.13" }, "peerDependencies": { "react": ">= 18.3.1", "react-native": ">= 0.76.0", "react-native-web": ">= 0.11" }, "optionalPeers": ["react-native-web"] }, "sha512-vqgRKAsrbl9EymvVHubFMv705mGDhR21Fb6kq7YLSHatJ9qnMx4qWdD+jJeYjeUqYG3KrT4diZ17Y+9OBmX5Jw=="],
 
-    "react-native-mmkv": ["react-native-mmkv@2.12.2", "", { "peerDependencies": { "react": "*", "react-native": ">=0.71.0" } }, "sha512-6058Aq0p57chPrUutLGe9fYoiDVDNMU2PKV+lLFUJ3GhoHvUrLdsS1PDSCLr00yqzL4WJQ7TTzH+V8cpyrNcfg=="],
+    "react-native-mmkv": ["react-native-mmkv@3.2.0", "", { "peerDependencies": { "react": "*", "react-native": "*" } }, "sha512-9y7K//1MaU46TFrXkyU0wT5VGk9Y2FDLFV6NPl+z3jTbm2G7SC1UIxneF6CfhSmBX5CfKze9SO7kwDuRx7flpQ=="],
 
     "react-native-pager-view": ["react-native-pager-view@6.7.0", "", { "peerDependencies": { "react": "*", "react-native": "*" } }, "sha512-sutxKiMqBuQrEyt4mLaLNzy8taIC7IuYpxfcwQBXfSYBSSpAa0qE9G1FXlP/iXqTSlFgBXyK7BESsl9umOjECQ=="],
 
