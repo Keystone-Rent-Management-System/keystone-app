@@ -14,18 +14,20 @@ export const profileQueryKey = ['user', 'profile'];
 const useAuth = () => {
   const {profile, saveProfile} = useProfileStore();
 
-  const {isPending, error, data, refetch, isSuccess} = useQuery({
+  const {isLoading, error, data, refetch, isSuccess} = useQuery({
     queryKey: profileQueryKey,
     queryFn: () => AuthServices.getProfile(),
     enabled: !profile?.userId, // fetch only if profile is not in store
   });
 
   useEffect(() => {
-    saveProfile(data);
-  }, [data, isSuccess, saveProfile]);
+    if (!profile?.userId) {
+      saveProfile(data);
+    }
+  }, [data, isSuccess, profile?.userId, saveProfile]);
 
   return {
-    isPending: profile?.userId ? false : isPending,
+    isPending: profile?.userId ? false : isLoading,
     error,
     profile: {
       ...profile,
