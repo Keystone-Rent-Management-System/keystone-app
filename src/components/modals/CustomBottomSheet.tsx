@@ -45,4 +45,22 @@ const CustomBottomSheet = forwardRef<
   );
 });
 
+export const renderBackdrop = (backdropProps: any) => (
+  <BottomSheetBackdrop opacity={0.5} {...backdropProps} />
+);
+
+export const CommonBottomSheetProps: Partial<BottomSheetProps> = {
+  index: -1,
+  snapPoints: ['50%'],
+  backdropComponent: renderBackdrop,
+  enableDynamicSizing: false,
+  enablePanDownToClose: true,
+  enableContentPanningGesture: false,
+  handleIndicatorStyle: {backgroundColor: COLORS.white},
+  containerStyle: {
+    zIndex: 100,
+    elevation: 10,
+  },
+};
+
 export default CustomBottomSheet;

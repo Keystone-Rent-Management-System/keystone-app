@@ -1,21 +1,22 @@
 import React, {forwardRef} from 'react';
 
-import {ScrollView, Text, TextInput, ToastAndroid, View} from 'react-native';
-import {CustomBottomSheet} from '../index';
-import COLORS from '../../../constants/Theme';
-import {CButton} from '../../general';
-import {CloseSvg} from '../../../assets/icons';
-import {useActiveAgrement} from '../../../hooks';
-import {Controller, useForm} from 'react-hook-form';
+import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {zodResolver} from '@hookform/resolvers/zod';
+import {useMutation} from '@tanstack/react-query';
+import {Controller, useForm} from 'react-hook-form';
+import {Text, TextInput, ToastAndroid, View} from 'react-native';
+import {CloseSvg} from '../../../assets/icons';
+import COLORS from '../../../constants/Theme';
+import {useActiveAgrement} from '../../../hooks';
+import HelpServices from '../../../services/help.ts';
+import {CButton} from '../../general';
+import {CustomBottomSheet} from '../index';
 import {
   IMakeComplainProps,
   RequestHelpFormData,
   RequestHelpFormSchema,
+  textInputStyles,
 } from './MakeComplaint';
-import {useMutation} from '@tanstack/react-query';
-import HelpServices from '../../../services/help.ts';
-import {BottomSheetModal} from '@gorhom/bottom-sheet';
 
 const GeneralRepairsModal = forwardRef<BottomSheetModal, IMakeComplainProps>(
   (props: IMakeComplainProps, ref) => {
@@ -69,67 +70,68 @@ const GeneralRepairsModal = forwardRef<BottomSheetModal, IMakeComplainProps>(
         ref={ref}
         handleComponent={() => renderSheetHeader(props.handleCloseModal)}
         onChange={props.handleSheetChanges}>
-        <ScrollView className={'px-4 min-h-[180px]'}>
-          <Text className={'text-xs font-open-sauce-sans text-grey_1 mb-2'}>
-            Get help on any other issue not indicated.
-          </Text>
-
-          <View className={'flex-col items-start w-full py-3'}>
-            <Text className={'text-black my-1.5 font-open-sauce-sans text-xs'}>
-              What would you like help with ?
+        <BottomSheetScrollView className={'flex-1'}>
+          <View className="px-4 min-h-[180px]">
+            <Text className={'text-xs font-open-sauce-sans text-grey_1 mb-2'}>
+              Get help on any other issue not indicated.
             </Text>
 
-            <Controller
-              control={control}
-              render={({
-                field: {onChange, onBlur, value},
-                fieldState: {error},
-              }) => (
-                <>
-                  <TextInput
-                    className={
-                      'text-black font-open-sauce-sans border border-border_grey w-full rounded-xl text-xs px-3'
-                    }
-                    numberOfLines={5}
-                    placeholder={'Enter Details'}
-                    placeholderTextColor={COLORS.border_grey}
-                    style={{
-                      textAlignVertical: 'top',
-                    }}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    value={value}
-                  />
-                  {error && (
-                    <Text
-                      className={
-                        'text-xs font-open-sauce-sans-medium leading-5 text-red-600'
-                      }>
-                      {error?.message}
-                    </Text>
-                  )}
-                </>
-              )}
-              name={'message'}
-            />
-          </View>
+            <View className={'flex-col items-start w-full py-3'}>
+              <Text
+                className={'text-black my-1.5 font-open-sauce-sans text-xs'}>
+                What would you like help with ?
+              </Text>
 
-          <View className={'flex-row flex-wrap mt-3 justify-center'}>
-            {helpTypes?.map(type => (
-              <CButton
-                key={type}
-                ClassName={
-                  ' bg-white py-0 rounded-xl border border-primary h-9 m-1.5'
-                }
-                // onPress={handleClose}
-              >
-                <Text className={'text-primary font-open-sauce-sans text-xs'}>
-                  {type}
-                </Text>
-              </CButton>
-            ))}
+              <Controller
+                control={control}
+                render={({
+                  field: {onChange, onBlur, value},
+                  fieldState: {error},
+                }) => (
+                  <>
+                    <TextInput
+                      className={
+                        'text-black font-open-sauce-sans border border-border_grey w-full rounded-xl text-xs px-3'
+                      }
+                      numberOfLines={5}
+                      placeholder={'Enter Details'}
+                      placeholderTextColor={COLORS.border_grey}
+                      style={textInputStyles.textInput}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      value={value}
+                    />
+                    {error && (
+                      <Text
+                        className={
+                          'text-xs font-open-sauce-sans-medium leading-5 text-red-600'
+                        }>
+                        {error?.message}
+                      </Text>
+                    )}
+                  </>
+                )}
+                name={'message'}
+              />
+            </View>
+
+            <View className={'flex-row flex-wrap mt-3 justify-center'}>
+              {helpTypes?.map(type => (
+                <CButton
+                  key={type}
+                  ClassName={
+                    ' bg-white py-0 rounded-xl border border-primary h-9 m-1.5'
+                  }
+                  // onPress={handleClose}
+                >
+                  <Text className={'text-primary font-open-sauce-sans text-xs'}>
+                    {type}
+                  </Text>
+                </CButton>
+              ))}
+            </View>
           </View>
-        </ScrollView>
+        </BottomSheetScrollView>
 
         <CButton
           disabled={requestGeneralAssistance.isPending}

@@ -1,7 +1,7 @@
-import BottomSheet from '@gorhom/bottom-sheet';
+import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {useNavigation} from '@react-navigation/native';
 import React, {forwardRef, useCallback, useMemo, useState} from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 
 import {CloseSvg} from '../../assets/icons';
 import {
@@ -69,76 +69,83 @@ const StatementFilter = forwardRef<BottomSheet, IStatementFilterProps>(
         ref={ref}
         snapPoints={['81%', '81%']}
         handleComponent={() => renderSheetHeader(handleCloseFilter)}>
-        <ScrollView
-          className="p-5"
+        <BottomSheetScrollView
+          className={'flex-1'}
           contentContainerStyle={styles.contentContainer}>
-          {/* months filter */}
-          <View className="flex flex-row flex-wrap gap-3">
-            {monthFilters.map((filter, ind) => (
-              <CButton
-                textClassName={`font-open-sauce-sans text-[13px] ${
-                  filter?.value === selectedDuration
-                    ? 'text-white'
-                    : 'text-primary'
-                } `}
-                ClassName={`border ${
-                  filter?.value === selectedDuration
-                    ? 'border-primary bg-primary'
-                    : 'border-[#DEDEDE]'
-                } py-2 px-3 mb-1`}
-                text={filter.text}
-                onPress={() =>
-                  handleDurationSelection(filter.value as Duration)
+          <View className="p-5 min-h-[180px]">
+            {/* months filter */}
+            <View className="flex flex-row flex-wrap gap-3">
+              {monthFilters.map((filter, ind) => (
+                <CButton
+                  textClassName={`font-open-sauce-sans text-[13px] ${
+                    filter?.value === selectedDuration
+                      ? 'text-white'
+                      : 'text-primary'
+                  } `}
+                  ClassName={`border ${
+                    filter?.value === selectedDuration
+                      ? 'border-primary bg-primary'
+                      : 'border-[#DEDEDE]'
+                  } py-2 px-3 mb-1`}
+                  text={filter.text}
+                  onPress={() =>
+                    handleDurationSelection(filter.value as Duration)
+                  }
+                  key={ind}
+                />
+              ))}
+            </View>
+
+            {/* separator */}
+            <View className={'relative my-10'}>
+              {/* line */}
+              <View
+                className={
+                  'absolute top-1/2 left-0  right-0 h-px bg-border_grey'
                 }
-                key={ind}
               />
-            ))}
-          </View>
 
-          {/* separator */}
-          <View className={'relative my-10'}>
-            {/* line */}
-            <View
-              className={'absolute top-1/2 left-0  right-0 h-px bg-border_grey'}
-            />
+              <View
+                className={
+                  'absolute -top-3 right-0 left-0 flex flex-row justify-center items-center'
+                }>
+                <Text
+                  className={
+                    'bg-white py-1 px-4 text-xs text-black font-open-sauce-sans-medium'
+                  }>
+                  OR
+                </Text>
+              </View>
+            </View>
 
-            <View
-              className={
-                'absolute -top-3 right-0 left-0 flex flex-row justify-center items-center'
-              }>
+            {/* date range */}
+            <View>
               <Text
                 className={
-                  'bg-white py-1 px-4 text-xs text-black font-open-sauce-sans-medium'
+                  'font-open-sauce-sans-semibold text-base text-black mb-4'
                 }>
-                OR
+                Pick the date range
               </Text>
+
+              <StatementDatePicker
+                label={'Start Date'}
+                placeholder={'Select Date'}
+                setValue={handleFromChange}
+                value={fromEndDate?.from}
+              />
+
+              {/* Separator */}
+              <View className={'h-3 w-full'} />
+
+              <StatementDatePicker
+                label={'End Date'}
+                placeholder={'Select Date'}
+                setValue={handleToChange}
+                value={fromEndDate?.to}
+              />
             </View>
           </View>
-
-          {/* date range */}
-          <View>
-            <Text className={'font-open-sauce-sans-semibold text-base text-black mb-4'}>
-              Pick the date range
-            </Text>
-
-            <StatementDatePicker
-              label={'Start Date'}
-              placeholder={'Select Date'}
-              setValue={handleFromChange}
-              value={fromEndDate?.from}
-            />
-
-            {/* Separator */}
-            <View className={'h-3 w-full'} />
-
-            <StatementDatePicker
-              label={'End Date'}
-              placeholder={'Select Date'}
-              setValue={handleToChange}
-              value={fromEndDate?.to}
-            />
-          </View>
-        </ScrollView>
+        </BottomSheetScrollView>
 
         {/*    generate button  */}
         <View className={'mx-5 absolute inset-x-0 bottom-3'}>

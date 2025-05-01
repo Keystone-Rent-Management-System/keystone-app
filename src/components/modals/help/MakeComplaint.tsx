@@ -1,17 +1,17 @@
 import React, {forwardRef} from 'react';
 
-import {ScrollView, Text, TextInput, ToastAndroid, View} from 'react-native';
-import {CustomBottomSheet} from '../index';
-import {CloseSvg} from '../../../assets/icons';
-import {CButton} from '../../general';
-import COLORS from '../../../constants/Theme';
-import {z, ZodType} from 'zod';
-import {Controller, useForm} from 'react-hook-form';
+import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useMutation} from '@tanstack/react-query';
-import HelpServices from '../../../services/help.ts';
+import {Controller, useForm} from 'react-hook-form';
+import {Text, TextInput, ToastAndroid, View} from 'react-native';
+import {z, ZodType} from 'zod';
+import {CloseSvg} from '../../../assets/icons';
+import COLORS from '../../../constants/Theme';
 import {useActiveAgrement} from '../../../hooks';
-import {BottomSheetModal} from '@gorhom/bottom-sheet';
+import HelpServices from '../../../services/help.ts';
+import {CButton} from '../../general';
+import {CustomBottomSheet} from '../index';
 
 export interface RequestHelpFormData {
   message: string;
@@ -78,52 +78,53 @@ const MakeComplaint = forwardRef<BottomSheetModal, IMakeComplainProps>(
         ref={ref}
         handleComponent={() => renderSheetHeader(props.handleCloseModal)}
         onChange={props.handleSheetChanges}>
-        <ScrollView className={'px-4 min-h-[180px]'}>
-          <Text className={'text-xs font-open-sauce-sans text-grey_1 mb-2'}>
-            Share your complaint with the management to ensure you have a smooth
-            experience.
-          </Text>
-
-          <View className={'flex-col items-start w-full py-3'}>
-            <Text className={'text-black my-1.5 font-open-sauce-sans text-xs'}>
-              What would you like to complain about?
+        <BottomSheetScrollView className={'flex-1'}>
+          <View className="px-4 min-h-[180px]">
+            <Text className={'text-xs font-open-sauce-sans text-grey_1 mb-2'}>
+              Share your complaint with the management to ensure you have a
+              smooth experience.
             </Text>
 
-            <Controller
-              control={control}
-              render={({
-                field: {onChange, onBlur, value},
-                fieldState: {error},
-              }) => (
-                <>
-                  <TextInput
-                    className={
-                      'text-black font-open-sauce-sans border border-border_grey w-full rounded-xl  text-xs px-3'
-                    }
-                    numberOfLines={9}
-                    placeholder={'Briefly explain your complains'}
-                    placeholderTextColor={COLORS.border_grey}
-                    style={{
-                      textAlignVertical: 'top',
-                    }}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    value={value}
-                  />
-                  {error && (
-                    <Text
+            <View className={'flex-col items-start w-full py-3'}>
+              <Text
+                className={'text-black my-1.5 font-open-sauce-sans text-xs'}>
+                What would you like to complain about?
+              </Text>
+
+              <Controller
+                control={control}
+                render={({
+                  field: {onChange, onBlur, value},
+                  fieldState: {error},
+                }) => (
+                  <>
+                    <TextInput
                       className={
-                        'text-xs font-open-sauce-sans-medium leading-5 text-red-600'
-                      }>
-                      {error?.message}
-                    </Text>
-                  )}
-                </>
-              )}
-              name={'message'}
-            />
+                        'text-black font-open-sauce-sans border border-border_grey w-full rounded-xl  text-xs px-3'
+                      }
+                      numberOfLines={9}
+                      placeholder={'Briefly explain your complains'}
+                      placeholderTextColor={COLORS.border_grey}
+                      style={textInputStyles.textInput}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      value={value}
+                    />
+                    {error && (
+                      <Text
+                        className={
+                          'text-xs font-open-sauce-sans-medium leading-5 text-red-600'
+                        }>
+                        {error?.message}
+                      </Text>
+                    )}
+                  </>
+                )}
+                name={'message'}
+              />
+            </View>
           </View>
-        </ScrollView>
+        </BottomSheetScrollView>
 
         <CButton
           disabled={makeComplainMutation.isPending}
@@ -158,3 +159,10 @@ const renderSheetHeader = (handleClose: () => {}) => (
 );
 
 export default MakeComplaint;
+import {StyleSheet} from 'react-native';
+
+export const textInputStyles = StyleSheet.create({
+  textInput: {
+    textAlignVertical: 'top',
+  },
+});

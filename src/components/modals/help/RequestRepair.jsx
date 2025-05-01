@@ -1,10 +1,10 @@
 import React, {forwardRef, useCallback, useRef, useState} from 'react';
 
 import {CloseSvg} from '@/assets/icons';
+import {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {useMutation} from '@tanstack/react-query';
 import {
   Image,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -101,37 +101,40 @@ const RequestRepair = forwardRef((props, ref) => {
         ref={ref}
         handleComponent={() => renderSheetHeader(props.handleCloseModal)}
         onChange={props.handleSheetChanges}>
-        <ScrollView className={'px-4'}>
-          <Text className={'text-xs font-open-sauce-sans text-grey_1 mb-2'}>
-            Report or request for repair. The management will receive the
-            notification.
-          </Text>
-
-          <View className={'flex-col items-start w-full py-3'}>
-            <Text className={'text-black my-1.5 font-open-sauce-sans text-xs'}>
-              What would you like to be repair ?
+        <BottomSheetScrollView className={'flex-1'}>
+          <View className="px-4 min-h-[180px]">
+            <Text className={'text-xs font-open-sauce-sans text-grey_1 mb-2'}>
+              Report or request for repair. The management will receive the
+              notification.
             </Text>
-            <TextInput
-              className={
-                'text-black border border-border_grey w-full rounded-xl font-open-sauce-sans text-xs px-3'
-              }
-              numberOfLines={3}
-              placeholder={'List of repairs'}
-              placeholderTextColor={COLORS.border_grey}
-              style={styles.textArea}
-              value={message}
-              onChangeText={setMessage}
-            />
 
-            <TouchableOpacity
-              className={
-                'flex flex-col justify-center items-center h-40 bg-border_grey w-full rounded-xl my-3'
-              }
-              onPress={handleOpenImageModal}>
-              {renderImage()}
-            </TouchableOpacity>
+            <View className={'flex-col items-start w-full py-3'}>
+              <Text
+                className={'text-black my-1.5 font-open-sauce-sans text-xs'}>
+                What would you like to be repair ?
+              </Text>
+              <TextInput
+                className={
+                  'text-black border border-border_grey w-full rounded-xl font-open-sauce-sans text-xs px-3'
+                }
+                numberOfLines={3}
+                placeholder={'List of repairs'}
+                placeholderTextColor={COLORS.border_grey}
+                style={styles.textArea}
+                value={message}
+                onChangeText={setMessage}
+              />
+
+              <TouchableOpacity
+                className={
+                  'flex flex-col justify-center items-center h-40 bg-border_grey w-full rounded-xl my-3'
+                }
+                onPress={handleOpenImageModal}>
+                {renderImage()}
+              </TouchableOpacity>
+            </View>
           </View>
-        </ScrollView>
+        </BottomSheetScrollView>
         <CButton
           disabled={requestRepairMutation.isPending}
           ClassName={'bg-primary text-white py-3.5 mx-5 mb-3'}

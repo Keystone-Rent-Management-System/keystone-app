@@ -1,9 +1,9 @@
 import React, {forwardRef, useState} from 'react';
 
+import {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {useMutation} from '@tanstack/react-query';
 import {
   Image,
-  ScrollView,
   Text,
   TextInput,
   ToastAndroid,
@@ -126,38 +126,40 @@ const PaymentAllocation = forwardRef((props, ref) => {
       ref={ref}
       handleComponent={() => renderSheetHeader(props.handleCloseModal)}
       onChange={props?.handleSheetChanges}>
-      <ScrollView className={'px-4 min-h-[180px]'}>
-        <Text className={'text-xs font-open-sauce-sans text-grey_1 mb-2'}>
-          Input a transaction code that will be used to full fill the payment of
-          your invoice.
-        </Text>
-
-        <View className={'flex-col items-start w-full py-3'}>
-          <Text className={'text-black my-1.5 font-open-sauce-sans text-xs'}>
-            Enter a transaction code
+      <BottomSheetScrollView className={'flex-1'}>
+        <View className="px-4 min-h-[180px]">
+          <Text className={'text-xs font-open-sauce-sans text-grey_1 mb-2'}>
+            Input a transaction code that will be used to full fill the payment
+            of your invoice.
           </Text>
 
-          <TextInput
-            className={
-              'text-black font-open-sauce-sans border border-border_grey w-full rounded-xl text-xs px-3'
-            }
-            placeholder={'(e.g.TCB488B...)'}
-            placeholderTextColor={COLORS.grey_1}
-            onChangeText={setCode}
-            value={code}
-          />
-        </View>
+          <View className={'flex-col items-start w-full py-3'}>
+            <Text className={'text-black my-1.5 font-open-sauce-sans text-xs'}>
+              Enter a transaction code
+            </Text>
 
-        <View className={'flex-col items-start w-full py-3'}>
-          <TouchableOpacity
-            className={
-              'flex flex-col justify-center items-center h-40 bg-border_grey w-full rounded-xl my-3'
-            }
-            onPress={handleCamera}>
-            {renderImage()}
-          </TouchableOpacity>
+            <TextInput
+              className={
+                'text-black font-open-sauce-sans border border-border_grey w-full rounded-xl text-xs px-3'
+              }
+              placeholder={'(e.g.TCB488B...)'}
+              placeholderTextColor={COLORS.grey_1}
+              onChangeText={setCode}
+              value={code}
+            />
+          </View>
+
+          <View className={'flex-col items-start w-full py-3'}>
+            <TouchableOpacity
+              className={
+                'flex flex-col justify-center items-center h-40 bg-border_grey w-full rounded-xl my-3'
+              }
+              onPress={handleCamera}>
+              {renderImage()}
+            </TouchableOpacity>
+          </View>
         </View>
-      </ScrollView>
+      </BottomSheetScrollView>
 
       <CButton
         disabled={submitPayment.isPending}

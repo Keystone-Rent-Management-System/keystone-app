@@ -30,11 +30,13 @@ const Main = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <NavigationContainer linking={linking} ref={RootNavigation.navigationRef}>
-        <BottomSheetModalProvider>
+      <BottomSheetModalProvider>
+        <NavigationContainer
+          linking={linking}
+          ref={RootNavigation.navigationRef}>
           <MainNav />
-        </BottomSheetModalProvider>
-      </NavigationContainer>
+        </NavigationContainer>
+      </BottomSheetModalProvider>
     </QueryClientProvider>
   );
 };
