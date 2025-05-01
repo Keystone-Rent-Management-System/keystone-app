@@ -15,6 +15,7 @@ import {useActiveStatement} from '../../../hooks/useStatement';
 import {IPropertyContacts} from '../../../types/property.ts';
 import AgreementModalSheet from '../../../components/modals/Agreement';
 import {formatToKES} from '../../../utils/Helper';
+import {IAgreement} from '@/types/agreement.ts';
 
 type ChargeKey = string;
 
@@ -23,14 +24,14 @@ const UnitView = ({route: {params}}: any) => {
   const {isPending, agreement: _agreement} = useActiveAgrement();
   const {isPending: isPendingActive, activeStatement} = useActiveStatement();
 
-  const agreement = useMemo(() => {
+  const agreement: IAgreement | null = useMemo(() => {
     if (params?.type === 'previous') {
       // filter agreements to get the one with the same id as the one passed in the params
       return agreements.find(agr => agr.id === params?.agreementId) || null;
+    } else {
+      return agreements.find(agr => agr.id === _agreement.id) || null;
     }
-
-    return _agreement;
-  }, [_agreement, agreements, params?.type, params?.agreementId]);
+  }, [_agreement.id, agreements, params?.agreementId, params?.type]);
 
   const propertyContactPerson: IPropertyContacts = useMemo(() => {
     return agreement?.propertyUnits?.property?.propertyContacts || {};
@@ -81,8 +82,9 @@ const UnitView = ({route: {params}}: any) => {
       {params?.type !== 'previous' && (isPending || isPendingActive) ? (
         <View className={'flex flex-row justify-center py-16'}>
           <ActivityIndicator color={'#022374'} size="small" />
-          <Text className={'text-primary font-open-sauce-sans-semibold text-sm'}>
-            Loadingsss...
+          <Text
+            className={'text-primary font-open-sauce-sans-semibold text-sm'}>
+            Loading...
           </Text>
         </View>
       ) : (
@@ -90,11 +92,14 @@ const UnitView = ({route: {params}}: any) => {
           {/* title section*/}
           <View className={'flex-row space-x-3 pb-3'}>
             <View className={''}>
-              <Text className={'font-open-sauce-sans-bold text-base text-black mb-2'}>
-                {agreement.propertyUnits.property.name}
+              <Text
+                className={
+                  'font-open-sauce-sans-bold text-base text-black mb-2'
+                }>
+                {agreement?.propertyUnits.property.name}
               </Text>
               <Text className={'font-open-sauce-sans text-xs text-grey_1'}>
-                Unit {agreement.propertyUnits.name}
+                Unit {agreement?.propertyUnits.name}
               </Text>
             </View>
           </View>
@@ -109,7 +114,8 @@ const UnitView = ({route: {params}}: any) => {
                 ? 'Advance Balance'
                 : 'Arrears'}{' '}
             </Text>
-            <Text className={'text-black font-open-sauce-sans-bold text-base mt-2'}>
+            <Text
+              className={'text-black font-open-sauce-sans-bold text-base mt-2'}>
               {formatToKES(Number(activeStatement?.endingBalance || 0))}
             </Text>
           </View>
@@ -123,7 +129,10 @@ const UnitView = ({route: {params}}: any) => {
               <AgreementSvg color={COLORS.primary} size={'25'} />
 
               <View className={'flex-1'}>
-                <Text className={'text-sm text-primary font-open-sauce-sans-medium'}>
+                <Text
+                  className={
+                    'text-sm text-primary font-open-sauce-sans-medium'
+                  }>
                   View Agreement
                 </Text>
               </View>
@@ -137,7 +146,9 @@ const UnitView = ({route: {params}}: any) => {
 
           {/*  location  */}
           <View className={'py-2'}>
-            <Text className={'text-black font-open-sauce-sans-semibold'}>Location</Text>
+            <Text className={'text-black font-open-sauce-sans-semibold'}>
+              Location
+            </Text>
 
             <Text className={'font-open-sauce-sans text-xs text-grey_1 mt-2'}>
               {agreement.propertyUnits.property?.address?.line},{' '}
@@ -149,7 +160,9 @@ const UnitView = ({route: {params}}: any) => {
 
           {/*  list of charges  */}
           <View style={styles.chargeList} className={'py-2'}>
-            <Text className={'text-black font-open-sauce-sans-medium'}>Charges</Text>
+            <Text className={'text-black font-open-sauce-sans-medium'}>
+              Charges
+            </Text>
 
             {Object.keys(charges)?.map((charge, ind) => (
               <ExploreAmenity
@@ -169,7 +182,9 @@ const UnitView = ({route: {params}}: any) => {
 
           {/*  list of amenities  */}
           <View style={styles.chargeList} className={'py-2'}>
-            <Text className={'text-black font-open-sauce-sans-medium'}>Amenities</Text>
+            <Text className={'text-black font-open-sauce-sans-medium'}>
+              Amenities
+            </Text>
 
             {Object.keys(amenities)?.map((charge, ind) => (
               <ExploreAmenity
@@ -193,7 +208,9 @@ const UnitView = ({route: {params}}: any) => {
           {/*seperator*/}
           <Line />
 
-          <Text className={'text-black font-open-sauce-sans-semibold'}>Contacts</Text>
+          <Text className={'text-black font-open-sauce-sans-semibold'}>
+            Contacts
+          </Text>
           {/*  landlord details  */}
           <LandlordItem
             name={`${propertyContactPerson?.contactName}`}
