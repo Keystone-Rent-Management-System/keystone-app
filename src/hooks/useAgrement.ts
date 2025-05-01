@@ -2,7 +2,7 @@ import {ToastAndroid} from 'react-native';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import AgreementServices from '../services/AgreementServices';
 import {getError} from '../utils/getError';
-import {IAgreement} from '../types/agreement';
+import {IAgreement, IAgreement2} from '../types/agreement';
 import {useActiveAgreement} from '../provider/store';
 import {useEffect, useMemo} from 'react';
 import {queryRefetchIntervalOptions} from '../constants/general';
@@ -48,7 +48,7 @@ export const useActiveAgrement = () => {
   return {
     isPending: activeAgreement?.id ? false : isPending,
     error,
-    agreement: agreement as IAgreement,
+    agreement: agreement as IAgreement | IAgreement2,
     agreementRefetch: refetch,
     isFetching,
     isAgreed,

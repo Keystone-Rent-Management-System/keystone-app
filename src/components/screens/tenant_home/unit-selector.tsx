@@ -19,7 +19,10 @@ const UnitSelector = (props: IUnitSelector) => {
       <View className="flex-row items-center gap-2">
         <Text className={'text-black font-open-sauce-sans-medium text-15'}>
           {/* @ts-ignore */}
-          {agreement?.propertyUnits?.property?.name}
+          {agreement?.propertyName ||
+            // @ts-ignore
+            agreement?.propertyUnits?.property?.name ||
+            '__'}
         </Text>
 
         {/* dropdown icon */}
@@ -27,8 +30,8 @@ const UnitSelector = (props: IUnitSelector) => {
       </View>
 
       <Text className={'text-xs mt-1 font-open-sauce-sans text-black'}>
-        {/* @ts-ignore */}
-        Unit {agreement?.propertyUnits?.name}
+        Unit {/* @ts-ignore */}
+        {agreement?.propertyUnitName || agreement?.propertyUnits?.name || '__'}
       </Text>
     </TouchableOpacity>
   );
