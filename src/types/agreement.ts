@@ -151,3 +151,35 @@ export interface IAgreement {
   tenants: ITenants | [];
   propertyUnits: IPropertyUnits | [];
 }
+
+export interface IAgreement2 {
+  id: string;
+  userId: string;
+  status: string;
+  commissionType: string | null;
+  amount: number | null;
+  tenancyBeginningDate: string;
+  rentDueDate: number;
+  daysOfTerminationNotice: number;
+  daysOfTerminationAfterAgreementBreach: number;
+  daysOfDepositRefundAfterTermination: number;
+  agreementType: string | null;
+  agreementPremises: string | null;
+  endDate: string | null;
+  landlordId: string | null;
+  tenantId: string | null;
+  merchantId: string | null;
+  propertyUnitsId: string | null;
+  penalizedAmount: number | null;
+  propertyUnitName: string | null;
+  propertyId: string | null;
+  propertyName: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  country?: string | null;
+  county?: string | null;
+  location?: string | null;
+  contactName: string;
+  phoneNumber: string;
+  email: string;
+}

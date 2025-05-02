@@ -81,7 +81,8 @@ const AgreementModalSheet = forwardRef((props, ref) => {
                     tintColor={COLORS.primary}
                     onFillColor={COLORS.primary}
                   />
-                  <Text className={'text-black mx-8 font-open-sauce-sans text-xs'}>
+                  <Text
+                    className={'text-black mx-8 font-open-sauce-sans text-xs'}>
                     By checking here you confirm that you have read the
                     agreement.{' '}
                   </Text>
@@ -119,7 +120,9 @@ const SheetHeader = () => {
       }>
       <View className={'flex-row'}>
         <Text
-          className={'font-open-sauce-sans-semibold text-lg text-black mr-2 uppercase'}>
+          className={
+            'font-open-sauce-sans-semibold text-lg text-black mr-2 uppercase'
+          }>
           Tenancy Agreement
         </Text>
       </View>

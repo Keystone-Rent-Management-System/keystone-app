@@ -25,7 +25,9 @@ const Menu = ({
   const {isPending, agreement} = useActiveAgrement();
 
   const propertyContact = useMemo(
-    () => agreement?.propertyUnits?.property?.propertyContacts?.phoneNumber,
+    () =>
+      agreement?.phoneNumber ||
+      agreement?.propertyUnits?.property?.propertyContacts?.phoneNumber,
     [agreement],
   );
 
@@ -33,10 +35,6 @@ const Menu = ({
     if (screen?.name) {
       navigation.navigate(screen?.name);
     }
-  };
-
-  const handleHelp = () => {
-    handleOpenHelpModal();
   };
 
   const handleCallAssistance = async () => {
@@ -47,7 +45,8 @@ const Menu = ({
     <>
       <View className={'py-8 px-4'}>
         <View>
-          <Text className={'font-open-sauce-sans-medium text-13 text-ctext mb-3'}>
+          <Text
+            className={'font-open-sauce-sans-medium text-13 text-ctext mb-3'}>
             Finance & Payments
           </Text>
 
@@ -70,7 +69,8 @@ const Menu = ({
         </View>
 
         <View className={'mt-8'}>
-          <Text className={'font-open-sauce-sans-medium text-13 text-ctext mb-3'}>
+          <Text
+            className={'font-open-sauce-sans-medium text-13 text-ctext mb-3'}>
             Assistance
           </Text>
 
@@ -85,7 +85,7 @@ const Menu = ({
                   hasInactiveAgreement
                     ? handleAcceptAgreement
                     : opt.text === 'Help'
-                    ? handleHelp
+                    ? handleOpenHelpModal
                     : opt.text === 'Extension'
                     ? handleOpenExtensionModal
                     : opt.text === 'Call'
@@ -113,7 +113,9 @@ const MenuBtn = ({icon, text, handlePress, disabled}) => (
       {icon}
     </TouchableOpacity>
 
-    <Text className={'mt-3 text-inactive_text font-open-sauce-sans text-xs'}>{text}</Text>
+    <Text className={'mt-3 text-inactive_text font-open-sauce-sans text-xs'}>
+      {text}
+    </Text>
   </View>
 );
 

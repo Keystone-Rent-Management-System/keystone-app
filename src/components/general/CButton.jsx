@@ -5,7 +5,7 @@ const CButtonFill = ({
   ClassName = '',
   textClassName = '',
   text = '',
-  children = undefined,
+  children = <></>,
   isLoading = false,
   disabled = false,
   ...rest
@@ -19,7 +19,9 @@ const CButtonFill = ({
       }`}
       {...rest}>
       {text ? (
-        <Text className={`font-open-sauce-sans-medium ${textClassName}`}>{text}</Text>
+        <Text className={`font-open-sauce-sans-medium ${textClassName}`}>
+          {text}
+        </Text>
       ) : (
         children
       )}
