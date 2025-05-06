@@ -158,6 +158,7 @@ export interface IAgreement2 {
   status: string;
   commissionType: string | null;
   amount: number | null;
+  rent: number | null;
   tenancyBeginningDate: string;
   rentDueDate: number;
   daysOfTerminationNotice: number;
