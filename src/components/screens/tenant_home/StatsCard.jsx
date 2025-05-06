@@ -55,7 +55,7 @@ const StatsCard = ({statement, agreement}) => {
             <Text
               className={'text-11 text-white font-open-sauce-sans-semibold'}>
               {formatToKES(
-                agreement?.rent || Number(agreement?.propertyUnits?.rent),
+                agreement?.rent || Number(agreement?.propertyUnits?.rent) || 0,
               )}
               /Mo
             </Text>
