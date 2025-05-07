@@ -81,7 +81,7 @@ const More = () => {
                 ?.split(' ')[1]
                 ?.charAt(0)
                 ?.toLowerCase()}`}
-              textClassName={'text-primary'}
+              textClassName={'text-primary uppercase w-full text-center'}
               containerClassName={'bg-white'}
             />
           )}
@@ -95,7 +95,10 @@ const More = () => {
                 {Helper.getGreetings()} <WavingSvg />
               </Text>
 
-              <Text className={'font-open-sauce-sans-semibold text-sm text-white'}>
+              <Text
+                className={
+                  'font-open-sauce-sans-semibold capitalize text-sm text-white'
+                }>
                 {profile?.name}
               </Text>
             </View>
