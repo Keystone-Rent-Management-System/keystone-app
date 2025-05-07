@@ -143,7 +143,9 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
           <RightArrowSvg size={'18'} />
         </TouchableOpacity>
 
-        <Text className={'font-open-sauce-sans-semibold text-15 text-black'}>Filter</Text>
+        <Text className={'font-open-sauce-sans-semibold text-15 text-black'}>
+          Filter
+        </Text>
 
         <View className={'p-2 bg-none w-4'} />
       </View>
@@ -154,13 +156,16 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
         backgroundStyle={styles.container}
         snapPoints={['50%', '98%']}
         ref={ref}
-        handleComponent={renderSheetHeader}>
+        handleComponent={renderSheetHeader}
+        containerStyle={styles.container2}>
         <View className={'flex-1 bg-none rounded-t-2xl overflow-hidden'}>
           <ScrollView style={styles.scrollView}>
             {/* Location input */}
             <LabelledCInput
               label={'Location'}
-              ClassName={'border-border_grey rounded-lg font-open-sauce-sans px-2'}
+              ClassName={
+                'border-border_grey rounded-lg font-open-sauce-sans px-2'
+              }
               placeHolder={'Search Location'}
               placeholderTextColor={COLORS.border_grey}
               labelClassName={''}
@@ -175,7 +180,9 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
             <LabelledCInput
               label={'Price Range'}
               value={'Include all charges required to move in'}
-              ClassName={'border-border_grey rounded-lg font-open-sauce-sans px-2'}
+              ClassName={
+                'border-border_grey rounded-lg font-open-sauce-sans px-2'
+              }
               InputClassName={'text-xs'}
               placeHolder={'Search Location'}
               placeholderTextColor={COLORS.border_grey}
@@ -224,7 +231,9 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
             />
 
             {/* House size filters */}
-            <Text className={'font-open-sauce-sans-medium text-black '}>House Size</Text>
+            <Text className={'font-open-sauce-sans-medium text-black '}>
+              House Size
+            </Text>
 
             {houseFilters.map((filt, ind) => (
               <ExploreRoomSelector
@@ -240,7 +249,9 @@ const FilterModal = forwardRef<BottomSheetMethods, FilterModalProps>(
             />
 
             {/* House type filters */}
-            <Text className={'font-open-sauce-sans-medium text-black '}>House Type</Text>
+            <Text className={'font-open-sauce-sans-medium text-black '}>
+              House Type
+            </Text>
 
             <View style={styles.houseItem} className={'flex-row mt-3'}>
               {houseTypes.map((item, index) => (
@@ -296,6 +307,10 @@ const CSwitch = ({
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',
+  },
+  container2: {
+    zIndex: 1000,
+    elevation: 20,
   },
   scrollView: {
     padding: 20,

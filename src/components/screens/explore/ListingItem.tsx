@@ -123,7 +123,11 @@ const ListingItem = ({
 
         {/*  address  */}
         <View className={'flex-row mb-2'}>
-          <IconLabel icon={<MapPinSvg />} text={fullAddress} />
+          <IconLabel
+            icon={<MapPinSvg />}
+            text={fullAddress}
+            textClassName="capitalize"
+          />
         </View>
 
         {/*  bedrooms, bathrooms, balconies*/}
@@ -190,14 +194,19 @@ export default ListingItem;
 export const IconLabel = ({
   icon,
   text,
+  textClassName = '',
 }: {
   icon: React.ReactNode;
   text: string;
+  textClassName?: string;
 }) => (
   <View className={'flex-row space-x-2 mr-3'}>
     {icon}
 
-    <Text className={'font-open-sauce-sans text-grey_1 text-xs'}>{text}</Text>
+    <Text
+      className={`font-open-sauce-sans text-grey_1 text-xs ${textClassName}`}>
+      {text}
+    </Text>
   </View>
 );
 
