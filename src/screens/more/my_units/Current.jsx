@@ -33,7 +33,7 @@ const Current = () => {
         contentContainerStyle={invoiceStyles.list}
         data={currentUnits}
         renderItem={({item}) => renderUnitListItem(item, handleNavigate)}
-        keyExtractor={item => item?.id}
+        keyExtractor={(_, ind) => ind?.toString()}
         estimatedItemSize={300}
         refreshing={isPending}
         onRefresh={refetch}

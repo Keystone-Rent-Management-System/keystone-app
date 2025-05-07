@@ -22,12 +22,17 @@ const GeneralRepairsModal = forwardRef<BottomSheetModal, IMakeComplainProps>(
   (props: IMakeComplainProps, ref) => {
     const {agreement} = useActiveAgrement();
 
-    const {control, handleSubmit, reset} = useForm<RequestHelpFormData>({
-      resolver: zodResolver(RequestHelpFormSchema),
-      defaultValues: {
-        message: '',
-      },
-    });
+    const {control, handleSubmit, reset, setValue} =
+      useForm<RequestHelpFormData>({
+        resolver: zodResolver(RequestHelpFormSchema),
+        defaultValues: {
+          message: '',
+        },
+      });
+
+    const handlePopulateValue = (value: string) => {
+      setValue('message', value);
+    };
 
     const requestGeneralAssistance = useMutation({
       mutationKey: ['generalAssistance'],
@@ -91,7 +96,7 @@ const GeneralRepairsModal = forwardRef<BottomSheetModal, IMakeComplainProps>(
                   <>
                     <TextInput
                       className={
-                        'text-black font-open-sauce-sans border border-border_grey w-full rounded-xl text-xs px-3'
+                        'text-black font-open-sauce-sans border border-border_grey w-full rounded-xl text-xs px-3 text-wrap'
                       }
                       numberOfLines={5}
                       placeholder={'Enter Details'}
@@ -100,6 +105,8 @@ const GeneralRepairsModal = forwardRef<BottomSheetModal, IMakeComplainProps>(
                       onChangeText={onChange}
                       onBlur={onBlur}
                       value={value}
+                      textAlignVertical="top"
+                      multiline
                     />
                     {error && (
                       <Text
@@ -118,14 +125,13 @@ const GeneralRepairsModal = forwardRef<BottomSheetModal, IMakeComplainProps>(
             <View className={'flex-row flex-wrap mt-3 justify-center'}>
               {helpTypes?.map(type => (
                 <CButton
-                  key={type}
+                  key={type.name}
                   ClassName={
                     ' bg-white py-0 rounded-xl border border-primary h-9 m-1.5'
                   }
-                  // onPress={handleClose}
-                >
+                  onPress={() => handlePopulateValue(type.value)}>
                   <Text className={'text-primary font-open-sauce-sans text-xs'}>
-                    {type}
+                    {type.name}
                   </Text>
                 </CButton>
               ))}
@@ -166,4 +172,30 @@ const renderSheetHeader = (handleClose: any) => (
 );
 export default GeneralRepairsModal;
 
-const helpTypes = ['Repairs', 'Notice', 'Complains', 'Call', 'Contact'];
+// const helpTypes = ['Repairs', 'Notice', 'Complains', 'Call', 'Contact'];
+type HelpType = {
+  name: string;
+  value: string;
+};
+
+const helpTypes: HelpType[] = [
+  {
+    name: 'Repairs',
+    value:
+      'I need assistance with repairs. Please provide details about the issue.',
+  },
+  {
+    name: 'Notice',
+    value:
+      'I would like to issue a notice. Please provide the necessary details.',
+  },
+  {name: 'Complains', value: 'I have a complaint regarding'},
+  {
+    name: 'Call',
+    value: 'I would like to request a call for further assistance.',
+  },
+  {
+    name: 'Contact',
+    value: 'I need help contacting the relevant department or person.',
+  },
+];
