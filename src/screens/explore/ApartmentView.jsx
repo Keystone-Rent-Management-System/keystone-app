@@ -1,4 +1,4 @@
-import React, {useMemo, useRef, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -34,6 +34,7 @@ import COLORS from '../../constants/Theme';
 import {useSpecificPropertyListing} from '../../hooks/usePropertyListing';
 import Helper from '../../utils/Helper';
 import numberWithCommas from '../../utils/numberWithCommas';
+import useSavedUnits, {useFetchSavedUnits} from '@/hooks/useSavedUnits';
 
 const ApartmentView = ({route: {params}}) => {
   const bottomSheetRef = useRef();
@@ -113,6 +114,23 @@ const ApartmentView = ({route: {params}}) => {
     return listing?.purpose?.toLocaleLowerCase() === 'rent';
   }, [listing?.purpose]);
 
+  const {data: savedData} = useFetchSavedUnits();
+
+  const liked = useMemo(() => {
+    return savedData?.some(unit => unit.unit_id === listing?.id);
+  }, [savedData, listing?.id]);
+
+  const {saveUnitMutation, removeUnitMutation} = useSavedUnits();
+
+  const handleLike = useCallback(() => {
+    // remove unit if already liked
+    if (liked) {
+      return removeUnitMutation.mutate(listing?.id);
+    }
+
+    saveUnitMutation.mutate({unitId: listing?.id, data: listing});
+  }, [liked, listing, removeUnitMutation, saveUnitMutation]);
+
   return (
     <Layout>
       {/* image */}
@@ -136,8 +154,9 @@ const ApartmentView = ({route: {params}}) => {
               className={'flex-1 flex-row justify-end shadow-xl'}>
               <ExploreActionBtn ClassName={'bg-white'} icon={<UploadSvg />} />
               <ExploreActionBtn
-                ClassName={'bg-white'}
+                ClassName={`${liked ? COLORS.likeRed : 'bg-white'}`}
                 icon={<LikeSvg strokeColor={COLORS.text_color} size="24" />}
+                onPress={handleLike}
               />
             </View>
           </View>
@@ -166,6 +185,7 @@ const ApartmentView = ({route: {params}}) => {
         <View className={'px-4 border-b border-border_grey'}>
           <Text className={'text-black font-open-sauce-sans-semibold mt-2'}>
             {listing?.property.name}
+            {('\n', JSON.stringify(savedData, null, 2))}
           </Text>
 
           <View className={'flex-row py-2'}>
