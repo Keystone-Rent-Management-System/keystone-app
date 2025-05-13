@@ -91,7 +91,7 @@ const ApartmentView = ({route: {params}}) => {
     return `<iframe
     width="100%"
     height="100%"
-    frameborder='0'
+    frameborder='0'8
     allowfullscreen
     src=${
       listing?.matterportUrl ||
@@ -99,6 +99,10 @@ const ApartmentView = ({route: {params}}) => {
     }
 />`;
   }, [listing?.matterportUrl]);
+
+  const isRent = useMemo(() => {
+    return listing?.purpose?.toLocaleLowerCase() === 'rent';
+  }, [listing?.purpose]);
 
   return (
     <Layout>
@@ -204,6 +208,7 @@ const ApartmentView = ({route: {params}}) => {
           phoneNumber={PALLAX_PHONE_NUMBER}
           rent={listing?.rent?.toString()}
           userName={'Pallax'}
+          isRent={isRent}
         />
 
         {/* Location details */}
@@ -276,6 +281,7 @@ const ApartmentView = ({route: {params}}) => {
 
       <ApartmentViewFloatingActionBar
         amount={numberWithCommas(Number(listing?.rent + listing?.deposit))}
+        isRent={isRent}
       />
 
       <VirtualTourModal
