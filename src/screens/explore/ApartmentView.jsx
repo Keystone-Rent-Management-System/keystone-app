@@ -7,6 +7,9 @@ import {
   View,
 } from 'react-native';
 
+import {useActiveAgrement} from '@/hooks';
+import {useNavigation} from '@react-navigation/native';
+import MapView, {Marker} from 'react-native-maps';
 import {
   BackSvg,
   BalconySvg,
@@ -26,14 +29,11 @@ import {
 } from '../../components';
 import {VirtualTourModal} from '../../components/modals';
 import {IconLabel} from '../../components/screens/explore/ListingItem';
-import COLORS from '../../constants/Theme';
-import Helper from '../../utils/Helper';
-import {useNavigation} from '@react-navigation/native';
-import MapView, {Marker} from 'react-native-maps';
-import {PALLAX_PHONE_NUMBER} from '../../constants';
-import {useSpecificPropertyListing} from '../../hooks/usePropertyListing';
-import numberWithCommas from '../../utils/numberWithCommas';
 import MatterPortPreview from '../../components/screens/property_view/matterport-preview';
+import COLORS from '../../constants/Theme';
+import {useSpecificPropertyListing} from '../../hooks/usePropertyListing';
+import Helper from '../../utils/Helper';
+import numberWithCommas from '../../utils/numberWithCommas';
 
 const ApartmentView = ({route: {params}}) => {
   const bottomSheetRef = useRef();
@@ -42,6 +42,15 @@ const ApartmentView = ({route: {params}}) => {
   const [modalState, setModalState] = useState(false);
 
   const {isPending, data} = useSpecificPropertyListing(params?.apartment);
+
+  const {agreement} = useActiveAgrement();
+
+  const propertyContact = useMemo(
+    () =>
+      agreement?.phoneNumber ||
+      agreement?.propertyUnits?.property?.propertyContacts?.phoneNumber,
+    [agreement],
+  );
 
   const listing = useMemo(() => {
     if (!isPending) {
@@ -205,7 +214,7 @@ const ApartmentView = ({route: {params}}) => {
         <LandlordItem
           name={'Pallax'}
           unitName={listing?.unitName}
-          phoneNumber={PALLAX_PHONE_NUMBER}
+          phoneNumber={propertyContact}
           rent={listing?.rent?.toString()}
           userName={'Pallax'}
           isRent={isRent}
@@ -282,6 +291,7 @@ const ApartmentView = ({route: {params}}) => {
       <ApartmentViewFloatingActionBar
         amount={numberWithCommas(Number(listing?.rent + listing?.deposit))}
         isRent={isRent}
+        phoneNumber={propertyContact}
       />
 
       <VirtualTourModal
