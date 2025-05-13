@@ -1,19 +1,28 @@
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import React from 'react';
 
-const FloatingActionBar = ({amount}) => (
+const FloatingActionBar = ({
+  amount,
+  isRent,
+}: {
+  amount: string;
+  isRent: boolean;
+}) => (
   <View
     style={styles.floatingBar}
     className={'absolute inset-x-0 bottom-0 bg-bg px-4 py-3 flex-row '}>
-    <View className={'flex-1'}>
-      <Text className={'text-xs font-open-sauce-sans text-inactive_text'}>
-        First installment Amount
-      </Text>
+    {isRent ? (
+      <View className={'flex-1'}>
+        <Text className={'text-xs font-open-sauce-sans text-inactive_text'}>
+          First installment Amount
+        </Text>
 
-      <Text className={'text-lg font-open-sauce-sans text-black'}>
-        KES. <Text className={'font-open-sauce-sans-semibold '}>{amount}</Text>
-      </Text>
-    </View>
+        <Text className={'text-lg font-open-sauce-sans text-black'}>
+          KES.{' '}
+          <Text className={'font-open-sauce-sans-semibold '}>{amount}</Text>
+        </Text>
+      </View>
+    ) : null}
 
     <View className={'flex-1'}>
       <TouchableOpacity
