@@ -1,13 +1,14 @@
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useCallback} from 'react';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 import COLORS from '@/constants/Theme';
 
-import {CInput, Layout} from '@/components';
 import {RightArrowSvg} from '@/assets/icons';
+import {CInput, Layout} from '@/components';
+import {compileFullAddress} from '@/components/screens/explore/ListingItem';
+import {useNavigation} from '@react-navigation/native';
 import {HistorySvg} from '../../assets/icons';
 import {usePropertyListing} from '../../hooks';
-import {useNavigation} from '@react-navigation/native';
 
 const Search = props => {
   const navigation = useNavigation();
@@ -45,6 +46,7 @@ const Search = props => {
           onChangeText={handleSearchChange}
         />
       </View>
+      {/* <Text>{JSON.stringify(listings, null, 2)}</Text> */}
 
       {/* Suggestion list */}
       <FlatList
@@ -65,10 +67,9 @@ const renderSuggestionItem = (item, handleApartmentView) => (
       {/* icon */}
       <HistorySvg />
 
-      <Text
-        className={
-          'text-black font-open-sauce-sans text-xs w-11/12'
-        }>{`${item?.property?.name}, ${item?.property?.address?.line}`}</Text>
+      <Text className={'text-black font-open-sauce-sans text-xs w-11/12'}>{`${
+        item?.name || item?.property?.name
+      } - ${compileFullAddress(item)}`}</Text>
     </View>
   </TouchableOpacity>
 );
