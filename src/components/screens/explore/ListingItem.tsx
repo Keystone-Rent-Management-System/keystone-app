@@ -40,11 +40,7 @@ const ListingItem = ({
 }: ListingItemProps) => {
   const StyledView = styled(View);
 
-  const fullAddress = useMemo(() => {
-    return `${props?.country || '__'}, ${props?.county || '__'}, ${
-      props?.location || '__'
-    }`;
-  }, [props]);
+  const fullAddress = useMemo(() => compileFullAddress(props), [props]);
 
   return (
     <Pressable className={`mx-1 ${containerClassName}`} onPress={handlePress}>
@@ -206,3 +202,8 @@ export const IconLabel = ({
  *   purpose?:string
  * } ListingProperty
  */
+
+export const compileFullAddress = (item: IProperty) =>
+  `${item?.country || '__'}, ${item?.county || '__'}, ${
+    item?.location || '__'
+  }`;
