@@ -24,3 +24,5 @@ export const queryRefetchIntervalOptions = {
   queryRefetchInterval: 1000 * 60 * 5,
   queryRefetchIntervalInBackground: true,
 };
+
+export const WEB_URL = 'https://pallax-ke.com/portfolio/';

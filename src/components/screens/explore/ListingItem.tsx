@@ -1,23 +1,22 @@
-import React, {useCallback, useMemo} from 'react';
+import React, {useMemo} from 'react';
 
 import {
   AgentSvg,
   BalconySvg,
   BathroomSvg,
   BedSvg,
-  LikeSvg,
   MapPinSvg,
 } from '@/assets/icons';
 import COLORS from '@/constants/Theme';
+import {IProperty} from '@/types/property';
 import Helper from '@/utils/Helper';
 import {styled} from 'nativewind';
 import {Pressable, Text, TouchableOpacity, View} from 'react-native';
 import {RightArrowSvg} from '../../../assets/icons';
-import ImageWithSpinner from '../../general/image-with-spinner';
-import useSavedUnits, {useFetchSavedUnits} from '../../../hooks/useSavedUnits';
 import numberWithCommas from '../../../utils/numberWithCommas';
+import ImageWithSpinner from '../../general/image-with-spinner';
+import LikeButton from '../property_view/like-button';
 import Badge from './Badge';
-import {IProperty} from '@/types/property';
 
 interface ListingItemProps extends IProperty {
   imgClassName?: string;
@@ -40,22 +39,6 @@ const ListingItem = ({
   ...props
 }: ListingItemProps) => {
   const StyledView = styled(View);
-
-  const {data} = useFetchSavedUnits();
-
-  const liked = useMemo(() => {
-    return data?.some(unit => unit.unit_id === props.id);
-  }, [data, props.id]);
-
-  const {saveUnitMutation, removeUnitMutation} = useSavedUnits();
-  const handleLike = useCallback(() => {
-    // remove unit if already liked
-    if (liked) {
-      return removeUnitMutation.mutate(props.id);
-    }
-
-    saveUnitMutation.mutate({unitId: props.id, data: props});
-  }, [liked, props, removeUnitMutation, saveUnitMutation]);
 
   const fullAddress = useMemo(() => {
     return `${props?.country || '__'}, ${props?.county || '__'}, ${
@@ -91,15 +74,11 @@ const ListingItem = ({
           </TouchableOpacity>
         )}
 
-        <TouchableOpacity
+        <LikeButton
           hitSlop={{top: 20, bottom: 20, right: 20}}
-          onPress={handleLike}
-          className={'absolute z-10 top-2 right-2'}>
-          <LikeSvg
-            color={liked ? COLORS.likeRed : COLORS.text_color}
-            opacity={liked ? '1' : '0.45'}
-          />
-        </TouchableOpacity>
+          className="absolute z-10 top-2 right-2"
+          data={props}
+        />
       </StyledView>
 
       {/*details*/}

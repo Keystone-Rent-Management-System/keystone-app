@@ -58,13 +58,14 @@ const useSavedUnits = () => {
     },
     onSuccess: async () => {
       ToastAndroid.show('Unit saved successfully', ToastAndroid.SHORT);
+      queryClient.refetchQueries({queryKey});
     },
     onError: async (_err, _vars, context) => {
       //   revert cache
       queryClient.setQueryData<ISavedUnit[]>(queryKey, context?.previousData);
       ToastAndroid.show('An error occurred', ToastAndroid.SHORT);
     },
-    onSettled: () => queryClient.invalidateQueries({queryKey}),
+    onSettled: () => queryClient.refetchQueries({queryKey}),
   });
 
   //  mutation to remove unit
