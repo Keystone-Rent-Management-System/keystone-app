@@ -4,16 +4,23 @@ import {StyleSheet, Text, View} from 'react-native';
 import ProfileView from '../ProfileView';
 import {ExploreActionBtn} from './index';
 import {MessageSvg, PhoneSvg} from '../../../assets/icons';
-import Helper from '../../../utils/Helper';
+import Helper, {formatToKES} from '../../../utils/Helper';
 
 interface ILandlordItem {
   name: string;
   phoneNumber: string;
   rent: string;
   ClassName?: string;
+  isRent?: boolean;
 }
 
-const LandlordItem = ({name, phoneNumber, ClassName, rent}: ILandlordItem) => {
+const LandlordItem = ({
+  name,
+  phoneNumber,
+  ClassName,
+  rent,
+  isRent,
+}: ILandlordItem) => {
   return (
     <View className={`px-4 py-2 flex-row items-center ${ClassName}`}>
       <ProfileView
@@ -24,11 +31,17 @@ const LandlordItem = ({name, phoneNumber, ClassName, rent}: ILandlordItem) => {
 
       <View className={'mx-3 flex-1 '} style={{gap: 2}}>
         <Text className={'font-open-sauce-sans-medium text-black'}>{name}</Text>
-        <Text className={'pl-1 font-open-sauce-sans capitalize text-13 text-grey_1'}>
+        <Text
+          className={
+            'pl-1 font-open-sauce-sans capitalize text-13 text-grey_1'
+          }>
           {phoneNumber}
         </Text>
-        <Text className={'pl-1 font-open-sauce-sans capitalize text-13 text-grey_1'}>
-          Rent: {rent}
+        <Text
+          className={
+            'pl-1 font-open-sauce-sans capitalize text-13 text-grey_1'
+          }>
+          {isRent ? 'Rent:' : 'Sale:'} {formatToKES(rent)}
         </Text>
       </View>
 
