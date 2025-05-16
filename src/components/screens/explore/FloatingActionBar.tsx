@@ -1,12 +1,15 @@
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import React from 'react';
+import Helper from '@/utils/Helper';
 
 const FloatingActionBar = ({
   amount,
   isRent,
+  phoneNumber,
 }: {
   amount: string;
   isRent: boolean;
+  phoneNumber: string;
 }) => (
   <View
     style={styles.floatingBar}
@@ -26,7 +29,10 @@ const FloatingActionBar = ({
 
     <View className={'flex-1'}>
       <TouchableOpacity
-        className={'bg-primary py-3.5 rounded-lg items-center px-4'}>
+        className={'bg-primary py-3.5 rounded-lg items-center px-4'}
+        onPress={() => {
+          Helper.handleCall(phoneNumber);
+        }}>
         <Text className={'text-xs text-white font-open-sauce-sans-medium'}>
           Contact Pallax
         </Text>

@@ -3,17 +3,21 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
 
+import LikeButton from '@/components/screens/property_view/like-button';
+import {useActiveAgrement} from '@/hooks';
+import {useNavigation} from '@react-navigation/native';
+import MapView, {Marker} from 'react-native-maps';
 import {
   BackSvg,
   BalconySvg,
   BathroomSvg,
   BedSvg,
   HouseMapMarker,
-  LikeSvg,
   UploadSvg,
   VirtualTourSvg,
 } from '../../assets/icons';
@@ -26,22 +30,34 @@ import {
 } from '../../components';
 import {VirtualTourModal} from '../../components/modals';
 import {IconLabel} from '../../components/screens/explore/ListingItem';
-import COLORS from '../../constants/Theme';
-import Helper from '../../utils/Helper';
-import {useNavigation} from '@react-navigation/native';
-import MapView, {Marker} from 'react-native-maps';
-import {PALLAX_PHONE_NUMBER} from '../../constants';
-import {useSpecificPropertyListing} from '../../hooks/usePropertyListing';
-import numberWithCommas from '../../utils/numberWithCommas';
 import MatterPortPreview from '../../components/screens/property_view/matterport-preview';
+import COLORS from '../../constants/Theme';
+import {
+  usePropertyListing,
+  useSpecificPropertyListing,
+} from '../../hooks/usePropertyListing';
+import Helper from '../../utils/Helper';
+import numberWithCommas from '../../utils/numberWithCommas';
+import {getFullListingWebUrl} from '@/utils';
+import Share from 'react-native-share';
 
 const ApartmentView = ({route: {params}}) => {
   const bottomSheetRef = useRef();
   const navigation = useNavigation();
+  const {listings} = usePropertyListing();
 
   const [modalState, setModalState] = useState(false);
 
   const {isPending, data} = useSpecificPropertyListing(params?.apartment);
+
+  const {agreement} = useActiveAgrement();
+
+  const propertyContact = useMemo(
+    () =>
+      agreement?.phoneNumber ||
+      agreement?.propertyUnits?.property?.propertyContacts?.phoneNumber,
+    [agreement],
+  );
 
   const listing = useMemo(() => {
     if (!isPending) {
@@ -100,9 +116,33 @@ const ApartmentView = ({route: {params}}) => {
 />`;
   }, [listing?.matterportUrl]);
 
+  const currentListing = useMemo(
+    () => listings?.find(l => l.id === params?.apartment),
+    [listings, params?.apartment],
+  );
+
   const isRent = useMemo(() => {
     return listing?.purpose?.toLocaleLowerCase() === 'rent';
   }, [listing?.purpose]);
+
+  const handleShare = async () => {
+    try {
+      const url = getFullListingWebUrl(params.apartment);
+      await Share.open({
+        title: 'Check out this property!',
+        message: 'Check out this property on Pallax!',
+        url,
+      });
+    } catch (error) {
+      // Optionally handle user cancel or error
+      if (error?.message !== 'User did not share') {
+        ToastAndroid.show(
+          'Failed to share the listing. Please try again.',
+          ToastAndroid.LONG,
+        );
+      }
+    }
+  };
 
   return (
     <Layout>
@@ -125,10 +165,23 @@ const ApartmentView = ({route: {params}}) => {
             <View
               style={styles.actionButtonWrapper}
               className={'flex-1 flex-row justify-end shadow-xl'}>
-              <ExploreActionBtn ClassName={'bg-white'} icon={<UploadSvg />} />
               <ExploreActionBtn
+                onPress={handleShare}
                 ClassName={'bg-white'}
-                icon={<LikeSvg strokeColor={COLORS.text_color} size="24" />}
+                icon={<UploadSvg />}
+              />
+
+              <LikeButton
+                className={
+                  'relativep-2 bg-bg_grey rounded-full h-9 w-9 items-center justify-center'
+                }
+                data={currentListing}
+                color={COLORS.white}
+                strokeColor={COLORS.text_color}
+                size="24"
+                iconProps={{
+                  size: 24,
+                }}
               />
             </View>
           </View>
@@ -205,7 +258,7 @@ const ApartmentView = ({route: {params}}) => {
         <LandlordItem
           name={'Pallax'}
           unitName={listing?.unitName}
-          phoneNumber={PALLAX_PHONE_NUMBER}
+          phoneNumber={propertyContact}
           rent={listing?.rent?.toString()}
           userName={'Pallax'}
           isRent={isRent}
@@ -282,6 +335,7 @@ const ApartmentView = ({route: {params}}) => {
       <ApartmentViewFloatingActionBar
         amount={numberWithCommas(Number(listing?.rent + listing?.deposit))}
         isRent={isRent}
+        phoneNumber={propertyContact}
       />
 
       <VirtualTourModal
