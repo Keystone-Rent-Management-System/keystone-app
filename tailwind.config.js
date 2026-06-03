@@ -28,6 +28,14 @@ module.exports = {
         bg_green: COLORS.bg_green,
       },
       fontFamily: {
+        // Inter is the web SPA's primary typeface (font-inter in
+        // src/index.css). These keys mirror Tailwind's font-weight
+        // convention so screens can swap one className to switch.
+        inter: ['Inter-Regular'],
+        'inter-medium': ['Inter-Medium'],
+        'inter-semibold': ['Inter-SemiBold'],
+        'inter-bold': ['Inter-Bold'],
+        // Legacy — keep until every screen is swept off OpenSauceSans.
         'open-sauce-sans': ['OpenSauceSans-Regular'],
         'open-sauce-sans-bold': ['OpenSauceSans-Bold'],
         'open-sauce-sans-semibold': ['OpenSauceSans-SemiBold'],

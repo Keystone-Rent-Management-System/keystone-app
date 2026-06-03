@@ -4,11 +4,10 @@ This file tracks the Pallax-era → Keystone US-market rebrand of the
 mobile app. The web counterpart is in the `keystone-front` repo; this
 doc only covers the mobile side.
 
-> ⚠️ **NOT READY FOR TENANT USE YET.**
-> The app builds and the JS layer talks to Keystone DNS, but the auth
-> flow needs to be migrated from Pallax `/profile/login` to Keystone's
-> Keycloak OAuth before any real tenant can sign in. See the
-> **Authentication migration** section below for the plan.
+> ✅ **Login flow now uses Keycloak.** Existing tenants whose
+> credentials are in the Keystone Keycloak realm can sign in. The
+> remaining blocker for **new tenants** is the signup endpoint (BE
+> needs to publish a tenant-signup contract — see below).
 
 ## Status board
 
@@ -16,7 +15,11 @@ doc only covers the mobile side.
 |---|---|
 | **API base URLs** | ✅ Pointed at `api{-dev,-uat,-}.keystonerent.app` |
 | **Keycloak host config** | ✅ Constants added (`KEYCLOAK_HOSTS`, `KEYCLOAK_REALM`, `KEYCLOAK_CLIENT_ID`) |
-| **Auth flow wired to Keycloak** | 🔴 **Not yet** — still using `POST /profile/login` |
+| **Auth flow wired to Keycloak** | ✅ `POST {keycloak}/realms/keystone/protocol/openid-connect/token` (password grant); refresh + logout flows in place |
+| **Single-flight refresh interceptor** | ✅ Concurrent 401s queue behind one refresh attempt |
+| **Logout invalidates server-side session** | ✅ Hits Keycloak `end_session` on signout |
+| **Inter font family wired** | ✅ Bundled .ttfs already in `src/assets/fonts/`; Tailwind tokens added (`font-inter`, `-medium`, `-semibold`, `-bold`) |
+| **Login screen on Keystone palette + Inter** | ✅ |
 | **Tenant signup endpoint** | 🔴 **Not yet** — still using `POST /profile/tenant` with `NATIONAL_ID` |
 | **Theme palette (Keystone navy / gold / cream)** | ✅ |
 | **Tailwind tokens (`keystone_navy` etc.)** | ✅ |
@@ -37,31 +40,32 @@ doc only covers the mobile side.
 
 ## What's still blocked (in priority order)
 
-### 🔴 1. Authentication migration to Keycloak — **deploy blocker**
+### ✅ 1. Authentication — DONE (2026-06-03)
 
-The Pallax app uses `POST /profile/login` with email+password,
-returns its own JWT. The Keystone backend uses **Keycloak OAuth** at
-`${KEYCLOAK_URL}/realms/keystone/protocol/openid-connect/token`. The
-two are completely different auth systems.
+`AuthServices.login()` now POSTs to
+`${KEYCLOAK_URL}/realms/keystone/protocol/openid-connect/token` with
+`grant_type=password` and `client_id=keystone-mobile`. Response shape
+(`access_token`, `refresh_token`, etc.) is what the existing
+`updateAuth` consumer expects, so no downstream change.
 
-Until this is migrated, the app cannot log a real tenant in.
+Refresh: `AuthServices.refreshToken()` uses
+`grant_type=refresh_token`. Keycloak rotates the refresh token on
+each call; the new pair is persisted via `useGlobals.updateAuth`.
 
-**Plan:**
+Logout: `AuthServices.logout(refresh_token)` POSTs to
+`${KEYCLOAK_URL}/realms/keystone/protocol/openid-connect/logout`
+to invalidate the refresh token server-side. Wired from
+`screens/more/more.jsx` so the Sign-out button on the More tab kills
+the Keycloak session.
 
-1. Replace `AuthServices.login()` body with a Keycloak token POST:
-   ```
-   POST https://auth-{env}.keystonerent.app/realms/keystone/protocol/openid-connect/token
-   Content-Type: application/x-www-form-urlencoded
-   grant_type=password&username={email}&password={password}&client_id=keystone-mobile
-   ```
-2. Response shape: `{access_token, refresh_token, expires_in, ...}` — already what the existing zustand `state.auth` slot expects, so downstream consumers compile unchanged.
-3. Replace `AuthServices.refreshToken()` body with a Keycloak refresh POST (`grant_type=refresh_token`).
-4. Logout: hit Keycloak's `end_session_endpoint` to invalidate the refresh token server-side, mirror the web SPA's `/auth/logout` fallback path.
-5. `getProfile()` keeps hitting the BE `/manage-profile/me` once the JWT carries Keycloak claims.
+`AxiosServices.js` got a single-flight refresh interceptor — N
+parallel 401s now collapse into one refresh; the rest queue and
+replay with the new bearer.
 
-**Outstanding question for BE:** confirm the `keystone-mobile`
-Keycloak client exists with the `password` grant enabled, or tell us
-the correct client id to use.
+**BE confirmation needed before production:** the `keystone-mobile`
+Keycloak client must have "Direct Access Grants" enabled. If BE
+prefers a confidential client + PKCE flow, mobile needs a different
+adapter (loginviabrowser-style; bigger change).
 
 ### 🔴 2. Tenant signup endpoint — **deploy blocker for new users**
 
@@ -101,6 +105,14 @@ landlord use of the mobile app for anything operator-side.
 - The Maps API key in `AndroidManifest.xml` (`AIzaSyD1pW9ERP2yCkaLh10oasIp7YmWCBk2sDg`) is the Pallax-era Google Maps key. Generate a new key under the Keystone Google Cloud project before release.
 
 ## What's done
+
+### 2026-06-03
+
+- **Keycloak login** wired. `AuthServices.login` → password grant against `${KEYCLOAK}/realms/keystone/protocol/openid-connect/token`. `refreshToken` uses refresh-token grant. New `logout` invalidates the server-side session.
+- **Axios refresh interceptor** rewritten — single-flight refresh, queue + replay model. Token-endpoint URLs and Pallax `/profile/login` excluded from the refresh loop.
+- **Logout call-site** in `screens/more/more.jsx` now hits Keycloak end-session before wiping local state.
+- **Inter fonts** exposed to nativewind/tailwind (`font-inter`, `font-inter-medium`, `font-inter-semibold`, `font-inter-bold`). Asset files were already bundled in `src/assets/fonts/`.
+- **Login screen** swept to `text-keystone_navy`, Inter family, "Sign In" / "Sign Up" copy aligned with web SPA tone.
 
 ### 2026-06-02
 

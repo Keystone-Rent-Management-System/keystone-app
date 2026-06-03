@@ -30,6 +30,7 @@ import {useAuth} from '../../hooks';
 import {ZustandStorage} from '../../provider/store/MMKV';
 import {useNotificationStore} from '../../provider/store/notification';
 import useGlobals from '../../provider/store/useGlobals';
+import AuthServices from '../../services/AuthServices';
 import {openLinkInBrowser} from '../../utils/openLinkInBrowser';
 
 const More = () => {
@@ -47,6 +48,10 @@ const More = () => {
   };
 
   const handleSignout = () => {
+    // End the Keycloak session server-side so the refresh token is
+    // invalidated immediately — fire-and-forget; we don't block the
+    // local wipe on a Keycloak hiccup.
+    AuthServices.logout(auth?.refresh_token).catch(() => {});
     queryClient.clear();
     ZustandStorage.clear();
     resetState();

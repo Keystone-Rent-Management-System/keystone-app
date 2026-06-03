@@ -42,9 +42,9 @@ const Login = () => {
           label={'Email'}
           icon={<EmailSvg />}
           placeholder={'Enter email address'}
-          labelClassName={'text-primary text-13'}
+          labelClassName={'text-keystone_navy text-13 font-inter-medium'}
           ClassName={'border border-border_grey px-2'}
-          InputClassName={'text-[13px] px-2 text-gray-600 '}
+          InputClassName={'text-[13px] px-2 text-gray-600 font-inter'}
           name={'username'}
           control={control}
         />
@@ -53,9 +53,9 @@ const Login = () => {
           label={'Password'}
           icon={<LockSvg />}
           placeholder={'Enter password'}
-          labelClassName={'text-primary text-13'}
+          labelClassName={'text-keystone_navy text-13 font-inter-medium'}
           ClassName={'border border-border_grey px-2'}
-          InputClassName={'text-[13px] px-2 text-gray-600 '}
+          InputClassName={'text-[13px] px-2 text-gray-600 font-inter'}
           containerClassName={'mt-4'}
           name={'password'}
           control={control}
@@ -69,31 +69,31 @@ const Login = () => {
         onPress={handleForgotPassword}>
         <Text
           className={
-            'text-[13px] font-open-sauce-sans text-primary text-right underline'
+            'text-[13px] font-inter-medium text-keystone_navy text-right underline'
           }>
           Forgot password?
         </Text>
       </TouchableOpacity>
 
-      {/*    siginin button   */}
+      {/*    sign-in button   */}
       <CButton
         ClassName={
-          'bg-primary text-white py-3.5 mb-3 absolute bottom-20 inset-x-0 mx-4'
+          'bg-keystone_navy text-white py-3.5 mb-3 absolute bottom-20 inset-x-0 mx-4'
         }
         isLoading={loginMutation.isPending}
         onPress={handleSubmit(handleSignin)}
-        textClassName={'text-white font'}
-        text={loginMutation.isPending ? 'signing in...' : 'Sign In'}
+        textClassName={'text-white font-inter-semibold'}
+        text={loginMutation.isPending ? 'Signing in…' : 'Sign In'}
       />
 
       <Text
         className={
-          'font-open-sauce-sans text-[13px] absolute bottom-12 inset-x-0 text-center'
+          'font-inter text-[13px] absolute bottom-12 inset-x-0 text-center'
         }
         style={styles.haveNoAccount}>
-        Don't have an accounts?{' '}
+        Don&apos;t have an account?{' '}
         <Text
-          className={'font-open-sauce-sans-medium underline text-primary'}
+          className={'font-inter-semibold underline text-keystone_navy'}
           onPress={handleRegister}>
           Sign Up
         </Text>

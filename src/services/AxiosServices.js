@@ -27,50 +27,84 @@ export const setAuthToken = instance => {
 
 const globalState = useGlobals.getState();
 
-/**
- * Axios interceptor for refreshing token
- */
+// Token-refresh interceptor. Keycloak access tokens are short-lived
+// (5 min by default); the refresh token is what we exchange for a
+// new pair when a request 401s. Single-flight protects against a
+// thundering herd if N requests 401 in the same tick — we kick off
+// one refresh, queue the rest, and replay every queued request with
+// the new bearer when the refresh resolves.
+let isRefreshing = false;
+let pendingQueue = [];
+
+const flushQueue = (error, token = null) => {
+  pendingQueue.forEach(({resolve, reject}) =>
+    error ? reject(error) : resolve(token),
+  );
+  pendingQueue = [];
+};
+
 AxiosUtility.interceptors.response.use(
   response => response,
   async error => {
     const originalRequest = error.config;
-    // Check if the URL includes '/login'
-    if (originalRequest.url.includes('login')) {
-      console.log(originalRequest.url);
+    if (!originalRequest) return Promise.reject(error);
+
+    // Keycloak's token endpoint itself can 401 (wrong password,
+    // disabled user). Don't try to refresh through it.
+    const url = originalRequest.url || '';
+    if (
+      url.includes('/openid-connect/token') ||
+      url.includes('/openid-connect/logout') ||
+      url.includes('/profile/login')
+    ) {
       return Promise.reject(error);
     }
 
-    // check if error is 401 and request has not been retried
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error?.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      // Get refresh token from zustand global state
-      const refreshToken = globalState.state.auth.refresh_token;
+      if (isRefreshing) {
+        // Another request is already refreshing — wait for it.
+        return new Promise((resolve, reject) => {
+          pendingQueue.push({
+            resolve: token => {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              resolve(AxiosUtility(originalRequest));
+            },
+            reject,
+          });
+        });
+      }
 
+      isRefreshing = true;
       try {
-        // request for new access token using refresh token
-        const response = await AuthServices.refreshToken(refreshToken); //access_token:"",refresh_token:""
-
-        if (!response.access_token) {
-          return Promise.reject(error);
+        const refreshTkn = useGlobals.getState().state.auth.refresh_token;
+        if (!refreshTkn) {
+          throw new Error('No refresh token in store');
         }
-
-        // update global state with new auth data(access_token, refresh_token)
+        const response = await AuthServices.refreshToken(refreshTkn);
+        if (!response?.access_token) {
+          throw new Error('Keycloak refresh did not return access_token');
+        }
+        // Persist the new (rotated) tokens to the global store.
         globalState.updateAuth(response);
 
-        // set new access token to axios instance
+        // Replay the original request + any pending ones.
         AxiosUtility.defaults.headers.common.Authorization = `Bearer ${response.access_token}`;
         originalRequest.headers.Authorization = `Bearer ${response.access_token}`;
-
+        flushQueue(null, response.access_token);
         return AxiosUtility(originalRequest);
       } catch (refreshError) {
+        // Refresh failed — wipe the auth state. The screen-level
+        // navigation guard sends the user back to /login.
+        flushQueue(refreshError, null);
         globalState.resetState();
         return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
-    } else if (error.response.status === 401 && originalRequest._retry) {
-      //   destroy session
-      globalState.resetState();
     }
+
     return Promise.reject(error);
   },
 );
