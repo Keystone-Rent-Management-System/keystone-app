@@ -5,7 +5,7 @@ buildscript {
         compileSdkVersion = 36
         targetSdkVersion = 34
         ndkVersion = "26.1.10909125"
-        kotlinVersion = "2.1.0"
+        kotlinVersion = "1.9.25"
     }
     repositories {
         google()
@@ -20,3 +20,26 @@ buildscript {
 }
 
 apply plugin: "com.facebook.react.rootproject"
+
+// Force every subproject to resolve kotlin-stdlib and the kotlin-
+// reflect family to ${kotlinVersion}. Third-party RN libraries ship
+// artifacts compiled against newer Kotlin (2.1.x). Without this
+// strategy, gradle picks the highest stdlib version transitively,
+// the RN gradle plugin (RN 0.76, written for Kotlin 1.9.x) breaks on
+// classes-as-interfaces (e.g. KotlinTopLevelExtension), and the
+// app's own MainActivity.kt fails to compile with "incompatible
+// Kotlin metadata version".
+allprojects {
+    configurations.all {
+        resolutionStrategy {
+            eachDependency { details ->
+                if (details.requested.group == "org.jetbrains.kotlin"
+                    && (details.requested.name.startsWith("kotlin-stdlib")
+                        || details.requested.name == "kotlin-reflect")) {
+                    details.useVersion("${kotlinVersion}")
+                    details.because("RN 0.76 + Kotlin 1.9.x compatibility")
+                }
+            }
+        }
+    }
+}
