@@ -10,7 +10,6 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {StyleSheet} from 'react-native';
 
 import Main from './src/Main';
-import RemoteNotification from './src/components/notifications';
 import * as Sentry from '@sentry/react-native';
 
 Sentry.init({
@@ -20,10 +19,12 @@ Sentry.init({
   integrations: [Sentry.mobileReplayIntegration()],
 });
 function App() {
+  // RemoteNotification used to be mounted here, but it now reads the
+  // react-query client (to invalidate dashboard/payment-zone caches
+  // on PAYMENT_RECEIVED pushes), so it must live INSIDE the
+  // QueryClientProvider — which lives in Main. RN remounts it there.
   return (
     <GestureHandlerRootView style={styles.gestureProvider}>
-      <RemoteNotification />
-
       <Main />
     </GestureHandlerRootView>
   );
