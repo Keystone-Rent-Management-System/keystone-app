@@ -1,4 +1,4 @@
-package com.pallax_app
+package com.keystone.app
 
 import android.app.Application
 import com.facebook.react.PackageList

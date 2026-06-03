@@ -130,7 +130,7 @@ const ApartmentView = ({route: {params}}) => {
       const url = getFullListingWebUrl(params.apartment);
       await Share.open({
         title: 'Check out this property!',
-        message: 'Check out this property on Pallax!',
+        message: 'Check out this property on Keystone!',
         url,
       });
     } catch (error) {
@@ -256,11 +256,11 @@ const ApartmentView = ({route: {params}}) => {
         </View>
 
         <LandlordItem
-          name={'Pallax'}
+          name={'Keystone'}
           unitName={listing?.unitName}
           phoneNumber={propertyContact}
           rent={listing?.rent?.toString()}
-          userName={'Pallax'}
+          userName={'Keystone'}
           isRent={isRent}
         />
 

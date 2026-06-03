@@ -1,16 +1,16 @@
-# Running the Pallax App from repo
+# Running the Keystone App from repo
 
-Follow these steps to clone and run the Pallax App from GitHub:
+Follow these steps to clone and run the Keystone App from GitHub:
 
 1. **Environment setup**
    Setup the React Native CLI Environment as instructed [here](https://reactnative.dev/docs/environment-setup)
 
 2. **Clone the repository**
 
-   Open your terminal and navigate to the directory where you want to clone the repository. Use the following command to clone the Pallax App repository:
+   Open your terminal and navigate to the directory where you want to clone the repository. Use the following command to clone the Keystone App repository:
 
    \`\`\`bash
-   git clone https://github.com/username/pallax-app.git
+   git clone https://github.com/username/keystone-app.git
    \`\`\`
 
    Replace `username` with the actual GitHub username of the repository owner.
@@ -20,7 +20,7 @@ Follow these steps to clone and run the Pallax App from GitHub:
    Change your current directory to the cloned repository:
 
    \`\`\`bash
-   cd pallax-app
+   cd keystone-app
    \`\`\`
 
 4. **Install dependencies**

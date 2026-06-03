@@ -79,9 +79,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk 36
 
-    namespace "com.pallax_app"
+    namespace "com.keystone.app"
     defaultConfig {
-        applicationId "com.pallax_app"
+        applicationId "com.keystone.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 35

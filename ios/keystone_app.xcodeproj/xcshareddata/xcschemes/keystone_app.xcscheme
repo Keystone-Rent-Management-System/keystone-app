@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "pallax_app.app"
-               BlueprintName = "pallax_app"
-               ReferencedContainer = "container:pallax_app.xcodeproj">
+               BuildableName = "keystone_app.app"
+               BlueprintName = "keystone_app"
+               ReferencedContainer = "container:keystone_app.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "pallax_appTests.xctest"
-               BlueprintName = "pallax_appTests"
-               ReferencedContainer = "container:pallax_app.xcodeproj">
+               BuildableName = "keystone_appTests.xctest"
+               BlueprintName = "keystone_appTests"
+               ReferencedContainer = "container:keystone_app.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "pallax_app.app"
-            BlueprintName = "pallax_app"
-            ReferencedContainer = "container:pallax_app.xcodeproj">
+            BuildableName = "keystone_app.app"
+            BlueprintName = "keystone_app"
+            ReferencedContainer = "container:keystone_app.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "pallax_app.app"
-            BlueprintName = "pallax_app"
-            ReferencedContainer = "container:pallax_app.xcodeproj">
+            BuildableName = "keystone_app.app"
+            BlueprintName = "keystone_app"
+            ReferencedContainer = "container:keystone_app.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -159,7 +159,7 @@ const invoiceData = {
     },
     {
       id: 2,
-      title: "Pallax Apartments",
+      title: "Keystone Sample Property",
       unit: "Unit 508",
       date: moment().clone().subtract(1, "months"),
       amount: 10000,
@@ -173,7 +173,7 @@ const invoiceData = {
     },
     {
       id: 4,
-      title: "Pallax Apartments",
+      title: "Keystone Sample Property",
       unit: "Unit 508",
       date: moment().clone().subtract(1, "months"),
       amount: 30000,
@@ -187,7 +187,7 @@ const invoiceData = {
     },
     {
       id: 7,
-      title: "Pallax Apartments",
+      title: "Keystone Sample Property",
       unit: "Unit 508",
       date: moment().clone().subtract(1, "months"),
       amount: 50000,
@@ -201,7 +201,7 @@ const invoiceData = {
     },
     {
       id: 10,
-      title: "Pallax Apartments",
+      title: "Keystone Sample Property",
       unit: "Unit 508",
       date: moment().clone().subtract(5, "months"),
       amount: 70000,
@@ -215,7 +215,7 @@ const invoiceData = {
     },
     {
       id: 12,
-      title: "Pallax Apartments",
+      title: "Keystone Sample Property",
       unit: "Unit 508",
       date: moment().clone().subtract(6, "months"),
       amount: 40000,

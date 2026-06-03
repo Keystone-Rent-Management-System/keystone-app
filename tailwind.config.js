@@ -6,6 +6,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Keystone tokens — preferred for new code.
+        keystone_navy: COLORS.keystone_navy,
+        keystone_gold: COLORS.keystone_gold,
+        keystone_cream: COLORS.keystone_cream,
+        keystone_stone: COLORS.keystone_stone,
+        // Legacy aliases — resolve to Keystone palette via Theme.js.
         primary: COLORS.primary,
         primaryBg: COLORS.primary_bg,
         primary_bg_pale: COLORS.primary_bg_pale,

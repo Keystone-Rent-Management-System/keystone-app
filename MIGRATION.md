@@ -4,83 +4,134 @@ This file tracks the Pallax-era → Keystone US-market rebrand of the
 mobile app. The web counterpart is in the `keystone-front` repo; this
 doc only covers the mobile side.
 
-## What landed in 2026-06-02
+> ⚠️ **NOT READY FOR TENANT USE YET.**
+> The app builds and the JS layer talks to Keystone DNS, but the auth
+> flow needs to be migrated from Pallax `/profile/login` to Keystone's
+> Keycloak OAuth before any real tenant can sign in. See the
+> **Authentication migration** section below for the plan.
 
-### Rebrand surface
+## Status board
 
-| Was | Is | Notes |
-|---|---|---|
-| `displayName: "pallax_app"` | `displayName: "Keystone"` | Phone home-screen label updated. Native module `name` stays `pallax_app` until we do a proper RN rename pass (AndroidManifest + iOS bundle ID + Gradle namespace), tracked below. |
-| `formatToKES` (KES, `en-KE` locale) | `formatToUSD` (USD, `en-US`) under both names | All ~50 callsites of `formatToKES` now produce US dollar formatting. New screens should import `formatToUSD` directly. |
-| `"BLESKET KE LIMITED"` (statement PDF header) | `"Keystone Rent Management"` | Tenant statement PDF + landlord statement PDF. |
+| Surface | State |
+|---|---|
+| **API base URLs** | ✅ Pointed at `api{-dev,-uat,-}.keystonerent.app` |
+| **Keycloak host config** | ✅ Constants added (`KEYCLOAK_HOSTS`, `KEYCLOAK_REALM`, `KEYCLOAK_CLIENT_ID`) |
+| **Auth flow wired to Keycloak** | 🔴 **Not yet** — still using `POST /profile/login` |
+| **Tenant signup endpoint** | 🔴 **Not yet** — still using `POST /profile/tenant` with `NATIONAL_ID` |
+| **Theme palette (Keystone navy / gold / cream)** | ✅ |
+| **Tailwind tokens (`keystone_navy` etc.)** | ✅ |
+| **Pallax string sweep across `src/`** | ✅ |
+| **`formatToKES` → `formatToUSD`** | ✅ (alias preserved) |
+| **WEB_URL + privacy / about URLs** | ✅ `keystonerent.app` |
+| **B70 statement endpoint** | ✅ `/agreements/{id}/statement` |
+| **App display name (phone home screen)** | ✅ "Keystone" |
+| **Android Gradle namespace / package** | ✅ `com.keystone.app` |
+| **Android `MainActivity.kt` / `MainApplication.kt`** | ✅ Moved to `java/com/keystone/app/` |
+| **Android splash drawable rename** | ✅ `white_pallax.png` → `white_keystone.png` (binary asset unchanged) |
+| **Android deep-link host** | ✅ `keystonerent.app` (Pallax host kept as fallback) |
+| **Android app name string** | ✅ "Keystone" |
+| **iOS bundle directory** | ✅ `ios/keystone_app/` |
+| **iOS Xcode project + workspace + scheme** | ✅ Renamed `keystone_app.*` |
+| **iOS `CFBundleDisplayName`** | ✅ "Keystone" |
+| **package.json `name` + version bump** | ✅ `keystone_app` @ 1.4.0 |
 
-### B70 — tenant statement now reads the AR sub-ledger
+## What's still blocked (in priority order)
 
-`src/services/StatementServices.ts` was hitting the legacy
-`/statements/tenantStatements`, `/statements/currentStatement`, and
-`/statements/tenant/filter` endpoints. Those front the Pallax-era
-`Statement` POJO with no schema backing — empty in practice.
+### 🔴 1. Authentication migration to Keycloak — **deploy blocker**
 
-Switched to the GAAP-correct AR projection at
-`GET /agreements/{id}/statement?from=&to=`. Returns one payload with
-opening / closing balance, totals, and one row per AR-hitting
-journal-entry leg with a running balance — same shape Yardi /
-AppFolio / Buildium render. Mirrors web commit `a69248b`.
+The Pallax app uses `POST /profile/login` with email+password,
+returns its own JWT. The Keystone backend uses **Keycloak OAuth** at
+`${KEYCLOAK_URL}/realms/keystone/protocol/openid-connect/token`. The
+two are completely different auth systems.
 
-Existing screens keep working through a back-compat adapter that maps
-the new `entries[]` into the legacy `IFlattendenedStatement[]` shape.
-New screens should read the AR fields directly (`openingBalance`,
-`closingBalance`, `totalCharges`, `totalCredits`).
+Until this is migrated, the app cannot log a real tenant in.
 
-## What's still pending (next sessions)
+**Plan:**
 
-These are the gaps between mobile and the web product the user wants
-brought to parity. Sequenced by ROI:
+1. Replace `AuthServices.login()` body with a Keycloak token POST:
+   ```
+   POST https://auth-{env}.keystonerent.app/realms/keystone/protocol/openid-connect/token
+   Content-Type: application/x-www-form-urlencoded
+   grant_type=password&username={email}&password={password}&client_id=keystone-mobile
+   ```
+2. Response shape: `{access_token, refresh_token, expires_in, ...}` — already what the existing zustand `state.auth` slot expects, so downstream consumers compile unchanged.
+3. Replace `AuthServices.refreshToken()` body with a Keycloak refresh POST (`grant_type=refresh_token`).
+4. Logout: hit Keycloak's `end_session_endpoint` to invalidate the refresh token server-side, mirror the web SPA's `/auth/logout` fallback path.
+5. `getProfile()` keeps hitting the BE `/manage-profile/me` once the JWT carries Keycloak claims.
 
-### Tenant-side (highest priority — mobile is tenant-first)
+**Outstanding question for BE:** confirm the `keystone-mobile`
+Keycloak client exists with the `password` grant enabled, or tell us
+the correct client id to use.
 
-- [ ] `home.jsx` hero card — pull `closingBalance` directly and show
-      "Tenant credit: $X" when negative, mirroring the web
-      `AgreementStatistics` polish.
-- [ ] `Statements.jsx` — replace the legacy transaction list with the
-      AR-projection columns (Date / Description / Source / Charges /
-      Credits / Running Balance) once the basic migration ships
-      cleanly through QA.
-- [ ] Recent activity feed (per agreement) — mirrors the web
-      `TenantOverview` synthesized feed (inspections + move-in tasks
-      + lease start), then swaps to BE's real `/activity` endpoint
-      once it lands.
+### 🔴 2. Tenant signup endpoint — **deploy blocker for new users**
 
-### Landlord-side (mobile-light)
+The Pallax flow:
+- `POST /profile/email-verification` → OTP to email
+- `POST /profile/tenant` → register with `identificationType: 'NATIONAL_ID'`
 
-- [ ] **Bills & Payments**: new tab in landlord nav that mirrors the
-      web Bills + Pay Bills surfaces. BE ask drafted in
-      `docs/design/expense-cycle-us-redesign.md` (web repo); when BE
-      ships `/bills` + `/payments`, mobile lights up too.
-- [ ] **Smart Building**: integrations + devices. Lower priority for
-      mobile since operators usually configure on the web. v2.
-- [ ] **Planned Expense** lifecycle (DRAFT → APPROVED → FUNDED →
-      COMPLETED) — mirror the web migration from `/planned-activities`
-      to `/planned-expenses`.
+Neither endpoint exists on the Keystone BE. Also, US identification
+types are `DRIVERS_LICENSE | STATE_ID | PASSPORT | SSN_LAST_4`, not
+`NATIONAL_ID`.
 
-### Native rebrand follow-ups
+**Plan:**
 
-- [ ] Rename Android Gradle namespace `com.pallax_app` →
-      `com.keystone.app` (touches `android/app/build.gradle` +
-      package directories).
-- [ ] Rename iOS bundle ID `com.pallax_app` → `com.keystone.app`
-      (Xcode project + Info.plist).
-- [ ] App icon assets in `android/app/src/main/res/mipmap-*` and
-      `ios/.../Images.xcassets/AppIcon.appiconset/`.
+1. Wait for BE to publish a tenant-signup contract (the SPA's `/signup` already drives a Keystone-shape signup; the matching endpoint exists for the web flow).
+2. Replace `AuthServices.registerTenant()` to hit that endpoint with the US ID types.
+3. Update `screens/authentication/SignUp.jsx` form to render the four US ID types in the dropdown.
 
-### Branches
+### 🔴 3. Service files calling dead Pallax endpoints
 
-The repo now uses the standard Keystone branch layout:
+The audit hasn't traced every call site yet. Known migrations from
+the web side (already shipped) that mobile still owes:
+
+- `PlannedActivities` → `PlannedExpense` (web commit `c6ec181`)
+- Float / Requisitions / Disbursement workspace → Bills & Payments (web design at `docs/design/expense-cycle-us-redesign.md`)
+- The `/utilities` flat-table → Smart Building (web design at `docs/design/smart-building-redesign.md`)
+
+These don't block tenant use (tenants don't see them), but they block
+landlord use of the mobile app for anything operator-side.
+
+### 🟡 4. Asset replacements (visual only)
+
+- `android/app/src/main/res/drawable/white_keystone.png` — file is renamed but the **bitmap is still the old Pallax logo**. Designer needs to replace with Keystone wordmark.
+- `android/app/src/main/res/mipmap-*/ic_launcher*.png` — app icons. Same.
+- `ios/keystone_app/Images.xcassets/AppIcon.appiconset/*.png` — app icons.
+- `src/assets/icons/**` — many SVG icons may carry Pallax glyphs.
+- `google-services.json` is a Firebase-generated file. The user needs to **create a Keystone Firebase project**, download a fresh `google-services.json`, and replace the current one. Renaming `project_id` inside the JSON does not work — it has to be a real Firebase project that matches the package `com.keystone.app`.
+- The Maps API key in `AndroidManifest.xml` (`AIzaSyD1pW9ERP2yCkaLh10oasIp7YmWCBk2sDg`) is the Pallax-era Google Maps key. Generate a new key under the Keystone Google Cloud project before release.
+
+## What's done
+
+### 2026-06-02
+
+- **API DOMAINS** rewired from `gateway-{env}.pallax-ke.com` to `api{-env-}.keystonerent.app`. Added Keycloak host constants (`KEYCLOAK_HOSTS`, `KEYCLOAK_REALM`, `KEYCLOAK_CLIENT_ID`, `getKeycloakBaseUrl`).
+- **Theme** replaced — `keystone_navy` (#152535), `keystone_gold` (#A89977), `keystone_cream` (#E7E5DA), `keystone_stone` (#F4F2EC). Legacy `primary` etc. aliased so existing screens compile without churn.
+- **Tailwind** `tailwind.config.js` exposes the Keystone tokens to nativewind so new code can use `bg-keystone_navy` etc.
+- **Pallax string sweep**: `Main.jsx` deep-link prefix, `FloatingActionBar.tsx` "Contact Pallax" → "Contact Keystone", `ApartmentView.jsx` share copy + author name, `provider/invoice.js` sample property titles, `constants/index.js` privacy/about URLs + support number, `installing.md` / `changelog.md` / `README.md`.
+- **`formatToKES`** retired (alias preserved); new code should import `formatToUSD`.
+- **App display name** `Keystone` on phone home screens (both Android string + iOS CFBundleDisplayName).
+- **Android package** `com.pallax_app` → `com.keystone.app`. `MainActivity.kt` + `MainApplication.kt` moved + repackaged. Gradle namespace + applicationId updated. `settings.gradle` rootProject. Splash drawable renamed.
+- **iOS bundle** `pallax_app` → `keystone_app` across the Xcode project, workspace, scheme, tests, and source files.
+- **package.json** `name` → `keystone_app`, version bumped to `1.4.0`.
+- **B70 statement migration** (previous session) — switched to `GET /agreements/{id}/statement`. AR sub-ledger projection with running balance.
+
+## Branches
+
+The repo uses the standard Keystone branch layout:
 
 - `dev` — active development. Default target for PRs.
-- `uat` — user-acceptance testing. Merged from `dev` weekly or
-  per release.
+- `uat` — user-acceptance testing. Merged from `dev` weekly or per release.
 - `prod` — production tag stream. Merged from `uat` after sign-off.
+- `master` — preserved historical Pallax mainline. Frozen.
 
-`master` is preserved temporarily for migration safety but should be
-considered frozen; cut from `dev` going forward.
+## Native rebuild reminder
+
+After the package rename you need to:
+
+```sh
+cd android && ./gradlew clean
+cd ../ios && rm -rf Pods Podfile.lock && pod install
+```
+
+before the next dev build, otherwise stale Gradle caches will still
+reference `com.pallax_app`.

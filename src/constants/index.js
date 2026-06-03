@@ -1,9 +1,19 @@
 export * from './screens';
 
-export const PRIVACY_POLICY_URL = 'https://pallax-ke.com/privacy-policy';
-export const ABOUT_URL = 'https://pallax-ke.com/about-us';
+// Keystone US-market constants. Pallax-era URLs and the Kenyan
+// support line (+254 743 271 775) have been retired.
+export const PRIVACY_POLICY_URL = 'https://keystonerent.app/privacy-policy';
+export const ABOUT_URL = 'https://keystonerent.app/about-us';
+export const TERMS_URL = 'https://keystonerent.app/terms';
+export const HELP_URL = 'https://keystonerent.app/help';
 
-export const PALLAX_SUPPORT_NUMBER = '743271775';
-export const PALLAX_PHONE_NUMBER = `0${PALLAX_SUPPORT_NUMBER}`;
+// US support line — owner-controlled. Update to the real published
+// support number before each release.
+export const KEYSTONE_SUPPORT_NUMBER = '5125550100';
+export const KEYSTONE_PHONE_NUMBER = `+1${KEYSTONE_SUPPORT_NUMBER}`;
+
+// Legacy aliases — sweep call sites in follow-ups, then delete.
+export const PALLAX_SUPPORT_NUMBER = KEYSTONE_SUPPORT_NUMBER;
+export const PALLAX_PHONE_NUMBER = KEYSTONE_PHONE_NUMBER;
 
 export const PAGINATION_LIMIT = 10;

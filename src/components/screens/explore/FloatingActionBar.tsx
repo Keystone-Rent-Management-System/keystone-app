@@ -34,7 +34,7 @@ const FloatingActionBar = ({
           Helper.handleCall(phoneNumber);
         }}>
         <Text className={'text-xs text-white font-open-sauce-sans-medium'}>
-          Contact Pallax
+          Contact Keystone
         </Text>
       </TouchableOpacity>
     </View>
