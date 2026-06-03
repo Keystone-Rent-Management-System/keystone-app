@@ -6,6 +6,7 @@ import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import * as RootNavigation from './RootNavigation';
 import {useDeepLinkUrlListener, useInitialURL} from './hooks';
+import RemoteNotification from './components/notifications';
 
 const Main = () => {
   useEffect(() => {
@@ -34,6 +35,7 @@ const Main = () => {
         <NavigationContainer
           linking={linking}
           ref={RootNavigation.navigationRef}>
+          <RemoteNotification />
           <MainNav />
         </NavigationContainer>
       </BottomSheetModalProvider>

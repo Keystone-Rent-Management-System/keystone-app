@@ -26,8 +26,20 @@ import {useTotalTransaction, useTenantTransaction} from './useTransaction';
 import {useStatement, useActiveStatement} from './useStatement';
 import {useUnit} from './useUnit';
 import {useLogin} from './useLogin';
+import {useDashboard} from './useDashboard';
+import {
+  PAYMENT_ZONES,
+  usePaymentZones,
+  useZoneTenants,
+} from './usePaymentZone';
+import {useLeaseExpiry} from './useLeaseExpiry';
 
 export {
+  useDashboard,
+  PAYMENT_ZONES,
+  usePaymentZones,
+  useZoneTenants,
+  useLeaseExpiry,
   useHelp,
   useInitialURL,
   useDeepLinkUrlListener,
