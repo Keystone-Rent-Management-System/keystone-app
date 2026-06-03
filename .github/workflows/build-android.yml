@@ -33,20 +33,27 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # No `cache: npm` — the repo uses bun.lockb and no
-          # package-lock.json is committed, so setup-node would fail
-          # the cache step looking for a hash anchor.
+
+      - name: Set up Bun
+        # The repo commits bun.lockb, not package-lock.json. Installing
+        # with npm pulls in reanimated@4.x which requires RN ≥0.78 (we
+        # ship 0.74) — gradle fails the
+        # `:react-native-reanimated:assertMinimalReactNativeVersionTask`
+        # gate. Bun respects the lockfile.
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
       - name: Cache node_modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: node_modules-${{ runner.os }}-${{ hashFiles('package.json') }}
+          key: node_modules-${{ runner.os }}-${{ hashFiles('bun.lockb') }}
           restore-keys: |
             node_modules-${{ runner.os }}-
 
-      - name: Install npm deps
-        run: npm install --legacy-peer-deps --no-audit --no-fund
+      - name: Install deps with bun
+        run: bun install --frozen-lockfile
 
       - name: Cache Gradle
         uses: actions/cache@v4
