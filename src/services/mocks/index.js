@@ -12,7 +12,19 @@
 // All fixture amounts are USD. Dates relative to "today" so a stale
 // fixture never shows a date in the past.
 
+// Global mock override. Flip to true to force every wired service
+// onto mock data regardless of BE health — useful for an offline
+// demo or rapid screen iteration. Default false so production users
+// always hit the real BE; per-service fallbacks still kick in when
+// individual endpoints 404/501.
 export const USE_MOBILE_MOCKS = false;
+
+// Dev-only role override so the landlord command center is reachable
+// before BE auth is wired against a real landlord test account.
+// Gated by __DEV__ at the consumer (BottomNav.jsx) so release builds
+// are unaffected. Flip to true alongside USE_MOBILE_MOCKS=true for
+// an offline tour of every new screen on a debug build.
+export const DEV_FORCE_LANDLORD = false;
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const daysFromNow = n => {

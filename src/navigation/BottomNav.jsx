@@ -8,6 +8,7 @@ import {BottomTabBtn} from '@/components';
 import {BottomNavScreens, LandlordBottomNavScreens} from '@/constants';
 import useGlobals from '../provider/store/useGlobals';
 import {useAuth, useRefreshToken} from '../hooks';
+import {DEV_FORCE_LANDLORD} from '../services/mocks';
 
 const Tab = createBottomTabNavigator();
 
@@ -32,7 +33,10 @@ const BottomNav = () => {
 
   useRefreshToken();
 
-  const isLandlord = !!profile?.access_types?.roles?.includes('ROLE_LANDLORD');
+  const realRole = !!profile?.access_types?.roles?.includes('ROLE_LANDLORD');
+  // DEV_FORCE_LANDLORD short-circuits the role check in debug builds.
+  // Gated by __DEV__ so release bundles always respect the real role.
+  const isLandlord = realRole || (__DEV__ && DEV_FORCE_LANDLORD);
   const screens = isLandlord ? LandlordBottomNavScreens : BottomNavScreens;
 
   return (
@@ -60,7 +64,14 @@ const renderTabButton = ({props}, auth, navigation, title) => (
   <TouchableOpacity
     {...props}
     onPress={() => {
-      if (!auth?.access_token && !title?.toLowerCase().includes('explore')) {
+      // DEV_FORCE_LANDLORD bypasses the auth gate so all landlord
+      // screens are reachable without a real token in dev builds.
+      const devBypass = __DEV__ && DEV_FORCE_LANDLORD;
+      if (
+        !devBypass &&
+        !auth?.access_token &&
+        !title?.toLowerCase().includes('explore')
+      ) {
         navigation.navigate('auth__login');
         ToastAndroid.show('Please login to access screen', 4000);
       } else {
