@@ -50,9 +50,16 @@ allprojects {
                     && details.requested.name in [
                         "annotation",
                         "annotation-jvm",
-                        "annotation-experimental",
                     ]) {
                     details.useVersion("1.7.1")
+                    details.because("Kotlin 1.9 metadata compatibility")
+                }
+                // annotation-experimental has its own version stream
+                // (no 1.7.1 published) — pin to the last 1.4.x build
+                // that pre-dates Kotlin 2.x.
+                if (details.requested.group == "androidx.annotation"
+                    && details.requested.name == "annotation-experimental") {
+                    details.useVersion("1.4.1")
                     details.because("Kotlin 1.9 metadata compatibility")
                 }
             }
