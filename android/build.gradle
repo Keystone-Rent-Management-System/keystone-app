@@ -33,11 +33,27 @@ allprojects {
     configurations.all {
         resolutionStrategy {
             eachDependency { details ->
+                // Force kotlin-stdlib + kotlin-reflect to the project
+                // Kotlin (1.9.x) so the RN 0.76 gradle plugin can
+                // resolve KotlinTopLevelExtension as a class.
                 if (details.requested.group == "org.jetbrains.kotlin"
                     && (details.requested.name.startsWith("kotlin-stdlib")
                         || details.requested.name == "kotlin-reflect")) {
                     details.useVersion("${kotlinVersion}")
                     details.because("RN 0.76 + Kotlin 1.9.x compatibility")
+                }
+                // Force androidx.annotation to a 1.7.x version that was
+                // compiled with Kotlin 1.9 metadata. AGP 8.9 pulls in
+                // 1.10 transitively which carries Kotlin 2.1 metadata
+                // and breaks the same compile.
+                if (details.requested.group == "androidx.annotation"
+                    && details.requested.name in [
+                        "annotation",
+                        "annotation-jvm",
+                        "annotation-experimental",
+                    ]) {
+                    details.useVersion("1.7.1")
+                    details.because("Kotlin 1.9 metadata compatibility")
                 }
             }
         }
