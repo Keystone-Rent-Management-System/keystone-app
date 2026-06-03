@@ -36,7 +36,7 @@ const Statements = ({params}) => {
       <header>
         <div style="display: flex; flex-direction: row; justify-content: space-between; color:black; margin-bottom:3px">
         
-          <h4 style="font-weight: 500; font-size: 20px; flex:1;">BLESKET KE LIMITED</h4>
+          <h4 style="font-weight: 500; font-size: 20px; flex:1;">Keystone Rent Management</h4>
           
           <h4 style="color: #022374; font-size: 20px; flex:1;">STATEMENT</h4>
         </div> 

@@ -158,12 +158,17 @@ export async function generatePdf(html, fileName) {
   }
 }
 
-export const formatToKES = amount => {
-  return new Intl.NumberFormat('en-KE', {
+// Default currency is now USD — Keystone is a US-market product. The
+// function name stays `formatToKES` for callsite compatibility (~50
+// imports across the app); the LOCALE+CURRENCY were swapped to US.
+// New screens should import `formatToUSD` directly.
+export const formatToUSD = amount => {
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'KES',
-  }).format(Math.abs(amount));
+    currency: 'USD',
+  }).format(Math.abs(Number(amount) || 0));
 };
+export const formatToKES = formatToUSD;
 
 export const handleReportError = error => {
   // if (ENVIRON === APP_MODE.production) {

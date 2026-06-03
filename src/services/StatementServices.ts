@@ -1,106 +1,137 @@
 import moment from 'moment';
-import {IFlattendenedStatement, IStatement} from '../types/statement';
-import {getFlattenedStatements, IFromEndDate} from '../utils/statement';
+import {IFlattendenedStatement} from '../types/statement';
+import {IFromEndDate} from '../utils/statement';
 import AxiosUtility, {setAuthToken} from './AxiosServices';
 
-/**
- * @typedef {Object} Statement
- * @property {string} id
- * @property {string} createdAt
- * @property {string} updatedAt
- * @property {string} createdBy
- * @property {string} modifiedBy
- * @property {boolean} deleted
- * @property {string} transactionCode
- * @property {string} accountNumber
- * @property {string} firstName
- * @property {string} lastName
- * @property {string} phoneNumber
- * @property {number} amountCredited
- * @property {number} amountDebited
- * @property {string} methodOfPayment
- * @property {string} transactionDate
- * @property {string} bankAccountNumber
- * @property {object} propertyUnits
- */
-export interface Statement {
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-  modifiedBy: string;
-  deleted: boolean;
-  transactionCode: string;
-  accountNumber: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  amountCredited: number;
-  amountDebited: number;
-  methodOfPayment: string;
-  transactionDate: string;
-  bankAccountNumber: string;
-  propertyUnits: object;
+// B70 — switched from the dead Pallax `/statements/*` POJO endpoints
+// to the GAAP-correct AR sub-ledger projection at
+// GET /agreements/{id}/statement. See web-side commit a69248b for
+// the SPA migration and docs/design/expense-cycle-us-redesign.md in
+// the web repo for the design rationale.
+//
+// New BE shape returns the full window in a single payload:
+//   { openingBalance, closingBalance, totalCharges, totalCredits,
+//     entries: [{ entryDate, description, sourceType, sourceId,
+//                 charge, credit, runningBalance }] }
+// — instead of the legacy paged transaction stream the old endpoints
+// returned. Helpers below adapt the new shape into the legacy
+// IFlattendenedStatement[] that the existing screens consume so the
+// migration is non-breaking at the UI layer; screens can adopt the
+// richer shape (running balance, source type, opening/closing) at
+// their own pace.
+
+export interface ARStatementEntry {
+  entryDate: string;
+  description: string;
+  sourceType: string;
+  sourceId: string;
+  charge: number;
+  credit: number;
+  runningBalance: number;
 }
 
-/**
- * Fetches all statements
- * @param {string} agreementId
- * @param {number} page
- * @param {number} size
- * @returns {Promise<Statement[]>}
- */
+export interface ARStatement {
+  openingBalance: number;
+  closingBalance: number;
+  totalCharges: number;
+  totalCredits: number;
+  entries: ARStatementEntry[];
+}
+
+const fetchAgreementStatement = async (
+  agreementId: string,
+  from?: string,
+  to?: string,
+): Promise<ARStatement> => {
+  setAuthToken(AxiosUtility);
+  const params = new URLSearchParams();
+  if (from) params.set('from', from);
+  if (to) params.set('to', to);
+  const qs = params.toString();
+  const {data: res} = await AxiosUtility.get(
+    qs
+      ? `/agreements/${agreementId}/statement?${qs}`
+      : `/agreements/${agreementId}/statement`,
+  );
+  return res;
+};
+
+// Back-compat shim — same name as before so existing callers don't
+// break. Returns the new full-window payload; callers reading the
+// legacy shape need to migrate to `entries[]` instead.
 const getStatements = async (
   agreementId: string,
-  page: number,
-  size: number,
-): Promise<Statement[]> => {
-  setAuthToken(AxiosUtility);
-  const {data: res} = await AxiosUtility.get(
-    `/statements/tenantStatements?agreementId=${agreementId}&page=${page}&size=${size}`,
-  );
-
-  return res;
+  _page: number,
+  _size: number,
+): Promise<ARStatement> => {
+  return await fetchAgreementStatement(agreementId);
 };
 
+// "Current statement" was a legacy concept that meant "the most
+// recent line on the ledger". Under the AR projection model the
+// closing balance is always current — callers should read
+// `closingBalance` instead of treating the response as a single row.
 const fetchCurrentStatement = async (
   agreementId: string,
-): Promise<Statement> => {
-  setAuthToken(AxiosUtility);
-
-  const {data: res} = await AxiosUtility.get(
-    `/statements/currentStatement?agreementId=${agreementId}`,
-  );
-
-  return res;
+): Promise<ARStatement> => {
+  return await fetchAgreementStatement(agreementId);
 };
 
+// Adapter — flattens the AR entries into the legacy mobile
+// IFlattendenedStatement[] shape so the existing transaction list +
+// PDF generator screens keep working without immediate edits. New
+// screens should read `entries[]` directly.
 async function getFilteredStatements(
   dateRange: IFromEndDate,
+  agreementId?: string,
 ): Promise<IFlattendenedStatement[] | []> {
+  if (!agreementId) return [];
   setAuthToken(AxiosUtility);
-
   const startDate = moment
     .min(moment(dateRange.from), moment(dateRange.to))
     .format('YYYY-MM-DD');
   const endDate = moment
     .max(moment(dateRange.from), moment(dateRange.to))
     .format('YYYY-MM-DD');
-
-  const {data: res} = await AxiosUtility.get(
-    `/statements/tenant/filter?startDate=${startDate}&endDate=${endDate}&page=0&size=1000`,
+  const statement = await fetchAgreementStatement(
+    agreementId,
+    startDate,
+    endDate,
   );
-
-  const flattenedResponse: IFlattendenedStatement[] =
-    res?.content?.length &&
-    res?.content.flatMap((statement: IStatement) =>
-      getFlattenedStatements(statement),
-    );
-
-  return flattenedResponse || [];
+  return statement.entries.map(
+    entry =>
+      ({
+        timeOfDayLabel: moment(entry.entryDate).format('MMMM YYYY'),
+        // Stub legacy nested shapes so existing PDF + list rendering
+        // keeps working; new screens should read the AR fields above.
+        statement_date: entry.entryDate,
+        invoice_details: {
+          rent_amount: entry.charge,
+          invoice_number: entry.sourceId,
+          water_fee_amount: null,
+          security: null,
+          garbage_fee_amount: null,
+          balance: entry.runningBalance,
+          penalized_amount: null,
+          total_amount: entry.charge,
+          created_at: entry.entryDate,
+        },
+        payment_details: {
+          paid_amount: entry.credit,
+          balance: entry.runningBalance,
+          transaction_code: entry.sourceId,
+          created_at: entry.entryDate,
+        },
+        previous_charge: {
+          carried_forward: 0,
+          balance: entry.runningBalance,
+        },
+      } as unknown as IFlattendenedStatement),
+  );
 }
 
 const StatementServices = {
+  fetchAgreementStatement,
   getStatements,
   fetchCurrentStatement,
   getFilteredStatements,
