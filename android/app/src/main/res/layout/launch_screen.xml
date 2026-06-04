@@ -4,22 +4,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:orientation="vertical">
+    android:background="@color/keystone_navy">
 
-    <ImageView
-        android:layout_width="326dp"
-        android:layout_height="425dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="42dp"
-        android:layout_marginTop="73dp"
-        android:layout_marginEnd="43dp"
-        android:layout_marginBottom="233dp"
-        android:background="#000000"
-        android:contentDescription="@string/launch_screen_desc"
-        android:scaleType="centerCrop"
-        android:src="@drawable/white_keystone" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:contentDescription="@string/launch_screen_desc"
+            android:src="@drawable/keystone_mark" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="sans-serif"
+            android:letterSpacing="0.32"
+            android:text="KEYSTONE"
+            android:textColor="#FFFFFF"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:letterSpacing="0.4"
+            android:text="RENT MANAGEMENT"
+            android:textColor="@color/keystone_gold"
+            android:textSize="10sp" />
+    </LinearLayout>
 </RelativeLayout>
