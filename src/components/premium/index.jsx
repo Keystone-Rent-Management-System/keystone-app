@@ -1,6 +1,10 @@
 import React from 'react';
 import {Text, View, StyleSheet} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import COLORS from '../../constants/Theme';
+
+export {default as Icon} from './icons';
+export {Donut, Sparkline, AreaTrend} from './charts';
 
 // ── Keystone command-center kit (light, brand-matched) ─────────────
 // Mirrors the web SPA's dashboard vocabulary so mobile + web feel
@@ -21,13 +25,28 @@ const MUTED = COLORS.text_muted;
 const tabular = {fontVariant: ['tabular-nums']};
 
 /** White card — the workhorse surface. `feature` = navy hero card. */
-export const Card = ({children, feature, style, className}) => (
-  <View
-    className={className}
-    style={[feature ? styles.feature : styles.card, style]}>
-    {children}
-  </View>
-);
+export const Card = ({children, feature, style, className}) => {
+  if (feature) {
+    // Navy hero card: a subtle diagonal gradient for depth plus a
+    // hairline gold top edge — reads as a precious "panel", not a
+    // flat block.
+    return (
+      <LinearGradient
+        colors={['#1B3047', '#152535', '#0F1E2C']}
+        start={{x: 0, y: 0}}
+        end={{x: 1, y: 1}}
+        style={[styles.feature, style]}>
+        <View style={styles.goldEdge} />
+        {children}
+      </LinearGradient>
+    );
+  }
+  return (
+    <View className={className} style={[styles.card, style]}>
+      {children}
+    </View>
+  );
+};
 
 /** Cream/gold rounded icon chip, like the web's stat-card chip. */
 export const IconChip = ({children, size = 40, onDark, style}) => (
@@ -204,7 +223,6 @@ const styles = StyleSheet.create({
     ...cardShadow,
   },
   feature: {
-    backgroundColor: NAVY,
     borderRadius: 20,
     padding: 20,
     overflow: 'hidden',
@@ -213,6 +231,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.22,
     shadowRadius: 20,
     elevation: 8,
+  },
+  goldEdge: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 2,
+    backgroundColor: GOLD,
+    opacity: 0.5,
   },
   chip: {borderRadius: 12, alignItems: 'center', justifyContent: 'center'},
   avatar: {

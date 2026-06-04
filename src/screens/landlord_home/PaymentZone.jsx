@@ -13,7 +13,7 @@ import {useNavigation} from '@react-navigation/native';
 import {PAYMENT_ZONES, usePaymentZones, useZoneTenants} from '../../hooks';
 import {usePayoutBalance} from '../../hooks/usePayout';
 import {pct, usdCents} from '../../utils/money';
-import {Card, IconChip, Avatar, Label, Amount, Divider, StatusPill} from '../../components/premium';
+import {Card, IconChip, Avatar, Label, Amount, Divider, StatusPill, Donut} from '../../components/premium';
 import COLORS from '../../constants/Theme';
 
 // Tenant rent-status buckets. Top: a navy feature strip with the
@@ -64,6 +64,38 @@ const PaymentZone = () => {
                     Send to bank
                   </Text>
                 </TouchableOpacity>
+              </View>
+            </Card>
+          </View>
+        )}
+
+        {/* Donut overview */}
+        {total > 0 && (
+          <View className="px-4 mb-4">
+            <Card>
+              <View className="flex-row items-center">
+                <Donut
+                  size={150}
+                  thickness={20}
+                  centerValue={total}
+                  centerLabel="tenants"
+                  data={summary.map(z => ({value: z.count, color: z.color}))}
+                />
+                <View className="flex-1 pl-4">
+                  {summary.map(z => (
+                    <View key={z.key} className="flex-row items-center justify-between py-1.5">
+                      <View className="flex-row items-center gap-2 flex-1">
+                        <View style={{backgroundColor: z.color}} className="w-2.5 h-2.5 rounded-full" />
+                        <Text className="text-keystone_navy font-inter-medium text-xs">
+                          {z.label}
+                        </Text>
+                      </View>
+                      <Text className="text-keystone_navy font-inter-bold text-sm">
+                        {z.count}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
               </View>
             </Card>
           </View>

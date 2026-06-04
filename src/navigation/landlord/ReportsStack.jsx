@@ -2,7 +2,7 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {Portfolio, Maintenance} from '@/screens';
-import {Card, IconChip} from '../../components/premium';
+import {Card, IconChip, Icon} from '../../components/premium';
 import {titleStyling} from '../options';
 
 const Stack = createStackNavigator();
@@ -10,11 +10,11 @@ const Stack = createStackNavigator();
 // Reports hub — landing page lists the reports the landlord reaches
 // for. Tap-through to each. Brand-matched card vocabulary.
 const HUB = [
-  {key: 'portfolio', glyph: '📈', title: 'Portfolio Performance', sub: 'Gross rent, vacancy, occupancy — the owner view'},
-  {key: 'maintenance', glyph: '🔧', title: 'Maintenance', sub: 'Open / overdue counts · read-only'},
-  {key: 'owner_reports', glyph: '🗂', title: 'Owner Reports', sub: 'One-tap PDF per property owner'},
-  {key: 'insurance', glyph: '🛡', title: 'Rent Insurance', sub: 'Coverage, claims, payouts'},
-  {key: 'compliance', glyph: '⚖', title: 'Compliance Alerts', sub: 'Notices due — Washington HB 1217 + others'},
+  {key: 'portfolio', icon: 'trending', title: 'Portfolio Performance', sub: 'Gross rent, vacancy, occupancy — the owner view'},
+  {key: 'maintenance', icon: 'wrench', title: 'Maintenance', sub: 'Open / overdue counts · read-only'},
+  {key: 'owner_reports', icon: 'users', title: 'Owner Reports', sub: 'One-tap PDF per property owner'},
+  {key: 'insurance', icon: 'shield', title: 'Rent Insurance', sub: 'Coverage, claims, payouts'},
+  {key: 'compliance', icon: 'scale', title: 'Compliance Alerts', sub: 'Notices due — Washington HB 1217 + others'},
 ];
 
 const ReportsHub = ({navigation}) => (
@@ -31,7 +31,7 @@ const ReportsHub = ({navigation}) => (
         <Card>
           <View className="flex-row items-center gap-3">
             <IconChip size={44}>
-              <Text style={{fontSize: 18}}>{item.glyph}</Text>
+              <Icon name={item.icon} size={21} />
             </IconChip>
             <View className="flex-1">
               <Text className="text-keystone_navy font-inter-semibold text-base">
