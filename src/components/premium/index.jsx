@@ -1,10 +1,13 @@
 import React from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import {Animated, Text, View, StyleSheet} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import COLORS from '../../constants/Theme';
+import {useCountUp, useSweep} from './motion';
 
 export {default as Icon} from './icons';
 export {Donut, Sparkline, AreaTrend} from './charts';
+export {FadeScaleIn, useCountUp} from './motion';
+export {KeystoneMark, BrandLockup} from './brand';
 
 // ── Keystone command-center kit (light, brand-matched) ─────────────
 // Mirrors the web SPA's dashboard vocabulary so mobile + web feel
@@ -108,9 +111,9 @@ export const Divider = ({onDark, style}) => (
   />
 );
 
-/** Gold progress bar on a light track. */
+/** Gold progress bar that sweeps to `percent` on mount. */
 export const ProgressBar = ({percent = 0, onDark, style}) => {
-  const clamped = Math.max(0, Math.min(100, percent));
+  const width = useSweep(percent);
   return (
     <View
       style={[
@@ -118,9 +121,18 @@ export const ProgressBar = ({percent = 0, onDark, style}) => {
         onDark && {backgroundColor: 'rgba(255,255,255,0.14)'},
         style,
       ]}>
-      <View style={[styles.fill, {width: `${clamped}%`}]} />
+      <Animated.View style={[styles.fill, {width}]} />
     </View>
   );
+};
+
+/**
+ * Hero amount that counts up to `value` on mount. `format` turns the
+ * in-flight number into a string (usd, usdCents, etc.).
+ */
+export const AnimatedAmount = ({value, format, ...rest}) => {
+  const n = useCountUp(value ?? 0);
+  return <Amount {...rest}>{format ? format(n) : Math.round(n)}</Amount>;
 };
 
 /** Trend delta pill (web semantic green/red). */

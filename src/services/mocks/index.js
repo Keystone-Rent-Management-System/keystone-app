@@ -66,6 +66,13 @@ export const mockDailyCollection = {
     {label: 'May', collected: 190100},
     {label: 'Jun', collected: 187400},
   ],
+  // Latest money movements for the dashboard activity feed.
+  recentActivity: [
+    {id: 'a1', type: 'PAYMENT', tenant: 'James Otieno', unit: 'Riverside E', amount: 2400, minutesAgo: 12},
+    {id: 'a2', type: 'PAYMENT', tenant: 'Sarah Chen', unit: 'Magnolia A', amount: 1800, minutesAgo: 95},
+    {id: 'a3', type: 'LATE_FEE', tenant: 'Carlos Rivera', unit: 'Oak H', amount: 75, minutesAgo: 184},
+    {id: 'a4', type: 'PAYOUT', amount: 23400, minutesAgo: 1490, note: 'Sent to Chase ····4821'},
+  ],
 };
 
 // ── #3 PaymentZone ─────────────────────────────────────────────────

@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import {useInsurance} from '../../hooks/useInsurance';
 import {usd, pct} from '../../utils/money';
-import {Card, IconChip, Label, Amount, Divider, Row, ProgressBar, Stat, Icon} from '../../components/premium';
+import {Card, IconChip, Label, Amount, AnimatedAmount, Divider, Row, ProgressBar, Stat, Icon} from '../../components/premium';
 import COLORS from '../../constants/Theme';
 
 // Rent insurance — the protection product. Zero active claims means
@@ -39,9 +39,13 @@ const Insurance = () => {
         <View className="px-4">
           <Card feature>
             <Label onDark>Your net protection</Label>
-            <Amount size="xl" onDark style={{marginTop: 10}}>
-              {usd(insurance?.netCoveredRent ?? 0)}
-            </Amount>
+            <AnimatedAmount
+              value={insurance?.netCoveredRent ?? 0}
+              format={usd}
+              size="xl"
+              onDark
+              style={{marginTop: 10}}
+            />
             <Text className="text-white/55 font-inter text-xs mt-1">covered rent</Text>
             <Divider onDark style={{marginVertical: 14}} />
             <View className="flex-row items-center justify-between">

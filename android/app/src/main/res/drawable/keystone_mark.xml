@@ -1,0 +1,15 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Keystone monogram: the wedge stone at the crown of an arch,
+         wider at the top and tapering down. -->
+    <path
+        android:fillColor="#A89977"
+        android:pathData="M15,9 L33,9 L29,39 L19,39 Z" />
+    <path
+        android:fillColor="#152535"
+        android:fillAlpha="0.18"
+        android:pathData="M21,14 L27,14 L24.6,34 L23.4,34 Z" />
+</vector>
