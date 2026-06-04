@@ -2,6 +2,7 @@ import AxiosUtility from './AxiosServices';
 import {
   USE_MOBILE_MOCKS,
   mockComplianceAlerts,
+  mockComplianceAudit,
   mockFallback,
 } from './mocks';
 
@@ -44,9 +45,25 @@ const sendNotice = async alertId => {
   }
 };
 
+const getAudit = async () => {
+  if (USE_MOBILE_MOCKS)
+    return mockFallback('compliance.audit', mockComplianceAudit);
+  try {
+    const {data} = await AxiosUtility.get('/compliance/audit');
+    return data;
+  } catch (err) {
+    const status = err?.response?.status;
+    if (status === 404 || status === 501 || status === undefined) {
+      return mockFallback('compliance.audit', mockComplianceAudit);
+    }
+    throw err;
+  }
+};
+
 const ComplianceServices = {
   listAlerts,
   sendNotice,
+  getAudit,
 };
 
 export default ComplianceServices;

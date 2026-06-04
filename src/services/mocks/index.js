@@ -73,6 +73,14 @@ export const mockDailyCollection = {
     {id: 'a3', type: 'LATE_FEE', tenant: 'Carlos Rivera', unit: 'Oak H', amount: 75, minutesAgo: 184},
     {id: 'a4', type: 'PAYOUT', amount: 23400, minutesAgo: 1490, note: 'Sent to Chase ····4821'},
   ],
+  // Portfolio snapshot for the dashboard occupancy ring.
+  portfolio: {
+    properties: 4,
+    units: 200,
+    occupied: 186,
+    vacant: 14,
+    occupancyRate: 93,
+  },
 };
 
 // ── #3 PaymentZone ─────────────────────────────────────────────────
@@ -154,9 +162,14 @@ export const mockLeaseExpiries = {
 };
 
 // ── #4 Instant Payout (Phase 2) ────────────────────────────────────
+// The money story: tenants' rent lands in the landlord's Keystone
+// balance; some is still clearing (ACH settling), the rest is
+// available to sweep to his own bank instantly via FedNow.
 export const mockPayoutBalance = {
-  available: 23400.0,
   currency: 'USD',
+  collectedThisMonth: 187400.0, // total rent collected into Keystone
+  clearing: 6800.0, // still settling, not yet sweepable
+  available: 23400.0, // sweepable to bank right now
   bank: {
     name: 'Chase Business',
     accountLast4: '4821',
@@ -165,6 +178,18 @@ export const mockPayoutBalance = {
     enabled: false,
     cadence: null,
   },
+  // A payout already on its way to the bank.
+  inTransit: {
+    amount: 8200.0,
+    etaSeconds: 35,
+    initiatedMinutesAgo: 1,
+  },
+  // Completed sweeps, newest first.
+  recentPayouts: [
+    {id: 'p1', amount: 23400.0, status: 'ARRIVED', daysAgo: 1, rail: 'FedNow'},
+    {id: 'p2', amount: 31200.0, status: 'ARRIVED', daysAgo: 4, rail: 'FedNow'},
+    {id: 'p3', amount: 18750.0, status: 'ARRIVED', daysAgo: 8, rail: 'FedNow'},
+  ],
 };
 
 // ── #5 Portfolio Performance (Phase 3) ─────────────────────────────
@@ -188,13 +213,46 @@ export const mockMaintenanceSummary = {
   inProgress: 3,
   awaitingParts: 2,
   overdue: 1,
-  overdueDetails: [
+  // Supervision stats — how the system is performing, so the landlord
+  // can trust it's working without doing the work.
+  resolvedThisMonth: 18,
+  avgResolutionDays: 2.4,
+  slaComplianceRate: 94,
+  // Active request board. status: OPEN | IN_PROGRESS | AWAITING_PARTS.
+  // slaDays = the resolution target; ageDays past it = overdue.
+  requests: [
     {
       id: 'mr-001',
       unitName: 'Magnolia C',
       issue: 'Leaking kitchen faucet',
+      category: 'Plumbing',
+      status: 'AWAITING_PARTS',
       ageDays: 9,
+      slaDays: 7,
       assignedTo: 'Acme Plumbing',
+      priority: 'HIGH',
+    },
+    {
+      id: 'mr-002',
+      unitName: 'Riverside E',
+      issue: 'HVAC not cooling',
+      category: 'HVAC',
+      status: 'IN_PROGRESS',
+      ageDays: 2,
+      slaDays: 5,
+      assignedTo: 'CoolAir Co.',
+      priority: 'MEDIUM',
+    },
+    {
+      id: 'mr-003',
+      unitName: 'Oak G',
+      issue: 'Garbage disposal jammed',
+      category: 'Appliance',
+      status: 'OPEN',
+      ageDays: 1,
+      slaDays: 4,
+      assignedTo: null,
+      priority: 'LOW',
     },
   ],
 };
@@ -242,6 +300,16 @@ export const mockComplianceAlerts = [
     actionLabel: 'Send 90-day notice',
     status: 'NOT_SENT',
   },
+];
+
+// Compliance audit trail — every dispatched notice, timestamped and
+// logged. This is the "proof it happened" record the landlord can
+// stand behind. Newest first.
+export const mockComplianceAudit = [
+  {id: 'au1', action: 'Security deposit return statement', unitName: 'Magnolia A', regulation: 'RCW 59.18.280', jurisdiction: 'WA', daysAgo: 6},
+  {id: 'au2', action: '90-day rent increase notice', unitName: 'Riverside E', regulation: 'HB 1217', jurisdiction: 'WA', daysAgo: 21},
+  {id: 'au3', action: 'Notice to enter (repairs)', unitName: 'Oak G', regulation: 'RCW 59.18.150', jurisdiction: 'WA', daysAgo: 33},
+  {id: 'au4', action: '14-day pay-or-vacate notice', unitName: 'Magnolia D', regulation: 'RCW 59.12.030', jurisdiction: 'WA', daysAgo: 47},
 ];
 
 // Helper a service can call after catching a 404/501 from the BE.

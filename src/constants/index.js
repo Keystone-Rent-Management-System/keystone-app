@@ -12,8 +12,4 @@ export const HELP_URL = 'https://keystonerent.app/help';
 export const KEYSTONE_SUPPORT_NUMBER = '5125550100';
 export const KEYSTONE_PHONE_NUMBER = `+1${KEYSTONE_SUPPORT_NUMBER}`;
 
-// Legacy aliases — sweep call sites in follow-ups, then delete.
-export const PALLAX_SUPPORT_NUMBER = KEYSTONE_SUPPORT_NUMBER;
-export const PALLAX_PHONE_NUMBER = KEYSTONE_PHONE_NUMBER;
-
 export const PAGINATION_LIMIT = 10;
