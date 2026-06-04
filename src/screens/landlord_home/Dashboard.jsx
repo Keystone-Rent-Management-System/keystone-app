@@ -22,6 +22,8 @@ import {
   ProgressBar,
   Stat,
   StatusPill,
+  Icon,
+  Sparkline,
 } from '../../components/premium';
 import COLORS from '../../constants/Theme';
 
@@ -94,7 +96,7 @@ const Dashboard = () => {
         {pendingCompliance > 0 && (
           <Flag
             tone="pending"
-            glyph="⚖"
+            icon="scale"
             title={`${pendingCompliance} compliance notice${
               pendingCompliance === 1 ? '' : 's'
             } to send`}
@@ -107,7 +109,7 @@ const Dashboard = () => {
         {overdue > 0 && (
           <Flag
             tone="danger"
-            glyph="!"
+            icon="wrench"
             title={`${overdue} maintenance overdue`}
             sub="Needs your attention"
             onPress={() =>
@@ -164,7 +166,7 @@ const Dashboard = () => {
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center gap-3">
                 <IconChip>
-                  <Text style={{fontSize: 16}}>📊</Text>
+                  <Icon name="collection" size={20} color={COLORS.keystone_gold} />
                 </IconChip>
                 <View>
                   <Label>Rent Collection</Label>
@@ -220,19 +222,50 @@ const Dashboard = () => {
           </Card>
         </View>
 
+        {/* COLLECTION TREND */}
+        {dashboard?.trend?.length > 1 && (
+          <View className="px-4 mt-4">
+            <Card>
+              <View className="flex-row items-center justify-between mb-3">
+                <Label>6-month trend</Label>
+                <Text className="text-text_muted font-inter text-xs">
+                  collected / month
+                </Text>
+              </View>
+              <View className="items-center">
+                <Sparkline
+                  data={dashboard.trend.map(t => t.collected)}
+                  width={300}
+                  height={64}
+                />
+              </View>
+              <View className="flex-row justify-between mt-2 px-0.5">
+                {dashboard.trend.map(t => (
+                  <Text
+                    key={t.label}
+                    className="text-text_muted font-inter text-2xs"
+                    style={{width: 300 / dashboard.trend.length, textAlign: 'center'}}>
+                    {t.label}
+                  </Text>
+                ))}
+              </View>
+            </Card>
+          </View>
+        )}
+
         {/* QUICK ACCESS */}
         <View className="px-4 mt-5">
           <Text className="text-text_muted font-inter-semibold text-xs uppercase tracking-widest ml-1 mb-3">
             Quick access
           </Text>
           <View className="flex-row flex-wrap -m-1">
-            <Quick glyph="💳" label="Payments" sub="Who paid · who hasn't"
+            <Quick icon="card" label="Payments" sub="Who paid · who hasn't"
               onPress={() => nav.navigate('payments_stack')} />
-            <Quick glyph="📄" label="Leases" sub="Expiring soon"
+            <Quick icon="lease" label="Leases" sub="Expiring soon"
               onPress={() => nav.navigate('leases_stack')} />
-            <Quick glyph="📈" label="Portfolio" sub="The owner view"
+            <Quick icon="trending" label="Portfolio" sub="The owner view"
               onPress={() => nav.navigate('reports_stack', {screen: 'portfolio'})} />
-            <Quick glyph="🗂" label="Reports" sub="Owners · insurance"
+            <Quick icon="reports" label="Reports" sub="Owners · insurance"
               onPress={() => nav.navigate('reports_stack')} />
           </View>
         </View>
@@ -247,7 +280,7 @@ const Dashboard = () => {
   );
 };
 
-const Flag = ({tone, glyph, title, sub, onPress}) => {
+const Flag = ({tone, icon, title, sub, onPress}) => {
   const accent =
     tone === 'danger' ? COLORS.c_danger : COLORS.c_pending;
   return (
@@ -257,7 +290,7 @@ const Flag = ({tone, glyph, title, sub, onPress}) => {
           <View
             style={{backgroundColor: tone === 'danger' ? 'rgba(229,53,53,0.10)' : 'rgba(205,160,0,0.12)'}}
             className="w-9 h-9 rounded-lg items-center justify-center">
-            <Text style={{color: accent, fontWeight: '700'}}>{glyph}</Text>
+            <Icon name={icon} size={18} color={accent} />
           </View>
           <View className="flex-1">
             <Text className="text-keystone_navy font-inter-semibold text-sm">
@@ -276,11 +309,11 @@ const Flag = ({tone, glyph, title, sub, onPress}) => {
   );
 };
 
-const Quick = ({glyph, label, sub, onPress}) => (
+const Quick = ({icon, label, sub, onPress}) => (
   <TouchableOpacity onPress={onPress} className="w-1/2 p-1" activeOpacity={0.85}>
     <Card style={{padding: 16, borderRadius: 18}}>
-      <IconChip size={36}>
-        <Text style={{fontSize: 15}}>{glyph}</Text>
+      <IconChip size={38}>
+        <Icon name={icon} size={19} />
       </IconChip>
       <Text className="text-keystone_navy font-inter-semibold text-base mt-3">
         {label}

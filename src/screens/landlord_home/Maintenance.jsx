@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import {useMaintenance} from '../../hooks/useMaintenance';
-import {Card, IconChip, Label, Stat, Divider, StatusPill} from '../../components/premium';
+import {Card, IconChip, Label, Stat, Divider, StatusPill, Icon} from '../../components/premium';
 import COLORS from '../../constants/Theme';
 
 // Maintenance visibility (NOT management). The overdue flag is the
@@ -61,7 +61,7 @@ const Maintenance = () => {
                       <View
                         style={{backgroundColor: 'rgba(229,53,53,0.10)'}}
                         className="w-10 h-10 rounded-lg items-center justify-center">
-                        <Text style={{color: COLORS.c_danger, fontWeight: '700'}}>!</Text>
+                        <Icon name="wrench" size={19} color={COLORS.c_danger} />
                       </View>
                       <View className="flex-1">
                         <Text className="text-keystone_navy font-inter-semibold text-base">
