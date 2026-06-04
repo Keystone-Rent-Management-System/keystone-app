@@ -1,7 +1,20 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, Image} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
 import COLORS from '../../constants/Theme';
+
+// The real Keystone logo (KS monogram on stone shapes + wordmark).
+// Transparent PNG, so it sits cleanly on any surface.
+const LOGO = require('../../assets/images/keystone-logo.png');
+
+/** The actual Keystone logo image. Default height 40, width auto. */
+export const KeystoneLogo = ({height = 40, style}) => (
+  <Image
+    source={LOGO}
+    resizeMode="contain"
+    style={[{height, width: height * 1.18}, style]}
+  />
+);
 
 // Keystone monogram — an architectural keystone (the wedge stone at
 // the crown of an arch): wider at the top, tapering down, with an
