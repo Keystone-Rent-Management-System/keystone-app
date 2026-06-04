@@ -100,6 +100,59 @@ export const Donut = ({
 };
 
 /**
+ * Single-value progress ring with a center label. Used for occupancy
+ * and compliance-health reads. `color` defaults to gold.
+ */
+export const Ring = ({
+  percent = 0,
+  size = 96,
+  thickness = 9,
+  color = COLORS.keystone_gold,
+  trackColor = 'rgba(21,37,53,0.08)',
+  centerValue,
+  centerLabel,
+  centerColor = COLORS.keystone_navy,
+}) => {
+  const r = (size - thickness) / 2;
+  const c = 2 * Math.PI * r;
+  const clamped = Math.max(0, Math.min(100, percent));
+  const dash = (clamped / 100) * c;
+  const cx = size / 2;
+  return (
+    <View style={{width: size, height: size, alignItems: 'center', justifyContent: 'center'}}>
+      <Svg width={size} height={size}>
+        <Circle cx={cx} cy={cx} r={r} stroke={trackColor} strokeWidth={thickness} fill="none" />
+        <Circle
+          cx={cx}
+          cy={cx}
+          r={r}
+          stroke={color}
+          strokeWidth={thickness}
+          strokeLinecap="round"
+          fill="none"
+          strokeDasharray={`${dash} ${c - dash}`}
+          transform={`rotate(-90 ${cx} ${cx})`}
+        />
+      </Svg>
+      {(centerValue != null || centerLabel) && (
+        <View style={{position: 'absolute', alignItems: 'center'}}>
+          {centerValue != null && (
+            <Text style={[{color: centerColor, fontFamily: 'Inter-Bold', fontSize: size * 0.24}, tabular]}>
+              {centerValue}
+            </Text>
+          )}
+          {centerLabel ? (
+            <Text style={{color: COLORS.text_muted, fontFamily: 'Inter-SemiBold', fontSize: 9, letterSpacing: 0.6, textTransform: 'uppercase', marginTop: 1}}>
+              {centerLabel}
+            </Text>
+          ) : null}
+        </View>
+      )}
+    </View>
+  );
+};
+
+/**
  * Mini bar sparkline. `data`: [numbers]. The last bar is highlighted
  * gold; the rest are a muted navy. Gives a "trend / life" read to the
  * collection card without the weight of a full chart.

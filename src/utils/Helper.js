@@ -5,7 +5,7 @@ import FileViewer from 'react-native-file-viewer';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import RNFetchBlob from 'rn-fetch-blob';
 
-import {PALLAX_SUPPORT_NUMBER} from '../constants';
+import {KEYSTONE_PHONE_NUMBER} from '../constants';
 import {getError} from './getError';
 
 const renderSingularPlural = (num, render, nullRender = '') =>
@@ -34,27 +34,23 @@ const getInitials = fullName => {
   return `${firstInitial}${secondInitial}`.toUpperCase();
 };
 
+// Phone numbers are E.164 (e.g. +15125550100) — the Keystone support
+// line and any tenant/landlord numbers from the US BE already carry
+// their country code, so dial them as-is. (The old code force-prefixed
+// the Kenyan +254 from the Pallax era.)
 const handleCallSupport = async () => {
-  await handleCall(PALLAX_SUPPORT_NUMBER);
+  await Linking.openURL(`tel:${KEYSTONE_PHONE_NUMBER}`);
 };
 
 const handleCall = async phoneNumber => {
-  const validatedPhoneNumber = phoneNumber.startsWith('07')
-    ? phoneNumber.slice(1)
-    : phoneNumber;
-
-  await Linking.openURL(`tel:+254${validatedPhoneNumber}`);
+  await Linking.openURL(`tel:${phoneNumber}`);
 };
 
 const handleSmsSupport = async () => {
-  await Linking.openURL(`sms:+254${PALLAX_SUPPORT_NUMBER}`);
+  await Linking.openURL(`sms:${KEYSTONE_PHONE_NUMBER}`);
 };
 const handleSms = async phoneNumber => {
-  const validatedPhoneNumber = phoneNumber.startsWith('07')
-    ? phoneNumber.slice(1)
-    : phoneNumber;
-
-  await Linking.openURL(`sms:+254${validatedPhoneNumber}`);
+  await Linking.openURL(`sms:${phoneNumber}`);
 };
 
 const getCurrentMonthInNumberForm = () => {

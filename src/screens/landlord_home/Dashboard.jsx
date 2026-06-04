@@ -25,6 +25,7 @@ import {
   StatusPill,
   Icon,
   Sparkline,
+  Ring,
   FadeScaleIn,
   BrandLockup,
 } from '../../components/premium';
@@ -52,7 +53,15 @@ const Dashboard = () => {
     (profile?.lastName ?? '')[0] ?? ''
   }`.toUpperCase();
 
-  const monthLabel = new Date()
+  const now = new Date();
+  const hours = now.getHours();
+  const greeting = hours < 12 ? 'Good morning' : hours < 17 ? 'Good afternoon' : 'Good evening';
+  const dateLabel = now.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  });
+  const monthLabel = now
     .toLocaleDateString('en-US', {month: 'long', year: 'numeric'})
     .toUpperCase();
   const updatedMins = dashboard?.cashAccount?.updatedAt
@@ -91,10 +100,13 @@ const Dashboard = () => {
         <View className="px-5 pt-5 pb-5 flex-row items-center justify-between">
           <View>
             <Text className="text-keystone_gold font-inter-semibold text-xs tracking-widest uppercase">
-              Good morning
+              {greeting}
             </Text>
             <Text className="text-keystone_navy font-inter-bold text-3xl mt-1">
               {firstName}
+            </Text>
+            <Text className="text-text_muted font-inter text-xs mt-1">
+              {dateLabel}
             </Text>
           </View>
           <Avatar initials={initials} size={48} />
@@ -236,6 +248,34 @@ const Dashboard = () => {
             </View>
           </Card>
         </View>
+
+        {/* PORTFOLIO SNAPSHOT */}
+        {dashboard?.portfolio && (
+          <View className="px-4 mt-4">
+            <Card>
+              <View className="flex-row items-center">
+                <Ring
+                  percent={dashboard.portfolio.occupancyRate}
+                  size={96}
+                  thickness={9}
+                  centerValue={`${dashboard.portfolio.occupancyRate}%`}
+                  centerLabel="occupied"
+                />
+                <View className="flex-1 ml-4">
+                  <Label>Portfolio</Label>
+                  <View className="flex-row mt-3">
+                    <Stat label="Properties" value={`${dashboard.portfolio.properties}`} />
+                    <Stat label="Units" value={`${dashboard.portfolio.units}`} align="left" style={{paddingLeft: 8}} />
+                  </View>
+                  <View className="flex-row mt-3">
+                    <Stat label="Occupied" value={`${dashboard.portfolio.occupied}`} valueColor={COLORS.c_success} />
+                    <Stat label="Vacant" value={`${dashboard.portfolio.vacant}`} valueColor={COLORS.c_pending} align="left" style={{paddingLeft: 8}} />
+                  </View>
+                </View>
+              </View>
+            </Card>
+          </View>
+        )}
 
         {/* COLLECTION TREND */}
         {dashboard?.trend?.length > 1 && (

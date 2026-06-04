@@ -10,6 +10,14 @@ export const useComplianceAlerts = () => {
   return {isPending, isRefetching, alerts: data ?? [], refetch};
 };
 
+export const useComplianceAudit = () => {
+  const {isPending, data, refetch} = useQuery({
+    queryKey: ['compliance/audit'],
+    queryFn: () => ComplianceServices.getAudit(),
+  });
+  return {isPending, audit: data ?? [], refetch};
+};
+
 export const useSendComplianceNotice = () => {
   const qc = useQueryClient();
   return useMutation({
