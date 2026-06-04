@@ -2,6 +2,7 @@ import React from 'react';
 import {
   RefreshControl,
   ScrollView,
+  StatusBar,
   Text,
   TouchableOpacity,
   View,
@@ -11,16 +12,23 @@ import {useDashboard, useAuth} from '../../hooks';
 import {useMaintenance} from '../../hooks/useMaintenance';
 import {useComplianceAlerts} from '../../hooks/useCompliance';
 import {usd, usdCents, pct} from '../../utils/money';
+import {
+  Card,
+  IconChip,
+  Avatar,
+  Label,
+  Amount,
+  Divider,
+  ProgressBar,
+  Stat,
+  StatusPill,
+} from '../../components/premium';
+import COLORS from '../../constants/Theme';
 
-// The morning number — the screen the landlord opens at 7 AM with his
-// coffee. Three sections, no nav required:
-//   1. Today's collection (collected / expected / outstanding)
-//   2. This month's collection (collected / pending + % bar)
-//   3. Cash in bank account right now (Dwolla balance proxy)
-//
-// Every other landlord screen is reached from the quick-action grid
-// below the cash card — but if the landlord never scrolls, he should
-// already know his world. That's the design constraint.
+// The morning command center — brand-matched to the Keystone web UI.
+// Light canvas, white cards with cream chips and navy values, a single
+// navy feature card for cash-on-hand, gold accents. He opens this at
+// 7 AM and knows his world in 10 seconds.
 
 const Dashboard = () => {
   const {dashboard, isPending, isRefetching, refetch} = useDashboard();
@@ -28,14 +36,20 @@ const Dashboard = () => {
   const {alerts: complianceAlerts} = useComplianceAlerts();
   const {profile} = useAuth();
   const nav = useNavigation();
+
   const pendingCompliance = complianceAlerts.filter(
     a => a.status === 'NOT_SENT',
   ).length;
+  const overdue = maint?.overdue ?? 0;
 
-  const monthLabel = new Date().toLocaleDateString('en-US', {
-    month: 'long',
-    year: 'numeric',
-  });
+  const firstName = profile?.firstName ?? 'Landlord';
+  const initials = `${(profile?.firstName ?? 'L')[0] ?? ''}${
+    (profile?.lastName ?? '')[0] ?? ''
+  }`.toUpperCase();
+
+  const monthLabel = new Date()
+    .toLocaleDateString('en-US', {month: 'long', year: 'numeric'})
+    .toUpperCase();
   const updatedMins = dashboard?.cashAccount?.updatedAt
     ? Math.max(
         0,
@@ -46,198 +60,233 @@ const Dashboard = () => {
       )
     : null;
 
+  const collectedToday = dashboard?.today?.collected ?? 0;
+  const expectedToday = dashboard?.today?.expected ?? 0;
+  const outstandingToday = expectedToday - collectedToday;
+
   return (
-    <ScrollView
-      className="flex-1 bg-keystone_stone"
-      refreshControl={
-        <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
-      }>
-      {/* Header */}
-      <View className="px-5 pt-6 pb-4 bg-keystone_navy">
-        <Text className="text-keystone_cream font-inter text-xs uppercase tracking-widest">
-          Good morning
-        </Text>
-        <Text className="text-white font-inter-bold text-2xl mt-1">
-          {profile?.firstName ?? 'Landlord'}
-        </Text>
-      </View>
-
-      {/* Compliance banner — same flag-not-list principle. */}
-      {pendingCompliance > 0 && (
-        <TouchableOpacity
-          onPress={() => nav.navigate('reports_stack', {screen: 'compliance'})}
-          activeOpacity={0.8}
-          className="mx-4 mt-4 bg-keystone_gold/15 border-l-4 border-keystone_gold rounded-2xl p-4 flex-row items-center justify-between">
-          <View className="flex-1">
-            <Text className="text-keystone_navy font-inter-semibold text-sm">
-              ⚠ {pendingCompliance} compliance notice
-              {pendingCompliance === 1 ? '' : 's'} need to be sent
+    <View className="flex-1 bg-keystone_canvas">
+      <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
+      <ScrollView
+        contentContainerStyle={{paddingBottom: 32}}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={refetch}
+            tintColor={COLORS.keystone_gold}
+          />
+        }>
+        {/* Header */}
+        <View className="px-5 pt-14 pb-5 flex-row items-center justify-between">
+          <View>
+            <Text className="text-keystone_gold font-inter-semibold text-xs tracking-widest uppercase">
+              Good morning
             </Text>
-            <Text className="text-grey_1 font-inter text-xs mt-1">
-              Tap to review and dispatch
+            <Text className="text-keystone_navy font-inter-bold text-3xl mt-1">
+              {firstName}
             </Text>
           </View>
-          <Text className="text-keystone_navy font-inter-semibold">→</Text>
-        </TouchableOpacity>
-      )}
-
-      {/* Maintenance red-flag banner — surfaces only if there's an
-          overdue item. The landlord responds to flags, not lists. */}
-      {(maint?.overdue ?? 0) > 0 && (
-        <TouchableOpacity
-          onPress={() => nav.navigate('reports_stack', {screen: 'maintenance'})}
-          activeOpacity={0.8}
-          className="mx-4 mt-4 bg-[#EF4444]/10 border-l-4 border-[#EF4444] rounded-2xl p-4 flex-row items-center justify-between">
-          <View className="flex-1">
-            <Text className="text-[#EF4444] font-inter-semibold text-sm">
-              {maint.overdue} maintenance overdue
-            </Text>
-            <Text className="text-grey_1 font-inter text-xs mt-1">
-              Tap to see what needs your attention
-            </Text>
-          </View>
-          <Text className="text-[#EF4444] font-inter-semibold">→</Text>
-        </TouchableOpacity>
-      )}
-
-      {/* SECTION 1 — Today's collection */}
-      <View className="mx-4 mt-4 bg-white rounded-2xl p-5 shadow-sm">
-        <Text className="text-keystone_navy font-inter-semibold text-sm tracking-wide uppercase">
-          {monthLabel} Rent Collection
-        </Text>
-        <View className="h-px bg-keystone_cream my-3" />
-
-        <Row
-          label="Collected today"
-          value={usd(dashboard?.today?.collected)}
-          valueClass="text-keystone_navy"
-        />
-        <Row
-          label="Expected today"
-          value={usd(dashboard?.today?.expected)}
-          valueClass="text-grey_1"
-        />
-        <Row
-          label="Outstanding"
-          value={usd(
-            (dashboard?.today?.expected ?? 0) -
-              (dashboard?.today?.collected ?? 0),
-          )}
-          rightTag={
-            dashboard?.today?.outstandingUnits > 0
-              ? `${dashboard.today.outstandingUnits} units`
-              : null
-          }
-          valueClass="text-[#EF4444]"
-        />
-
-        <View className="h-px bg-keystone_cream my-4" />
-
-        <Text className="text-grey_1 font-inter-medium text-xs uppercase tracking-wider mb-3">
-          Overall this month
-        </Text>
-        <Row
-          label="Collected"
-          value={usd(dashboard?.month?.collected)}
-          rightTag={`${pct(dashboard?.month?.percentCollected)}`}
-          valueClass="text-keystone_navy"
-        />
-        <Row
-          label="Pending"
-          value={usd(dashboard?.month?.pending)}
-          rightTag={`${pct(dashboard?.month?.percentPending)}`}
-          valueClass="text-keystone_gold"
-        />
-        <ProgressBar percent={dashboard?.month?.percentCollected ?? 0} />
-      </View>
-
-      {/* SECTION 2 — Cash in account */}
-      <View className="mx-4 mt-4 bg-keystone_navy rounded-2xl p-5">
-        <Text className="text-keystone_cream font-inter text-xs uppercase tracking-widest">
-          Cash in account right now
-        </Text>
-        <Text className="text-white font-inter-semibold text-sm mt-2">
-          {dashboard?.cashAccount?.bankName ?? 'Bank account'} ****
-          {dashboard?.cashAccount?.accountLast4 ?? '—'}
-        </Text>
-        <Text className="text-white font-inter-bold text-3xl mt-2">
-          {usdCents(dashboard?.cashAccount?.balance)}
-        </Text>
-        {updatedMins !== null && (
-          <Text className="text-keystone_cream font-inter text-xs mt-1 opacity-80">
-            ↑ updated {updatedMins} min{updatedMins === 1 ? '' : 's'} ago
-          </Text>
-        )}
-      </View>
-
-      {/* SECTION 3 — Quick-action grid (drill-downs to other tabs) */}
-      <View className="mx-4 mt-4 mb-8 flex-row flex-wrap -m-1">
-        <QuickAction
-          label="Payments"
-          subtitle="Who paid / who hasn't"
-          onPress={() => nav.navigate('payments_stack')}
-        />
-        <QuickAction
-          label="Leases"
-          subtitle="Expiring soon"
-          onPress={() => nav.navigate('leases_stack')}
-        />
-        <QuickAction
-          label="Reports"
-          subtitle="Portfolio + owners"
-          onPress={() => nav.navigate('reports_stack')}
-        />
-        <QuickAction
-          label="Payout"
-          subtitle="Send to bank now"
-          onPress={() => nav.navigate('payments_stack', {screen: 'payout'})}
-        />
-      </View>
-      {isPending && (
-        <View className="absolute inset-0 items-center justify-center bg-white/60">
-          <Text className="text-keystone_navy font-inter">Loading…</Text>
+          <Avatar initials={initials} size={48} />
         </View>
-      )}
-    </ScrollView>
+
+        {/* Action flags — refined cards, only when he must act */}
+        {pendingCompliance > 0 && (
+          <Flag
+            tone="pending"
+            glyph="⚖"
+            title={`${pendingCompliance} compliance notice${
+              pendingCompliance === 1 ? '' : 's'
+            } to send`}
+            sub="Statutory deadline approaching"
+            onPress={() =>
+              nav.navigate('reports_stack', {screen: 'compliance'})
+            }
+          />
+        )}
+        {overdue > 0 && (
+          <Flag
+            tone="danger"
+            glyph="!"
+            title={`${overdue} maintenance overdue`}
+            sub="Needs your attention"
+            onPress={() =>
+              nav.navigate('reports_stack', {screen: 'maintenance'})
+            }
+          />
+        )}
+
+        {/* CASH — the navy feature card */}
+        <View className="px-4 mt-1">
+          <Card feature>
+            <View className="flex-row items-center justify-between">
+              <Label onDark>Cash available now</Label>
+              <View className="flex-row items-center gap-2">
+                <View className="w-1.5 h-1.5 rounded-full bg-c_success" />
+                <Text className="text-white/70 font-inter-medium text-2xs uppercase tracking-wider">
+                  {dashboard?.cashAccount?.bankName ?? 'Bank'}
+                </Text>
+              </View>
+            </View>
+
+            <Amount size="xl" onDark style={{marginTop: 12}}>
+              {usdCents(dashboard?.cashAccount?.balance)}
+            </Amount>
+
+            <View className="flex-row items-center justify-between mt-3">
+              <View>
+                <Text className="text-white/60 font-inter text-xs">
+                  Business ····{dashboard?.cashAccount?.accountLast4 ?? '—'}
+                </Text>
+                {updatedMins !== null && (
+                  <Text className="text-white/40 font-inter text-2xs mt-0.5">
+                    updated {updatedMins}m ago
+                  </Text>
+                )}
+              </View>
+              <TouchableOpacity
+                onPress={() =>
+                  nav.navigate('payments_stack', {screen: 'payout'})
+                }
+                activeOpacity={0.85}
+                className="bg-keystone_gold rounded-full px-5 py-2.5">
+                <Text className="text-keystone_navy font-inter-semibold text-xs uppercase tracking-wider">
+                  Move money
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Card>
+        </View>
+
+        {/* COLLECTION — white card */}
+        <View className="px-4 mt-4">
+          <Card>
+            <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center gap-3">
+                <IconChip>
+                  <Text style={{fontSize: 16}}>📊</Text>
+                </IconChip>
+                <View>
+                  <Label>Rent Collection</Label>
+                  <Text className="text-text_muted font-inter text-xs mt-0.5">
+                    {monthLabel}
+                  </Text>
+                </View>
+              </View>
+              <View className="bg-keystone_chip rounded-full px-3 py-1">
+                <Text className="text-keystone_gold font-inter-bold text-sm">
+                  {pct(dashboard?.month?.percentCollected)}
+                </Text>
+              </View>
+            </View>
+
+            <Amount size="xl" style={{marginTop: 16}}>
+              {usd(dashboard?.month?.collected)}
+            </Amount>
+            <Text className="text-text_muted font-inter text-sm mt-1">
+              collected of {usd(dashboard?.month?.expected)} expected
+            </Text>
+
+            <ProgressBar
+              percent={dashboard?.month?.percentCollected ?? 0}
+              style={{marginTop: 16}}
+            />
+
+            <Divider style={{marginTop: 18, marginBottom: 14}} />
+
+            <View className="flex-row">
+              <Stat label="Today" value={usd(collectedToday)} />
+              <View className="w-px bg-keystone_hairline" />
+              <Stat
+                label="Pending"
+                value={usd(dashboard?.month?.pending)}
+                valueColor={COLORS.c_pending}
+                align="left"
+                style={{paddingLeft: 14}}
+              />
+              <View className="w-px bg-keystone_hairline" />
+              <Stat
+                label="Outstanding"
+                value={usd(outstandingToday)}
+                sub={
+                  dashboard?.today?.outstandingUnits
+                    ? `${dashboard.today.outstandingUnits} units`
+                    : null
+                }
+                valueColor={COLORS.c_danger}
+                align="right"
+              />
+            </View>
+          </Card>
+        </View>
+
+        {/* QUICK ACCESS */}
+        <View className="px-4 mt-5">
+          <Text className="text-text_muted font-inter-semibold text-xs uppercase tracking-widest ml-1 mb-3">
+            Quick access
+          </Text>
+          <View className="flex-row flex-wrap -m-1">
+            <Quick glyph="💳" label="Payments" sub="Who paid · who hasn't"
+              onPress={() => nav.navigate('payments_stack')} />
+            <Quick glyph="📄" label="Leases" sub="Expiring soon"
+              onPress={() => nav.navigate('leases_stack')} />
+            <Quick glyph="📈" label="Portfolio" sub="The owner view"
+              onPress={() => nav.navigate('reports_stack', {screen: 'portfolio'})} />
+            <Quick glyph="🗂" label="Reports" sub="Owners · insurance"
+              onPress={() => nav.navigate('reports_stack')} />
+          </View>
+        </View>
+
+        {isPending && (
+          <View className="absolute inset-0 items-center justify-center">
+            <Text className="text-text_muted font-inter">Loading…</Text>
+          </View>
+        )}
+      </ScrollView>
+    </View>
   );
 };
 
-const Row = ({label, value, valueClass, rightTag}) => (
-  <View className="flex-row items-center justify-between py-2">
-    <Text className="text-grey_1 font-inter text-sm">{label}</Text>
-    <View className="flex-row items-center gap-2">
-      <Text className={`font-inter-semibold text-base ${valueClass ?? 'text-keystone_navy'}`}>
-        {value}
-      </Text>
-      {rightTag && (
-        <Text className="text-grey_1 font-inter text-xs">{rightTag}</Text>
-      )}
-    </View>
-  </View>
-);
+const Flag = ({tone, glyph, title, sub, onPress}) => {
+  const accent =
+    tone === 'danger' ? COLORS.c_danger : COLORS.c_pending;
+  return (
+    <TouchableOpacity onPress={onPress} activeOpacity={0.85} className="mx-4 mb-3">
+      <Card style={{padding: 14, borderLeftWidth: 3, borderLeftColor: accent}}>
+        <View className="flex-row items-center gap-3">
+          <View
+            style={{backgroundColor: tone === 'danger' ? 'rgba(229,53,53,0.10)' : 'rgba(205,160,0,0.12)'}}
+            className="w-9 h-9 rounded-lg items-center justify-center">
+            <Text style={{color: accent, fontWeight: '700'}}>{glyph}</Text>
+          </View>
+          <View className="flex-1">
+            <Text className="text-keystone_navy font-inter-semibold text-sm">
+              {title}
+            </Text>
+            <Text className="text-text_muted font-inter text-xs mt-0.5">
+              {sub}
+            </Text>
+          </View>
+          <Text style={{color: accent}} className="font-inter-semibold text-base">
+            →
+          </Text>
+        </View>
+      </Card>
+    </TouchableOpacity>
+  );
+};
 
-const ProgressBar = ({percent}) => (
-  <View className="mt-3 h-2 bg-keystone_cream rounded-full overflow-hidden">
-    <View
-      style={{
-        width: `${Math.max(0, Math.min(100, percent))}%`,
-      }}
-      className="h-2 bg-keystone_navy"
-    />
-  </View>
-);
-
-const QuickAction = ({label, subtitle, onPress}) => (
-  <TouchableOpacity
-    onPress={onPress}
-    className="w-1/2 p-1"
-    activeOpacity={0.7}>
-    <View className="bg-white rounded-2xl p-4 shadow-sm">
-      <Text className="text-keystone_navy font-inter-semibold text-base">
+const Quick = ({glyph, label, sub, onPress}) => (
+  <TouchableOpacity onPress={onPress} className="w-1/2 p-1" activeOpacity={0.85}>
+    <Card style={{padding: 16, borderRadius: 18}}>
+      <IconChip size={36}>
+        <Text style={{fontSize: 15}}>{glyph}</Text>
+      </IconChip>
+      <Text className="text-keystone_navy font-inter-semibold text-base mt-3">
         {label}
       </Text>
-      <Text className="text-grey_1 font-inter text-xs mt-1">{subtitle}</Text>
-    </View>
+      <Text className="text-text_muted font-inter text-xs mt-0.5">{sub}</Text>
+    </Card>
   </TouchableOpacity>
 );
 

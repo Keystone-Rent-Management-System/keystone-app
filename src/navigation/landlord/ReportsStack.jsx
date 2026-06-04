@@ -2,63 +2,51 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {Portfolio, Maintenance} from '@/screens';
+import {Card, IconChip} from '../../components/premium';
 import {titleStyling} from '../options';
 
 const Stack = createStackNavigator();
 
-// Reports hub — landing page lists the three reports the landlord
-// actually reaches for (Portfolio Performance, Maintenance,
-// Owner Reports). Tap-through to each. Insurance and Compliance
-// (Phase 4) land under their own stack entries as they ship.
+// Reports hub — landing page lists the reports the landlord reaches
+// for. Tap-through to each. Brand-matched card vocabulary.
+const HUB = [
+  {key: 'portfolio', glyph: '📈', title: 'Portfolio Performance', sub: 'Gross rent, vacancy, occupancy — the owner view'},
+  {key: 'maintenance', glyph: '🔧', title: 'Maintenance', sub: 'Open / overdue counts · read-only'},
+  {key: 'owner_reports', glyph: '🗂', title: 'Owner Reports', sub: 'One-tap PDF per property owner'},
+  {key: 'insurance', glyph: '🛡', title: 'Rent Insurance', sub: 'Coverage, claims, payouts'},
+  {key: 'compliance', glyph: '⚖', title: 'Compliance Alerts', sub: 'Notices due — Washington HB 1217 + others'},
+];
+
 const ReportsHub = ({navigation}) => (
-  <ScrollView className="flex-1 bg-keystone_stone">
-    <View className="px-5 pt-6 pb-2">
-      <Text className="text-grey_1 font-inter text-xs uppercase tracking-widest">
-        Reports
-      </Text>
-    </View>
-
-    <HubRow
-      title="Portfolio Performance"
-      subtitle="Gross rent, vacancy, occupancy — the accountant view"
-      onPress={() => navigation.navigate('portfolio')}
-    />
-    <HubRow
-      title="Maintenance"
-      subtitle="Open / overdue counts. Read-only."
-      onPress={() => navigation.navigate('maintenance')}
-    />
-    <HubRow
-      title="Owner Reports"
-      subtitle="One-tap PDF per property owner"
-      onPress={() => navigation.navigate('owner_reports')}
-    />
-    <HubRow
-      title="Rent Insurance"
-      subtitle="Coverage, claims, payouts"
-      onPress={() => navigation.navigate('insurance')}
-    />
-    <HubRow
-      title="Compliance Alerts"
-      subtitle="Notices due — Washington HB 1217 + others"
-      onPress={() => navigation.navigate('compliance')}
-    />
+  <ScrollView
+    className="flex-1 bg-keystone_canvas"
+    contentContainerStyle={{paddingTop: 8, paddingBottom: 24}}
+    showsVerticalScrollIndicator={false}>
+    {HUB.map(item => (
+      <TouchableOpacity
+        key={item.key}
+        onPress={() => navigation.navigate(item.key)}
+        activeOpacity={0.85}
+        className="mx-4 mb-3">
+        <Card>
+          <View className="flex-row items-center gap-3">
+            <IconChip size={44}>
+              <Text style={{fontSize: 18}}>{item.glyph}</Text>
+            </IconChip>
+            <View className="flex-1">
+              <Text className="text-keystone_navy font-inter-semibold text-base">
+                {item.title}
+              </Text>
+              <Text className="text-text_muted font-inter text-xs mt-0.5">
+                {item.sub}
+              </Text>
+            </View>
+            <Text className="text-text_muted font-inter-semibold text-lg">›</Text>
+          </View>
+        </Card>
+      </TouchableOpacity>
+    ))}
   </ScrollView>
-);
-
-const HubRow = ({title, subtitle, onPress}) => (
-  <TouchableOpacity
-    onPress={onPress}
-    activeOpacity={0.7}
-    className="mx-4 mb-3 bg-white rounded-2xl p-4 shadow-sm flex-row items-center justify-between">
-    <View className="flex-1">
-      <Text className="text-keystone_navy font-inter-semibold text-base">
-        {title}
-      </Text>
-      <Text className="text-grey_1 font-inter text-xs mt-1">{subtitle}</Text>
-    </View>
-    <Text className="text-keystone_navy font-inter-semibold text-lg">→</Text>
-  </TouchableOpacity>
 );
 
 // Lazy-loaded Phase 4 screens — keep imports below so the bundle
