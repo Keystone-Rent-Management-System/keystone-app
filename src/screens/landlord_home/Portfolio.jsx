@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import {usd, pct} from '../../utils/money';
 import {useExportPortfolioPdf, usePortfolio} from '../../hooks/usePortfolio';
-import {Card, IconChip, Label, Amount, Divider, Row, Delta, Stat} from '../../components/premium';
+import {Card, IconChip, Label, Amount, Divider, Row, Delta, Stat, Icon} from '../../components/premium';
 import COLORS from '../../constants/Theme';
 
 // Portfolio Performance — the screen that replaces the landlord's
@@ -64,7 +64,7 @@ const Portfolio = () => {
         <View className="px-4 mt-4">
           <Card>
             <View className="flex-row items-center gap-3 mb-2">
-              <IconChip><Text style={{fontSize: 15}}>📈</Text></IconChip>
+              <IconChip><Icon name="trending" size={19} /></IconChip>
               <Label>Income statement</Label>
             </View>
             <Row label="Gross Rent Income" value={usd(performance?.grossRentIncome)} />

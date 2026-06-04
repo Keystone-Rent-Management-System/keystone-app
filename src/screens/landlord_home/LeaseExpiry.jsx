@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import {useLeaseExpiry} from '../../hooks';
-import {Card, IconChip, Label, Stat, Divider, StatusPill} from '../../components/premium';
+import {Card, IconChip, Label, Stat, Divider, StatusPill, Icon} from '../../components/premium';
 import COLORS from '../../constants/Theme';
 
 // Lease-expiry timeline. The action-needed flag is the load-bearing
@@ -74,7 +74,7 @@ const LeaseExpiry = () => {
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center gap-3 flex-1">
                     <IconChip size={40}>
-                      <Text style={{fontSize: 15}}>📄</Text>
+                      <Icon name="lease" size={19} />
                     </IconChip>
                     <View className="flex-1">
                       <Text className="text-keystone_navy font-inter-semibold text-base">

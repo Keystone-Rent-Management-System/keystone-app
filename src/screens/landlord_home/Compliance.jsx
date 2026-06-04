@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 import {useComplianceAlerts, useSendComplianceNotice} from '../../hooks/useCompliance';
-import {Card, IconChip, Label, Divider, StatusPill} from '../../components/premium';
+import {Card, IconChip, Label, Divider, StatusPill, Icon} from '../../components/premium';
 import COLORS from '../../constants/Theme';
 
 // Compliance alerts — Washington-first (CEO override on Strategic
@@ -70,7 +70,7 @@ const Compliance = () => {
                 <View
                   style={{backgroundColor: 'rgba(205,160,0,0.12)'}}
                   className="w-10 h-10 rounded-lg items-center justify-center">
-                  <Text style={{color: COLORS.c_pending, fontWeight: '700'}}>⚖</Text>
+                  <Icon name="scale" size={19} color={COLORS.c_pending} />
                 </View>
                 <View className="flex-1">
                   <Text className="text-keystone_navy font-inter-semibold text-base">

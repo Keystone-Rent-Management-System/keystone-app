@@ -56,6 +56,16 @@ export const mockDailyCollection = {
     balance: 234600.0,
     updatedAt: new Date(Date.now() - 4 * 60 * 1000).toISOString(),
   },
+  // Trailing 6-month collected totals (oldest → newest) for the
+  // dashboard trend sparkline. Newest = this month's running total.
+  trend: [
+    {label: 'Jan', collected: 171200},
+    {label: 'Feb', collected: 176900},
+    {label: 'Mar', collected: 169800},
+    {label: 'Apr', collected: 182400},
+    {label: 'May', collected: 190100},
+    {label: 'Jun', collected: 187400},
+  ],
 };
 
 // ── #3 PaymentZone ─────────────────────────────────────────────────
