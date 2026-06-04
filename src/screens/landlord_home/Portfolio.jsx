@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   ScrollView,
+  StatusBar,
   Text,
   ToastAndroid,
   TouchableOpacity,
@@ -10,10 +11,12 @@ import {
 } from 'react-native';
 import {usd, pct} from '../../utils/money';
 import {useExportPortfolioPdf, usePortfolio} from '../../hooks/usePortfolio';
+import {Card, IconChip, Label, Amount, Divider, Row, Delta, Stat} from '../../components/premium';
+import COLORS from '../../constants/Theme';
 
 // Portfolio Performance — the screen that replaces the landlord's
-// Excel-to-property-owner workflow. Clean fixed-width columns, a few
-// deltas, single PDF export button.
+// Excel-to-owner workflow. Hero net-collected number, an income
+// statement, health metrics, period deltas, one-tap PDF.
 
 const Portfolio = () => {
   const {performance, isPending, isRefetching, refetch} = usePortfolio();
@@ -22,148 +25,99 @@ const Portfolio = () => {
   const handleExport = async () => {
     ToastAndroid.show('Preparing PDF…', ToastAndroid.SHORT);
     const res = await exportMut.mutateAsync(undefined).catch(() => null);
-    if (res?.url) {
-      // Hand-off to the share sheet. The SPA pattern is to open in a
-      // webview; on mobile we let the OS handle the URL.
-      ToastAndroid.show('PDF ready — opening', ToastAndroid.SHORT);
-    } else {
-      ToastAndroid.show(
-        res?.message ?? 'PDF export not available yet',
-        ToastAndroid.LONG,
-      );
-    }
+    ToastAndroid.show(
+      res?.url ? 'PDF ready — opening' : res?.message ?? 'PDF export coming soon',
+      ToastAndroid.LONG,
+    );
   };
 
   return (
-    <ScrollView
-      className="flex-1 bg-keystone_stone"
-      refreshControl={
-        <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
-      }>
-      {/* Header */}
-      <View className="px-5 pt-6 pb-4">
-        <Text className="text-grey_1 font-inter text-xs uppercase tracking-widest">
-          Portfolio Overview
-        </Text>
-        <Text className="text-keystone_navy font-inter-bold text-2xl mt-1">
-          {performance?.period ?? 'Current period'}
-        </Text>
-      </View>
-
-      {/* Income / loss table */}
-      <View className="mx-4 bg-white rounded-2xl p-5 shadow-sm">
-        <PerfRow
-          label="Gross Rent Income"
-          value={usd(performance?.grossRentIncome)}
-        />
-        <PerfRow
-          label="Vacancy Loss"
-          value={`-${usd(performance?.vacancyLoss ?? 0)}`}
-          valueClass="text-[#EF4444]"
-        />
-        <PerfRow
-          label="Late Fees"
-          value={`+${usd(performance?.lateFees ?? 0)}`}
-          valueClass="text-[#22C55E]"
-        />
-        <PerfRow
-          label="Insurance Claims"
-          value={`-${usd(performance?.insuranceClaims ?? 0)}`}
-          valueClass={
-            performance?.insuranceClaims
-              ? 'text-[#EF4444]'
-              : 'text-keystone_navy'
-          }
-        />
-        <View className="h-px bg-keystone_cream my-3" />
-        <PerfRow
-          label="Net Collected"
-          value={usd(performance?.netCollected)}
-          bold
-        />
-      </View>
-
-      {/* Health metrics */}
-      <View className="mx-4 mt-4 bg-white rounded-2xl p-5 shadow-sm">
-        <Text className="text-grey_1 font-inter text-xs uppercase tracking-wider mb-3">
-          Health
-        </Text>
-        <PerfRow
-          label="Occupancy Rate"
-          value={pct(performance?.occupancyRate, {decimals: 1})}
-        />
-        <PerfRow
-          label="Average Days to Pay"
-          value={`${performance?.averageDaysToPay ?? '—'} days`}
-        />
-        <PerfRow
-          label="On-Time Rate"
-          value={pct(performance?.onTimeRate, {decimals: 1})}
-        />
-      </View>
-
-      {/* Vs prior periods */}
-      <View className="mx-4 mt-4 bg-white rounded-2xl p-5 shadow-sm">
-        <DeltaRow label="vs Last Month" value={performance?.vsLastMonth} />
-        <DeltaRow label="vs Last Year" value={performance?.vsLastYear} />
-      </View>
-
-      {/* PDF export */}
-      <View className="px-4 mt-6 mb-12">
-        <TouchableOpacity
-          onPress={handleExport}
-          disabled={exportMut.isPending}
-          activeOpacity={0.85}
-          className={`rounded-2xl p-4 items-center justify-center ${
-            exportMut.isPending ? 'bg-keystone_navy/40' : 'bg-keystone_navy'
-          }`}>
-          {exportMut.isPending ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text className="text-white font-inter-semibold text-base uppercase tracking-wider">
-              Export PDF
-            </Text>
-          )}
-        </TouchableOpacity>
-      </View>
-
-      {isPending && (
-        <View className="absolute inset-0 items-center justify-center bg-white/60">
-          <ActivityIndicator color="#152535" />
+    <View className="flex-1 bg-keystone_canvas">
+      <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
+      <ScrollView
+        contentContainerStyle={{paddingBottom: 28}}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={COLORS.keystone_gold} />
+        }>
+        {/* Hero net collected (navy feature) */}
+        <View className="px-4 pt-4">
+          <Card feature>
+            <View className="flex-row items-center justify-between">
+              <Label onDark>Net Collected · {performance?.period ?? 'This period'}</Label>
+              {performance?.vsLastMonth != null && <Delta value={performance.vsLastMonth} />}
+            </View>
+            <Amount size="xl" onDark style={{marginTop: 12}}>
+              {usd(performance?.netCollected)}
+            </Amount>
+            <View className="flex-row mt-4">
+              <Stat label="Occupancy" value={pct(performance?.occupancyRate, {decimals: 1})} onDark />
+              <View className="w-px bg-white/12" />
+              <Stat label="On-time" value={pct(performance?.onTimeRate, {decimals: 1})} onDark align="left" style={{paddingLeft: 14}} />
+              <View className="w-px bg-white/12" />
+              <Stat label="Avg days to pay" value={`${performance?.averageDaysToPay ?? '—'}`} onDark align="right" />
+            </View>
+          </Card>
         </View>
-      )}
-    </ScrollView>
-  );
-};
 
-const PerfRow = ({label, value, valueClass, bold}) => (
-  <View className="flex-row items-center justify-between py-2">
-    <Text
-      className={`text-grey_1 font-inter text-sm ${
-        bold ? 'text-keystone_navy font-inter-semibold' : ''
-      }`}>
-      {label}
-    </Text>
-    <Text
-      className={`font-${bold ? 'inter-bold text-lg' : 'inter-semibold text-base'} ${
-        valueClass ?? 'text-keystone_navy'
-      }`}>
-      {value}
-    </Text>
-  </View>
-);
+        {/* Income statement */}
+        <View className="px-4 mt-4">
+          <Card>
+            <View className="flex-row items-center gap-3 mb-2">
+              <IconChip><Text style={{fontSize: 15}}>📈</Text></IconChip>
+              <Label>Income statement</Label>
+            </View>
+            <Row label="Gross Rent Income" value={usd(performance?.grossRentIncome)} />
+            <Row label="Vacancy Loss" value={`-${usd(performance?.vacancyLoss ?? 0)}`} valueColor={COLORS.c_danger} />
+            <Row label="Late Fees" value={`+${usd(performance?.lateFees ?? 0)}`} valueColor={COLORS.c_success} />
+            <Row
+              label="Insurance Claims"
+              value={`-${usd(performance?.insuranceClaims ?? 0)}`}
+              valueColor={performance?.insuranceClaims ? COLORS.c_danger : undefined}
+            />
+            <Divider style={{marginVertical: 8}} />
+            <Row label="Net Collected" value={usd(performance?.netCollected)} bold />
+          </Card>
+        </View>
 
-const DeltaRow = ({label, value}) => {
-  const positive = (value ?? 0) >= 0;
-  return (
-    <View className="flex-row items-center justify-between py-2">
-      <Text className="text-grey_1 font-inter text-sm">{label}</Text>
-      <Text
-        className={`font-inter-semibold text-base ${
-          positive ? 'text-[#22C55E]' : 'text-[#EF4444]'
-        }`}>
-        {positive ? '↑' : '↓'} {pct(Math.abs(value ?? 0), {decimals: 1})}
-      </Text>
+        {/* Trend */}
+        <View className="px-4 mt-4">
+          <Card>
+            <Label>Performance</Label>
+            <View className="flex-row items-center justify-between mt-3">
+              <Text className="text-text_muted font-inter text-sm">vs Last Month</Text>
+              <Delta value={performance?.vsLastMonth} />
+            </View>
+            <View className="flex-row items-center justify-between mt-3">
+              <Text className="text-text_muted font-inter text-sm">vs Last Year</Text>
+              <Delta value={performance?.vsLastYear} />
+            </View>
+          </Card>
+        </View>
+
+        {/* PDF export */}
+        <View className="px-4 mt-5">
+          <TouchableOpacity
+            onPress={handleExport}
+            disabled={exportMut.isPending}
+            activeOpacity={0.85}
+            className="bg-keystone_navy rounded-2xl p-4 items-center">
+            {exportMut.isPending ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text className="text-white font-inter-semibold text-base uppercase tracking-wider">
+                Export PDF
+              </Text>
+            )}
+          </TouchableOpacity>
+        </View>
+
+        {isPending && (
+          <View className="absolute inset-0 items-center justify-center">
+            <ActivityIndicator color={COLORS.keystone_navy} />
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 };

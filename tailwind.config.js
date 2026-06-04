@@ -11,6 +11,15 @@ module.exports = {
         keystone_gold: COLORS.keystone_gold,
         keystone_cream: COLORS.keystone_cream,
         keystone_stone: COLORS.keystone_stone,
+        // Command-center system (light, brand-matched to web)
+        keystone_canvas: COLORS.keystone_canvas,
+        keystone_slate: COLORS.keystone_slate,
+        keystone_chip: COLORS.keystone_chip,
+        keystone_hairline: COLORS.keystone_hairline,
+        text_muted: COLORS.text_muted,
+        c_success: COLORS.c_success,
+        c_danger: COLORS.c_danger,
+        c_pending: COLORS.c_pending,
         // Legacy aliases — resolve to Keystone palette via Theme.js.
         primary: COLORS.primary,
         primaryBg: COLORS.primary_bg,
