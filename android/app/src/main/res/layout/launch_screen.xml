@@ -6,37 +6,11 @@
     android:layout_height="match_parent"
     android:background="@color/keystone_navy">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_centerInParent="true"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <ImageView
-            android:layout_width="88dp"
-            android:layout_height="88dp"
-            android:contentDescription="@string/launch_screen_desc"
-            android:src="@drawable/keystone_mark" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:fontFamily="sans-serif"
-            android:letterSpacing="0.32"
-            android:text="KEYSTONE"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:letterSpacing="0.4"
-            android:text="RENT MANAGEMENT"
-            android:textColor="@color/keystone_gold"
-            android:textSize="10sp" />
-    </LinearLayout>
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/launch_screen_desc"
+        android:src="@drawable/keystone_splash_logo" />
 </RelativeLayout>

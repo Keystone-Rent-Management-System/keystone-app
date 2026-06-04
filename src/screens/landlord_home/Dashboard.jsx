@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {useDashboard, useAuth} from '../../hooks';
+import {useDashboard, useAuth, usePaymentZones, useLeaseExpiry} from '../../hooks';
 import {useMaintenance} from '../../hooks/useMaintenance';
 import {useComplianceAlerts} from '../../hooks/useCompliance';
 import {usd, usdCents, pct} from '../../utils/money';
@@ -27,7 +27,7 @@ import {
   Sparkline,
   Ring,
   FadeScaleIn,
-  BrandLockup,
+  KeystoneLogo,
 } from '../../components/premium';
 import COLORS from '../../constants/Theme';
 
@@ -40,6 +40,8 @@ const Dashboard = () => {
   const {dashboard, isPending, isRefetching, refetch} = useDashboard();
   const {summary: maint} = useMaintenance();
   const {alerts: complianceAlerts} = useComplianceAlerts();
+  const {summary: zones} = usePaymentZones();
+  const {expiring} = useLeaseExpiry();
   const {profile} = useAuth();
   const nav = useNavigation();
 
@@ -47,8 +49,10 @@ const Dashboard = () => {
     a => a.status === 'NOT_SENT',
   ).length;
   const overdue = maint?.overdue ?? 0;
+  const unpaid = zones?.find(z => z.key === 'notPaid')?.count ?? 0;
+  const renewalsDue = expiring.filter(u => u.renewalStatus === 'NOT_SENT').length;
 
-  const firstName = profile?.firstName ?? 'Landlord';
+  const firstName = profile?.firstName ?? '';
   const initials = `${(profile?.firstName ?? 'L')[0] ?? ''}${
     (profile?.lastName ?? '')[0] ?? ''
   }`.toUpperCase();
@@ -61,6 +65,52 @@ const Dashboard = () => {
     month: 'long',
     day: 'numeric',
   });
+
+  // A warm, human read of the month — spoken like a person, not a
+  // dashboard. Busy landlords want reassurance, not just numbers.
+  const collectedPct = dashboard?.month?.percentCollected ?? 0;
+  const monthFeel =
+    collectedPct >= 95
+      ? "You're nearly all collected for the month — beautifully on top of it."
+      : collectedPct >= 85
+        ? "June's looking strong. You're well ahead on rent."
+        : collectedPct >= 65
+          ? "Rent's coming in steadily this month."
+          : "Early in the month — collections are just getting going.";
+
+  // The few things that actually need him — pulled from across hundreds
+  // of units and said in plain language. This is the whole point: he
+  // shouldn't have to go hunting.
+  const needs = [
+    unpaid > 0 && {
+      icon: 'card',
+      tone: 'danger',
+      text: `${unpaid} ${unpaid === 1 ? 'tenant hasn’t' : 'tenants haven’t'} paid yet`,
+      hint: 'Keystone already sent reminders',
+      onPress: () => nav.navigate('payments_stack'),
+    },
+    renewalsDue > 0 && {
+      icon: 'lease',
+      tone: 'pending',
+      text: `${renewalsDue} ${renewalsDue === 1 ? 'lease is' : 'leases are'} up for renewal`,
+      hint: 'A renewal hasn’t been sent yet',
+      onPress: () => nav.navigate('leases_stack'),
+    },
+    pendingCompliance > 0 && {
+      icon: 'scale',
+      tone: 'pending',
+      text: `${pendingCompliance} ${pendingCompliance === 1 ? 'notice' : 'notices'} to send before the deadline`,
+      hint: 'Washington — we’ll write them for you',
+      onPress: () => nav.navigate('reports_stack', {screen: 'compliance'}),
+    },
+    overdue > 0 && {
+      icon: 'wrench',
+      tone: 'danger',
+      text: `${overdue} ${overdue === 1 ? 'repair is' : 'repairs are'} running late`,
+      hint: 'Your PM has been notified',
+      onPress: () => nav.navigate('reports_stack', {screen: 'maintenance'}),
+    },
+  ].filter(Boolean);
   const monthLabel = now
     .toLocaleDateString('en-US', {month: 'long', year: 'numeric'})
     .toUpperCase();
@@ -91,52 +141,56 @@ const Dashboard = () => {
             tintColor={COLORS.keystone_gold}
           />
         }>
-        {/* Brand bar */}
-        <View className="px-5 pt-12">
-          <BrandLockup size={22} />
+        {/* Brand + profile */}
+        <View className="px-5 pt-12 flex-row items-center justify-between">
+          <KeystoneLogo height={38} />
+          <Avatar initials={initials} size={44} />
         </View>
 
-        {/* Header */}
-        <View className="px-5 pt-5 pb-5 flex-row items-center justify-between">
-          <View>
-            <Text className="text-keystone_gold font-inter-semibold text-xs tracking-widest uppercase">
-              {greeting}
-            </Text>
-            <Text className="text-keystone_navy font-inter-bold text-3xl mt-1">
-              {firstName}
-            </Text>
-            <Text className="text-text_muted font-inter text-xs mt-1">
-              {dateLabel}
-            </Text>
-          </View>
-          <Avatar initials={initials} size={48} />
+        {/* Warm, human greeting */}
+        <View className="px-5 pt-6 pb-4">
+          <Text className="text-text_muted font-inter text-xs">{dateLabel}</Text>
+          <Text className="text-keystone_navy font-inter-bold text-3xl mt-1">
+            {greeting}
+            {firstName ? `, ${firstName}` : ''}.
+          </Text>
+          <Text className="text-keystone_slate font-inter text-base mt-2 leading-5">
+            {monthFeel}
+          </Text>
         </View>
 
-        {/* Action flags — refined cards, only when he must act */}
-        {pendingCompliance > 0 && (
-          <Flag
-            tone="pending"
-            icon="scale"
-            title={`${pendingCompliance} compliance notice${
-              pendingCompliance === 1 ? '' : 's'
-            } to send`}
-            sub="Statutory deadline approaching"
-            onPress={() =>
-              nav.navigate('reports_stack', {screen: 'compliance'})
-            }
-          />
-        )}
-        {overdue > 0 && (
-          <Flag
-            tone="danger"
-            icon="wrench"
-            title={`${overdue} maintenance overdue`}
-            sub="Needs your attention"
-            onPress={() =>
-              nav.navigate('reports_stack', {screen: 'maintenance'})
-            }
-          />
-        )}
+        {/* Needs you — the one place he looks to know what's on his plate */}
+        <View className="px-4 mb-1">
+          <Card style={{padding: 6}}>
+            <View className="px-3 pt-3 pb-1 flex-row items-center justify-between">
+              <Text className="text-keystone_navy font-inter-semibold text-base">
+                {needs.length > 0 ? 'A few things need you' : 'You’re all caught up'}
+              </Text>
+              {needs.length > 0 && (
+                <View className="bg-keystone_chip rounded-full w-6 h-6 items-center justify-center">
+                  <Text className="text-keystone_navy font-inter-bold text-xs">
+                    {needs.length}
+                  </Text>
+                </View>
+              )}
+            </View>
+            {needs.length === 0 ? (
+              <View className="px-3 py-4 flex-row items-center gap-3">
+                <Text style={{fontSize: 20}}>☕</Text>
+                <Text className="text-text_muted font-inter text-sm flex-1">
+                  Nothing needs you right now. Keystone’s handling the rest.
+                </Text>
+              </View>
+            ) : (
+              needs.map((n, i) => (
+                <View key={i}>
+                  {i > 0 && <Divider style={{marginHorizontal: 12}} />}
+                  <NeedRow item={n} />
+                </View>
+              ))
+            )}
+          </Card>
+        </View>
 
         {/* CASH — the navy feature card */}
         <View className="px-4 mt-1">
@@ -358,31 +412,19 @@ const Dashboard = () => {
   );
 };
 
-const Flag = ({tone, icon, title, sub, onPress}) => {
-  const accent =
-    tone === 'danger' ? COLORS.c_danger : COLORS.c_pending;
+const NeedRow = ({item}) => {
+  const accent = item.tone === 'danger' ? COLORS.c_danger : COLORS.c_pending;
+  const bg = item.tone === 'danger' ? 'rgba(229,53,53,0.10)' : 'rgba(205,160,0,0.12)';
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.85} className="mx-4 mb-3">
-      <Card style={{padding: 14, borderLeftWidth: 3, borderLeftColor: accent}}>
-        <View className="flex-row items-center gap-3">
-          <View
-            style={{backgroundColor: tone === 'danger' ? 'rgba(229,53,53,0.10)' : 'rgba(205,160,0,0.12)'}}
-            className="w-9 h-9 rounded-lg items-center justify-center">
-            <Icon name={icon} size={18} color={accent} />
-          </View>
-          <View className="flex-1">
-            <Text className="text-keystone_navy font-inter-semibold text-sm">
-              {title}
-            </Text>
-            <Text className="text-text_muted font-inter text-xs mt-0.5">
-              {sub}
-            </Text>
-          </View>
-          <Text style={{color: accent}} className="font-inter-semibold text-base">
-            →
-          </Text>
-        </View>
-      </Card>
+    <TouchableOpacity onPress={item.onPress} activeOpacity={0.7} className="flex-row items-center px-3 py-3">
+      <View style={{backgroundColor: bg}} className="w-9 h-9 rounded-lg items-center justify-center mr-3">
+        <Icon name={item.icon} size={18} color={accent} />
+      </View>
+      <View className="flex-1">
+        <Text className="text-keystone_navy font-inter-semibold text-sm">{item.text}</Text>
+        <Text className="text-text_muted font-inter text-xs mt-0.5">{item.hint}</Text>
+      </View>
+      <Text className="text-text_muted font-inter-semibold text-base">›</Text>
     </TouchableOpacity>
   );
 };

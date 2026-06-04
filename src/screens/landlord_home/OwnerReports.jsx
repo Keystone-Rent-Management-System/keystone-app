@@ -9,47 +9,55 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {
-  useEmailOwnerReport,
-  useGenerateOwnerReport,
-  useOwners,
-} from '../../hooks/useOwners';
-import {Card, Avatar, Label, Divider} from '../../components/premium';
+import {useGenerateOwnerReport, useEmailOwnerReport} from '../../hooks/useOwners';
+import {usePortfolio} from '../../hooks/usePortfolio';
+import {usd} from '../../utils/money';
+import {Card, IconChip, Label, Amount, Divider, Icon} from '../../components/premium';
 import COLORS from '../../constants/Theme';
 
-// Owner reporting — the four-hours-per-month Sandra screen. Pick an
-// owner, generate a clean PDF, hand off to email.
+// Statements — for a landlord who OWNS his units. Not "reporting to
+// owners"; this is the clean financial summary he hands his
+// accountant or keeps for taxes. Pick a period, get a tidy PDF —
+// no spreadsheets, no bookkeeping.
+
+const PERIODS = [
+  {key: 'MONTH', label: 'This month'},
+  {key: 'QUARTER', label: 'This quarter'},
+  {key: 'YTD', label: 'Year to date'},
+];
+
+const INCLUDES = [
+  'Rent collected vs expected',
+  'Operating expenses & repairs',
+  'Vacancy & late fees',
+  'Net operating income',
+  'Year-end summary your accountant can use',
+];
 
 const OwnerReports = () => {
-  const {owners, isPending, isRefetching, refetch} = useOwners();
-  const [selectedId, setSelectedId] = useState(null);
+  const [period, setPeriod] = useState('MONTH');
+  const {performance, isPending, isRefetching, refetch} = usePortfolio();
   const generate = useGenerateOwnerReport();
   const sendEmail = useEmailOwnerReport();
 
-  const selectedOwner = owners.find(o => o.id === selectedId) ?? owners[0];
-  const currentPeriod = new Date().toISOString().slice(0, 7);
+  const periodLabel = PERIODS.find(p => p.key === period)?.label ?? '';
 
   const onGeneratePdf = async () => {
-    if (!selectedOwner) return;
-    ToastAndroid.show('Generating report…', ToastAndroid.SHORT);
+    ToastAndroid.show('Preparing your statement…', ToastAndroid.SHORT);
     const res = await generate
-      .mutateAsync({ownerId: selectedOwner.id, period: currentPeriod})
+      .mutateAsync({ownerId: 'portfolio', period})
       .catch(() => null);
     ToastAndroid.show(
-      res?.url ? 'PDF ready — opening' : res?.message ?? 'PDF export coming soon',
+      res?.url ? 'Statement ready — opening' : res?.message ?? 'Coming soon',
       ToastAndroid.LONG,
     );
   };
   const onSendEmail = async () => {
-    if (!selectedOwner) return;
     const res = await sendEmail
-      .mutateAsync({ownerId: selectedOwner.id, period: currentPeriod})
+      .mutateAsync({ownerId: 'portfolio', period})
       .catch(() => null);
-    ToastAndroid.show(res?.message ?? `Report queued to ${selectedOwner.name}`, ToastAndroid.LONG);
+    ToastAndroid.show(res?.message ?? 'Sent to your accountant', ToastAndroid.LONG);
   };
-
-  const initials = name =>
-    (name ?? '').split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
 
   return (
     <View className="flex-1 bg-keystone_canvas">
@@ -60,53 +68,60 @@ const OwnerReports = () => {
         refreshControl={
           <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={COLORS.keystone_gold} />
         }>
-        <View className="px-5 pt-6 pb-4">
-          <Text className="text-keystone_navy font-inter-bold text-2xl">Owner Reports</Text>
+        <View className="px-5 pt-6 pb-3">
+          <Text className="text-keystone_navy font-inter-bold text-2xl">Statements</Text>
           <Text className="text-text_muted font-inter text-sm mt-1">
-            Clean monthly statements per property owner
+            Clean financials for your accountant or your records — no
+            spreadsheets, no bookkeeping.
           </Text>
         </View>
 
-        {/* Owner picker */}
+        {/* Net snapshot (navy) */}
         <View className="px-4">
-          <Card style={{padding: 6}}>
-            {owners.map((owner, idx) => {
-              const selected = (selectedOwner?.id ?? owners[0]?.id) === owner.id;
-              return (
-                <View key={owner.id}>
-                  <TouchableOpacity
-                    onPress={() => setSelectedId(owner.id)}
-                    activeOpacity={0.7}
-                    className="flex-row items-center px-3 py-3">
-                    <Avatar initials={initials(owner.name)} size={42} />
-                    <View className="flex-1 ml-3">
-                      <Text className="text-keystone_navy font-inter-semibold text-base">
-                        {owner.name}
-                      </Text>
-                      <Text className="text-text_muted font-inter text-xs mt-0.5">
-                        {owner.propertyCount} propert{owner.propertyCount === 1 ? 'y' : 'ies'}
-                      </Text>
-                    </View>
-                    <View
-                      className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
-                        selected ? 'border-keystone_navy bg-keystone_navy' : 'border-text_muted'
-                      }`}>
-                      {selected && <View className="w-2 h-2 rounded-full bg-keystone_gold" />}
-                    </View>
-                  </TouchableOpacity>
-                  {idx < owners.length - 1 && <Divider style={{marginHorizontal: 12}} />}
-                </View>
-              );
-            })}
+          <Card feature>
+            <Label onDark>Net operating income · {periodLabel}</Label>
+            <Amount size="xl" onDark style={{marginTop: 10}}>
+              {usd(performance?.netCollected ?? 0)}
+            </Amount>
+            <Text className="text-white/55 font-inter text-xs mt-1">
+              across your whole portfolio
+            </Text>
           </Card>
         </View>
 
-        {/* Report contents */}
+        {/* Period */}
+        <View className="px-4 mt-5">
+          <Text className="text-text_muted font-inter-semibold text-xs uppercase tracking-widest ml-1 mb-3">
+            Period
+          </Text>
+          <View className="flex-row gap-2">
+            {PERIODS.map(p => {
+              const on = period === p.key;
+              return (
+                <TouchableOpacity
+                  key={p.key}
+                  onPress={() => setPeriod(p.key)}
+                  activeOpacity={0.8}
+                  style={on ? {backgroundColor: COLORS.keystone_navy} : null}
+                  className={`flex-1 rounded-xl p-3 items-center ${on ? '' : 'bg-white border border-keystone_hairline'}`}>
+                  <Text className={`font-inter-semibold text-sm ${on ? 'text-white' : 'text-keystone_navy'}`}>
+                    {p.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+
+        {/* What's inside */}
         <View className="px-4 mt-5">
           <Card>
-            <Label>Report for {formatPeriod(currentPeriod)}</Label>
-            <Divider style={{marginVertical: 12}} />
-            {['Rent collected vs expected', 'Maintenance costs', 'Vacancy summary', 'Year-to-date comparison'].map(l => (
+            <View className="flex-row items-center gap-3 mb-1">
+              <IconChip><Icon name="reports" size={19} /></IconChip>
+              <Label>What's inside</Label>
+            </View>
+            <Divider style={{marginVertical: 10}} />
+            {INCLUDES.map(l => (
               <View key={l} className="flex-row items-center py-1.5">
                 <Text className="text-c_success font-inter-semibold mr-2">✓</Text>
                 <Text className="text-keystone_navy font-inter text-sm">{l}</Text>
@@ -119,27 +134,27 @@ const OwnerReports = () => {
         <View className="px-4 mt-5 flex-row gap-3">
           <TouchableOpacity
             onPress={onGeneratePdf}
-            disabled={generate.isPending || !selectedOwner}
+            disabled={generate.isPending}
             activeOpacity={0.85}
             className="flex-1 bg-keystone_navy rounded-2xl p-4 items-center">
             {generate.isPending ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
               <Text className="text-white font-inter-semibold text-sm uppercase tracking-wider">
-                Generate PDF
+                Download PDF
               </Text>
             )}
           </TouchableOpacity>
           <TouchableOpacity
             onPress={onSendEmail}
-            disabled={sendEmail.isPending || !selectedOwner}
+            disabled={sendEmail.isPending}
             activeOpacity={0.85}
             className="flex-1 border border-keystone_navy rounded-2xl p-4 items-center">
             {sendEmail.isPending ? (
               <ActivityIndicator color={COLORS.keystone_navy} />
             ) : (
               <Text className="text-keystone_navy font-inter-semibold text-sm uppercase tracking-wider">
-                Send by email
+                Email accountant
               </Text>
             )}
           </TouchableOpacity>
@@ -153,12 +168,6 @@ const OwnerReports = () => {
       </ScrollView>
     </View>
   );
-};
-
-const formatPeriod = iso => {
-  if (!iso) return '—';
-  const [y, m] = iso.split('-');
-  return new Date(Number(y), Number(m) - 1, 1).toLocaleDateString('en-US', {month: 'long', year: 'numeric'});
 };
 
 export default OwnerReports;

@@ -12,7 +12,7 @@ const Stack = createStackNavigator();
 const HUB = [
   {key: 'portfolio', icon: 'trending', title: 'Portfolio Performance', sub: 'Gross rent, vacancy, occupancy — the owner view'},
   {key: 'maintenance', icon: 'wrench', title: 'Maintenance', sub: 'Open / overdue counts · read-only'},
-  {key: 'owner_reports', icon: 'users', title: 'Owner Reports', sub: 'One-tap PDF per property owner'},
+  {key: 'owner_reports', icon: 'reports', title: 'Statements', sub: 'Accountant-ready financials & tax summary'},
   {key: 'insurance', icon: 'shield', title: 'Rent Insurance', sub: 'Coverage, claims, payouts'},
   {key: 'compliance', icon: 'scale', title: 'Compliance Alerts', sub: 'Notices due — Washington HB 1217 + others'},
 ];
@@ -94,10 +94,11 @@ const ReportsStack = () => (
     />
     <Stack.Screen
       name="owner_reports"
+      // route key kept for nav stability; screen is now "Statements"
       component={OwnerReports}
       options={{
         headerShown: true,
-        title: 'Owner Reports',
+        title: 'Statements',
         headerShadowVisible: false,
         headerTitleStyle: titleStyling,
       }}

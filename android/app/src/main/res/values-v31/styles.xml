@@ -1,13 +1,10 @@
 <resources>
 
-    <!-- Android 12+ system splash. The default uses the launcher icon
-         on a light window background (still the old Pallax mark);
-         override it to the Keystone monogram on navy so the very
-         first frame is on-brand. -->
+    <!-- Android 12+ system splash — Keystone logo on navy. -->
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
         <item name="android:windowSplashScreenBackground">@color/keystone_navy</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/keystone_mark</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/keystone_splash_logo</item>
         <item name="android:windowSplashScreenIconBackgroundColor">@color/keystone_navy</item>
     </style>
 
