@@ -5,7 +5,7 @@ import COLORS from '../../constants/Theme';
 import {useCountUp, useSweep} from './motion';
 
 export {default as Icon} from './icons';
-export {Donut, Sparkline, AreaTrend} from './charts';
+export {Donut, Ring, Sparkline, AreaTrend} from './charts';
 export {FadeScaleIn, useCountUp} from './motion';
 export {KeystoneMark, BrandLockup} from './brand';
 

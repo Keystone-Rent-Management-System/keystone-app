@@ -14,7 +14,7 @@ const Main = () => {
   }, []);
 
   const linking = {
-    prefixes: ['https://keystonerent.app', 'https://pallax-ke.com'],
+    prefixes: ['https://keystonerent.app'],
     config: {
       screens: {
         agreements_current: {
