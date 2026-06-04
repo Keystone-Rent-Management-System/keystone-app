@@ -18,12 +18,15 @@ import {
   Avatar,
   Label,
   Amount,
+  AnimatedAmount,
   Divider,
   ProgressBar,
   Stat,
   StatusPill,
   Icon,
   Sparkline,
+  FadeScaleIn,
+  BrandLockup,
 } from '../../components/premium';
 import COLORS from '../../constants/Theme';
 
@@ -79,8 +82,13 @@ const Dashboard = () => {
             tintColor={COLORS.keystone_gold}
           />
         }>
+        {/* Brand bar */}
+        <View className="px-5 pt-12">
+          <BrandLockup size={22} />
+        </View>
+
         {/* Header */}
-        <View className="px-5 pt-14 pb-5 flex-row items-center justify-between">
+        <View className="px-5 pt-5 pb-5 flex-row items-center justify-between">
           <View>
             <Text className="text-keystone_gold font-inter-semibold text-xs tracking-widest uppercase">
               Good morning
@@ -131,9 +139,13 @@ const Dashboard = () => {
               </View>
             </View>
 
-            <Amount size="xl" onDark style={{marginTop: 12}}>
-              {usdCents(dashboard?.cashAccount?.balance)}
-            </Amount>
+            <AnimatedAmount
+              value={dashboard?.cashAccount?.balance ?? 0}
+              format={usdCents}
+              size="xl"
+              onDark
+              style={{marginTop: 12}}
+            />
 
             <View className="flex-row items-center justify-between mt-3">
               <View>
@@ -182,9 +194,12 @@ const Dashboard = () => {
               </View>
             </View>
 
-            <Amount size="xl" style={{marginTop: 16}}>
-              {usd(dashboard?.month?.collected)}
-            </Amount>
+            <AnimatedAmount
+              value={dashboard?.month?.collected ?? 0}
+              format={usd}
+              size="xl"
+              style={{marginTop: 16}}
+            />
             <Text className="text-text_muted font-inter text-sm mt-1">
               collected of {usd(dashboard?.month?.expected)} expected
             </Text>
@@ -253,6 +268,29 @@ const Dashboard = () => {
           </View>
         )}
 
+        {/* RECENT ACTIVITY */}
+        {dashboard?.recentActivity?.length > 0 && (
+          <View className="px-4 mt-4">
+            <Card style={{paddingVertical: 6}}>
+              <View className="px-3 pt-2 pb-1 flex-row items-center justify-between">
+                <Label>Recent activity</Label>
+                <View className="flex-row items-center gap-1.5">
+                  <View className="w-1.5 h-1.5 rounded-full bg-c_success" />
+                  <Text className="text-text_muted font-inter text-2xs uppercase tracking-wider">
+                    live
+                  </Text>
+                </View>
+              </View>
+              {dashboard.recentActivity.map((a, i) => (
+                <View key={a.id}>
+                  {i > 0 && <Divider style={{marginHorizontal: 12}} />}
+                  <ActivityRow item={a} />
+                </View>
+              ))}
+            </Card>
+          </View>
+        )}
+
         {/* QUICK ACCESS */}
         <View className="px-4 mt-5">
           <Text className="text-text_muted font-inter-semibold text-xs uppercase tracking-widest ml-1 mb-3">
@@ -306,6 +344,56 @@ const Flag = ({tone, icon, title, sub, onPress}) => {
         </View>
       </Card>
     </TouchableOpacity>
+  );
+};
+
+const ACTIVITY = {
+  PAYMENT: {icon: 'card', tint: COLORS.c_success, prefix: '+'},
+  LATE_FEE: {icon: 'card', tint: COLORS.c_pending, prefix: '+'},
+  PAYOUT: {icon: 'bank', tint: COLORS.keystone_navy, prefix: '−'},
+};
+
+const timeAgo = mins => {
+  if (mins < 60) return `${mins}m ago`;
+  const h = Math.floor(mins / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+};
+
+const ActivityRow = ({item}) => {
+  const cfg = ACTIVITY[item.type] ?? ACTIVITY.PAYMENT;
+  const title =
+    item.type === 'PAYOUT'
+      ? 'Payout to bank'
+      : item.type === 'LATE_FEE'
+        ? `Late fee · ${item.tenant}`
+        : `Rent · ${item.tenant}`;
+  const sub = item.type === 'PAYOUT' ? item.note : item.unit;
+  return (
+    <View className="flex-row items-center px-3 py-2.5">
+      <View
+        style={{backgroundColor: COLORS.keystone_chip}}
+        className="w-9 h-9 rounded-lg items-center justify-center mr-3">
+        <Icon name={cfg.icon} size={17} color={cfg.tint} />
+      </View>
+      <View className="flex-1">
+        <Text className="text-keystone_navy font-inter-semibold text-sm">{title}</Text>
+        {sub ? (
+          <Text className="text-text_muted font-inter text-xs mt-0.5">{sub}</Text>
+        ) : null}
+      </View>
+      <View className="items-end">
+        <Text
+          style={{color: cfg.tint}}
+          className="font-inter-bold text-sm">
+          {cfg.prefix}
+          {usd(item.amount)}
+        </Text>
+        <Text className="text-text_muted font-inter text-2xs mt-0.5">
+          {timeAgo(item.minutesAgo)}
+        </Text>
+      </View>
+    </View>
   );
 };
 

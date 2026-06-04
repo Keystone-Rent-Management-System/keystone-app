@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import {usd, pct} from '../../utils/money';
 import {useExportPortfolioPdf, usePortfolio} from '../../hooks/usePortfolio';
-import {Card, IconChip, Label, Amount, Divider, Row, Delta, Stat, Icon} from '../../components/premium';
+import {Card, IconChip, Label, Amount, AnimatedAmount, Divider, Row, Delta, Stat, Icon} from '../../components/premium';
 import COLORS from '../../constants/Theme';
 
 // Portfolio Performance — the screen that replaces the landlord's
@@ -47,9 +47,13 @@ const Portfolio = () => {
               <Label onDark>Net Collected · {performance?.period ?? 'This period'}</Label>
               {performance?.vsLastMonth != null && <Delta value={performance.vsLastMonth} />}
             </View>
-            <Amount size="xl" onDark style={{marginTop: 12}}>
-              {usd(performance?.netCollected)}
-            </Amount>
+            <AnimatedAmount
+              value={performance?.netCollected ?? 0}
+              format={usd}
+              size="xl"
+              onDark
+              style={{marginTop: 12}}
+            />
             <View className="flex-row mt-4">
               <Stat label="Occupancy" value={pct(performance?.occupancyRate, {decimals: 1})} onDark />
               <View className="w-px bg-white/12" />

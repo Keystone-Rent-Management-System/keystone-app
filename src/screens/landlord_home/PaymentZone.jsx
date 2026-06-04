@@ -13,7 +13,7 @@ import {useNavigation} from '@react-navigation/native';
 import {PAYMENT_ZONES, usePaymentZones, useZoneTenants} from '../../hooks';
 import {usePayoutBalance} from '../../hooks/usePayout';
 import {pct, usdCents} from '../../utils/money';
-import {Card, IconChip, Avatar, Label, Amount, Divider, StatusPill, Donut} from '../../components/premium';
+import {Card, IconChip, Avatar, Label, Amount, AnimatedAmount, Divider, StatusPill, Donut, FadeScaleIn} from '../../components/premium';
 import COLORS from '../../constants/Theme';
 
 // Tenant rent-status buckets. Top: a navy feature strip with the
@@ -52,9 +52,13 @@ const PaymentZone = () => {
               <View className="flex-row items-center justify-between">
                 <View>
                   <Label onDark>Available to payout</Label>
-                  <Amount size="lg" onDark style={{marginTop: 6}}>
-                    {usdCents(balance.available)}
-                  </Amount>
+                  <AnimatedAmount
+                    value={balance.available}
+                    format={usdCents}
+                    size="lg"
+                    onDark
+                    style={{marginTop: 6}}
+                  />
                 </View>
                 <TouchableOpacity
                   onPress={() => nav.navigate('payout')}
@@ -74,13 +78,15 @@ const PaymentZone = () => {
           <View className="px-4 mb-4">
             <Card>
               <View className="flex-row items-center">
-                <Donut
-                  size={150}
-                  thickness={20}
-                  centerValue={total}
-                  centerLabel="tenants"
-                  data={summary.map(z => ({value: z.count, color: z.color}))}
-                />
+                <FadeScaleIn>
+                  <Donut
+                    size={150}
+                    thickness={20}
+                    centerValue={total}
+                    centerLabel="tenants"
+                    data={summary.map(z => ({value: z.count, color: z.color}))}
+                  />
+                </FadeScaleIn>
                 <View className="flex-1 pl-4">
                   {summary.map(z => (
                     <View key={z.key} className="flex-row items-center justify-between py-1.5">

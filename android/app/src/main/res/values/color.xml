@@ -1,3 +1,5 @@
 <resources>
     <color name="white">#FFF</color>
+    <color name="keystone_navy">#152535</color>
+    <color name="keystone_gold">#A89977</color>
 </resources>

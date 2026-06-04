@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text} from 'react-native';
 import Svg, {Circle, Rect, Path, Defs, LinearGradient as SvgGradient, Stop} from 'react-native-svg';
 import COLORS from '../../constants/Theme';
+import {useCountUp} from './motion';
 
 const tabular = {fontVariant: ['tabular-nums']};
 
@@ -22,6 +23,10 @@ export const Donut = ({
   const c = 2 * Math.PI * r;
   const cx = size / 2;
   const cy = size / 2;
+
+  const countUp = typeof centerValue === 'number';
+  const animated = useCountUp(countUp ? centerValue : 0);
+  const shownCenter = countUp ? Math.round(animated) : centerValue;
 
   let offset = 0;
   const segments = data
@@ -72,7 +77,7 @@ export const Donut = ({
         <View style={{position: 'absolute', alignItems: 'center'}}>
           {centerValue != null && (
             <Text style={[{color: COLORS.keystone_navy, fontFamily: 'Inter-Bold', fontSize: 28}, tabular]}>
-              {centerValue}
+              {shownCenter}
             </Text>
           )}
           {centerLabel ? (
