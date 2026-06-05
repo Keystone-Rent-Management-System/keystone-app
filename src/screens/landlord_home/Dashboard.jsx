@@ -11,7 +11,7 @@ import {useNavigation} from '@react-navigation/native';
 import {useDashboard, useAuth, usePaymentZones, useLeaseExpiry} from '../../hooks';
 import {useMaintenance} from '../../hooks/useMaintenance';
 import {useComplianceAlerts} from '../../hooks/useCompliance';
-import {usd, usdCents, pct} from '../../utils/money';
+import {usd, pct} from '../../utils/money';
 import {
   Card,
   IconChip,
@@ -114,19 +114,18 @@ const Dashboard = () => {
   const monthLabel = now
     .toLocaleDateString('en-US', {month: 'long', year: 'numeric'})
     .toUpperCase();
-  const updatedMins = dashboard?.cashAccount?.updatedAt
-    ? Math.max(
-        0,
-        Math.round(
-          (Date.now() - new Date(dashboard.cashAccount.updatedAt).getTime()) /
-            60000,
-        ),
-      )
-    : null;
-
-  const collectedToday = dashboard?.today?.collected ?? 0;
+  // Tolerant of both the mock fixture shape ({today,month}) and the
+  // real /dashboard/daily-collection response ({collectedToday,
+  // collectedThisMonth}).
+  const collectedToday =
+    dashboard?.today?.collected ?? dashboard?.collectedToday ?? 0;
   const expectedToday = dashboard?.today?.expected ?? 0;
   const outstandingToday = expectedToday - collectedToday;
+  // Rent received this month — paid instantly + directly to the
+  // landlord's bank (no escrow / held balance, so there is no
+  // "available balance" and nothing to "move").
+  const monthReceived =
+    dashboard?.month?.collected ?? dashboard?.collectedThisMonth ?? 0;
 
   return (
     <View className="flex-1 bg-keystone_canvas">
@@ -192,48 +191,42 @@ const Dashboard = () => {
           </Card>
         </View>
 
-        {/* CASH — the navy feature card */}
+        {/* RENT RECEIVED — the navy feature card. Keystone pays rent
+            instantly + directly into the landlord's own bank: there is
+            no escrow / platform-held balance, so this is a record of
+            money already in their account, NOT a balance to move. */}
         <View className="px-4 mt-1">
           <Card feature>
             <View className="flex-row items-center justify-between">
-              <Label onDark>Cash available now</Label>
+              <Label onDark>Rent received this month</Label>
               <View className="flex-row items-center gap-2">
                 <View className="w-1.5 h-1.5 rounded-full bg-c_success" />
                 <Text className="text-white/70 font-inter-medium text-2xs uppercase tracking-wider">
-                  {dashboard?.cashAccount?.bankName ?? 'Bank'}
+                  Instant · Direct
                 </Text>
               </View>
             </View>
 
             <AnimatedAmount
-              value={dashboard?.cashAccount?.balance ?? 0}
-              format={usdCents}
+              value={monthReceived}
+              format={usd}
               size="xl"
               onDark
               style={{marginTop: 12}}
             />
 
             <View className="flex-row items-center justify-between mt-3">
-              <View>
-                <Text className="text-white/60 font-inter text-xs">
-                  Business ····{dashboard?.cashAccount?.accountLast4 ?? '—'}
-                </Text>
-                {updatedMins !== null && (
-                  <Text className="text-white/40 font-inter text-2xs mt-0.5">
-                    updated {updatedMins}m ago
+              <Text className="text-white/60 font-inter text-xs flex-1 pr-3">
+                Paid straight to your bank the moment a tenant pays — no
+                holding account, nothing to move.
+              </Text>
+              {collectedToday > 0 && (
+                <View className="bg-white/10 rounded-full px-3 py-2">
+                  <Text className="text-c_success font-inter-semibold text-xs">
+                    +{usd(collectedToday)} today
                   </Text>
-                )}
-              </View>
-              <TouchableOpacity
-                onPress={() =>
-                  nav.navigate('payments_stack', {screen: 'payout'})
-                }
-                activeOpacity={0.85}
-                className="bg-keystone_gold rounded-full px-5 py-2.5">
-                <Text className="text-keystone_navy font-inter-semibold text-xs uppercase tracking-wider">
-                  Move money
-                </Text>
-              </TouchableOpacity>
+                </View>
+              )}
             </View>
           </Card>
         </View>

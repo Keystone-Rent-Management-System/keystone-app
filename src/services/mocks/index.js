@@ -50,12 +50,10 @@ export const mockDailyCollection = {
     percentCollected: 94,
     percentPending: 6,
   },
-  cashAccount: {
-    bankName: 'Chase Business',
-    accountLast4: '4821',
-    balance: 234600.0,
-    updatedAt: new Date(Date.now() - 4 * 60 * 1000).toISOString(),
-  },
+  // No cashAccount/held balance: Keystone pays rent instantly +
+  // directly into the landlord's own bank, so there is no platform-held
+  // balance to display or pay out. The dashboard shows rent *received*
+  // (month + today), not a balance to move.
   // Trailing 6-month collected totals (oldest → newest) for the
   // dashboard trend sparkline. Newest = this month's running total.
   trend: [
@@ -71,7 +69,7 @@ export const mockDailyCollection = {
     {id: 'a1', type: 'PAYMENT', tenant: 'James Otieno', unit: 'Riverside E', amount: 2400, minutesAgo: 12},
     {id: 'a2', type: 'PAYMENT', tenant: 'Sarah Chen', unit: 'Magnolia A', amount: 1800, minutesAgo: 95},
     {id: 'a3', type: 'LATE_FEE', tenant: 'Carlos Rivera', unit: 'Oak H', amount: 75, minutesAgo: 184},
-    {id: 'a4', type: 'PAYOUT', amount: 23400, minutesAgo: 1490, note: 'Sent to Chase ····4821'},
+    {id: 'a4', type: 'PAYMENT', tenant: 'Aisha Bello', unit: 'Oak C', amount: 2100, minutesAgo: 1490},
   ],
   // Portfolio snapshot for the dashboard occupancy ring.
   portfolio: {
