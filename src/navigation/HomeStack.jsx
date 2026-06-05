@@ -6,8 +6,10 @@ import useGlobals from '../provider/store/useGlobals';
 import {
   InvoiceReceipt,
   LandlordHome,
+  Lease,
   PayRent,
   Payments,
+  Receipts,
   RentReceipt,
   Statements,
   TenantHome,
@@ -119,6 +121,34 @@ const HomeStack = () => {
           options={{
             headerShown: true,
             title: 'Receipt',
+            headerShadowVisible: false,
+            headerTitleStyle: {
+              color: COLORS.primary,
+              fontSize: 18,
+              fontFamily: 'Inter-SemiBold',
+            },
+          }}
+        />
+        <Stack.Screen
+          name={'lease'}
+          component={Lease}
+          options={{
+            headerShown: true,
+            title: 'My lease',
+            headerShadowVisible: false,
+            headerTitleStyle: {
+              color: COLORS.primary,
+              fontSize: 18,
+              fontFamily: 'Inter-SemiBold',
+            },
+          }}
+        />
+        <Stack.Screen
+          name={'receipts'}
+          component={Receipts}
+          options={{
+            headerShown: true,
+            title: 'Receipts',
             headerShadowVisible: false,
             headerTitleStyle: {
               color: COLORS.primary,

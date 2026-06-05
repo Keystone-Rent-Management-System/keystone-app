@@ -304,7 +304,12 @@ const logged = new Set();
 // (no escrow, no Mpesa paybill). BE rollup not yet built:
 // GET /tenants/rent-summary (see BE_ASKS_MOBILE).
 export const mockTenantHome = {
-  tenant: {firstName: 'Sarah', lastName: 'Chen'},
+  tenant: {
+    firstName: 'Sarah',
+    lastName: 'Chen',
+    email: 'sarah.chen@example.com',
+    phone: '+1 (512) 555-0148',
+  },
   rent: {
     amount: 1800,
     periodLabel: monthYearLabel(0),
@@ -324,6 +329,14 @@ export const mockTenantHome = {
     daysToEnd: 56,
     landlord: 'Keystone Property Group',
     renewalStatus: 'NONE', // 'NONE' | 'OFFERED' | 'RENEWED'
+    // 'ACCEPTED' = signed & active. 'PENDING' = tenant must review +
+    // accept before the tenancy is active (drives the Home accept card).
+    agreementStatus: 'ACCEPTED',
+    term: '12 months',
+    documents: [
+      {id: 'd1', name: 'Lease agreement.pdf', kind: 'Signed', date: '2025-07-28'},
+      {id: 'd2', name: 'Move-in inspection.pdf', kind: 'Report', date: '2025-08-01'},
+    ],
   },
   paymentMethod: {type: 'bank', name: 'Chase', last4: '8821'},
   autopay: {enabled: false},
@@ -331,6 +344,43 @@ export const mockTenantHome = {
     {id: 'r1', amount: 1800, date: daysFromNow(-4), method: 'Bank · Chase ••8821', code: 'KS-9F2A', status: 'PAID', period: monthYearLabel(-1)},
     {id: 'r2', amount: 1800, date: daysFromNow(-34), method: 'Bank · Chase ••8821', code: 'KS-7C1B', status: 'PAID', period: monthYearLabel(-2)},
     {id: 'r3', amount: 1800, date: daysFromNow(-64), method: 'Bank · Chase ••8821', code: 'KS-4D8E', status: 'PAID', period: monthYearLabel(-3)},
+  ],
+};
+
+// Tenant payment history (receipts). Newest first. GET /tenants/payments
+export const mockTenantPayments = [
+  {id: 'r1', amount: 1800, date: daysFromNow(-4), method: 'Bank · Chase ••8821', code: 'KS-9F2A', status: 'PAID', period: monthYearLabel(-1)},
+  {id: 'r2', amount: 1800, date: daysFromNow(-34), method: 'Bank · Chase ••8821', code: 'KS-7C1B', status: 'PAID', period: monthYearLabel(-2)},
+  {id: 'r3', amount: 1800, date: daysFromNow(-64), method: 'Bank · Chase ••8821', code: 'KS-4D8E', status: 'PAID', period: monthYearLabel(-3)},
+  {id: 'r4', amount: 1800, date: daysFromNow(-95), method: 'Bank · Chase ••8821', code: 'KS-2A7F', status: 'PAID', period: monthYearLabel(-4)},
+  {id: 'r5', amount: 1800, date: daysFromNow(-125), method: 'Bank · Chase ••8821', code: 'KS-8B3C', status: 'PAID', period: monthYearLabel(-5)},
+  {id: 'r6', amount: 1800, date: daysFromNow(-156), method: 'Bank · Chase ••8821', code: 'KS-1E9D', status: 'PAID', period: monthYearLabel(-6)},
+];
+
+// Tenant notifications — rent-centric. GET /notifications
+export const mockTenantNotifications = {
+  content: [
+    {id: 'n1', type: 'REMINDER', title: 'Rent due in 5 days', body: `Your ${monthYearLabel(0)} rent of $1,800 is due soon. Pay anytime in two taps.`, createdAt: daysFromNow(0), read: false},
+    {id: 'n2', type: 'RECEIPT', title: 'Payment confirmed', body: `We sent $1,800 to your landlord for ${monthYearLabel(-1)}. Receipt KS-9F2A.`, createdAt: daysFromNow(-4), read: false},
+    {id: 'n3', type: 'LEASE', title: 'Lease renewal window opens soon', body: 'Your lease ends in under 2 months. Your landlord may offer a renewal.', createdAt: daysFromNow(-10), read: true},
+    {id: 'n4', type: 'RECEIPT', title: 'Payment confirmed', body: `We sent $1,800 to your landlord for ${monthYearLabel(-2)}. Receipt KS-7C1B.`, createdAt: daysFromNow(-34), read: true},
+  ],
+};
+
+// Tenant statement — a simple rent ledger (charges = rent, credits =
+// payments). GET /tenants/statement
+export const mockTenantStatement = {
+  openingBalance: 0,
+  closingBalance: 1800,
+  totalCharges: 5400,
+  totalCredits: 3600,
+  entries: [
+    {id: 'e1', entryDate: daysFromNow(0), description: `Rent · ${monthYearLabel(0)}`, charge: 1800, credit: 0, runningBalance: 1800},
+    {id: 'e2', entryDate: daysFromNow(-4), description: `Payment · KS-9F2A`, charge: 0, credit: 1800, runningBalance: 0},
+    {id: 'e3', entryDate: daysFromNow(-30), description: `Rent · ${monthYearLabel(-1)}`, charge: 1800, credit: 0, runningBalance: 1800},
+    {id: 'e4', entryDate: daysFromNow(-34), description: `Payment · KS-7C1B`, charge: 0, credit: 1800, runningBalance: 0},
+    {id: 'e5', entryDate: daysFromNow(-60), description: `Rent · ${monthYearLabel(-2)}`, charge: 1800, credit: 0, runningBalance: 1800},
+    {id: 'e6', entryDate: daysFromNow(-64), description: `Payment · KS-4D8E`, charge: 0, credit: 1800, runningBalance: 0},
   ],
 };
 

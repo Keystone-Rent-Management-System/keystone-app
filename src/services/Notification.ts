@@ -1,6 +1,7 @@
 import AxiosUtility, {setAuthToken} from './AxiosServices';
 import {useNotificationStore} from '../provider/store/notification.ts';
 import {INotificationsResponse} from '../types/notification.ts';
+import {USE_MOBILE_MOCKS, mockTenantNotifications, mockFallback} from './mocks';
 
 const notificationStore = useNotificationStore.getState();
 /**
@@ -26,12 +27,22 @@ export const registerDeviceToken = async () => {
  * Gets all user notifications
  */
 export const getNotifications = async (): Promise<INotificationsResponse> => {
+  if (USE_MOBILE_MOCKS) {
+    return mockFallback('notifications', mockTenantNotifications);
+  }
   // Set the token in the AxiosUtility
   setAuthToken(AxiosUtility);
 
-  const {data} = await AxiosUtility.get('/notifications');
-
-  return data;
+  try {
+    const {data} = await AxiosUtility.get('/notifications');
+    return data;
+  } catch (err: any) {
+    const status = err?.response?.status;
+    if (status === 404 || status === 501 || status === undefined) {
+      return mockFallback('notifications', mockTenantNotifications);
+    }
+    throw err;
+  }
 };
 
 const NotificationService = {
