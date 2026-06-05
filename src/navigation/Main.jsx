@@ -13,6 +13,7 @@ import {
   RecoveryReset,
   RecoveryVerification,
   SavedUnits,
+  Welcome,
 } from '../screens';
 import NavOptions from './options';
 import MyUnitsStack from './MyUnitsStack';
@@ -36,11 +37,17 @@ const MainNav = () => {
     }
   }, [auth]);
 
+  const isAuthed = !!auth?.access_token;
+
   return (
     <Stack.Navigator
       screenOptions={{headerShown: false}}
-      initialRouteName="bottom-nav">
+      // Option A: auth is the front door. Unauthenticated cold-open
+      // lands on the branded Welcome (value prop + landlord/tenant
+      // doors), NOT the Pallax-era Explore listings marketplace.
+      initialRouteName={isAuthed ? 'bottom-nav' : 'welcome'}>
       <Stack.Screen name={'bottom-nav'} component={BottomNav} />
+      <Stack.Screen name={'welcome'} component={Welcome} />
       <Stack.Screen name={'apartment_view'} component={ApartmentView} />
       <Stack.Screen name={'apartment-search'} component={ApartmentSearch} />
 
@@ -51,8 +58,10 @@ const MainNav = () => {
             name={'auth__login'}
             component={Login}
             options={{
+              // Title now lives in the screen's branded header
+              // (KeystoneMark + "Welcome back"), so the nav bar stays
+              // empty for a cleaner, on-brand login.
               ...NavOptions.emptyBarOptions,
-              title: 'Sign into your account.',
             }}
           />
 

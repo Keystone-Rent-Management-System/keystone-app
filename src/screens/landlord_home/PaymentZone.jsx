@@ -11,19 +11,18 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {PAYMENT_ZONES, usePaymentZones, useZoneTenants} from '../../hooks';
-import {usePayoutBalance} from '../../hooks/usePayout';
-import {pct, usdCents} from '../../utils/money';
+import {pct} from '../../utils/money';
 import {Card, IconChip, Avatar, Label, Amount, AnimatedAmount, Divider, StatusPill, Donut, FadeScaleIn} from '../../components/premium';
 import COLORS from '../../constants/Theme';
 
-// Tenant rent-status buckets. Top: a navy feature strip with the
-// available-payout call-to-action; then the four-bucket table; tap a
-// bucket → drill-down sheet listing tenants + what Keystone has
-// already automated on their behalf.
+// Tenant rent-status buckets — the four-bucket table; tap a bucket →
+// drill-down sheet listing tenants + what Keystone has already
+// automated on their behalf. There is no "available to payout" strip:
+// rent is paid instantly + directly into the landlord's bank, so there
+// is no platform-held balance to pay out.
 
 const PaymentZone = () => {
   const {summary, total, isPending, refetch} = usePaymentZones();
-  const {balance} = usePayoutBalance();
   const [drilldown, setDrilldown] = useState(null);
   const nav = useNavigation();
 
@@ -45,33 +44,6 @@ const PaymentZone = () => {
           </Text>
         </View>
 
-        {/* Payout feature strip */}
-        {balance?.available > 0 && (
-          <View className="px-4 mb-4">
-            <Card feature>
-              <View className="flex-row items-center justify-between">
-                <View>
-                  <Label onDark>Available to payout</Label>
-                  <AnimatedAmount
-                    value={balance.available}
-                    format={usdCents}
-                    size="lg"
-                    onDark
-                    style={{marginTop: 6}}
-                  />
-                </View>
-                <TouchableOpacity
-                  onPress={() => nav.navigate('payout')}
-                  activeOpacity={0.85}
-                  className="bg-keystone_gold rounded-full px-5 py-2.5">
-                  <Text className="text-keystone_navy font-inter-semibold text-xs uppercase tracking-wider">
-                    Send to bank
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </Card>
-          </View>
-        )}
 
         {/* Donut overview */}
         {total > 0 && (

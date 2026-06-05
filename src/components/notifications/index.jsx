@@ -107,7 +107,6 @@ const RemoteNotification = () => {
           // even before the user navigates back to it.
           qc.invalidateQueries({queryKey: ['dashboard/daily-collection']});
           qc.invalidateQueries({queryKey: ['payment-zones']});
-          qc.invalidateQueries({queryKey: ['payouts/balance']});
           return;
         }
 
