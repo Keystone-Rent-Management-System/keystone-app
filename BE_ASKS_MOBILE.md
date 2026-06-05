@@ -14,6 +14,13 @@ up with no FE code change.
 CEO override recorded for WA HB 1217 (§10) — outside the TX/FL/GA
 Year-1 footprint in the Strategic Playbook. CEO acknowledged.
 
+> **Model update (2026-06-05): instant + direct payments.** Keystone now
+> moves rent *instantly and directly* into the landlord's own bank — there
+> is no platform-held/escrow balance. Consequences for this doc:
+> §4 (Instant Payout / FedNow sweep) is **WITHDRAWN** (nothing to sweep),
+> and §1's `cashAccount` held-balance block is dropped. See the new
+> **Part B — Tenant app** section for the payment endpoints this introduces.
+
 ---
 
 ## §1 — Dashboard daily-collection rollup *(blocks Phase 1)*
@@ -47,9 +54,14 @@ Single aggregate so the dashboard opens in one round-trip. Cached
 }
 ```
 
-`cashAccount.balance` should proxy to the landlord's primary Dwolla
-funding source. `updatedAt` is when BE last reconciled the Dwolla
-balance — FE shows "updated N mins ago".
+> **Status (2026-06-05):** BE shipped a **flat** `GET /dashboard/daily-collection`
+> (B79): `{ expectedRent, billedThisMonth, collectedThisMonth, collectedToday,
+> outstanding, invoicesPaid, invoicesPartial, invoicesOutstanding,
+> collectionRatePct }`. The mobile FE now maps those flat fields
+> (`src/utils/dashboardShape.js`) so the collection card renders against the
+> live endpoint. **Still needed** from BE (today these stay on mock): the
+> `portfolio` rollup (occupancy/units), a 6-month `trend` array, and a
+> `recentActivity` feed. Drop the `cashAccount` block (no held balance).
 
 ---
 
@@ -95,7 +107,12 @@ exposes it under `/api/v1/rms/payment-zones`.
 
 ---
 
-## §4 — Instant Payout (FedNow) *(blocks Phase 2)*
+## §4 — Instant Payout (FedNow) *(WITHDRAWN — no held balance)*
+
+> **Withdrawn 2026-06-05.** The instant/direct model pays rent straight to
+> the landlord's bank, so there is no platform-held balance to sweep. The
+> payout screen, hooks, and these endpoints were removed from the app. Kept
+> below for history only — **do not build.**
 
 **`GET /payouts/balance`**
 ```json
@@ -295,6 +312,105 @@ entry. Idempotent on retry.
 Templates live in the BE and are versioned; FE never interprets the
 statute. The landlord signs (signature already on file via
 Keystone onboarding) and the action is logged.
+
+---
+
+# PART B — Tenant app
+
+The tenant experience is rebuilt around the wedge: a renter (provisioned
+by their landlord) sees their rent, pays it instantly + directly to the
+landlord's bank, and keeps receipts/lease in one place. Same FE pattern —
+each endpoint 404/501 falls back to a fixture in `src/services/mocks/index.js`
+(keys `tenant.*` / `notifications`) and picks up the live BE automatically.
+
+## §T1 — Tenant rent summary rollup *(blocks tenant home)*
+
+**`GET /tenants/rent-summary`** — one round-trip for the home screen.
+
+```jsonc
+{
+  "tenant": {"firstName": "Sarah", "lastName": "Chen", "email": "…", "phone": "…"},
+  "rent": {
+    "amount": 1800,
+    "periodLabel": "June 2026",
+    "dueDate": "2026-06-10",
+    "daysUntilDue": 5,
+    "status": "DUE",          // DUE | PAID | OVERDUE
+    "paidThisPeriod": 0
+  },
+  "lease": {
+    "unit": "4B", "property": "Magnolia Court",
+    "address": "128 Magnolia Ave, Austin, TX",
+    "monthlyRent": 1800, "deposit": 1800,
+    "startDate": "2025-08-01", "endDate": "2026-07-31",
+    "daysToEnd": 56, "term": "12 months",
+    "landlord": "Keystone Property Group",
+    "agreementStatus": "ACCEPTED",   // ACCEPTED | PENDING (drives accept card)
+    "documents": [{"id": "d1", "name": "Lease agreement.pdf", "kind": "Signed", "date": "2025-07-28"}]
+  },
+  "paymentMethod": {"type": "bank", "name": "Chase", "last4": "8821"},
+  "autopay": {"enabled": false},
+  "recentPayments": [
+    {"id": "r1", "amount": 1800, "date": "2026-06-01", "method": "Bank · Chase ••8821", "code": "KS-9F2A", "status": "PAID", "period": "May 2026"}
+  ]
+}
+```
+
+## §T2 — Pay rent (instant, direct) *(blocks tenant home)*
+
+**`POST /tenants/pay-rent`** — settles the rent straight to the landlord's
+bank (Dwolla customer→landlord, RTP/FedNow rail). Idempotent on a
+client-supplied key.
+
+```jsonc
+// Request
+{"amount": 1800, "idempotencyKey": "<uuid>"}
+
+// Response (FE renders this as the receipt)
+{
+  "code": "KS-RTQV", "amount": 1800, "date": "2026-06-05T12:36:00Z",
+  "method": "Bank · Chase ••8821", "status": "SETTLED",
+  "paidTo": "Keystone Property Group", "property": "Magnolia Court", "unit": "4B",
+  "period": "June 2026"
+}
+```
+
+Also need **autopay**: `PATCH /tenants/autopay` `{enabled, dayOfMonth}` — pay
+on the due date automatically.
+
+## §T3 — Payment history *(soft — FE falls back)*
+
+**`GET /tenants/payments`** → array of the `recentPayments` shape above
+(full history, newest first). Each item is a downloadable receipt.
+
+## §T4 — Rent ledger *(soft)*
+
+**`GET /tenants/statement`** — charges (rent) and credits (payments).
+
+```json
+{
+  "openingBalance": 0, "closingBalance": 1800,
+  "totalCharges": 5400, "totalCredits": 3600,
+  "entries": [
+    {"id": "e1", "entryDate": "2026-06-01", "description": "Rent · June 2026", "charge": 1800, "credit": 0, "runningBalance": 1800}
+  ]
+}
+```
+
+## §T5 — Notifications *(soft — shared endpoint)*
+
+**`GET /notifications`** already exists. The tenant app reads
+`content[].{type,title,body,createdAt,read}` with
+`type ∈ {REMINDER, RECEIPT, PAYMENT, LEASE}`. Please include `title`
+(short) alongside `body`, and a real `read` flag. Mark-read
+(`PATCH /notifications/{id}`) is still on the landlord-side ask.
+
+## §T6 — Lease acceptance *(exists — confirm)*
+
+`PATCH /agreements/{id}/acceptance` already exists. The new home shows a
+"Review & accept your lease" card when `rent-summary.lease.agreementStatus
+== "PENDING"`; accepting calls this endpoint. Just confirm the
+`agreementStatus` is reflected in the §T1 rollup.
 
 ---
 
