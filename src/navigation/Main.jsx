@@ -24,6 +24,7 @@ import {
   RegistrationVerification,
 } from '../screens/authentication/registration';
 import useGlobals from '../provider/store/useGlobals';
+import {DEV_FORCE_LANDLORD, DEV_FORCE_TENANT} from '../services/mocks';
 
 const Stack = createStackNavigator();
 const MainNav = () => {
@@ -38,6 +39,10 @@ const MainNav = () => {
   }, [auth]);
 
   const isAuthed = !!auth?.access_token;
+  // Dev-only: a DEV_FORCE_* role flag boots straight into the tab
+  // navigator (so the role screens are reachable without a real token),
+  // skipping the Welcome front door. __DEV__-gated; no effect in release.
+  const forceRole = __DEV__ && (DEV_FORCE_LANDLORD || DEV_FORCE_TENANT);
 
   return (
     <Stack.Navigator
@@ -45,7 +50,7 @@ const MainNav = () => {
       // Option A: auth is the front door. Unauthenticated cold-open
       // lands on the branded Welcome (value prop + landlord/tenant
       // doors), NOT the Pallax-era Explore listings marketplace.
-      initialRouteName={isAuthed ? 'bottom-nav' : 'welcome'}>
+      initialRouteName={isAuthed || forceRole ? 'bottom-nav' : 'welcome'}>
       <Stack.Screen name={'bottom-nav'} component={BottomNav} />
       <Stack.Screen name={'welcome'} component={Welcome} />
       <Stack.Screen name={'apartment_view'} component={ApartmentView} />
