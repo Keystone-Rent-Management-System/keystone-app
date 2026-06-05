@@ -16,6 +16,7 @@ interface ICInputProps extends TextInputProps {
   rightElement?: React.ReactNode;
   placeholderTextColor?: string;
   hasError?: boolean;
+  inputRef?: React.RefObject<TextInput>;
 }
 
 const CInput = ({
@@ -29,15 +30,19 @@ const CInput = ({
   rightElement,
   placeholderTextColor = COLORS.inactive_text,
   hasError,
+  inputRef,
   ...rest
 }: ICInputProps) => {
   // The TextInput only covers its own glyphs; tapping the icon or the
   // row padding did nothing, so users tapping the field's icon saw no
-  // keyboard. Make the whole row focus the input.
-  const inputRef = useRef<TextInput>(null);
+  // keyboard. Make the whole row focus the input. A caller can also pass
+  // `inputRef` to drive focus (e.g. next-field on submit).
+  const internalRef = useRef<TextInput>(null);
+  const ref = inputRef ?? internalRef;
   return (
     <Pressable
-      onPress={() => inputRef.current?.focus()}
+      accessible={false}
+      onPress={() => ref.current?.focus()}
       className={`flex-row rounded-xl border items-center ${ClassName} ${
         hasError ? 'border-red-500 border' : ''
       }`}>
@@ -46,7 +51,7 @@ const CInput = ({
 
       {/* input */}
       <TextInput
-        ref={inputRef}
+        ref={ref}
         value={value}
         onChangeText={handleChange}
         maxLength={maxL}
