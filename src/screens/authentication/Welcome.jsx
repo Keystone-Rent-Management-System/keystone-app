@@ -1,7 +1,7 @@
 import React from 'react';
 import {SafeAreaView, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {KeystoneMark} from '../../components/premium';
+import {KeystoneLogo} from '../../components/premium';
 import COLORS from '../../constants/Theme';
 
 // Option A front door. Keystone is a landlord-first rent-protection
@@ -35,11 +35,10 @@ const Welcome = () => {
         <View className="flex-1 px-6 pt-10 pb-6 justify-between">
           {/* Brand + value prop */}
           <View>
-            <View className="flex-row items-center gap-2 mb-12">
-              <KeystoneMark size={34} />
-              <Text className="text-white font-inter-bold text-xl tracking-tight">
-                Keystone
-              </Text>
+            {/* Real Keystone logo on a soft cream tile so the mark's
+                darker stone reads cleanly against the navy hero. */}
+            <View className="self-start bg-keystone_cream rounded-2xl px-3 py-2 mb-12">
+              <KeystoneLogo height={40} />
             </View>
 
             <Text className="text-white font-inter-bold text-4xl leading-tight">

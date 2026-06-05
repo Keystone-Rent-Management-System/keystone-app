@@ -5,7 +5,7 @@ import {useNavigation} from '@react-navigation/native';
 import {Layout} from '@/components';
 import {EmailSvg, LockSvg} from '../../assets/icons';
 import {CButton} from '../../components';
-import {KeystoneMark} from '../../components/premium';
+import {KeystoneLogo} from '../../components/premium';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {object, string} from 'yup';
 import {useForm} from 'react-hook-form';
@@ -41,12 +41,7 @@ const Login = () => {
       {/* Branded header — ties the login to the Keystone identity the
           Welcome landing sets (was a generic title-only form). */}
       <View className="mt-2 mb-8">
-        <View className="flex-row items-center gap-2 mb-7">
-          <KeystoneMark size={30} />
-          <Text className="text-keystone_navy font-inter-bold text-lg tracking-tight">
-            Keystone
-          </Text>
-        </View>
+        <KeystoneLogo height={52} style={{marginBottom: 28}} />
         <Text className="text-keystone_navy font-inter-bold text-[26px] leading-tight">
           Welcome back
         </Text>
