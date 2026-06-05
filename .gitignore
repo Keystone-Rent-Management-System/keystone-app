@@ -55,6 +55,24 @@ yarn-error.log
 
 # Bundle artifact
 *.jsbundle
+# Pre-baked debug JS bundle + assets copied by `react-native bundle`
+# (--assets-dest). Generated build output, not source — regenerate per
+# FE_HANDOFF §4 before a debug build. The density drawable dirs below
+# hold node_modules image copies only (real drawables live in drawable/).
+android/app/src/main/assets/index.android.bundle
+android/app/src/main/res/drawable-mdpi/
+android/app/src/main/res/drawable-hdpi/
+android/app/src/main/res/drawable-xhdpi/
+android/app/src/main/res/drawable-xxhdpi/
+android/app/src/main/res/drawable-xxxhdpi/
+android/app/src/main/res/raw/
+
+# Build logs / scratch
+*.log
+.tmp/
+
+# npm lockfile (this project uses yarn)
+package-lock.json
 
 # Ruby / CocoaPods
 **/Pods/
