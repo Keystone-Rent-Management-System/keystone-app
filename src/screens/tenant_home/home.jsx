@@ -64,6 +64,7 @@ const TenantHome = () => {
 
   const isPaid = rent.status === 'PAID';
   const isOverdue = rent.status === 'OVERDUE';
+  const isPendingLease = lease.agreementStatus === 'PENDING';
 
   // A warm, human read of where they stand.
   const feel = isPaid
@@ -106,6 +107,37 @@ const TenantHome = () => {
             {feel}
           </Text>
         </View>
+
+        {/* Lease needs accepting — the one thing that comes before rent */}
+        {isPendingLease && (
+          <View className="px-4 mb-1">
+            <TouchableOpacity
+              activeOpacity={0.9}
+              onPress={() => nav.navigate('lease')}>
+              <Card style={{padding: 16, borderColor: COLORS.keystone_gold, borderWidth: 1}}>
+                <View className="flex-row items-center">
+                  <View
+                    style={{backgroundColor: 'rgba(168,153,119,0.14)'}}
+                    className="w-10 h-10 rounded-xl items-center justify-center mr-3">
+                    <Icon name="lease" size={19} color={COLORS.keystone_gold} />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-keystone_navy font-inter-semibold text-sm">
+                      Review &amp; accept your lease
+                    </Text>
+                    <Text className="text-text_muted font-inter text-xs mt-0.5">
+                      Your landlord sent your lease — accept it to activate your
+                      tenancy.
+                    </Text>
+                  </View>
+                  <Text className="text-text_muted font-inter-semibold text-base">
+                    ›
+                  </Text>
+                </View>
+              </Card>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* RENT HERO — the whole point of the screen */}
         <View className="px-4 mt-1">
@@ -212,6 +244,9 @@ const TenantHome = () => {
 
         {/* LEASE snapshot */}
         <View className="px-4 mt-4">
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={() => nav.navigate('lease')}>
           <Card>
             <View className="flex-row items-center gap-3">
               <IconChip>
@@ -248,10 +283,16 @@ const TenantHome = () => {
               />
             </View>
 
-            <Text className="text-text_muted font-inter text-xs mt-3">
-              Managed by {lease.landlord}
-            </Text>
+            <View className="flex-row items-center justify-between mt-3">
+              <Text className="text-text_muted font-inter text-xs">
+                Managed by {lease.landlord}
+              </Text>
+              <Text className="text-keystone_gold font-inter-semibold text-xs">
+                View lease ›
+              </Text>
+            </View>
           </Card>
+          </TouchableOpacity>
         </View>
 
         {/* RECENT PAYMENTS */}
@@ -260,7 +301,7 @@ const TenantHome = () => {
             <Card style={{paddingVertical: 6}}>
               <View className="px-3 pt-2 pb-1 flex-row items-center justify-between">
                 <Label>Payment history</Label>
-                <TouchableOpacity onPress={() => nav.navigate('payments')}>
+                <TouchableOpacity onPress={() => nav.navigate('receipts')}>
                   <Text className="text-keystone_gold font-inter-semibold text-xs">
                     See all
                   </Text>
@@ -292,24 +333,19 @@ const TenantHome = () => {
               icon="reports"
               label="Receipts"
               sub="Every payment"
-              onPress={() => nav.navigate('payments')}
+              onPress={() => nav.navigate('receipts')}
+            />
+            <Quick
+              icon="lease"
+              label="My lease"
+              sub="Terms & documents"
+              onPress={() => nav.navigate('lease')}
             />
             <Quick
               icon="collection"
               label="Statements"
               sub="Charges & credits"
               onPress={() => nav.navigate('statements')}
-            />
-            <Quick
-              icon="users"
-              label="Get help"
-              sub="Reach your landlord"
-              onPress={() =>
-                ToastAndroid.show(
-                  `Managed by ${lease.landlord ?? 'your landlord'}`,
-                  ToastAndroid.LONG,
-                )
-              }
             />
           </View>
         </View>

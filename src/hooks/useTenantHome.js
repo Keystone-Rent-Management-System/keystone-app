@@ -12,3 +12,21 @@ export const useTenantHome = () => {
   });
   return {isPending, isRefetching, error, home: data, refetch};
 };
+
+// Full payment history (receipts list).
+export const useTenantPayments = () => {
+  const {isPending, isRefetching, error, data, refetch} = useQuery({
+    queryKey: ['tenant/payments'],
+    queryFn: () => TenantHomeServices.getPayments(),
+  });
+  return {isPending, isRefetching, error, payments: data ?? [], refetch};
+};
+
+// Rent ledger (charges/credits).
+export const useTenantStatement = () => {
+  const {isPending, isRefetching, error, data, refetch} = useQuery({
+    queryKey: ['tenant/statement'],
+    queryFn: () => TenantHomeServices.getStatement(),
+  });
+  return {isPending, isRefetching, error, statement: data, refetch};
+};
