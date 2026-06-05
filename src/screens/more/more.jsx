@@ -1,30 +1,12 @@
 import React from 'react';
-import {
-  Alert,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import {Alert, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import VersionCheck from 'react-native-version-check';
 
-import {
-  AgreementSvg,
-  ApartmentSvg,
-  InfoSvg,
-  LikeSvg,
-  LogoutSvg,
-  UserSvg,
-  WavingSvg,
-} from '@/assets/icons';
-import {Layout, ProfileView} from '@/components';
+import {Layout} from '@/components';
 import COLORS from '@/constants/Theme';
 import Helper from '@/utils/Helper';
 import {useNavigation} from '@react-navigation/native';
 import {useQueryClient} from '@tanstack/react-query';
-import {ComplainSvg} from '../../assets/icons';
 import {ABOUT_URL, PRIVACY_POLICY_URL} from '../../constants';
 import {useAuth} from '../../hooks';
 import {ZustandStorage} from '../../provider/store/MMKV';
@@ -32,6 +14,10 @@ import {useNotificationStore} from '../../provider/store/notification';
 import useGlobals from '../../provider/store/useGlobals';
 import AuthServices from '../../services/AuthServices';
 import {openLinkInBrowser} from '../../utils/openLinkInBrowser';
+import {Avatar, Card, IconChip, Icon, Divider} from '../../components/premium';
+
+// More — account + settings, brand-matched. A calm navy header with the
+// tenant's name, then a clean list of rows. Logout in its own card.
 
 const More = () => {
   const queryClient = useQueryClient();
@@ -43,14 +29,19 @@ const More = () => {
   const {isPending, profile} = useAuth();
   const {removeDeviceToken} = useNotificationStore();
 
-  const handleNavigate = screen => {
-    navigation.navigate(screen);
-  };
+  const isTenant = profile?.access_types?.roles?.includes('ROLE_TENANT');
+  const name = profile?.name ?? '';
+  const initials = name
+    .split(' ')
+    .slice(0, 2)
+    .map(p => p?.[0] ?? '')
+    .join('')
+    .toUpperCase();
+
+  const handleNavigate = screen => navigation.navigate(screen);
+  const handleLink = link => openLinkInBrowser(link);
 
   const handleSignout = () => {
-    // End the Keycloak session server-side so the refresh token is
-    // invalidated immediately — fire-and-forget; we don't block the
-    // local wipe on a Keycloak hiccup.
     AuthServices.logout(auth?.refresh_token).catch(() => {});
     queryClient.clear();
     ZustandStorage.clear();
@@ -58,194 +49,98 @@ const More = () => {
     removeDeviceToken();
     navigation.navigate('bottom-nav', {screen: 'explore_stack'});
   };
-  const handleConfirmSignout = () => {
-    Alert.alert('Signout?', 'please confirm you want to sign out', [
-      {
-        text: 'Cancel',
-        onPress: () => {},
-        style: 'cancel',
-      },
-      {text: 'OK', onPress: handleSignout},
+  const confirmSignout = () => {
+    Alert.alert('Sign out?', 'Please confirm you want to sign out.', [
+      {text: 'Cancel', style: 'cancel', onPress: () => {}},
+      {text: 'Sign out', style: 'destructive', onPress: handleSignout},
     ]);
   };
 
+  const list = isTenant ? TENANT_ITEMS : LANDLORD_ITEMS;
+
   return (
-    <Layout className={''}>
-      <LinearGradient
-        className={'h-40 bg-primary relative'}
-        colors={[COLORS.primary, COLORS.gradient_2]}>
-        <View
-          className={'absolute px-4 inset-x-0 bottom-8 flex-row items-center'}
-          style={styles.profileStyle}>
-          {!isPending && (
-            <ProfileView
-              text={`${profile?.name
-                ?.split(' ')[0]
-                ?.charAt(0)
-                ?.toLowerCase()}${profile?.name
-                ?.split(' ')[1]
-                ?.charAt(0)
-                ?.toLowerCase()}`}
-              textClassName={'text-primary uppercase w-full text-center'}
-              containerClassName={'bg-white'}
-            />
-          )}
-
-          {!isPending && (
-            <View>
-              <Text
-                className={
-                  'text-xs font-open-sauce-sans mb-0.5 flex text-white flex-row items-center'
-                }>
-                {Helper.getGreetings()} <WavingSvg />
-              </Text>
-
-              <Text
-                className={
-                  'font-open-sauce-sans-semibold capitalize text-sm text-white'
-                }>
-                {profile?.name}
-              </Text>
+    <Layout ClassName={''}>
+      <ScrollView
+        contentContainerStyle={{paddingBottom: 28}}
+        showsVerticalScrollIndicator={false}>
+        {/* Profile header */}
+        <View className="px-4 pt-12">
+          <Card feature>
+            <View className="flex-row items-center">
+              <Avatar initials={initials || 'KS'} size={52} />
+              <View className="ml-3">
+                <Text className="text-white/60 font-inter text-xs">
+                  {Helper.getGreetings()}
+                </Text>
+                <Text className="text-white font-inter-bold text-lg capitalize">
+                  {isPending ? '…' : name || 'Welcome'}
+                </Text>
+              </View>
             </View>
-          )}
+          </Card>
         </View>
-      </LinearGradient>
 
-      {!isPending && profile?.access_types?.roles?.includes('ROLE_TENANT') ? (
-        <FlatList
-          className={'py-4'}
-          style={styles.listStyle}
-          data={tenantNavList}
-          renderItem={({item}) =>
-            renderNavItem(
-              {item},
-              handleNavigate,
-              auth?.access_token,
-              handleConfirmSignout,
-            )
-          }
-        />
-      ) : (
-        <FlatList
-          className={'py-4'}
-          style={styles.listStyle}
-          data={navList}
-          renderItem={({item}) =>
-            renderNavItem(
-              {item},
-              handleNavigate,
-              auth?.access_token,
-              handleConfirmSignout,
-            )
-          }
-        />
-      )}
+        {/* Nav list */}
+        <View className="px-4 mt-5">
+          <Card style={{paddingVertical: 6}}>
+            {list.map((item, i) => (
+              <View key={item.title}>
+                {i > 0 && <Divider style={{marginHorizontal: 12}} />}
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() =>
+                    item.link ? handleLink(item.link) : handleNavigate(item.screen)
+                  }
+                  className="flex-row items-center px-3 py-3.5">
+                  <IconChip size={38}>
+                    <Icon name={item.icon} size={18} />
+                  </IconChip>
+                  <Text className="flex-1 ml-3 text-keystone_navy font-inter-semibold text-sm">
+                    {item.title}
+                  </Text>
+                  <Text className="text-text_muted font-inter-semibold text-base">
+                    ›
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </Card>
+        </View>
 
-      <View className={'flex-row justify-center p-3'}>
-        <Text className={'text-gray-300 font-open-sauce-sans text-13'}>
-          Version {VersionCheck.getCurrentVersion()}
+        {/* Sign out */}
+        <View className="px-4 mt-4">
+          <TouchableOpacity activeOpacity={0.85} onPress={confirmSignout}>
+            <Card style={{padding: 14}}>
+              <Text
+                className="font-inter-semibold text-sm text-center"
+                style={{color: COLORS.c_danger}}>
+                Sign out
+              </Text>
+            </Card>
+          </TouchableOpacity>
+        </View>
+
+        <Text className="text-text_muted font-inter text-xs text-center mt-5">
+          Keystone · v{VersionCheck.getCurrentVersion()}
         </Text>
-      </View>
+      </ScrollView>
     </Layout>
   );
 };
 
-const renderNavItem = ({item}, handleNavigate, token, signout) => {
-  const {icon, title} = item;
-
-  const handlePress = () => {
-    !token
-      ? () => {}
-      : title?.toLowerCase() === 'logout'
-      ? signout()
-      : handleNavigate(item?.screen ?? '');
-  };
-  const handleOpenLink = () => {
-    openLinkInBrowser(item?.link);
-  };
-
-  return (
-    <TouchableOpacity
-      className={'flex flex-row my-3.5 px-5 items-center space-x-3'}
-      onPress={item?.link ? handleOpenLink : handlePress}>
-      <View className={'items-center justify-center h-6 w-6 mr-3'}>{icon}</View>
-
-      <Text className={'text-black font-open-sauce-sans text-sm'}>{title}</Text>
-    </TouchableOpacity>
-  );
-};
-
-const styles = StyleSheet.create({
-  profileStyle: {
-    gap: 10,
-  },
-  listStyle: {
-    gap: 15,
-  },
-});
-
-const tenantNavList = [
-  {
-    icon: <UserSvg />,
-    title: 'Account Information',
-    screen: 'more__account_details',
-  },
-  {
-    icon: <ApartmentSvg size={'24'} color={COLORS.primary} />,
-    title: 'My Unit',
-    screen: 'my_units',
-  },
-  {
-    icon: <LikeSvg strokeColor={COLORS.primary} size={24} />,
-    title: 'Saved Units',
-    screen: 'more__saved_units',
-  },
-  {
-    icon: <AgreementSvg color={COLORS.primary} size={22} />,
-    title: 'Agreements',
-    screen: 'more__agreements',
-  },
-  {
-    icon: <InfoSvg />,
-    title: 'About us',
-    link: ABOUT_URL,
-  },
-  {
-    icon: <AgreementSvg />,
-    title: 'Privacy Policy',
-    link: PRIVACY_POLICY_URL,
-  },
-  {
-    icon: <LogoutSvg size={'24'} color={COLORS.primary} />,
-    title: 'Logout',
-  },
+const TENANT_ITEMS = [
+  {icon: 'users', title: 'Account information', screen: 'more__account_details'},
+  {icon: 'lease', title: 'My lease & agreements', screen: 'more__agreements'},
+  {icon: 'card', title: 'Payment methods', screen: 'more__account_details'},
+  {icon: 'shield', title: 'About Keystone', link: ABOUT_URL},
+  {icon: 'reports', title: 'Privacy policy', link: PRIVACY_POLICY_URL},
 ];
 
-const navList = [
-  {
-    icon: <UserSvg />,
-    title: 'Account Information',
-    screen: 'more__account_details',
-  },
-  {
-    icon: <InfoSvg />,
-    title: 'About us',
-    link: ABOUT_URL,
-  },
-  {
-    icon: <AgreementSvg />,
-    title: 'Privacy Policy',
-    link: PRIVACY_POLICY_URL,
-  },
-  {
-    icon: <ComplainSvg size="20" />,
-    title: 'Complains',
-    screen: 'more__complains',
-  },
-  {
-    icon: <LogoutSvg size={'24'} color={COLORS.primary} />,
-    title: 'Logout',
-  },
+const LANDLORD_ITEMS = [
+  {icon: 'users', title: 'Account information', screen: 'more__account_details'},
+  {icon: 'shield', title: 'About Keystone', link: ABOUT_URL},
+  {icon: 'reports', title: 'Privacy policy', link: PRIVACY_POLICY_URL},
+  {icon: 'scale', title: 'Complaints', screen: 'more__complains'},
 ];
 
 export default More;

@@ -1,106 +1,95 @@
-import {FlashList} from '@shopify/flash-list';
 import {useQuery} from '@tanstack/react-query';
 import moment from 'moment';
-import React, {useCallback} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import React from 'react';
+import {RefreshControl, ScrollView, Text, View} from 'react-native';
 
-import {ExtensionSvg, InvoiceSvg} from '../../assets/icons';
-import {Layout} from '../../components';
-import EmptyList from '../../components/general/EmptyList.tsx';
+import {IconChip, Icon} from '../../components/premium';
 import COLORS from '../../constants/Theme';
 import NotificationService from '../../services/Notification';
 
+// Notifications — the tenant's rent timeline: reminders, receipts and
+// lease updates, in the Keystone language. Unread items get a gold dot.
+
+const ICON: Record<string, string> = {
+  REMINDER: 'bell',
+  RECEIPT: 'card',
+  PAYMENT: 'card',
+  LEASE: 'lease',
+};
+
 const Notifications = () => {
-  const {
-    data: response,
-    isPending,
-    refetch,
-  } = useQuery({
+  const {data, isPending, isFetching, refetch} = useQuery({
     queryKey: ['notifications'],
     queryFn: () => NotificationService.getNotifications(),
   });
 
-  const renderEmptyList = useCallback(() => <EmptyList />, []);
+  const items: any[] = (data as any)?.content ?? [];
 
   return (
-    <Layout ClassName={''}>
-      <FlashList
-        refreshing={isPending}
-        onRefresh={refetch}
-        data={response?.content ?? []}
-        renderItem={renderItem}
-        estimatedItemSize={100}
-        ListEmptyComponent={() => renderEmptyList()}
-      />
-    </Layout>
+    <View className="flex-1 bg-keystone_canvas">
+      <ScrollView
+        contentContainerStyle={{paddingVertical: 12}}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isFetching && !isPending}
+            onRefresh={refetch}
+            tintColor={COLORS.keystone_gold}
+          />
+        }>
+        {items.length === 0 && !isPending ? (
+          <View className="items-center justify-center py-24 px-8">
+            <Text className="text-keystone_navy font-inter-semibold text-base">
+              You’re all caught up
+            </Text>
+            <Text className="text-text_muted font-inter text-sm mt-1 text-center">
+              Rent reminders and receipts will show up here.
+            </Text>
+          </View>
+        ) : (
+          items.map((item, i) => {
+            const read = !!item.read;
+            const title = item.title ?? 'Keystone';
+            const body = item.body ?? item.message ?? '';
+            const when = item.createdAt ?? item.time;
+            return (
+              <View
+                key={item.id ?? i}
+                className="flex-row items-start gap-3 px-4 py-3.5 mx-3 mb-2 bg-white rounded-2xl border border-keystone_hairline">
+                <IconChip size={40}>
+                  <Icon
+                    name={ICON[item.type] ?? 'bell'}
+                    size={18}
+                    color={read ? COLORS.text_muted : COLORS.keystone_gold}
+                  />
+                </IconChip>
+                <View className="flex-1">
+                  <Text
+                    className={`font-inter-semibold text-sm ${
+                      read ? 'text-text_muted' : 'text-keystone_navy'
+                    }`}>
+                    {title}
+                  </Text>
+                  <Text className="text-text_muted font-inter text-xs mt-0.5 leading-4">
+                    {body}
+                  </Text>
+                  <Text className="text-text_muted font-inter text-2xs mt-1.5">
+                    {when ? moment(when).fromNow() : ''}
+                  </Text>
+                </View>
+                {!read && (
+                  <View
+                    className="w-2 h-2 rounded-full mt-1"
+                    style={{backgroundColor: COLORS.keystone_gold}}
+                  />
+                )}
+              </View>
+            );
+          })
+        )}
+      </ScrollView>
+    </View>
   );
 };
 
-const renderItem = ({item}: {item: any}) => (
-  <View
-    className={'flex-row p-2.5 px-4 border-b border-border_grey'}
-    style={styles.notificationContainer}>
-    {/* icon */}
-    <View
-      className={
-        'items-center justify-center h-11 w-11 rounded-full bg-white overflow-hidden'
-      }
-      style={styles.iconContainer}>
-      {
-        // @ts-ignore
-        notificationIcons.invoice(item.read && COLORS.inactive_text)
-      }
-    </View>
-
-    {/* message */}
-    <View className={'flex-1'}>
-      <Text
-        className={`font-open-sauce-sans  text-xs ${
-          item.read ? 'text-inactive_text' : 'text-black'
-        }`}>
-        {item.message || item?.body}
-      </Text>
-      <Text className={'font-open-sauce-sans text-inactive_text text-11 mt-1.5'}>
-        {moment(item.time || item?.createdAt).fromNow()}
-      </Text>
-    </View>
-
-    {/* dot */}
-    <View className={'justify-center px-1'}>
-      <Indicator isRead={item.read} />
-    </View>
-  </View>
-);
-
 export default Notifications;
-
-export const Indicator = ({isRead = undefined, isArrears = undefined}) => (
-  <View
-    className={`h-2 w-2  rounded-full ${
-      isRead === true
-        ? 'bg-none'
-        : isRead === false
-        ? 'bg-red-600'
-        : isArrears === false
-        ? 'bg-green-600'
-        : isArrears === true
-        ? 'bg-red-600'
-        : 'bg-none'
-    }`}
-  />
-);
-
-const styles = StyleSheet.create({
-  notificationContainer: {
-    gap: 12,
-  },
-  iconContainer: {
-    borderColor: COLORS.primary + '15',
-    borderWidth: 1,
-  },
-});
-
-const notificationIcons = {
-  invoice: (color: string) => <InvoiceSvg size={25} color={color} />,
-  extension: (color: string) => <ExtensionSvg size={25} color={color} />,
-};
