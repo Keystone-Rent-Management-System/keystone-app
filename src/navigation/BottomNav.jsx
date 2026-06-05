@@ -8,7 +8,7 @@ import {BottomTabBtn} from '@/components';
 import {BottomNavScreens, LandlordBottomNavScreens} from '@/constants';
 import useGlobals from '../provider/store/useGlobals';
 import {useAuth, useRefreshToken} from '../hooks';
-import {DEV_FORCE_LANDLORD} from '../services/mocks';
+import {DEV_FORCE_LANDLORD, DEV_FORCE_TENANT} from '../services/mocks';
 
 const Tab = createBottomTabNavigator();
 
@@ -64,9 +64,9 @@ const renderTabButton = ({props}, auth, navigation, title) => (
   <TouchableOpacity
     {...props}
     onPress={() => {
-      // DEV_FORCE_LANDLORD bypasses the auth gate so all landlord
-      // screens are reachable without a real token in dev builds.
-      const devBypass = __DEV__ && DEV_FORCE_LANDLORD;
+      // DEV_FORCE_* bypasses the auth gate so role screens are
+      // reachable without a real token in dev builds.
+      const devBypass = __DEV__ && (DEV_FORCE_LANDLORD || DEV_FORCE_TENANT);
       if (
         !devBypass &&
         !auth?.access_token &&
