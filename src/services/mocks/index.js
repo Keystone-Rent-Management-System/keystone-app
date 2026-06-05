@@ -26,11 +26,22 @@ export const USE_MOBILE_MOCKS = false;
 // an offline tour of every new screen on a debug build.
 export const DEV_FORCE_LANDLORD = false;
 
+// Dev-only role override for the tenant experience — same idea as
+// DEV_FORCE_LANDLORD, for touring the tenant rent command center on a
+// debug build without a real tenant token. Gated by __DEV__ at the
+// consumer. Must be false in any committed/release build.
+export const DEV_FORCE_TENANT = false;
+
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const daysFromNow = n => {
   const d = new Date();
   d.setDate(d.getDate() + n);
   return d.toISOString().slice(0, 10);
+};
+const monthYearLabel = n => {
+  const d = new Date();
+  d.setMonth(d.getMonth() + n);
+  return d.toLocaleDateString('en-US', {month: 'long', year: 'numeric'});
 };
 
 // ── #1 Dashboard morning number ────────────────────────────────────
@@ -287,6 +298,42 @@ export const mockComplianceAudit = [
 // Returns the fixture and logs once so we know what's mocked at
 // runtime.
 const logged = new Set();
+// ── Tenant home — the rent command center ──────────────────────────
+// Keystone tenants are provisioned by their landlord; their #1 job is
+// paying rent, which lands instantly + directly in the landlord's bank
+// (no escrow, no Mpesa paybill). BE rollup not yet built:
+// GET /tenants/rent-summary (see BE_ASKS_MOBILE).
+export const mockTenantHome = {
+  tenant: {firstName: 'Sarah', lastName: 'Chen'},
+  rent: {
+    amount: 1800,
+    periodLabel: monthYearLabel(0),
+    dueDate: daysFromNow(5),
+    daysUntilDue: 5,
+    status: 'DUE', // 'DUE' | 'PAID' | 'OVERDUE'
+    paidThisPeriod: 0,
+  },
+  lease: {
+    unit: '4B',
+    property: 'Magnolia Court',
+    address: '128 Magnolia Ave, Austin, TX',
+    monthlyRent: 1800,
+    deposit: 1800,
+    startDate: '2025-08-01',
+    endDate: daysFromNow(56),
+    daysToEnd: 56,
+    landlord: 'Keystone Property Group',
+    renewalStatus: 'NONE', // 'NONE' | 'OFFERED' | 'RENEWED'
+  },
+  paymentMethod: {type: 'bank', name: 'Chase', last4: '8821'},
+  autopay: {enabled: false},
+  recentPayments: [
+    {id: 'r1', amount: 1800, date: daysFromNow(-4), method: 'Bank · Chase ••8821', code: 'KS-9F2A', status: 'PAID', period: monthYearLabel(-1)},
+    {id: 'r2', amount: 1800, date: daysFromNow(-34), method: 'Bank · Chase ••8821', code: 'KS-7C1B', status: 'PAID', period: monthYearLabel(-2)},
+    {id: 'r3', amount: 1800, date: daysFromNow(-64), method: 'Bank · Chase ••8821', code: 'KS-4D8E', status: 'PAID', period: monthYearLabel(-3)},
+  ],
+};
+
 export const mockFallback = (key, value) => {
   if (!logged.has(key)) {
     // eslint-disable-next-line no-console

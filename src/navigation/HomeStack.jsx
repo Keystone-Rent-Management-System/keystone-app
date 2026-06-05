@@ -6,7 +6,9 @@ import useGlobals from '../provider/store/useGlobals';
 import {
   InvoiceReceipt,
   LandlordHome,
+  PayRent,
   Payments,
+  RentReceipt,
   Statements,
   TenantHome,
   Units,
@@ -15,6 +17,7 @@ import {View} from 'react-native';
 import {LoadingModal} from '../components/modals';
 import COLORS from '../constants/Theme';
 import {useAuth} from '../hooks';
+import {DEV_FORCE_TENANT} from '../services/mocks';
 import PropertyStack from './PropertyStack';
 import StatementStack from './StatementStack';
 import TransactionTopTabNav from './TransactionTopTabNav';
@@ -27,15 +30,21 @@ const HomeStack = () => {
   const navigation = useNavigation();
   const {isPending, profile} = useAuth();
 
+  // Dev-only: tour the tenant experience without a real tenant token.
+  const forceTenant = __DEV__ && DEV_FORCE_TENANT;
+
   useEffect(() => {
-    if (!auth?.access_token) {
+    if (!auth?.access_token && !forceTenant) {
       navigation.navigate('auth__login');
     }
-  }, [auth?.access_token, navigation]);
+  }, [auth?.access_token, navigation, forceTenant]);
 
-  if (isPending) {
+  if (isPending && !forceTenant) {
     return <LoadingModal />;
-  } else if (profile?.access_types?.roles?.includes('ROLE_LANDLORD')) {
+  } else if (
+    !forceTenant &&
+    profile?.access_types?.roles?.includes('ROLE_LANDLORD')
+  ) {
     return (
       <Stack.Navigator
         screenOptions={{
@@ -77,7 +86,10 @@ const HomeStack = () => {
         <Stack.Screen name={'statements'} component={StatementStack} />
       </Stack.Navigator>
     );
-  } else if (profile?.access_types?.roles?.includes('ROLE_TENANT')) {
+  } else if (
+    forceTenant ||
+    profile?.access_types?.roles?.includes('ROLE_TENANT')
+  ) {
     return (
       <Stack.Navigator
         screenOptions={{
@@ -87,6 +99,34 @@ const HomeStack = () => {
         }}
         initialRouteName="home">
         <Stack.Screen name={'home'} component={TenantHome} />
+        <Stack.Screen
+          name={'pay_rent'}
+          component={PayRent}
+          options={{
+            headerShown: true,
+            title: 'Pay rent',
+            headerShadowVisible: false,
+            headerTitleStyle: {
+              color: COLORS.primary,
+              fontSize: 18,
+              fontFamily: 'Inter-SemiBold',
+            },
+          }}
+        />
+        <Stack.Screen
+          name={'rent_receipt'}
+          component={RentReceipt}
+          options={{
+            headerShown: true,
+            title: 'Receipt',
+            headerShadowVisible: false,
+            headerTitleStyle: {
+              color: COLORS.primary,
+              fontSize: 18,
+              fontFamily: 'Inter-SemiBold',
+            },
+          }}
+        />
         <Stack.Screen
           name={'invoices'}
           component={InvoiceAll}
