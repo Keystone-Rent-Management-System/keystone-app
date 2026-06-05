@@ -2,7 +2,6 @@ import LandlordHome from './Home';
 import LandlordDashboard from './Dashboard';
 import PaymentZone from './PaymentZone';
 import LeaseExpiry from './LeaseExpiry';
-import Payout from './Payout';
 import Portfolio from './Portfolio';
 import Maintenance from './Maintenance';
 import Insurance from './Insurance';
@@ -15,7 +14,6 @@ export {
   LandlordDashboard,
   PaymentZone,
   LeaseExpiry,
-  Payout,
   Portfolio,
   Maintenance,
   Insurance,

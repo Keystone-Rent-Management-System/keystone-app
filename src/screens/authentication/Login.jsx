@@ -5,6 +5,7 @@ import {useNavigation} from '@react-navigation/native';
 import {Layout} from '@/components';
 import {EmailSvg, LockSvg} from '../../assets/icons';
 import {CButton} from '../../components';
+import {KeystoneLogo} from '../../components/premium';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {object, string} from 'yup';
 import {useForm} from 'react-hook-form';
@@ -37,6 +38,18 @@ const Login = () => {
 
   return (
     <Layout ClassName={'px-4 py-4'}>
+      {/* Branded header — ties the login to the Keystone identity the
+          Welcome landing sets (was a generic title-only form). */}
+      <View className="mt-2 mb-8">
+        <KeystoneLogo height={52} style={{marginBottom: 28}} />
+        <Text className="text-keystone_navy font-inter-bold text-[26px] leading-tight">
+          Welcome back
+        </Text>
+        <Text className="text-text_muted font-inter text-sm mt-1.5">
+          Sign in to manage your rentals and get paid instantly.
+        </Text>
+      </View>
+
       <View style={styles.container}>
         <ControlledInput
           label={'Email'}
@@ -47,6 +60,11 @@ const Login = () => {
           InputClassName={'text-[13px] px-2 text-gray-600 font-inter'}
           name={'username'}
           control={control}
+          keyboardType={'email-address'}
+          autoCapitalize={'none'}
+          autoCorrect={false}
+          autoComplete={'email'}
+          textContentType={'emailAddress'}
         />
 
         <ControlledPasswordInput

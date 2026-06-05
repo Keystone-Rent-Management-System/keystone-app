@@ -1,6 +1,6 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import {PaymentZone, Payout} from '@/screens';
+import {PaymentZone} from '@/screens';
 import {titleStyling} from '../options';
 
 const Stack = createStackNavigator();
@@ -18,16 +18,6 @@ const PaymentsStack = () => (
       options={{
         headerShown: true,
         title: 'Payments',
-        headerShadowVisible: false,
-        headerTitleStyle: titleStyling,
-      }}
-    />
-    <Stack.Screen
-      name="payout"
-      component={Payout}
-      options={{
-        headerShown: true,
-        title: 'Instant Payout',
         headerShadowVisible: false,
         headerTitleStyle: titleStyling,
       }}
