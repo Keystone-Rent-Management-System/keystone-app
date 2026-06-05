@@ -60,6 +60,11 @@ const Login = () => {
           InputClassName={'text-[13px] px-2 text-gray-600 font-inter'}
           name={'username'}
           control={control}
+          keyboardType={'email-address'}
+          autoCapitalize={'none'}
+          autoCorrect={false}
+          autoComplete={'email'}
+          textContentType={'emailAddress'}
         />
 
         <ControlledPasswordInput

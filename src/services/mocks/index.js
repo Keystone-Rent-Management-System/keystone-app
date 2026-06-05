@@ -159,36 +159,9 @@ export const mockLeaseExpiries = {
   ],
 };
 
-// ── #4 Instant Payout (Phase 2) ────────────────────────────────────
-// The money story: tenants' rent lands in the landlord's Keystone
-// balance; some is still clearing (ACH settling), the rest is
-// available to sweep to his own bank instantly via FedNow.
-export const mockPayoutBalance = {
-  currency: 'USD',
-  collectedThisMonth: 187400.0, // total rent collected into Keystone
-  clearing: 6800.0, // still settling, not yet sweepable
-  available: 23400.0, // sweepable to bank right now
-  bank: {
-    name: 'Chase Business',
-    accountLast4: '4821',
-  },
-  autoPayout: {
-    enabled: false,
-    cadence: null,
-  },
-  // A payout already on its way to the bank.
-  inTransit: {
-    amount: 8200.0,
-    etaSeconds: 35,
-    initiatedMinutesAgo: 1,
-  },
-  // Completed sweeps, newest first.
-  recentPayouts: [
-    {id: 'p1', amount: 23400.0, status: 'ARRIVED', daysAgo: 1, rail: 'FedNow'},
-    {id: 'p2', amount: 31200.0, status: 'ARRIVED', daysAgo: 4, rail: 'FedNow'},
-    {id: 'p3', amount: 18750.0, status: 'ARRIVED', daysAgo: 8, rail: 'FedNow'},
-  ],
-};
+// #4 Instant Payout removed — Keystone pays rent instantly + directly
+// into the landlord's own bank. There is no platform-held balance to
+// sweep, so there is no payout balance fixture.
 
 // ── #5 Portfolio Performance (Phase 3) ─────────────────────────────
 export const mockPortfolioPerformance = {

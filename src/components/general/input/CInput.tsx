@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useRef} from 'react';
 
-import {Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Pressable, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import COLORS from '../../../constants/Theme';
 import {ClosedEyeSvg, OpenEyeSvg} from '../../../assets/icons/auth';
 import {TextInputProps} from 'react-native/Libraries/Components/TextInput/TextInput';
@@ -31,8 +31,13 @@ const CInput = ({
   hasError,
   ...rest
 }: ICInputProps) => {
+  // The TextInput only covers its own glyphs; tapping the icon or the
+  // row padding did nothing, so users tapping the field's icon saw no
+  // keyboard. Make the whole row focus the input.
+  const inputRef = useRef<TextInput>(null);
   return (
-    <View
+    <Pressable
+      onPress={() => inputRef.current?.focus()}
       className={`flex-row rounded-xl border items-center ${ClassName} ${
         hasError ? 'border-red-500 border' : ''
       }`}>
@@ -41,6 +46,7 @@ const CInput = ({
 
       {/* input */}
       <TextInput
+        ref={inputRef}
         value={value}
         onChangeText={handleChange}
         maxLength={maxL}
@@ -50,7 +56,7 @@ const CInput = ({
         {...rest}
       />
       {rightElement}
-    </View>
+    </Pressable>
   );
 };
 

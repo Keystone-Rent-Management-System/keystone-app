@@ -12,6 +12,7 @@ import {useDashboard, useAuth, usePaymentZones, useLeaseExpiry} from '../../hook
 import {useMaintenance} from '../../hooks/useMaintenance';
 import {useComplianceAlerts} from '../../hooks/useCompliance';
 import {usd, pct} from '../../utils/money';
+import {normalizeDashboard} from '../../utils/dashboardShape';
 import {
   Card,
   IconChip,
@@ -114,18 +115,20 @@ const Dashboard = () => {
   const monthLabel = now
     .toLocaleDateString('en-US', {month: 'long', year: 'numeric'})
     .toUpperCase();
-  // Tolerant of both the mock fixture shape ({today,month}) and the
-  // real /dashboard/daily-collection response ({collectedToday,
-  // collectedThisMonth}).
-  const collectedToday =
-    dashboard?.today?.collected ?? dashboard?.collectedToday ?? 0;
-  const expectedToday = dashboard?.today?.expected ?? 0;
-  const outstandingToday = expectedToday - collectedToday;
-  // Rent received this month — paid instantly + directly to the
-  // landlord's bank (no escrow / held balance, so there is no
-  // "available balance" and nothing to "move").
-  const monthReceived =
-    dashboard?.month?.collected ?? dashboard?.collectedThisMonth ?? 0;
+  // Map both the nested mock shape and the flat live B79 shape into one
+  // set of fields the cards read (so the Collection card renders against
+  // the real endpoint, not only the mock). Rent is paid instantly +
+  // directly to the landlord's bank — no escrow / held balance, so there
+  // is no "available balance" and nothing to "move".
+  const {
+    monthReceived,
+    monthExpected,
+    monthPercent,
+    monthPending,
+    collectedToday,
+    outstandingAmt,
+    outstandingUnits,
+  } = normalizeDashboard(dashboard);
 
   return (
     <View className="flex-1 bg-keystone_canvas">
@@ -248,25 +251,22 @@ const Dashboard = () => {
               </View>
               <View className="bg-keystone_chip rounded-full px-3 py-1">
                 <Text className="text-keystone_gold font-inter-bold text-sm">
-                  {pct(dashboard?.month?.percentCollected)}
+                  {pct(monthPercent)}
                 </Text>
               </View>
             </View>
 
             <AnimatedAmount
-              value={dashboard?.month?.collected ?? 0}
+              value={monthReceived}
               format={usd}
               size="xl"
               style={{marginTop: 16}}
             />
             <Text className="text-text_muted font-inter text-sm mt-1">
-              collected of {usd(dashboard?.month?.expected)} expected
+              collected of {usd(monthExpected)} expected
             </Text>
 
-            <ProgressBar
-              percent={dashboard?.month?.percentCollected ?? 0}
-              style={{marginTop: 16}}
-            />
+            <ProgressBar percent={monthPercent} style={{marginTop: 16}} />
 
             <Divider style={{marginTop: 18, marginBottom: 14}} />
 
@@ -275,7 +275,7 @@ const Dashboard = () => {
               <View className="w-px bg-keystone_hairline" />
               <Stat
                 label="Pending"
-                value={usd(dashboard?.month?.pending)}
+                value={usd(monthPending)}
                 valueColor={COLORS.c_pending}
                 align="left"
                 style={{paddingLeft: 14}}
@@ -283,12 +283,8 @@ const Dashboard = () => {
               <View className="w-px bg-keystone_hairline" />
               <Stat
                 label="Outstanding"
-                value={usd(outstandingToday)}
-                sub={
-                  dashboard?.today?.outstandingUnits
-                    ? `${dashboard.today.outstandingUnits} units`
-                    : null
-                }
+                value={usd(outstandingAmt)}
+                sub={outstandingUnits ? `${outstandingUnits} units` : null}
                 valueColor={COLORS.c_danger}
                 align="right"
               />
@@ -425,7 +421,6 @@ const NeedRow = ({item}) => {
 const ACTIVITY = {
   PAYMENT: {icon: 'card', tint: COLORS.c_success, prefix: '+'},
   LATE_FEE: {icon: 'card', tint: COLORS.c_pending, prefix: '+'},
-  PAYOUT: {icon: 'bank', tint: COLORS.keystone_navy, prefix: '−'},
 };
 
 const timeAgo = mins => {
@@ -438,12 +433,10 @@ const timeAgo = mins => {
 const ActivityRow = ({item}) => {
   const cfg = ACTIVITY[item.type] ?? ACTIVITY.PAYMENT;
   const title =
-    item.type === 'PAYOUT'
-      ? 'Payout to bank'
-      : item.type === 'LATE_FEE'
-        ? `Late fee · ${item.tenant}`
-        : `Rent · ${item.tenant}`;
-  const sub = item.type === 'PAYOUT' ? item.note : item.unit;
+    item.type === 'LATE_FEE'
+      ? `Late fee · ${item.tenant}`
+      : `Rent · ${item.tenant}`;
+  const sub = item.unit;
   return (
     <View className="flex-row items-center px-3 py-2.5">
       <View
