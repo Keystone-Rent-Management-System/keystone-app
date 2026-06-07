@@ -546,6 +546,24 @@ tenant can watch their refund come back.
 `NOT_COVERED` renders a "Get covered" CTA (deep-link/handoff to the insurer
 partner). UI + mock now; policy data comes from the insurer.
 
+**Proof of an outside policy** — most leases require proof of renters insurance,
+so a tenant insured elsewhere can upload theirs; it feeds the landlord's
+lease-compliance record. The `GET /tenants/insurance` response carries a
+`proof` block:
+
+```jsonc
+"proof": {
+  "status": "NONE",          // NONE | SUBMITTED | VERIFIED
+  "carrier": null, "policyNumber": null, "liability": null,
+  "expiresOn": null, "documentName": null
+}
+```
+
+**`POST /tenants/insurance/proof`** — multipart `{ carrier, policyNumber,
+liability?, expiresOn?, document }` (the document is a photo/scan of the
+declarations page). BE stores it as `SUBMITTED`; a human/automated check moves
+it to `VERIFIED`. Surfaces on the landlord side as a per-unit compliance flag.
+
 ## §T12 — Payment methods + autopay *(blocks Pay → Methods/Autopay)*
 
 **`GET /tenants/payment-methods`**

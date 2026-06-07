@@ -507,6 +507,17 @@ export const mockTenantInsurance = {
   deductible: 250,
   renewsOn: daysFromNow(212),
   requiredByLease: true,
+  // Proof of an OUTSIDE policy the tenant already holds. Many leases require
+  // proof of renters insurance; uploading it here feeds the landlord's
+  // compliance record. status: NONE | SUBMITTED | VERIFIED.
+  proof: {
+    status: 'NONE',
+    carrier: null,
+    policyNumber: null,
+    liability: null,
+    expiresOn: null,
+    documentName: null,
+  },
 };
 
 export const mockFallback = (key, value) => {
