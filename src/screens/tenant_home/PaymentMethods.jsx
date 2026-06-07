@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   RefreshControl,
   ScrollView,
@@ -10,14 +10,44 @@ import {
 } from 'react-native';
 
 import {useTenantHome} from '../../hooks/useTenantHome';
-import {Card, Label, Divider, Icon, IconChip, StatusPill} from '../../components/premium';
+import {
+  Card,
+  Label,
+  Divider,
+  Icon,
+  IconChip,
+  StatusPill,
+  DraftBadge,
+  ConsentRow,
+  LegalLink,
+} from '../../components/premium';
 import COLORS from '../../constants/Theme';
+import {DWOLLA} from '../../constants/legalCopy';
 
-// Payment methods — the banks/cards rent can come from.
+// Payment methods — the banks/cards rent can come from. Adding one creates a
+// Dwolla funding source (white-label), so the tenant must accept the Dwolla
+// Terms of Service + Keystone Payment Terms first. The BE persists the
+// acceptance timestamp before the funding source is created.
 
 const PaymentMethods = () => {
   const {home, isRefetching, refetch} = useTenantHome();
   const methods = home?.paymentMethods ?? [];
+
+  // Dwolla ToS acceptance gate.
+  const [showTos, setShowTos] = useState(false);
+  const [agreed, setAgreed] = useState(false);
+
+  const proceedAdd = () => {
+    if (!agreed) {
+      ToastAndroid.show('Please accept the terms to continue', ToastAndroid.SHORT);
+      return;
+    }
+    // Acceptance captured (BE stores the timestamp); the funding-source add
+    // flow (Plaid/Dwolla) opens next — wired when the BE ships it.
+    setShowTos(false);
+    setAgreed(false);
+    ToastAndroid.show('Terms accepted — add a bank/card coming soon', ToastAndroid.SHORT);
+  };
 
   return (
     <View className="flex-1 bg-keystone_canvas">
@@ -73,20 +103,64 @@ const PaymentMethods = () => {
         </View>
         )}
 
-        <View className="px-4 mt-4">
-          <TouchableOpacity
-            activeOpacity={0.85}
-            onPress={() => ToastAndroid.show('Add a payment method — coming soon', ToastAndroid.SHORT)}>
-            <Card style={{padding: 16, borderStyle: 'dashed', borderColor: COLORS.keystone_gold, borderWidth: 1}}>
-              <View className="flex-row items-center justify-center gap-2">
-                <Icon name="bank" size={18} color={COLORS.keystone_gold} />
-                <Text className="text-keystone_navy font-inter-semibold text-sm">
-                  Add bank or card
-                </Text>
+        {!showTos && (
+          <View className="px-4 mt-4">
+            <TouchableOpacity activeOpacity={0.85} onPress={() => setShowTos(true)}>
+              <Card style={{padding: 16, borderStyle: 'dashed', borderColor: COLORS.keystone_gold, borderWidth: 1}}>
+                <View className="flex-row items-center justify-center gap-2">
+                  <Icon name="bank" size={18} color={COLORS.keystone_gold} />
+                  <Text className="text-keystone_navy font-inter-semibold text-sm">
+                    Add bank or card
+                  </Text>
+                </View>
+              </Card>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Dwolla ToS acceptance — required before creating a funding source */}
+        {showTos && (
+          <View className="px-4 mt-4">
+            <Card style={{borderColor: COLORS.keystone_gold, borderWidth: 1}}>
+              <Label>{DWOLLA.tosTitle}</Label>
+              <View className="mt-2">
+                <DraftBadge />
+              </View>
+              <Text className="text-text_muted font-inter text-xs leading-5">
+                {DWOLLA.tosText}
+              </Text>
+              <View className="flex-row flex-wrap gap-x-4 gap-y-1 mt-2">
+                <LegalLink label="Dwolla Terms of Service" url={DWOLLA.dwollaTosUrl} />
+                <LegalLink label="Dwolla Privacy Policy" url={DWOLLA.dwollaPrivacyUrl} />
+                <LegalLink label="Keystone Payment Terms" url={DWOLLA.keystoneTermsUrl} />
+              </View>
+              <ConsentRow checked={agreed} onToggle={() => setAgreed(a => !a)}>
+                {DWOLLA.tosCheckbox}
+              </ConsentRow>
+              <View className="flex-row gap-3 mt-4">
+                <TouchableOpacity
+                  onPress={() => {
+                    setShowTos(false);
+                    setAgreed(false);
+                  }}
+                  activeOpacity={0.85}
+                  className="flex-1 border border-keystone_navy rounded-2xl py-3.5 items-center">
+                  <Text className="text-keystone_navy font-inter-semibold text-sm">Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={proceedAdd}
+                  disabled={!agreed}
+                  activeOpacity={0.9}
+                  style={{opacity: agreed ? 1 : 0.5}}
+                  className="flex-1 bg-keystone_navy rounded-2xl py-3.5 items-center">
+                  <Text className="text-white font-inter-semibold text-sm">
+                    {DWOLLA.continueCta}
+                  </Text>
+                </TouchableOpacity>
               </View>
             </Card>
-          </TouchableOpacity>
-        </View>
+          </View>
+        )}
       </ScrollView>
     </View>
   );
