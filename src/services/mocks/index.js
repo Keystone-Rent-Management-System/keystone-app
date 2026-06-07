@@ -330,6 +330,9 @@ export const mockTenantHome = {
     daysToEnd: 56,
     noticeDays: 30, // agreement.daysOfTerminationNotice
     landlord: 'Keystone Property Group',
+    landlordPhone: '+15125550148', // tel: for routine contact
+    emergencyPhone: '+15125550199', // after-hours urgent maintenance line
+
     renewalStatus: 'OFFERED', // 'NONE' | 'OFFERED' | 'RENEWED'
     // 'ACCEPTED' = signed & active. 'PENDING' = tenant must review +
     // accept before the tenancy is active (drives the Home accept card).
@@ -437,6 +440,7 @@ export const mockTenantRepairs = [
     category: 'Plumbing',
     title: 'Kitchen faucet dripping',
     status: 'IN_PROGRESS', // SUBMITTED | IN_PROGRESS | SCHEDULED | RESOLVED
+    priority: 'NORMAL', // NORMAL | URGENT
     submittedOn: daysFromNow(-3),
     updatedOn: daysFromNow(-1),
     assignedTo: 'Acme Plumbing',
@@ -453,6 +457,7 @@ export const mockTenantRepairs = [
     category: 'Electrical',
     title: 'Bedroom outlet not working',
     status: 'RESOLVED',
+    priority: 'NORMAL',
     submittedOn: daysFromNow(-22),
     updatedOn: daysFromNow(-18),
     assignedTo: 'Bright Spark Electric',

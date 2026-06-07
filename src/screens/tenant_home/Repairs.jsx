@@ -99,9 +99,14 @@ const Repairs = () => {
                       <Icon name="wrench" size={19} color={COLORS.keystone_gold} />
                     </IconChip>
                     <View className="flex-1">
-                      <Text className="text-keystone_navy font-inter-semibold text-sm">
-                        {r.title}
-                      </Text>
+                      <View className="flex-row items-center gap-2">
+                        <Text className="text-keystone_navy font-inter-semibold text-sm">
+                          {r.title}
+                        </Text>
+                        {r.priority === 'URGENT' && r.status !== 'RESOLVED' && (
+                          <StatusPill label="Urgent" tone="danger" />
+                        )}
+                      </View>
                       <Text className="text-text_muted font-inter text-xs mt-0.5">
                         {r.category} · {fmtDate(r.submittedOn)}
                         {r.assignedTo ? ` · ${r.assignedTo}` : ''}
