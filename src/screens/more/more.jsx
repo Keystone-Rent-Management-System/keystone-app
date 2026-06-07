@@ -13,6 +13,7 @@ import {ZustandStorage} from '../../provider/store/MMKV';
 import {useNotificationStore} from '../../provider/store/notification';
 import useGlobals from '../../provider/store/useGlobals';
 import AuthServices from '../../services/AuthServices';
+import {DEV_FORCE_LANDLORD, DEV_FORCE_TENANT} from '../../services/mocks';
 import {openLinkInBrowser} from '../../utils/openLinkInBrowser';
 import {Avatar, Card, IconChip, Icon, Divider} from '../../components/premium';
 
@@ -29,7 +30,12 @@ const More = () => {
   const {isPending, profile} = useAuth();
   const {removeDeviceToken} = useNotificationStore();
 
-  const isTenant = profile?.access_types?.roles?.includes('ROLE_TENANT');
+  // Dev role overrides mirror BottomNav/HomeStack so the tour shows the right
+  // menu without a real token. __DEV__-gated; no effect on release builds.
+  const realTenant = !!profile?.access_types?.roles?.includes('ROLE_TENANT');
+  const isTenant = __DEV__
+    ? DEV_FORCE_TENANT || (realTenant && !DEV_FORCE_LANDLORD)
+    : realTenant;
   const name = profile?.name ?? '';
   const initials = name
     .split(' ')

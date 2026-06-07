@@ -17,7 +17,11 @@ import ReportRepair from './ReportRepair';
 import RepairDetail from './RepairDetail';
 import Checklist from './Checklist';
 import MoveOut from './MoveOut';
-import Insurance from './Insurance';
+// Exported as RentersInsurance — the landlord barrel already exports an
+// `Insurance` screen (rent-default cover, §8). Two `export *` sources sharing
+// a name throws "property is not configurable" at barrel init and takes down
+// the whole screens namespace, so the tenant one is namespaced distinctly.
+import RentersInsurance from './Insurance';
 import Help from './Help';
 
 export {
@@ -40,7 +44,7 @@ export {
   RepairDetail,
   Checklist,
   MoveOut,
-  Insurance,
+  RentersInsurance,
   Help,
 };
 export * from './invoice';
