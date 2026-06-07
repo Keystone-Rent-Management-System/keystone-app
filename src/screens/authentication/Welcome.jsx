@@ -79,10 +79,10 @@ const Welcome = () => {
 
             <TouchableOpacity
               activeOpacity={0.85}
-              onPress={() => nav.navigate('auth__login')}
+              onPress={() => nav.navigate('auth__claim')}
               className="mt-3 border border-white/25 rounded-2xl py-4 items-center">
               <Text className="text-white font-inter-semibold text-base">
-                I’m a tenant — Sign in
+                I’m a tenant — Claim my home
               </Text>
             </TouchableOpacity>
 
