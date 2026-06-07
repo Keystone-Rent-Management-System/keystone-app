@@ -414,6 +414,161 @@ on the due date automatically.
 
 ---
 
+# PART C — Tenant command center (capture half)
+
+> **Thesis.** The tenant app is the *data-capture half* of Keystone — every
+> landlord read-model is fed by a tenant action. The four magnet features
+> (credit building, maintenance, rent flexibility, renters insurance) make the
+> renter *want* to engage, which is what produces the data the landlord needs.
+> CEO approved building these surfaces now as **premium UI + mock + this ask**;
+> credit/insurance need a partner (bureau / insurer) and flexibility needs a
+> product/risk sign-off before real settlement. Each route below 404/501 falls
+> back to a fixture in `src/services/mocks/index.js` and picks up live BE with
+> no FE change.
+
+### Tenant action → landlord data map
+
+| Tenant action (this app) | Endpoint | Feeds landlord side |
+|---|---|---|
+| Report a repair (photo) | `POST /request-repair` *(live)* | Maintenance summary §6 (open/overdue) |
+| Move-in checklist | `POST /tenants/checklist` | Deposit baseline · inspection |
+| Move-out checklist + notice | `POST /vacate-notice` *(live)* | Lease Expiry §7 · deposit return |
+| Renewal response | `POST /extensions` *(live)* | Lease Expiry §7 · renewals |
+| On-time payment streak | derived from §T2/§T3 | Collection reliability §3 + tenant credit §T9 |
+
+## §T7 — Repairs list + detail *(blocks My Home → Repairs)*
+
+Submit reuses the **live** `POST /request-repair` (multipart: `description`,
+`category`, `agreementId`, `photo`). We need the read side:
+
+**`GET /tenants/repairs`** → newest first.
+
+```jsonc
+[
+  {
+    "id": "rp1", "category": "Plumbing", "title": "Leaking kitchen faucet",
+    "status": "IN_PROGRESS",            // SUBMITTED | IN_PROGRESS | RESOLVED
+    "createdAt": "2026-06-02T09:00:00Z", "photoUrl": "<signed s3>",
+    "timeline": [
+      {"label": "Submitted", "at": "2026-06-02T09:00:00Z", "done": true},
+      {"label": "Acknowledged", "at": "2026-06-02T14:00:00Z", "done": true},
+      {"label": "Scheduled", "at": "2026-06-04T08:00:00Z", "done": true},
+      {"label": "Resolved", "at": null, "done": false}
+    ]
+  }
+]
+```
+
+The same record feeds the landlord's read-only **maintenance summary (§6)** —
+one tenant submit, both sides update.
+
+## §T8 — Move-in / move-out checklist *(blocks My Home → Checklist)*
+
+The room-by-room condition log that sets the **deposit baseline** and the
+move-out comparison. This is the deposit dispute shield.
+
+**`GET /tenants/checklist`**
+```jsonc
+{
+  "type": "MOVE_IN",                    // MOVE_IN | MOVE_OUT
+  "status": "IN_PROGRESS", "completed": 4, "total": 6,
+  "rooms": [
+    {"id": "rm1", "name": "Living room", "condition": "Good", "done": true, "photoCount": 3},
+    {"id": "rm2", "name": "Kitchen", "condition": null, "done": false, "photoCount": 0}
+  ]
+}
+```
+
+**`POST /tenants/checklist`** — body `{type, rooms:[{id, condition, notes, photos:[…]}]}`
+(multipart for photos). Server stamps and locks a baseline on completion; the
+move-out pass diffs against it. Feeds the landlord deposit-return decision.
+
+## §T9 — Credit building *(blocks Home + Credit; needs bureau partner)*
+
+Reports on-time rent to the bureaus. Score + streak drive the Home snapshot
+Ring and the Credit screen.
+
+**`GET /tenants/credit`**
+```jsonc
+{
+  "enabled": true, "score": 712, "delta": 18, "band": "Good",
+  "streakMonths": 9, "reportedTo": ["TransUnion", "Equifax"],
+  "history": [684, 690, 690, 695, 701, 705, 708, 712, 712]
+}
+```
+
+**`PATCH /tenants/credit`** — body `{enabled}` (opt in/out of reporting).
+
+> Needs a bureau/data-furnisher partner (e.g. via a rent-reporting aggregator).
+> Shipped as UI + mock now; the `score`/`history` come from the partner.
+
+## §T10 — Deposit *(blocks My Home → Deposit)*
+
+**`GET /tenants/deposit`** — derived from the agreement
+(`deposit`, `daysOfDepositRefundAfterTermination`) + the move-in checklist.
+
+```jsonc
+{
+  "held": 1800, "refundDays": 14, "condition": "Good",
+  "moveInLogged": true, "heldBy": "Keystone Property Group"
+}
+```
+
+Read-model only — no new write. `condition` mirrors the move-in checklist (§T8).
+
+## §T11 — Renters insurance *(blocks More → Insurance; needs insurer partner)*
+
+**`GET /tenants/insurance`**
+```jsonc
+{
+  "status": "COVERED",                  // COVERED | NOT_COVERED
+  "carrier": "Lemonade", "monthlyPremium": 14,
+  "propertyCoverage": 30000, "liabilityCoverage": 100000,
+  "policyNumber": "LM-44821", "renewsOn": "2027-01-01"
+}
+```
+
+`NOT_COVERED` renders a "Get covered" CTA (deep-link/handoff to the insurer
+partner). UI + mock now; policy data comes from the insurer.
+
+## §T12 — Payment methods + autopay *(blocks Pay → Methods/Autopay)*
+
+**`GET /tenants/payment-methods`**
+```jsonc
+[
+  {"id": "pm1", "type": "bank", "name": "Chase", "last4": "8821", "default": true},
+  {"id": "pm2", "type": "card", "name": "Visa",  "last4": "4417", "default": false}
+]
+```
+
+**`POST /tenants/payment-methods`** — Dwolla funding-source attach (bank via
+Plaid/processor token, card via tokenized PAN). **`PATCH …/{id}/default`** sets
+the default. **`DELETE …/{id}`** removes.
+
+Autopay extends §T2: **`PATCH /tenants/autopay`** `{enabled, dayOfMonth, methodId}`.
+
+## §T13 — Rent flexibility *(Pay → "need more time"; needs risk sign-off)*
+
+Pay part now / split the rest — the renter-facing side of the
+landlord-protection model (**landlord is still paid in full**; Keystone carries
+the timing). UI + ask only until product/risk confirms terms.
+
+**`POST /tenants/pay-rent`** already settles a partial when `amount < rentDue`.
+Proposed split plan:
+
+**`POST /tenants/flexibility/plan`**
+```jsonc
+// Request
+{"payNow": 900, "remainder": 900, "remainderDate": "2026-06-20"}
+// Response
+{"planId": "fp_1", "status": "PROPOSED", "schedule": [
+  {"amount": 900, "date": "2026-06-07", "status": "DUE"},
+  {"amount": 900, "date": "2026-06-20", "status": "SCHEDULED"}
+]}
+```
+
+---
+
 ## Quick checklist for BE PM
 
 - [ ] §1 dashboard rollup
@@ -425,6 +580,16 @@ on the due date automatically.
 - [ ] §8 insurance summary
 - [ ] §9 Owner entity + multi-owner reports
 - [ ] §10 compliance template + dispatch
+
+### Tenant (Part B + C)
+
+- [ ] §T1 rent-summary rollup · §T2 pay-rent (RTP) + autopay
+- [ ] §T3 payments · §T4 statement · §T5 notifications title/read
+- [ ] §T7 repairs read-side (`GET /tenants/repairs`) — submit is live
+- [ ] §T8 checklist read + write (deposit baseline)
+- [ ] §T9 credit (bureau partner) · §T11 insurance (insurer partner)
+- [ ] §T10 deposit read-model · §T12 payment-methods + autopay
+- [ ] §T13 flexibility plan (risk sign-off first)
 
 FE will switch off mocks for each section automatically once the BE
 endpoint returns 200 with the expected shape. No FE deploy required

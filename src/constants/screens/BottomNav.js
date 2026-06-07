@@ -1,27 +1,27 @@
 import React from 'react';
 
-import {Explore, Notifications} from '@/screens';
-import {ExploreSvg, HomeSvg, MoreSvg, NotificationsSvg} from '@/assets/icons';
+import {Notifications} from '@/screens';
+import {
+  HomeSvg,
+  LeasesSvg,
+  MoreSvg,
+  NotificationsSvg,
+  PaymentsSvg,
+} from '@/assets/icons';
 import COLORS from '@/constants/Theme';
 import NavOptions from '@/navigation/options';
 import {Text, View} from 'react-native';
 import {HomeStack} from '@/navigation';
 import MoreStack from '../../navigation/MoreStack';
+import PayStack from '../../navigation/tenant/PayStack';
+import MyHomeStack from '../../navigation/tenant/MyHomeStack';
+
+// Tenant bottom-nav — mirrors the landlord 5-tab command center.
+// The Pallax-era Explore/listings marketplace was removed (too soon for
+// a marketplace; tenants are provisioned, not browsing). Explore code is
+// parked in ExploreStack/Main, just no longer a tenant tab.
 
 const screens = [
-  {
-    title: 'explore_stack',
-    component: Explore,
-    tab: {
-      title: 'Explore',
-      icon: isCurrent => (
-        <ExploreSvg
-          strokeWidth={isCurrent ? '0.8' : '0.4'}
-          color={isCurrent ? COLORS.primary : COLORS.grey_1}
-        />
-      ),
-    },
-  },
   {
     title: 'home_stack',
     component: HomeStack,
@@ -36,10 +36,36 @@ const screens = [
     },
   },
   {
+    title: 'pay_stack',
+    component: PayStack,
+    tab: {
+      title: 'Pay',
+      icon: isCurrent => (
+        <PaymentsSvg
+          strokeWidth={isCurrent ? '1.5' : '1.2'}
+          color={isCurrent ? COLORS.primary : COLORS.grey_1}
+        />
+      ),
+    },
+  },
+  {
+    title: 'my_home_stack',
+    component: MyHomeStack,
+    tab: {
+      title: 'My Home',
+      icon: isCurrent => (
+        <LeasesSvg
+          strokeWidth={isCurrent ? '1.5' : '1.2'}
+          color={isCurrent ? COLORS.primary : COLORS.grey_1}
+        />
+      ),
+    },
+  },
+  {
     title: 'notifications',
     component: Notifications,
     tab: {
-      title: 'Notifications',
+      title: 'Inbox',
       icon: isCurrent => (
         <NotificationsSvg
           color={isCurrent ? COLORS.primary : COLORS.grey_1}

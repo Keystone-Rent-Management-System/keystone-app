@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  ActivityIndicator,
   RefreshControl,
   ScrollView,
   StatusBar,
@@ -66,6 +67,45 @@ const TenantHome = () => {
   const isOverdue = rent.status === 'OVERDUE';
   const isPendingLease = lease.agreementStatus === 'PENDING';
 
+  const credit = home?.credit ?? {};
+  const checklist = home?.checklist ?? {};
+  const openRepairs = home?.openRepairs ?? 0;
+  const renewalSoon = (lease.daysToEnd ?? 999) <= 60;
+
+  // The few things that need the tenant — across the whole tenancy, in
+  // plain language (mirrors the landlord "A few things need you"). Rent
+  // lives in its own hero below, so it's not duplicated here.
+  const needs = [
+    isPendingLease && {
+      icon: 'lease',
+      tone: 'pending',
+      text: 'Review & accept your lease',
+      hint: 'Activate your tenancy',
+      onPress: () => nav.navigate('lease'),
+    },
+    checklist.status === 'IN_PROGRESS' && {
+      icon: 'reports',
+      tone: 'pending',
+      text: 'Finish your move-in checklist',
+      hint: `${checklist.completed}/${checklist.total} rooms · protects your deposit`,
+      onPress: () => nav.navigate('my_home_stack', {screen: 'checklist'}),
+    },
+    openRepairs > 0 && {
+      icon: 'wrench',
+      tone: 'danger',
+      text: `${openRepairs} repair ${openRepairs === 1 ? 'is' : 'are'} in progress`,
+      hint: 'Track the status',
+      onPress: () => nav.navigate('my_home_stack', {screen: 'repairs'}),
+    },
+    renewalSoon && {
+      icon: 'scale',
+      tone: 'pending',
+      text: 'Your lease ends soon',
+      hint: 'Renew or give notice',
+      onPress: () => nav.navigate('my_home_stack', {screen: 'move_out'}),
+    },
+  ].filter(Boolean);
+
   // A warm, human read of where they stand.
   const feel = isPaid
     ? "You're all caught up — nothing to do but live here."
@@ -76,6 +116,18 @@ const TenantHome = () => {
         : 'Everything looks good. Rent’s the only thing on your plate.';
 
   const goPay = () => nav.navigate('pay_rent');
+
+  // First load with no cached data — show a clean branded splash rather
+  // than empty $0 scaffolding with a "Loading…" overlaid on top.
+  if (isPending && !home) {
+    return (
+      <View className="flex-1 bg-keystone_canvas items-center justify-center">
+        <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
+        <KeystoneLogo height={40} />
+        <ActivityIndicator color={COLORS.keystone_gold} style={{marginTop: 18}} />
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-keystone_canvas">
@@ -108,34 +160,27 @@ const TenantHome = () => {
           </Text>
         </View>
 
-        {/* Lease needs accepting — the one thing that comes before rent */}
-        {isPendingLease && (
+        {/* A few things need you — one place to see what's on your plate */}
+        {needs.length > 0 && (
           <View className="px-4 mb-1">
-            <TouchableOpacity
-              activeOpacity={0.9}
-              onPress={() => nav.navigate('lease')}>
-              <Card style={{padding: 16, borderColor: COLORS.keystone_gold, borderWidth: 1}}>
-                <View className="flex-row items-center">
-                  <View
-                    style={{backgroundColor: 'rgba(168,153,119,0.14)'}}
-                    className="w-10 h-10 rounded-xl items-center justify-center mr-3">
-                    <Icon name="lease" size={19} color={COLORS.keystone_gold} />
-                  </View>
-                  <View className="flex-1">
-                    <Text className="text-keystone_navy font-inter-semibold text-sm">
-                      Review &amp; accept your lease
-                    </Text>
-                    <Text className="text-text_muted font-inter text-xs mt-0.5">
-                      Your landlord sent your lease — accept it to activate your
-                      tenancy.
-                    </Text>
-                  </View>
-                  <Text className="text-text_muted font-inter-semibold text-base">
-                    ›
+            <Card style={{padding: 6}}>
+              <View className="px-3 pt-3 pb-1 flex-row items-center justify-between">
+                <Text className="text-keystone_navy font-inter-semibold text-base">
+                  A few things need you
+                </Text>
+                <View className="bg-keystone_chip rounded-full w-6 h-6 items-center justify-center">
+                  <Text className="text-keystone_navy font-inter-bold text-xs">
+                    {needs.length}
                   </Text>
                 </View>
-              </Card>
-            </TouchableOpacity>
+              </View>
+              {needs.map((n, i) => (
+                <View key={i}>
+                  {i > 0 && <Divider style={{marginHorizontal: 12}} />}
+                  <NeedRow item={n} />
+                </View>
+              ))}
+            </Card>
           </View>
         )}
 
@@ -210,14 +255,43 @@ const TenantHome = () => {
           </Card>
         </View>
 
+        {/* CREDIT — rent that builds something (the tenant magnet) */}
+        {credit.score ? (
+          <View className="px-4 mt-3">
+            <TouchableOpacity activeOpacity={0.9} onPress={() => nav.navigate('credit')}>
+              <Card>
+                <View className="flex-row items-center">
+                  <IconChip>
+                    <Icon name="trending" size={19} color={COLORS.keystone_gold} />
+                  </IconChip>
+                  <View className="flex-1 ml-3">
+                    <Text className="text-keystone_navy font-inter-semibold text-sm">
+                      Your rent is building credit
+                    </Text>
+                    <Text className="text-text_muted font-inter text-xs mt-0.5">
+                      {credit.streakMonths} months on time · reported to the bureaus
+                    </Text>
+                  </View>
+                  <View className="items-end">
+                    <Text className="text-keystone_navy font-inter-bold text-lg">
+                      {credit.score}
+                    </Text>
+                    <Text className="text-c_success font-inter-semibold text-2xs">
+                      ▲ {credit.delta} pts
+                    </Text>
+                  </View>
+                </View>
+              </Card>
+            </TouchableOpacity>
+          </View>
+        ) : null}
+
         {/* AUTOPAY nudge — only when off */}
         {!autopay.enabled && !isPaid && (
           <View className="px-4 mt-3">
             <TouchableOpacity
               activeOpacity={0.85}
-              onPress={() =>
-                ToastAndroid.show('Autopay setup coming soon', ToastAndroid.SHORT)
-              }>
+              onPress={() => nav.navigate('pay_stack', {screen: 'autopay'})}>
               <Card style={{padding: 14}}>
                 <View className="flex-row items-center">
                   <View
@@ -350,13 +424,25 @@ const TenantHome = () => {
           </View>
         </View>
 
-        {isPending && (
-          <View className="absolute inset-0 items-center justify-center">
-            <Text className="text-text_muted font-inter">Loading…</Text>
-          </View>
-        )}
       </ScrollView>
     </View>
+  );
+};
+
+const NeedRow = ({item}) => {
+  const accent = item.tone === 'danger' ? COLORS.c_danger : COLORS.c_pending;
+  const bg = item.tone === 'danger' ? 'rgba(229,53,53,0.10)' : 'rgba(205,160,0,0.12)';
+  return (
+    <TouchableOpacity onPress={item.onPress} activeOpacity={0.7} className="flex-row items-center px-3 py-3">
+      <View style={{backgroundColor: bg}} className="w-9 h-9 rounded-lg items-center justify-center mr-3">
+        <Icon name={item.icon} size={18} color={accent} />
+      </View>
+      <View className="flex-1">
+        <Text className="text-keystone_navy font-inter-semibold text-sm">{item.text}</Text>
+        <Text className="text-text_muted font-inter text-xs mt-0.5">{item.hint}</Text>
+      </View>
+      <Text className="text-text_muted font-inter-semibold text-base">›</Text>
+    </TouchableOpacity>
   );
 };
 

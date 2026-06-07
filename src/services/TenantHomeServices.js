@@ -4,8 +4,26 @@ import {
   mockTenantHome,
   mockTenantPayments,
   mockTenantStatement,
+  mockTenantRepairs,
+  mockTenantChecklist,
+  mockTenantInsurance,
   mockFallback,
 } from './mocks';
+
+// Small helper: try a GET, fall back to a fixture on 404/501/offline.
+const getOrMock = async (url, key, fixture) => {
+  if (USE_MOBILE_MOCKS) return mockFallback(key, fixture);
+  try {
+    const {data} = await AxiosUtility.get(url);
+    return data;
+  } catch (err) {
+    const status = err?.response?.status;
+    if (status === 404 || status === 501 || status === undefined) {
+      return mockFallback(key, fixture);
+    }
+    throw err;
+  }
+};
 
 // The tenant's rent command center datasource. One rollup so the home
 // screen doesn't fan out (agreement + statement + invoices + payments)
@@ -62,10 +80,25 @@ const getStatement = async () => {
   }
 };
 
+// Repair requests (feeds the landlord's read-only maintenance view).
+const getRepairs = () =>
+  getOrMock('/tenants/repairs', 'tenant.repairs', mockTenantRepairs);
+
+// Move-in / move-out condition checklist (feeds the deposit baseline).
+const getChecklist = () =>
+  getOrMock('/tenants/checklist', 'tenant.checklist', mockTenantChecklist);
+
+// Renters insurance coverage.
+const getInsurance = () =>
+  getOrMock('/tenants/insurance', 'tenant.insurance', mockTenantInsurance);
+
 const TenantHomeServices = {
   getRentSummary,
   getPayments,
   getStatement,
+  getRepairs,
+  getChecklist,
+  getInsurance,
 };
 
 export default TenantHomeServices;

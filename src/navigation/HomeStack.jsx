@@ -4,6 +4,7 @@ import React, {useEffect} from 'react';
 import useGlobals from '../provider/store/useGlobals';
 
 import {
+  Credit,
   InvoiceReceipt,
   LandlordHome,
   Lease,
@@ -149,6 +150,20 @@ const HomeStack = () => {
           options={{
             headerShown: true,
             title: 'Receipts',
+            headerShadowVisible: false,
+            headerTitleStyle: {
+              color: COLORS.primary,
+              fontSize: 18,
+              fontFamily: 'Inter-SemiBold',
+            },
+          }}
+        />
+        <Stack.Screen
+          name={'credit'}
+          component={Credit}
+          options={{
+            headerShown: true,
+            title: 'Credit building',
             headerShadowVisible: false,
             headerTitleStyle: {
               color: COLORS.primary,
