@@ -1,6 +1,13 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import {Credit, Help, RentersInsurance, More, MoreAccountDetails} from '../screens';
+import {
+  Credit,
+  Help,
+  RentersInsurance,
+  NotificationPrefs,
+  More,
+  MoreAccountDetails,
+} from '../screens';
 import COLORS from '../constants/Theme';
 import Complains from '../screens/more/landlord/complains';
 
@@ -35,6 +42,11 @@ const MoreStack = () => {
         name={'help'}
         component={Help}
         options={{...commonOptionsWithHeader, title: 'Help & contact'}}
+      />
+      <Stack.Screen
+        name={'notification_prefs'}
+        component={NotificationPrefs}
+        options={{...commonOptionsWithHeader, title: 'Notifications'}}
       />
     </Stack.Navigator>
   );

@@ -648,6 +648,29 @@ Checklist for the compliance pass:
 
 ---
 
+## §T15 — Notification preferences *(soft — FE has defaults)*
+
+The tenant controls what they hear about and how. Part of `GET /tenants/rent-summary`
+(or its own `GET /tenants/notification-preferences`):
+
+```jsonc
+"notificationPrefs": {
+  "channels": {"push": true, "email": true, "sms": false},
+  "topics": {
+    "rentReminders": true, "paymentReceipts": true, "repairs": true,
+    "leaseRenewals": true, "creditUpdates": false
+  },
+  "rentReminderDays": 5            // 1 | 3 | 5 — when to remind before due
+}
+```
+
+**`PATCH /tenants/notification-preferences`** — partial update of any of the
+above. The BE must still send **critical tenancy notices** (e.g. eviction /
+legal) regardless of these toggles; topics only gate non-critical pushes. FE
+falls back to all-on defaults if the block is absent.
+
+---
+
 ## Quick checklist for BE PM
 
 - [ ] §1 dashboard rollup

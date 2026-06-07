@@ -23,6 +23,7 @@ import MoveOut from './MoveOut';
 // the whole screens namespace, so the tenant one is namespaced distinctly.
 import RentersInsurance from './Insurance';
 import Help from './Help';
+import NotificationPrefs from './NotificationPrefs';
 
 export {
   TenantHome,
@@ -46,5 +47,6 @@ export {
   MoveOut,
   RentersInsurance,
   Help,
+  NotificationPrefs,
 };
 export * from './invoice';

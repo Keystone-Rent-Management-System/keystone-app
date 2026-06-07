@@ -388,6 +388,19 @@ export const mockTenantHome = {
     status: 'OFFERED', // NONE | OFFERED | RENEWED
     offerEndsOn: daysFromNow(21),
   },
+  // Notification preferences — what the tenant hears about and how.
+  // PATCH /tenants/notification-preferences persists changes.
+  notificationPrefs: {
+    channels: {push: true, email: true, sms: false},
+    topics: {
+      rentReminders: true,
+      paymentReceipts: true,
+      repairs: true,
+      leaseRenewals: true,
+      creditUpdates: false,
+    },
+    rentReminderDays: 5, // days before due to remind: 1 | 3 | 5
+  },
   recentPayments: [
     {id: 'r1', amount: 1800, date: daysFromNow(-4), method: 'Bank · Chase ••8821', code: 'KS-9F2A', status: 'PAID', period: monthYearLabel(-1)},
     {id: 'r2', amount: 1800, date: daysFromNow(-34), method: 'Bank · Chase ••8821', code: 'KS-7C1B', status: 'PAID', period: monthYearLabel(-2)},
