@@ -138,7 +138,8 @@ const TENANT_ITEMS = [
   {icon: 'users', title: 'Account information', screen: 'more__account_details'},
   {icon: 'trending', title: 'Credit building', screen: 'credit'},
   {icon: 'shield', title: 'Renters insurance', screen: 'insurance'},
-  {icon: 'bell', title: 'Help & contact', screen: 'help'},
+  {icon: 'bell', title: 'Notifications', screen: 'notification_prefs'},
+  {icon: 'collection', title: 'Help & contact', screen: 'help'},
   {icon: 'reports', title: 'Privacy policy', link: PRIVACY_POLICY_URL},
 ];
 
