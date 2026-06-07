@@ -136,7 +136,7 @@ const ClaimLanding = () => {
                 <TouchableOpacity
                   activeOpacity={0.9}
                   onPress={() => nav.navigate('auth__login')}
-                  className="bg-keystone_gold rounded-2xl py-4 items-center">
+                  className="bg-keystone_cream rounded-2xl py-4 items-center">
                   <Text className="text-keystone_navy font-inter-bold text-base">
                     Set up my account
                   </Text>
@@ -153,7 +153,7 @@ const ClaimLanding = () => {
                 <TouchableOpacity
                   activeOpacity={0.9}
                   onPress={resolveCode}
-                  className="bg-keystone_gold rounded-2xl py-4 items-center">
+                  className="bg-keystone_cream rounded-2xl py-4 items-center">
                   <Text className="text-keystone_navy font-inter-bold text-base">Continue</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -168,7 +168,7 @@ const ClaimLanding = () => {
                 <TouchableOpacity
                   activeOpacity={0.9}
                   onPress={() => setShowCode(true)}
-                  className="bg-keystone_gold rounded-2xl py-4 items-center">
+                  className="bg-keystone_cream rounded-2xl py-4 items-center">
                   <Text className="text-keystone_navy font-inter-bold text-base">
                     I have an invite code
                   </Text>

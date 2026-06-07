@@ -89,8 +89,8 @@ const Welcome = () => {
                   </View>
                   <View
                     className="px-2.5 py-1 rounded-full"
-                    style={{backgroundColor: 'rgba(168,153,119,0.18)'}}>
-                    <Text className="text-keystone_gold font-inter-semibold text-2xs uppercase tracking-wider">
+                    style={{backgroundColor: 'rgba(168,153,119,0.28)'}}>
+                    <Text className="text-keystone_cream font-inter-semibold text-2xs uppercase tracking-wider">
                       Instant
                     </Text>
                   </View>
@@ -107,16 +107,18 @@ const Welcome = () => {
           <FadeScaleIn delay={460}>
             <View>
               <View className="flex-row items-center justify-center mb-5">
-                <Icon name="shield" size={13} color="rgba(255,255,255,0.45)" />
-                <Text className="text-white/45 font-inter text-xs ml-1.5">
+                <Icon name="shield" size={13} color="rgba(255,255,255,0.65)" />
+                <Text className="text-white/65 font-inter text-xs ml-1.5">
                   Bank-level encryption · Powered by Dwolla & Plaid
                 </Text>
               </View>
 
+              {/* Cream (not the muddy bronze gold) so the dark label reads
+                  with strong contrast on the navy front door. */}
               <TouchableOpacity
                 activeOpacity={0.9}
                 onPress={() => nav.navigate('auth__registration_email')}
-                className="bg-keystone_gold rounded-2xl py-4 flex-row items-center justify-center">
+                className="bg-keystone_cream rounded-2xl py-4 flex-row items-center justify-center">
                 <Text className="text-keystone_navy font-inter-bold text-base">Get started</Text>
                 <Text className="text-keystone_navy font-inter-bold text-base ml-2">→</Text>
               </TouchableOpacity>
