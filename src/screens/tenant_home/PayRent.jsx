@@ -12,8 +12,9 @@ import {useNavigation} from '@react-navigation/native';
 
 import {useTenantHome} from '../../hooks/useTenantHome';
 import {usd} from '../../utils/money';
-import {Card, Label, Amount, Divider, Row, Icon, IconChip} from '../../components/premium';
+import {Card, Label, Amount, Divider, Row, Icon, IconChip, DraftBadge} from '../../components/premium';
 import COLORS from '../../constants/Theme';
+import {ACH} from '../../constants/legalCopy';
 
 // Pay rent — instant + direct. Keystone moves the rent straight into
 // the landlord's bank the moment the tenant taps; there's no paybill,
@@ -125,10 +126,32 @@ const PayRent = () => {
             landlord’s bank.
           </Text>
         </View>
+
+        {/* ACH authorization (NACHA) + Reg E notice */}
+        <View className="px-4 mt-5">
+          <Card>
+            <DraftBadge />
+            <Text className="text-text_muted font-inter text-xs leading-5">
+              {ACH.oneTimeMandate(
+                usd(amount),
+                method.name ? `${method.name} ••${method.last4}` : 'your bank',
+                rent.periodLabel ?? 'this period',
+              )}
+            </Text>
+            <Divider style={{marginVertical: 10}} />
+            <Text className="text-text_muted font-inter text-xs leading-5">
+              {ACH.regE}
+            </Text>
+          </Card>
+        </View>
       </ScrollView>
 
       {/* Pay CTA */}
       <View className="px-4 pb-6 pt-2 bg-keystone_canvas">
+        <Text className="text-text_muted font-inter text-2xs leading-4 mb-2 text-center px-2">
+          By tapping Pay you authorize this one-time debit. See the
+          authorization above.
+        </Text>
         <TouchableOpacity
           onPress={onPay}
           disabled={paying || amount <= 0}
