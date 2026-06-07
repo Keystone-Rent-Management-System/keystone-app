@@ -510,11 +510,21 @@ Ring and the Credit screen.
 ```jsonc
 {
   "held": 1800, "refundDays": 14, "condition": "Good",
-  "moveInLogged": true, "heldBy": "Keystone Property Group"
+  "moveInLogged": true, "heldBy": "Keystone Property Group",
+  "return": {
+    "status": "HELD",          // HELD | NOTICE_GIVEN | INSPECTION | REFUNDED
+    "moveOutDate": null,        // set from the §T8/vacate notice
+    "expectedBy": null,         // moveOutDate + refundDays
+    "amount": 1800,             // projected refund
+    "deductions": 0
+  }
 }
 ```
 
 Read-model only — no new write. `condition` mirrors the move-in checklist (§T8).
+The `return` block drives the FE deposit-return tracker; `status` advances off
+the vacate notice (`POST /vacate-notice`) and the move-out inspection, so the
+tenant can watch their refund come back.
 
 ## §T11 — Renters insurance *(blocks More → Insurance; needs insurer partner)*
 

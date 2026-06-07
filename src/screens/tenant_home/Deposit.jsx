@@ -7,12 +7,31 @@ import {Card, Label, Divider, Row, Icon, IconChip} from '../../components/premiu
 import COLORS from '../../constants/Theme';
 
 // Security deposit — the renter's biggest "will I get it back?" worry.
-// Show what's held, the move-in condition baseline, and the refund clock.
+// Show what's held, the move-in condition baseline, the refund clock, and a
+// step-by-step return tracker that goes live once they give notice to vacate.
+
+const RETURN_STEPS = [
+  {key: 'HELD', label: 'Held safely', sub: 'Secured for your tenancy'},
+  {key: 'NOTICE_GIVEN', label: 'Notice given', sub: 'Move-out date set'},
+  {key: 'INSPECTION', label: 'Move-out inspection', sub: 'Compared to your move-in photos'},
+  {key: 'REFUNDED', label: 'Refund issued', sub: 'Sent to your bank'},
+];
+
+const fmtDate = iso => {
+  if (!iso) return null;
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
+};
 
 const Deposit = () => {
   const {home} = useTenantHome();
   const deposit = home?.deposit ?? {};
   const lease = home?.lease ?? {};
+  const ret = deposit.return ?? {status: 'HELD'};
+  const activeIdx = Math.max(
+    0,
+    RETURN_STEPS.findIndex(s => s.key === ret.status),
+  );
 
   return (
     <View className="flex-1 bg-keystone_canvas">
@@ -43,6 +62,66 @@ const Deposit = () => {
             />
             <Divider />
             <Row label="Refund window" value={`${deposit.refundDays ?? 14} days after move-out`} />
+          </Card>
+        </View>
+
+        {/* Return tracker */}
+        <View className="px-4 mt-4">
+          <View className="flex-row items-center justify-between mb-3 ml-1">
+            <Label>Your deposit return</Label>
+            {ret.status === 'HELD' ? (
+              <Text className="text-text_muted font-inter text-xs">starts when you give notice</Text>
+            ) : (
+              <Text className="text-keystone_gold font-inter-semibold text-xs">in progress</Text>
+            )}
+          </View>
+          <Card>
+            {RETURN_STEPS.map((step, i) => {
+              const done = i < activeIdx;
+              const active = i === activeIdx;
+              const last = i === RETURN_STEPS.length - 1;
+              const dot = done ? COLORS.c_success : active ? COLORS.keystone_gold : '#CBD2D9';
+              return (
+                <View key={step.key} className="flex-row">
+                  {/* rail */}
+                  <View className="items-center mr-3" style={{width: 22}}>
+                    <View
+                      className="rounded-full items-center justify-center"
+                      style={{width: 22, height: 22, backgroundColor: dot}}>
+                      {done && <Text className="text-white" style={{fontSize: 11}}>✓</Text>}
+                    </View>
+                    {!last && (
+                      <View style={{width: 2, flex: 1, minHeight: 22, backgroundColor: done ? COLORS.c_success : '#E6E2D8'}} />
+                    )}
+                  </View>
+                  {/* label */}
+                  <View className={last ? '' : 'pb-4'} style={{flex: 1}}>
+                    <Text
+                      className={`font-inter-semibold text-sm ${active || done ? 'text-keystone_navy' : 'text-text_muted'}`}>
+                      {step.label}
+                    </Text>
+                    <Text className="text-text_muted font-inter text-xs mt-0.5">{step.sub}</Text>
+                  </View>
+                </View>
+              );
+            })}
+
+            {ret.status !== 'HELD' && (
+              <>
+                <Divider style={{marginVertical: 12}} />
+                {fmtDate(ret.moveOutDate) && (
+                  <Row label="Move-out date" value={fmtDate(ret.moveOutDate)} />
+                )}
+                {fmtDate(ret.expectedBy) && (
+                  <Row label="Refund expected by" value={fmtDate(ret.expectedBy)} />
+                )}
+                <Row
+                  label="Projected refund"
+                  value={usd((ret.amount ?? deposit.held ?? 0) - (ret.deductions ?? 0))}
+                  bold
+                />
+              </>
+            )}
           </Card>
         </View>
 

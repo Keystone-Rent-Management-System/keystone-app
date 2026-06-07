@@ -363,6 +363,15 @@ export const mockTenantHome = {
     refundDays: 14, // agreement.daysOfDepositRefundAfterTermination
     condition: 'Good',
     moveInLogged: true,
+    // Deposit-return tracker. `status` advances once the tenant gives notice
+    // to vacate (MoveOut → POST /vacate-notice). HELD = active tenancy.
+    return: {
+      status: 'HELD', // HELD | NOTICE_GIVEN | INSPECTION | REFUNDED
+      moveOutDate: null,
+      expectedBy: null, // set to moveOutDate + refundDays once notice is given
+      amount: 1800, // projected refund
+      deductions: 0,
+    },
   },
   // Move-in / move-out condition checklist progress.
   checklist: {
