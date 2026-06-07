@@ -319,6 +319,7 @@ export const mockTenantHome = {
     paidThisPeriod: 0,
   },
   lease: {
+    agreementId: 'agr-4b-2025',
     unit: '4B',
     property: 'Magnolia Court',
     address: '128 Magnolia Ave, Austin, TX',
@@ -327,8 +328,9 @@ export const mockTenantHome = {
     startDate: '2025-08-01',
     endDate: daysFromNow(56),
     daysToEnd: 56,
+    noticeDays: 30, // agreement.daysOfTerminationNotice
     landlord: 'Keystone Property Group',
-    renewalStatus: 'NONE', // 'NONE' | 'OFFERED' | 'RENEWED'
+    renewalStatus: 'OFFERED', // 'NONE' | 'OFFERED' | 'RENEWED'
     // 'ACCEPTED' = signed & active. 'PENDING' = tenant must review +
     // accept before the tenancy is active (drives the Home accept card).
     agreementStatus: 'ACCEPTED',
@@ -339,7 +341,41 @@ export const mockTenantHome = {
     ],
   },
   paymentMethod: {type: 'bank', name: 'Chase', last4: '8821'},
-  autopay: {enabled: false},
+  paymentMethods: [
+    {id: 'pm1', type: 'bank', name: 'Chase', last4: '8821', isDefault: true},
+    {id: 'pm2', type: 'card', name: 'Visa debit', last4: '4417', isDefault: false},
+  ],
+  autopay: {enabled: false, dayOfMonth: 1, methodId: 'pm1'},
+  // Credit building — on-time rent reported to the bureaus. The reason a
+  // renter chooses to pay through Keystone.
+  credit: {
+    enabled: true,
+    score: 712,
+    delta: 18, // points since enrolling
+    band: 'Good',
+    streakMonths: 9, // consecutive on-time payments
+    reportedTo: ['TransUnion', 'Equifax'],
+    history: [684, 690, 690, 695, 701, 705, 708, 712, 712],
+  },
+  // Security deposit held + how fast it returns after move-out.
+  deposit: {
+    held: 1800,
+    refundDays: 14, // agreement.daysOfDepositRefundAfterTermination
+    condition: 'Good',
+    moveInLogged: true,
+  },
+  // Move-in / move-out condition checklist progress.
+  checklist: {
+    type: 'MOVE_IN', // MOVE_IN | MOVE_OUT
+    status: 'IN_PROGRESS', // NOT_STARTED | IN_PROGRESS | COMPLETE
+    completed: 4,
+    total: 6,
+  },
+  openRepairs: 1, // active repair requests needing the tenant's eye
+  renewal: {
+    status: 'OFFERED', // NONE | OFFERED | RENEWED
+    offerEndsOn: daysFromNow(21),
+  },
   recentPayments: [
     {id: 'r1', amount: 1800, date: daysFromNow(-4), method: 'Bank · Chase ••8821', code: 'KS-9F2A', status: 'PAID', period: monthYearLabel(-1)},
     {id: 'r2', amount: 1800, date: daysFromNow(-34), method: 'Bank · Chase ••8821', code: 'KS-7C1B', status: 'PAID', period: monthYearLabel(-2)},
@@ -382,6 +418,81 @@ export const mockTenantStatement = {
     {id: 'e5', entryDate: daysFromNow(-60), description: `Rent · ${monthYearLabel(-2)}`, charge: 1800, credit: 0, runningBalance: 1800},
     {id: 'e6', entryDate: daysFromNow(-64), description: `Payment · KS-4D8E`, charge: 0, credit: 1800, runningBalance: 0},
   ],
+};
+
+// Tenant repair requests — the data that feeds the landlord's read-only
+// maintenance view. GET /tenants/repairs (submit reuses POST /request-repair).
+export const mockTenantRepairs = [
+  {
+    id: 'rp1',
+    category: 'Plumbing',
+    title: 'Kitchen faucet dripping',
+    status: 'IN_PROGRESS', // SUBMITTED | IN_PROGRESS | SCHEDULED | RESOLVED
+    submittedOn: daysFromNow(-3),
+    updatedOn: daysFromNow(-1),
+    assignedTo: 'Acme Plumbing',
+    photos: 1,
+    timeline: [
+      {label: 'Submitted', date: daysFromNow(-3), done: true},
+      {label: 'Landlord notified', date: daysFromNow(-3), done: true},
+      {label: 'Vendor assigned', date: daysFromNow(-1), done: true},
+      {label: 'Scheduled visit', date: daysFromNow(1), done: false},
+    ],
+  },
+  {
+    id: 'rp2',
+    category: 'Electrical',
+    title: 'Bedroom outlet not working',
+    status: 'RESOLVED',
+    submittedOn: daysFromNow(-22),
+    updatedOn: daysFromNow(-18),
+    assignedTo: 'Bright Spark Electric',
+    photos: 2,
+    timeline: [
+      {label: 'Submitted', date: daysFromNow(-22), done: true},
+      {label: 'Vendor assigned', date: daysFromNow(-20), done: true},
+      {label: 'Resolved', date: daysFromNow(-18), done: true},
+    ],
+  },
+];
+
+// Repair categories for the report form.
+export const repairCategories = [
+  'Plumbing',
+  'Electrical',
+  'Heating / Cooling',
+  'Appliance',
+  'Pest',
+  'Locks / Doors',
+  'Other',
+];
+
+// Move-in / move-out checklist — feeds the deposit baseline. The tenant
+// logs each room's condition (+ photos). GET /tenants/checklist
+export const mockTenantChecklist = {
+  type: 'MOVE_IN',
+  status: 'IN_PROGRESS',
+  rooms: [
+    {id: 'c1', room: 'Living room', done: true, condition: 'Good', photos: 2},
+    {id: 'c2', room: 'Kitchen', done: true, condition: 'Good', photos: 3},
+    {id: 'c3', room: 'Bedroom', done: true, condition: 'Fair', photos: 1, note: 'Small scuff on wall'},
+    {id: 'c4', room: 'Bathroom', done: true, condition: 'Good', photos: 2},
+    {id: 'c5', room: 'Floors / windows', done: false, condition: null, photos: 0},
+    {id: 'c6', room: 'Outdoor / parking', done: false, condition: null, photos: 0},
+  ],
+};
+
+// Renters insurance — coverage status (partner-backed). GET /tenants/insurance
+export const mockTenantInsurance = {
+  status: 'COVERED', // COVERED | NOT_COVERED | EXPIRING
+  provider: 'Keystone Renters (Lemonade)',
+  policyNumber: 'KR-48213',
+  monthlyPremium: 14,
+  personalProperty: 30000,
+  liability: 100000,
+  deductible: 250,
+  renewsOn: daysFromNow(212),
+  requiredByLease: true,
 };
 
 export const mockFallback = (key, value) => {
