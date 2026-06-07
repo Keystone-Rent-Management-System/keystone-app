@@ -23,6 +23,7 @@ const MyHomeHub = () => {
   const lease = home?.lease ?? {};
   const checklist = home?.checklist ?? {};
   const openRepairs = home?.openRepairs ?? 0;
+  const renewal = home?.renewal ?? {};
 
   const HUB = [
     {
@@ -36,7 +37,7 @@ const MyHomeHub = () => {
       key: 'deposit',
       icon: 'shield',
       title: 'Security deposit',
-      sub: 'What’s held & how it comes back',
+      sub: 'What’s held & track your return',
     },
     {
       key: 'repairs',
@@ -58,8 +59,10 @@ const MyHomeHub = () => {
     {
       key: 'move_out',
       icon: 'scale',
-      title: 'Renew or move out',
-      sub: 'Give notice · respond to a renewal',
+      title: 'Move out or renew',
+      sub: 'Give notice to vacate · respond to a renewal',
+      badge:
+        renewal.status === 'OFFERED' ? {label: 'Renewal', tone: 'pending'} : null,
     },
   ];
 
