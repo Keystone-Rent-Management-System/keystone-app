@@ -30,3 +30,30 @@ export const useTenantStatement = () => {
   });
   return {isPending, isRefetching, error, statement: data, refetch};
 };
+
+// Repair requests the tenant has filed (feeds landlord maintenance).
+export const useTenantRepairs = () => {
+  const {isPending, isRefetching, error, data, refetch} = useQuery({
+    queryKey: ['tenant/repairs'],
+    queryFn: () => TenantHomeServices.getRepairs(),
+  });
+  return {isPending, isRefetching, error, repairs: data ?? [], refetch};
+};
+
+// Move-in / move-out condition checklist.
+export const useTenantChecklist = () => {
+  const {isPending, isRefetching, error, data, refetch} = useQuery({
+    queryKey: ['tenant/checklist'],
+    queryFn: () => TenantHomeServices.getChecklist(),
+  });
+  return {isPending, isRefetching, error, checklist: data, refetch};
+};
+
+// Renters insurance coverage.
+export const useTenantInsurance = () => {
+  const {isPending, isRefetching, error, data, refetch} = useQuery({
+    queryKey: ['tenant/insurance'],
+    queryFn: () => TenantHomeServices.getInsurance(),
+  });
+  return {isPending, isRefetching, error, insurance: data, refetch};
+};
