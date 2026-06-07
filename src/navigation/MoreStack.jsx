@@ -1,6 +1,6 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import {Credit, Help, Insurance, More, MoreAccountDetails} from '../screens';
+import {Credit, Help, RentersInsurance, More, MoreAccountDetails} from '../screens';
 import COLORS from '../constants/Theme';
 import Complains from '../screens/more/landlord/complains';
 
@@ -28,7 +28,7 @@ const MoreStack = () => {
       />
       <Stack.Screen
         name={'insurance'}
-        component={Insurance}
+        component={RentersInsurance}
         options={{...commonOptionsWithHeader, title: 'Renters insurance'}}
       />
       <Stack.Screen
