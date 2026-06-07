@@ -11,9 +11,24 @@ import {
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 
-import {KeystoneLogo} from '../../components/premium';
+import {KeystoneLogo, Icon, IconChip} from '../../components/premium';
 import COLORS from '../../constants/Theme';
 import {mockInvite} from '../../services/mocks';
+
+// A single renter value prop — gold chip, title, one line of why.
+const ValueRow = ({icon, title, sub}) => (
+  <View className="flex-row items-center mb-3.5">
+    <IconChip size={40} onDark>
+      <Icon name={icon} size={18} color={COLORS.keystone_gold} />
+    </IconChip>
+    <View className="flex-1 ml-3">
+      <Text className="text-white font-inter-semibold" style={{fontSize: 15}}>
+        {title}
+      </Text>
+      <Text className="text-white/55 font-inter text-xs mt-0.5">{sub}</Text>
+    </View>
+  </View>
+);
 
 // Tenant front door. Keystone is provisioned-only — a landlord adds the tenant
 // and an invite (deep-link token) brings them here. Two paths:
@@ -101,19 +116,20 @@ const ClaimLanding = () => {
             ) : (
               /* ── No invite yet ─────────────────────────────────── */
               <View>
-                <Text className="text-white font-inter-bold text-3xl leading-tight">
+                <Text className="text-keystone_gold font-inter-semibold text-xs uppercase tracking-widest mb-3">
+                  For renters
+                </Text>
+                <Text
+                  className="text-white font-inter-bold text-4xl leading-tight"
+                  style={{letterSpacing: -0.5}}>
                   Pay rent.{'\n'}
                   <Text className="text-keystone_gold">Build credit.</Text>
                 </Text>
-                <Text className="text-white/70 font-inter text-base mt-4 leading-relaxed">
-                  Keystone is set up by your landlord. If you have an invite,
-                  claim it below. If they’re not on Keystone yet — ask them.
-                </Text>
 
-                {showCode && (
-                  <View className="mt-6">
+                {showCode ? (
+                  <View className="mt-8">
                     <Text className="text-white/60 font-inter text-xs mb-2 ml-1">
-                      Invite code
+                      Enter the invite code from your landlord
                     </Text>
                     <TextInput
                       value={code}
@@ -122,6 +138,24 @@ const ClaimLanding = () => {
                       placeholder="e.g. KS-4B2A"
                       placeholderTextColor="rgba(255,255,255,0.4)"
                       className="bg-white/10 text-white font-inter text-base rounded-xl px-4 py-3"
+                    />
+                  </View>
+                ) : (
+                  <View className="mt-8">
+                    <ValueRow
+                      icon="card"
+                      title="Pay in two taps"
+                      sub="Instant — and free to you."
+                    />
+                    <ValueRow
+                      icon="trending"
+                      title="Build credit with rent"
+                      sub="Every on-time payment counts."
+                    />
+                    <ValueRow
+                      icon="shield"
+                      title="Renters insurance"
+                      sub="Protect your stuff, satisfy your lease."
                     />
                   </View>
                 )}
