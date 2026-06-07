@@ -4,26 +4,40 @@ import {useNavigation} from '@react-navigation/native';
 import {
   KeystoneLogo,
   Icon,
+  IconChip,
   FadeScaleIn,
   useCountUp,
 } from '../../components/premium';
 import COLORS from '../../constants/Theme';
 
-// Front door — "quiet confidence". Keystone is a landlord-first rent-protection
-// product (instant payments + insurance). The cold-open sells the wedge with
-// private-banking restraint: one shield, one promise, one proof point — then
-// routes the two audiences (landlord → get started; tenant → claim their home).
-//
-// NOTE: RENT_PROTECTED_THIS_MONTH is a PLACEHOLDER marketing figure for the
-// hero proof-point. Replace it with a real, sourced number (or remove the stat)
-// before any production release — do not ship a fabricated metric.
-const RENT_PROTECTED_THIS_MONTH = 2400000;
+// Front door — "quiet confidence", but now it SHOWS the product and earns
+// trust instead of only stating a promise:
+//   • a money-landed card (rent received → counts into the bank) = the magic,
+//     demonstrated, and the one anchoring visual.
+//   • two benefit lines so both audiences see themselves (landlord + renter).
+//   • a trust row (encryption + payment partners) — it's a money app; screen 1
+//     should feel safe before it asks for a bank.
+// The illustrative $1,800 card replaces the old fabricated "$Xm protected"
+// stat — an honest product glimpse, not a claimed metric.
 
-const compactUsd = n => `$${(n / 1_000_000).toFixed(1)}M`;
+const EXAMPLE_RENT = 1800;
+const usd = n => `$${Math.round(n).toLocaleString()}`;
+
+const Benefit = ({who, text}) => (
+  <View className="flex-row items-start mb-2.5">
+    <View className="w-1.5 h-1.5 rounded-full bg-keystone_gold mt-2 mr-3" />
+    <Text
+      className="text-white/75 font-inter flex-1 leading-relaxed"
+      style={{fontSize: 15}}>
+      <Text className="text-white font-inter-semibold">{who} — </Text>
+      {text}
+    </Text>
+  </View>
+);
 
 const Welcome = () => {
   const nav = useNavigation();
-  const protectedNow = useCountUp(RENT_PROTECTED_THIS_MONTH, 1600);
+  const landed = useCountUp(EXAMPLE_RENT, 1400);
 
   return (
     <View className="flex-1 bg-keystone_navy">
@@ -35,63 +49,75 @@ const Welcome = () => {
             <KeystoneLogo height={34} />
           </View>
 
-          {/* Hero — lots of air, staggered settle */}
+          {/* Hero */}
           <View>
             <FadeScaleIn delay={80}>
-              <View
-                className="w-16 h-16 rounded-2xl items-center justify-center mb-8"
-                style={{
-                  backgroundColor: 'rgba(168,153,119,0.14)',
-                  borderWidth: 1,
-                  borderColor: 'rgba(168,153,119,0.35)',
-                }}>
-                <Icon name="shield" size={28} color={COLORS.keystone_gold} />
+              <Text
+                className="text-white font-inter-bold"
+                style={{fontSize: 44, lineHeight: 46, letterSpacing: -1}}>
+                Rent you{'\n'}can count on.
+              </Text>
+            </FadeScaleIn>
+
+            <FadeScaleIn delay={180}>
+              <View className="mt-5">
+                <Benefit who="Landlords" text="rent in your own bank in seconds — protected." />
+                <Benefit who="Renters" text="pay in two taps, and build credit doing it." />
               </View>
             </FadeScaleIn>
 
-            <FadeScaleIn delay={160}>
-              <Text
-                className="text-white font-inter-bold text-5xl"
-                style={{lineHeight: 50, letterSpacing: -1}}>
-                Rent you{'\n'}can count{'\n'}on.
-              </Text>
-            </FadeScaleIn>
-
-            <FadeScaleIn delay={260}>
-              <Text className="text-white/70 font-inter text-lg mt-5 leading-relaxed">
-                Paid instantly. Insured always.
-              </Text>
-            </FadeScaleIn>
-
-            {/* Proof point */}
-            <FadeScaleIn delay={380}>
-              <View className="mt-9">
-                <View
-                  className="mb-4"
-                  style={{height: 1, width: 64, backgroundColor: 'rgba(255,255,255,0.18)'}}
-                />
-                <Text
-                  className="text-keystone_gold font-inter-bold text-3xl"
-                  style={{fontVariant: ['tabular-nums'], letterSpacing: -0.5}}>
-                  {compactUsd(protectedNow)}
-                </Text>
-                <Text className="text-white/55 font-inter text-sm mt-1">
-                  in rent protected this month
+            {/* Money-landed moment — the magic, shown */}
+            <FadeScaleIn delay={320}>
+              <View
+                className="mt-7 rounded-2xl p-4"
+                style={{
+                  backgroundColor: 'rgba(255,255,255,0.06)',
+                  borderWidth: 1,
+                  borderColor: 'rgba(255,255,255,0.10)',
+                }}>
+                <View className="flex-row items-center">
+                  <IconChip size={42} onDark>
+                    <Icon name="bank" size={19} color={COLORS.keystone_gold} />
+                  </IconChip>
+                  <View className="flex-1 ml-3">
+                    <Text className="text-white/55 font-inter text-xs">Rent received</Text>
+                    <Text
+                      className="text-white font-inter-bold text-2xl"
+                      style={{fontVariant: ['tabular-nums'], letterSpacing: -0.5}}>
+                      {usd(landed)}
+                    </Text>
+                  </View>
+                  <View
+                    className="px-2.5 py-1 rounded-full"
+                    style={{backgroundColor: 'rgba(168,153,119,0.18)'}}>
+                    <Text className="text-keystone_gold font-inter-semibold text-2xs uppercase tracking-wider">
+                      Instant
+                    </Text>
+                  </View>
+                </View>
+                <View className="h-px bg-white/10 my-3" />
+                <Text className="text-white/50 font-inter text-xs">
+                  Landed in your bank · just now
                 </Text>
               </View>
             </FadeScaleIn>
           </View>
 
-          {/* Doors */}
-          <FadeScaleIn delay={480}>
+          {/* Trust + doors */}
+          <FadeScaleIn delay={460}>
             <View>
+              <View className="flex-row items-center justify-center mb-5">
+                <Icon name="shield" size={13} color="rgba(255,255,255,0.45)" />
+                <Text className="text-white/45 font-inter text-xs ml-1.5">
+                  Bank-level encryption · Powered by Dwolla & Plaid
+                </Text>
+              </View>
+
               <TouchableOpacity
                 activeOpacity={0.9}
                 onPress={() => nav.navigate('auth__registration_email')}
                 className="bg-keystone_gold rounded-2xl py-4 flex-row items-center justify-center">
-                <Text className="text-keystone_navy font-inter-bold text-base">
-                  Get started
-                </Text>
+                <Text className="text-keystone_navy font-inter-bold text-base">Get started</Text>
                 <Text className="text-keystone_navy font-inter-bold text-base ml-2">→</Text>
               </TouchableOpacity>
 
@@ -107,7 +133,7 @@ const Welcome = () => {
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => nav.navigate('auth__login')}
-                className="mt-5 items-center">
+                className="mt-4 items-center">
                 <Text className="text-white/55 font-inter text-sm">
                   Already have an account?{' '}
                   <Text className="text-white font-inter-semibold underline">Sign in</Text>
