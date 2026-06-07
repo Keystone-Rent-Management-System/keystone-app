@@ -438,8 +438,13 @@ on the due date automatically.
 
 ## §T7 — Repairs list + detail *(blocks My Home → Repairs)*
 
-Submit reuses the **live** `POST /request-repair` (multipart: `description`,
-`category`, `agreementId`, `photo`). We need the read side:
+Submit reuses the **live** `POST /request-repair` (multipart: `message`,
+`priority` (`NORMAL` | `URGENT`), `attachmentFile`). The tenant picks an
+urgency; `URGENT` is prefixed in the message and sent as a `priority` field so
+the landlord's maintenance read-model can triage. A life-safety / no-heat-water
+/ lockout issue is routed to a **phone call** (911 or the lease `emergencyPhone`
+after-hours line) from the report screen instead of a ticket that waits. We need
+the read side, which should echo `priority` per request:
 
 **`GET /tenants/repairs`** → newest first.
 
