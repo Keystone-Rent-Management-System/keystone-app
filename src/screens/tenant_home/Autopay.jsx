@@ -12,10 +12,30 @@ import {
 
 import {useTenantHome} from '../../hooks/useTenantHome';
 import {usd} from '../../utils/money';
-import {Card, Label, Divider, Icon, IconChip} from '../../components/premium';
+import {
+  Card,
+  Label,
+  Divider,
+  Icon,
+  IconChip,
+  DraftBadge,
+  ConsentRow,
+} from '../../components/premium';
 import COLORS from '../../constants/Theme';
+import {ACH} from '../../constants/legalCopy';
 
-// Autopay — set it and never think about rent again. PATCH /tenants/autopay.
+const ordinal = n => {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+};
+
+// Autopay — set it and never think about rent again. Because this is a
+// recurring ACH debit (Dwolla white-label), turning it ON requires an
+// explicit NACHA authorization: the tenant must see the mandate (amount, the
+// day of the month, how to cancel) and affirmatively authorize before we
+// enable it. PATCH /tenants/autopay stores { enabled, dayOfMonth, methodId,
+// authorizationAt } — the timestamp is the authorization record.
 
 const Autopay = () => {
   const {home, isRefetching, refetch} = useTenantHome();
@@ -25,6 +45,9 @@ const Autopay = () => {
 
   const [enabled, setEnabled] = useState(autopay.enabled ?? false);
   const [methodId, setMethodId] = useState(autopay.methodId ?? methods[0]?.id);
+  // Authorization step shown when the tenant asks to turn autopay on.
+  const [authorizing, setAuthorizing] = useState(false);
+  const [authorized, setAuthorized] = useState(false);
 
   // Sync local toggle state once the shared query resolves — useState only
   // captures the value at mount, so a direct entry (deep-link straight to
@@ -36,6 +59,30 @@ const Autopay = () => {
   }, [autopay.enabled, autopay.methodId]);
 
   const method = methods.find(m => m.id === methodId) ?? methods[0];
+  const dayLabel = ordinal(autopay.dayOfMonth ?? 1);
+  const methodLabel = method ? `${method.name} ••${method.last4}` : 'your bank';
+
+  const requestEnable = v => {
+    if (v) {
+      // Don't enable yet — gather the ACH authorization first.
+      setAuthorizing(true);
+    } else {
+      setEnabled(false);
+      setAuthorizing(false);
+      setAuthorized(false);
+      ToastAndroid.show('Autopay off', ToastAndroid.SHORT);
+    }
+  };
+
+  const confirmAuthorize = () => {
+    if (!authorized) {
+      ToastAndroid.show('Please authorize the recurring payment', ToastAndroid.SHORT);
+      return;
+    }
+    setEnabled(true);
+    setAuthorizing(false);
+    ToastAndroid.show('Autopay on', ToastAndroid.SHORT);
+  };
 
   return (
     <View className="flex-1 bg-keystone_canvas">
@@ -55,7 +102,7 @@ const Autopay = () => {
             </Text>
             <Text className="text-white/60 font-inter text-sm mt-1">
               {enabled
-                ? `We’ll pay ${usd(rent.amount)} on the 1st of each month — automatically.`
+                ? `We’ll pay ${usd(rent.amount)} on the ${dayLabel} of each month — automatically.`
                 : 'Turn on autopay so rent is never late and your credit keeps growing.'}
             </Text>
           </Card>
@@ -73,18 +120,58 @@ const Autopay = () => {
                   Pay rent automatically
                 </Text>
               </View>
+              {/* Reflects the ACTUAL enabled state only — never shows ON
+                  while the authorization is merely pending, so a screenshot
+                  can't imply consent that wasn't given. The mandate panel
+                  below is the pending-action indicator. */}
               <Switch
                 value={enabled}
-                onValueChange={v => {
-                  setEnabled(v);
-                  ToastAndroid.show(v ? 'Autopay on' : 'Autopay off', ToastAndroid.SHORT);
-                }}
+                onValueChange={requestEnable}
                 trackColor={{true: COLORS.keystone_gold, false: '#CBD2D9'}}
                 thumbColor="#FFFFFF"
               />
             </View>
           </Card>
         </View>
+
+        {/* ACH authorization (NACHA) — required before autopay turns on */}
+        {authorizing && !enabled && (
+          <View className="px-4 mt-4">
+            <Card style={{borderColor: COLORS.keystone_gold, borderWidth: 1}}>
+              <Label>Authorize recurring payment</Label>
+              <View className="mt-2">
+                <DraftBadge />
+              </View>
+              <Text className="text-text_muted font-inter text-xs leading-5">
+                {ACH.autopayMandate(usd(rent.amount), dayLabel, methodLabel)}
+              </Text>
+              <ConsentRow checked={authorized} onToggle={() => setAuthorized(a => !a)}>
+                {ACH.autopayCheckbox}
+              </ConsentRow>
+              <View className="flex-row gap-3 mt-4">
+                <TouchableOpacity
+                  onPress={() => {
+                    setAuthorizing(false);
+                    setAuthorized(false);
+                  }}
+                  activeOpacity={0.85}
+                  className="flex-1 border border-keystone_navy rounded-2xl py-3.5 items-center">
+                  <Text className="text-keystone_navy font-inter-semibold text-sm">Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={confirmAuthorize}
+                  disabled={!authorized}
+                  activeOpacity={0.9}
+                  style={{opacity: authorized ? 1 : 0.5}}
+                  className="flex-1 bg-keystone_navy rounded-2xl py-3.5 items-center">
+                  <Text className="text-white font-inter-semibold text-sm">
+                    {ACH.autopayConfirmCta}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </Card>
+          </View>
+        )}
 
         {/* Method picker */}
         {enabled && (

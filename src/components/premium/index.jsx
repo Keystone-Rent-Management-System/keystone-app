@@ -8,6 +8,7 @@ export {default as Icon} from './icons';
 export {Donut, Ring, Sparkline, AreaTrend} from './charts';
 export {FadeScaleIn, useCountUp} from './motion';
 export {KeystoneMark, BrandLockup, KeystoneLogo} from './brand';
+export {DraftBadge, ConsentRow, LegalLink} from './consent';
 
 // ── Keystone command-center kit (light, brand-matched) ─────────────
 // Mirrors the web SPA's dashboard vocabulary so mobile + web feel

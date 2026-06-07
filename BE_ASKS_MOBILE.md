@@ -567,6 +567,52 @@ Proposed split plan:
 ]}
 ```
 
+## §T14 — Compliance records (FCRA + NACHA/Reg E + Dwolla) *(blocks production)*
+
+> **Lawsuit-shield, not optional.** CEO decision (2026-06-07): credit reporting
+> runs through an **aggregator partner** (the partner is the FCRA furnisher of
+> record); payments are **Dwolla white-label** (Keystone hosts ToS acceptance +
+> ACH authorization). The FE now captures consent on every relevant screen and
+> needs the BE to **persist each consent as a timestamped, immutable record**.
+> All user-facing legal copy is centralized in `src/constants/legalCopy.js` and
+> is **DRAFT pending counsel sign-off** — do not treat the wording as final.
+
+**FCRA — rent-reporting consent.** Reporting must default **OFF**; the BE
+returns `credit.enabled=false` for an un-enrolled tenant. When the tenant opts
+in, FE calls:
+
+**`PATCH /tenants/credit`** `{ "enabled": true, "consentAt": "<iso>" }` — store
+`consentAt` as the authorization record (who/when/which disclosure version).
+Turning off sends `{ "enabled": false }`. Disputes are routed to the partner's
+portal (`CREDIT_REPORTING.disputeUrl`) — BE supplies the URL; **no FCRA dispute
+investigation runs on Keystone** in the aggregator model.
+
+**NACHA — ACH authorization (Autopay + one-time).** Recurring debits require an
+explicit mandate. FE captures it, BE stores it:
+
+**`PATCH /tenants/autopay`** `{ "enabled": true, "dayOfMonth": 1, "methodId": "pm1",
+"authorizationAt": "<iso>", "authorizationText": "<the mandate shown>" }` —
+persist the exact mandate text + timestamp (revocable; cancel = `enabled:false`).
+One-time `POST /tenants/pay-rent` should likewise log the displayed authorization
++ Reg E notice against the transfer.
+
+**Dwolla white-label — ToS acceptance + KYC.** Before a funding source is
+created, the tenant accepts Dwolla ToS + Keystone Payment Terms:
+
+**`POST /tenants/payment-methods`** must carry
+`{ "dwollaTosAcceptedAt": "<iso>", "ipAddress": "<addr>" }` and only then create
+the Dwolla funding source. White-label also needs a **KYC/CIP** step
+(name/DOB/SSN-last4/address → Dwolla customer verification) — surface the
+verification status back so FE can show pending/verified/retry. Reg E
+error-resolution contact + EFT disclosure must be reachable from the app.
+
+Checklist for the compliance pass:
+- [ ] `credit.enabled` defaults false; `PATCH /tenants/credit` stores `consentAt`
+- [ ] partner dispute URL provided for `CREDIT_REPORTING.disputeUrl`
+- [ ] `PATCH /tenants/autopay` stores `authorizationAt` + mandate text
+- [ ] `POST /tenants/payment-methods` stores `dwollaTosAcceptedAt` + KYC status
+- [ ] counsel sign-off on every string in `src/constants/legalCopy.js`
+
 ---
 
 ## Quick checklist for BE PM
