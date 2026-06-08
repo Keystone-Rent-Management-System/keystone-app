@@ -91,7 +91,7 @@ const PayHub = () => {
               <TouchableOpacity
                 onPress={() => nav.navigate('pay_rent')}
                 activeOpacity={0.9}
-                className="bg-keystone_gold rounded-2xl py-3.5 items-center mt-4">
+                className="bg-keystone_cream rounded-2xl py-3.5 items-center mt-4">
                 <Text className="text-keystone_navy font-inter-bold text-base">
                   Pay rent — {usd(rent.amount)}
                 </Text>
