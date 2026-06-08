@@ -6,6 +6,7 @@ import BottomNav from './BottomNav';
 import {ApartmentSearch, ApartmentView, InvoiceView} from '@/screens';
 import {
   AccountChangePassword,
+  ClaimLanding,
   CurrentAgreements,
   InvoiceMakePayment,
   Login,
@@ -53,6 +54,7 @@ const MainNav = () => {
       initialRouteName={isAuthed || forceRole ? 'bottom-nav' : 'welcome'}>
       <Stack.Screen name={'bottom-nav'} component={BottomNav} />
       <Stack.Screen name={'welcome'} component={Welcome} />
+      <Stack.Screen name={'auth__claim'} component={ClaimLanding} />
       <Stack.Screen name={'apartment_view'} component={ApartmentView} />
       <Stack.Screen name={'apartment-search'} component={ApartmentSearch} />
 

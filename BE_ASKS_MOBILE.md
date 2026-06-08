@@ -671,6 +671,46 @@ falls back to all-on defaults if the block is absent.
 
 ---
 
+## §T16 — Tenant invite & claim *(blocks onboarding — Phase 5)*
+
+Keystone is **provisioned-only**: the landlord adds the tenant + lease (agreement
+= `PENDING`), and the tenant *claims* a pre-created account. Open self-signup is
+removed for tenants — no invite, no account. CEO decisions (2026-06-07): KYC is
+**just-in-time** (collected at "Add bank," §T12, not at claim); the **minimum to
+finish onboarding is claim + verify contact + accept lease** — payment / KYC /
+autopay / credit / checklist are post-claim nudges on Home.
+
+**Invite (BE/landlord side):** on tenant creation, send an SMS + email with a
+deep link carrying a one-time **claim token** (e.g. `keystone://claim?token=…`
+or a universal link). Token is scoped to the agreement + invited contact, single
+use, expiring.
+
+**`GET /tenants/claim?token=<token>`** — resolve the token so the claim landing
+can show who's being invited before any auth:
+
+```jsonc
+{
+  "token": "inv_…", "property": "Magnolia Court", "unit": "4B",
+  "address": "128 Magnolia Ave, Austin, TX", "landlord": "Keystone Property Group",
+  "tenantName": "Sarah Chen", "rent": 1800
+}
+```
+
+**Claim = account activation:** the OTP-verify → set-password → confirm-profile
+steps **reuse the existing registration screens**, but driven by the claim token
+(prefilled email/phone, Keycloak user *activated* rather than self-registered).
+BE needs: validate OTP for the invited contact, set the Keycloak credential, and
+mark the invite consumed. Accepting the lease (existing
+`PATCH /agreements/{id}/acceptance`) flips `PENDING → ACCEPTED`.
+
+**Supply loop — "ask my landlord" (no BE for v1):** a renter with no invite can
+share a prefilled message (OS share sheet) inviting their landlord to Keystone.
+Optional future BE: capture the lead (renter contact + landlord contact) so sales
+can follow up — a `POST /leads/landlord-referral` `{ renterContact, landlordContact? }`.
+Not built yet; flagged as an opportunity.
+
+---
+
 ## Quick checklist for BE PM
 
 - [ ] §1 dashboard rollup

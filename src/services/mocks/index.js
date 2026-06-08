@@ -408,6 +408,19 @@ export const mockTenantHome = {
   ],
 };
 
+// Invite a provisioned tenant claims. A deep link / claim token resolves to
+// this so the claim landing can show "you've been invited to <unit> by
+// <landlord>" before any account exists. GET /tenants/claim?token=<token>.
+export const mockInvite = {
+  token: 'inv_demo_4b',
+  property: 'Magnolia Court',
+  unit: '4B',
+  address: '128 Magnolia Ave, Austin, TX',
+  landlord: 'Keystone Property Group',
+  tenantName: 'Sarah Chen',
+  rent: 1800,
+};
+
 // Tenant payment history (receipts). Newest first. GET /tenants/payments
 export const mockTenantPayments = [
   {id: 'r1', amount: 1800, date: daysFromNow(-4), method: 'Bank · Chase ••8821', code: 'KS-9F2A', status: 'PAID', period: monthYearLabel(-1)},
