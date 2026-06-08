@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
 import {useTenantHome} from '../../hooks/useTenantHome';
 import {
@@ -30,6 +31,7 @@ import {DWOLLA} from '../../constants/legalCopy';
 // acceptance timestamp before the funding source is created.
 
 const PaymentMethods = () => {
+  const nav = useNavigation();
   const {home, isRefetching, refetch} = useTenantHome();
   const methods = home?.paymentMethods ?? [];
 
@@ -42,11 +44,11 @@ const PaymentMethods = () => {
       ToastAndroid.show('Please accept the terms to continue', ToastAndroid.SHORT);
       return;
     }
-    // Acceptance captured (BE stores the timestamp); the funding-source add
-    // flow (Plaid/Dwolla) opens next — wired when the BE ships it.
+    // ToS accepted (BE stores the timestamp). Next is just-in-time identity
+    // verification (KYC/CIP) before the Dwolla funding source + Plaid bank-link.
     setShowTos(false);
     setAgreed(false);
-    ToastAndroid.show('Terms accepted — add a bank/card coming soon', ToastAndroid.SHORT);
+    nav.navigate('kyc_verify');
   };
 
   return (

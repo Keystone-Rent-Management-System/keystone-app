@@ -7,6 +7,7 @@ import {
   RentReceipt,
   Autopay,
   PaymentMethods,
+  KycVerify,
   Receipts,
   Statements,
 } from '@/screens';
@@ -36,6 +37,7 @@ const PayStack = () => (
     <Stack.Screen name="rent_receipt" component={RentReceipt} options={opts('Receipt')} />
     <Stack.Screen name="autopay" component={Autopay} options={opts('Autopay')} />
     <Stack.Screen name="payment_methods" component={PaymentMethods} options={opts('Payment methods')} />
+    <Stack.Screen name="kyc_verify" component={KycVerify} options={opts('Verify identity')} />
     <Stack.Screen name="receipts" component={Receipts} options={opts('Receipts')} />
     <Stack.Screen name="statements" component={Statements} options={opts('Statement')} />
   </Stack.Navigator>
