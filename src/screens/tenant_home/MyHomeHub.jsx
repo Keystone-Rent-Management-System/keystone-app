@@ -10,6 +10,7 @@ import {
 import {useNavigation} from '@react-navigation/native';
 
 import {useTenantHome} from '../../hooks/useTenantHome';
+import {usd} from '../../utils/money';
 import {Card, IconChip, Icon, StatusPill} from '../../components/premium';
 import COLORS from '../../constants/Theme';
 
@@ -24,6 +25,7 @@ const MyHomeHub = () => {
   const checklist = home?.checklist ?? {};
   const openRepairs = home?.openRepairs ?? 0;
   const renewal = home?.renewal ?? {};
+  const household = home?.household ?? {};
 
   const HUB = [
     {
@@ -33,6 +35,15 @@ const MyHomeHub = () => {
       sub: `${lease.property ?? ''}${lease.unit ? ` · ${lease.unit}` : ''}`,
       badge: lease.agreementStatus === 'PENDING' ? {label: 'Accept', tone: 'pending'} : null,
     },
+    // Only shown for a shared unit — each roommate has their own agreement.
+    household.isShared
+      ? {
+          key: 'roommates',
+          icon: 'users',
+          title: 'Roommates',
+          sub: `Your share · ${usd(household.yourShare)}/mo`,
+        }
+      : null,
     {
       key: 'deposit',
       icon: 'shield',
@@ -75,7 +86,7 @@ const MyHomeHub = () => {
         <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={COLORS.keystone_gold} />
       }>
       <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
-      {HUB.map(item => (
+      {HUB.filter(Boolean).map(item => (
         <TouchableOpacity
           key={item.key}
           onPress={() => nav.navigate(item.key)}

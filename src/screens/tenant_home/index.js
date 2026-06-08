@@ -24,6 +24,7 @@ import MoveOut from './MoveOut';
 import RentersInsurance from './Insurance';
 import Help from './Help';
 import NotificationPrefs from './NotificationPrefs';
+import Roommates from './Roommates';
 
 export {
   TenantHome,
@@ -48,5 +49,6 @@ export {
   RentersInsurance,
   Help,
   NotificationPrefs,
+  Roommates,
 };
 export * from './invoice';
