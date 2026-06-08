@@ -402,6 +402,17 @@ export const mockTenantHome = {
     status: 'OFFERED', // NONE | OFFERED | RENEWED
     offerEndsOn: daysFromNow(21),
   },
+  // Guided first-run. Shows a "Finish setting up" card on Home until the
+  // tenant completes the optional onboarding steps; hidden once complete.
+  // Each step deep-links (cross-tab) to where it's done.
+  onboarding: {
+    complete: false,
+    steps: [
+      {key: 'payment', label: 'Add a payment method', done: true, tab: 'pay_stack', screen: 'payment_methods'},
+      {key: 'checklist', label: 'Log your move-in condition', done: false, tab: 'my_home_stack', screen: 'checklist'},
+      {key: 'insurance', label: 'Add renters insurance', done: false, tab: 'more', screen: 'insurance'},
+    ],
+  },
   // Notification preferences — what the tenant hears about and how.
   // PATCH /tenants/notification-preferences persists changes.
   notificationPrefs: {

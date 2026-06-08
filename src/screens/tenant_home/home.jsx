@@ -22,6 +22,7 @@ import {
   Divider,
   Stat,
   Icon,
+  ProgressBar,
   KeystoneLogo,
 } from '../../components/premium';
 import COLORS from '../../constants/Theme';
@@ -106,6 +107,15 @@ const TenantHome = () => {
     },
   ].filter(Boolean);
 
+  // Guided first-run — the optional setup steps a new tenant still has open.
+  const onboarding = home?.onboarding ?? {};
+  const setupSteps = onboarding.steps ?? [];
+  const setupDone = setupSteps.filter(s => s.done).length;
+  const showSetup =
+    !onboarding.complete && setupSteps.length > 0 && setupDone < setupSteps.length;
+  const goStep = step =>
+    step.tab ? nav.navigate(step.tab, {screen: step.screen}) : nav.navigate(step.screen);
+
   // A warm, human read of where they stand.
   const feel = isPaid
     ? "You're all caught up — nothing to do but live here."
@@ -159,6 +169,58 @@ const TenantHome = () => {
             {feel}
           </Text>
         </View>
+
+        {/* Finish setting up — guided first-run, hides once complete */}
+        {showSetup && (
+          <View className="px-4 mb-3">
+            <Card feature>
+              <View className="flex-row items-center justify-between">
+                <Label onDark>Finish setting up</Label>
+                <Text className="text-white/60 font-inter-semibold text-xs">
+                  {setupDone} of {setupSteps.length}
+                </Text>
+              </View>
+              <View className="mt-3 mb-1">
+                <ProgressBar
+                  percent={(setupDone / setupSteps.length) * 100}
+                  onDark
+                />
+              </View>
+              <View className="mt-2">
+                {setupSteps.map((step, i) => (
+                  <TouchableOpacity
+                    key={step.key}
+                    activeOpacity={step.done ? 1 : 0.7}
+                    disabled={step.done}
+                    onPress={() => goStep(step)}
+                    className="flex-row items-center py-2.5">
+                    <View
+                      className="w-5 h-5 rounded-full items-center justify-center mr-3"
+                      style={{
+                        backgroundColor: step.done ? COLORS.keystone_gold : 'transparent',
+                        borderWidth: step.done ? 0 : 1.5,
+                        borderColor: 'rgba(255,255,255,0.4)',
+                      }}>
+                      {step.done && (
+                        <Text className="text-keystone_navy" style={{fontSize: 11}}>
+                          ✓
+                        </Text>
+                      )}
+                    </View>
+                    <Text
+                      className={`flex-1 font-inter ${step.done ? 'text-white/45 line-through' : 'text-white font-inter-medium'}`}
+                      style={{fontSize: 14}}>
+                      {step.label}
+                    </Text>
+                    {!step.done && (
+                      <Text className="text-white/50 font-inter-semibold">›</Text>
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </Card>
+          </View>
+        )}
 
         {/* A few things need you — one place to see what's on your plate */}
         {needs.length > 0 && (
