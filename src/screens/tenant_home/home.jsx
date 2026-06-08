@@ -423,7 +423,7 @@ const TenantHome = () => {
               <Text className="text-text_muted font-inter text-xs">
                 Managed by {lease.landlord}
               </Text>
-              <Text className="text-keystone_gold font-inter-semibold text-xs">
+              <Text className="text-gold_text font-inter-semibold text-xs">
                 View lease ›
               </Text>
             </View>
@@ -438,7 +438,7 @@ const TenantHome = () => {
               <View className="px-3 pt-2 pb-1 flex-row items-center justify-between">
                 <Label>Payment history</Label>
                 <TouchableOpacity onPress={() => nav.navigate('receipts')}>
-                  <Text className="text-keystone_gold font-inter-semibold text-xs">
+                  <Text className="text-gold_text font-inter-semibold text-xs">
                     See all
                   </Text>
                 </TouchableOpacity>

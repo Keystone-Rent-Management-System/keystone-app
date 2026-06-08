@@ -20,7 +20,7 @@ const KEYSTONE_CANVAS = '#F4F2EC'; // warm off-white page background
 const KEYSTONE_SLATE = '#3B5366'; // supporting copy / hover (web secondary)
 const KEYSTONE_CHIP = 'rgba(168,153,119,0.14)'; // cream/gold icon-chip fill
 const KEYSTONE_HAIRLINE = 'rgba(21,37,53,0.08)'; // navy @ 8% — card borders
-const TEXT_MUTED = '#7C7C7C'; // web text_gray_1
+const TEXT_MUTED = '#6B6B6B'; // muted secondary — darkened from #7C7C7C so small copy passes AA on white (5.33) and on the canvas page bg (4.76)
 const C_SUCCESS = '#05A660'; // web success_green
 const C_DANGER = '#E53535'; // web error_red
 const C_PENDING = '#CDA000'; // web pending_yellow
@@ -96,8 +96,8 @@ const ROLES = {
   text: {
     primary: KEYSTONE_NAVY, // on canvas/white/cream → 12–15 AAA
     secondary: KEYSTONE_SLATE, // 6.35–8.03 AA–AAA
-    muted: TEXT_MUTED, // large text only (4.17 on white)
-    mutedStrong: TEXT_MUTED_STRONG, // small body copy
+    muted: TEXT_MUTED, // AA on white (5.33) + canvas (4.76)
+    mutedStrong: TEXT_MUTED_STRONG, // heavier muted when more emphasis is wanted
     onNavy: KEYSTONE_CREAM, // 12.33 AAA label on navy
     goldAccent: KEYSTONE_GOLD, // 5.56 AA — gold accent on navy ONLY
     goldText: GOLD_TEXT, // gold-colored text on light surfaces

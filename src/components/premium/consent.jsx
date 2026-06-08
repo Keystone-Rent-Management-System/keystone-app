@@ -13,7 +13,7 @@ export const DraftBadge = ({label = LEGAL_DRAFT_BADGE}) => (
     className="self-start px-2 py-0.5 rounded-md mb-2"
     style={{backgroundColor: 'rgba(205,160,0,0.14)'}}>
     <Text
-      className="text-keystone_gold font-inter-semibold"
+      className="text-gold_text font-inter-semibold"
       style={{fontSize: 10, letterSpacing: 0.5}}>
       {label}
     </Text>
@@ -64,7 +64,7 @@ export const LegalLink = ({label, url}) => {
   return (
     <Text
       onPress={() => Linking.openURL(url)}
-      className="text-keystone_gold font-inter-semibold text-xs underline">
+      className="text-gold_text font-inter-semibold text-xs underline">
       {label}
     </Text>
   );

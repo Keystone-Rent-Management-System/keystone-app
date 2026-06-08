@@ -72,7 +72,7 @@ const Deposit = () => {
             {ret.status === 'HELD' ? (
               <Text className="text-text_muted font-inter text-xs">starts when you give notice</Text>
             ) : (
-              <Text className="text-keystone_gold font-inter-semibold text-xs">in progress</Text>
+              <Text className="text-gold_text font-inter-semibold text-xs">in progress</Text>
             )}
           </View>
           <Card>
