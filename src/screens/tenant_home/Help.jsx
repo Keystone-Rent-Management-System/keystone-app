@@ -57,7 +57,7 @@ const Help = () => {
               <TouchableOpacity
                 onPress={() => Linking.openURL('tel:+18005551234').catch(() => {})}
                 activeOpacity={0.9}
-                className="flex-1 bg-keystone_gold rounded-2xl py-3 items-center">
+                className="flex-1 bg-keystone_cream rounded-2xl py-3 items-center">
                 <Text className="text-keystone_navy font-inter-bold text-sm">Call</Text>
               </TouchableOpacity>
               <TouchableOpacity
