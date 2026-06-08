@@ -711,6 +711,40 @@ Not built yet; flagged as an opportunity.
 
 ---
 
+## §T17 — Roommate agreements *(blocks My Home → Roommates; needs BE model work)*
+
+Keystone's renter differentiator: in a shared unit, **each roommate has their own
+agreement** — their own rent share, their own ledger, their own credit reporting,
+and their own liability. Unlike a joint-and-several lease, one roommate's missed
+payment never lands on the others, and a tenant's credit reflects only their own
+payments. This is a real data-model change, not just a screen.
+
+**BE model:** a unit can have **multiple active agreements** (one per roommate)
+with a **rent split** (`share` per tenant of the unit's `totalRent`). Each
+agreement has its own invoices/ledger and its own credit-reporting stream (§T9).
+The landlord sets the split (even / custom) when provisioning roommates.
+
+**`GET /tenants/household`** — the requesting tenant's view (they only ever see
+their own share + a light roster):
+
+```jsonc
+{
+  "isShared": true, "totalRent": 1800, "yourShare": 900, "splitLabel": "Split evenly",
+  "members": [
+    {"id": "m1", "name": "Sarah Chen", "share": 900, "you": true,  "status": "DUE"},
+    {"id": "m2", "name": "Jordan Lee", "share": 900, "you": false, "status": "PAID"}
+  ]
+}
+```
+
+`isShared:false` (or a 404 → mock omits it) hides the Roommates surface for a solo
+tenant. Each roommate's `GET /tenants/rent-summary` (§T1) should return **their
+share** as `rent.amount`, so Pay/Home already show the right number per person.
+Member `status` is each roommate's own payment state — a tenant is never billed
+for, nor blocked by, another's.
+
+---
+
 ## Quick checklist for BE PM
 
 - [ ] §1 dashboard rollup

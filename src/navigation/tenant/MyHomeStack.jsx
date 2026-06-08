@@ -10,6 +10,7 @@ import {
   RepairDetail,
   Checklist,
   MoveOut,
+  Roommates,
   Statements,
 } from '@/screens';
 import COLORS from '../../constants/Theme';
@@ -42,6 +43,7 @@ const MyHomeStack = () => (
     <Stack.Screen name="repair_detail" component={RepairDetail} options={opts('Repair')} />
     <Stack.Screen name="checklist" component={Checklist} options={opts('Condition checklist')} />
     <Stack.Screen name="move_out" component={MoveOut} options={opts('Renew or move out')} />
+    <Stack.Screen name="roommates" component={Roommates} options={opts('Roommates')} />
     <Stack.Screen name="statements" component={Statements} options={opts('Statement')} />
   </Stack.Navigator>
 );

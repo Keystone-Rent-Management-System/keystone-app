@@ -384,6 +384,20 @@ export const mockTenantHome = {
     total: 6,
   },
   openRepairs: 1, // active repair requests needing the tenant's eye
+  // Roommate agreements — each roommate has their OWN agreement: their own
+  // share, their own credit, their own liability. The differentiator vs a
+  // joint-and-several lease where one roommate's miss lands on everyone.
+  // isShared=false for a solo tenant (the Roommates surface stays hidden).
+  household: {
+    isShared: true,
+    totalRent: 1800,
+    yourShare: 900,
+    splitLabel: 'Split evenly',
+    members: [
+      {id: 'm1', name: 'Sarah Chen', share: 900, you: true, status: 'DUE'},
+      {id: 'm2', name: 'Jordan Lee', share: 900, you: false, status: 'PAID'},
+    ],
+  },
   renewal: {
     status: 'OFFERED', // NONE | OFFERED | RENEWED
     offerEndsOn: daysFromNow(21),
