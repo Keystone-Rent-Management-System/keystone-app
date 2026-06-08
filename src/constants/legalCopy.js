@@ -65,6 +65,18 @@ export const DWOLLA = {
   keystoneTermsUrl: '', // TODO: hosted Keystone payment terms
 };
 
+// ── KYC / CIP · identity verification (Dwolla white-label) ────────────────
+export const KYC = {
+  title: 'Verify your identity',
+  // Federal Customer Identification Program (CIP) is required before a
+  // verified Dwolla customer can move money.
+  disclosure:
+    'To move money, federal law (the Customer Identification Program) requires ' +
+    'us to verify your identity. Your details are encrypted and verified by our ' +
+    'payments partner, Dwolla — Keystone never stores your full SSN.',
+  submitCta: 'Verify identity',
+};
+
 // ── NACHA / Reg E · ACH authorization language ────────────────────────────
 export const ACH = {
   // Recurring (Autopay) mandate. Args fill amount / day / funding source.

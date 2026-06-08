@@ -580,6 +580,21 @@ the default. **`DELETE …/{id}`** removes.
 
 Autopay extends §T2: **`PATCH /tenants/autopay`** `{enabled, dayOfMonth, methodId}`.
 
+**Add-a-method flow (just-in-time KYC).** The FE now runs the add-method flow as:
+Dwolla ToS gate → **KYC/CIP capture** → Plaid bank-link → funding source. KYC is
+collected here (not at claim) per the CEO decision. BE needs:
+
+- **`POST /tenants/kyc`** `{ firstName, lastName, dob, ssnLast4, address }` →
+  create/verify the Dwolla customer (CIP). Return a verification status
+  (`verified | document | retry`). Keystone must **not** store the full SSN — pass
+  it straight to Dwolla. The FE collects exactly these fields and shows a CIP
+  disclosure (centralized in `src/constants/legalCopy.js → KYC`, DRAFT pending
+  counsel).
+- **`POST /tenants/plaid/link-token`** → a Plaid Link token so the FE can open
+  Plaid and exchange the public token for a Dwolla processor token. *(FE Plaid
+  step is stubbed until the `react-native-plaid-link-sdk` dependency + this token
+  are available.)*
+
 ## §T13 — Rent flexibility *(Pay → "need more time"; needs risk sign-off)*
 
 Pay part now / split the rest — the renter-facing side of the

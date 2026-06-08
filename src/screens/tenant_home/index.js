@@ -25,6 +25,7 @@ import RentersInsurance from './Insurance';
 import Help from './Help';
 import NotificationPrefs from './NotificationPrefs';
 import Roommates from './Roommates';
+import KycVerify from './KycVerify';
 
 export {
   TenantHome,
@@ -50,5 +51,6 @@ export {
   Help,
   NotificationPrefs,
   Roommates,
+  KycVerify,
 };
 export * from './invoice';
