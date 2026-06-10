@@ -1,0 +1,100 @@
+name: Claude Security Review
+
+# Security-first PR review for the Keystone frontend. Runs Claude on every PR
+# to a deploy branch, posts findings inline + a verdict, and FAILS a required
+# status check on any CRITICAL/HIGH issue.
+#
+# Setup: add repo secret ANTHROPIC_API_KEY, then make the "Claude security
+# verdict" check Required in branch protection for dev/main.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [dev, develop, development, main, master, uat, production]
+
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  security-review:
+    name: Claude security verdict
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - name: Checkout PR (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Claude security review (frontend)
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            You are the senior security reviewer for Keystone's frontend — a
+            React + Vite web app and a bare React Native (NativeWind) mobile app
+            for a US rental-payments SaaS. This PR targets a DEPLOY branch
+            (${{ github.base_ref }}). Review ONLY the diff:
+              git diff origin/${{ github.base_ref }}...HEAD
+            Cite findings as file:line with a one-line fix. Don't invent issues;
+            if the diff is clean, say so.
+
+            ## SECURITY (rate each: CRITICAL | HIGH | MEDIUM | LOW)
+            1. Client-side secret exposure (CRITICAL): real secret/private API
+               keys or tokens hardcoded in source OR in a COMMITTED env file.
+               Remember: `VITE_*`, `EXPO_PUBLIC_*`, and any RN-bundled env var
+               SHIP TO THE CLIENT and are public — only publishable/public keys
+               belong there. Flag any Brevo/BoldSign/Dwolla/Keycloak *secret*,
+               DB string, or private token reachable in the client bundle.
+            2. XSS / injection: `dangerouslySetInnerHTML`, `innerHTML`, `eval`,
+               `new Function`, or unsanitized user/remote HTML; user-controlled
+               values in URLs without encoding.
+            3. Auth + tokens: access/refresh tokens logged to console or
+               persisted insecurely; auth-guard bypass; sensitive data in
+               analytics/log calls.
+            4. Insecure transport: `http://` API/base URLs (must be https in
+               deployed builds); disabled TLS / cert checks.
+            5. Dependencies: newly added/changed npm packages with known CVEs or
+               unpinned/`*` versions; postinstall scripts from untrusted pkgs.
+            6. Secrets hygiene: a real `.env` (not `.env.example`) committed;
+               secrets in source maps; debug/mock/god-mode flags enabled for a
+               production build.
+
+            ## No-List (flag HIGH)
+            A failing test commented out or deleted; a TODO in shipped code
+            without a GitHub Issue number; committed secrets; debug bypasses
+            (e.g. force-role / mock toggles) left enabled for prod.
+
+            ## OUTPUT
+            1. Inline comments (file:line) per real finding with severity + fix.
+            2. One summary PR comment with: "VERDICT: PASS" or "VERDICT: BLOCK",
+               and a findings table by severity.
+            3. Write `claude-review-verdict.txt` at repo root whose FIRST line is
+               exactly `PASS` or `BLOCK`. `BLOCK` iff >=1 CRITICAL or HIGH
+               finding. MEDIUM/LOW only => `PASS` with notes. If you can't finish,
+               write `PASS` (fail open) and say so.
+          claude_args: |
+            --model claude-sonnet-4-6
+            --max-turns 16
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(git diff:*),Bash(git log:*),Read,Grep,Glob,Write"
+
+      - name: Gate merge on blocking findings
+        if: always()
+        run: |
+          if [ ! -f claude-review-verdict.txt ]; then
+            echo "::warning::No verdict file (review errored). Failing open — human review required."
+            exit 0
+          fi
+          verdict=$(head -1 claude-review-verdict.txt | tr -d '[:space:]' | tr '[:lower:]' '[:upper:]')
+          echo "Claude verdict: $verdict"
+          if [ "$verdict" = "BLOCK" ]; then
+            echo "::error::Claude flagged CRITICAL/HIGH issues. See the PR review. Merge blocked."
+            exit 1
+          fi
+          echo "::notice::Claude security review passed."
