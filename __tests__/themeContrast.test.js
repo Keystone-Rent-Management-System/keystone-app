@@ -57,6 +57,11 @@ describe('Theme ROLES contrast', () => {
     expect(ratio(ROLES.status.pendingText, '#FFFFFF')).toBeGreaterThanOrEqual(AA);
   });
 
+  it('muted text passes AA on both white and the canvas page background', () => {
+    expect(ratio(ROLES.text.muted, '#FFFFFF')).toBeGreaterThanOrEqual(AA);
+    expect(ratio(ROLES.text.muted, ROLES.surface.canvas)).toBeGreaterThanOrEqual(AA);
+  });
+
   it('on-navy label and gold accent are both legible on the navy surface', () => {
     expect(ratio(ROLES.text.onNavy, ROLES.surface.navy)).toBeGreaterThanOrEqual(AA);
     expect(ratio(ROLES.text.goldAccent, ROLES.surface.navy)).toBeGreaterThanOrEqual(AA);

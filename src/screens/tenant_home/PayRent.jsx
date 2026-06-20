@@ -104,7 +104,7 @@ const PayRent = () => {
                 onPress={() =>
                   ToastAndroid.show('Manage payment methods — coming soon', ToastAndroid.SHORT)
                 }>
-                <Text className="text-keystone_gold font-inter-semibold text-xs">
+                <Text className="text-gold_text font-inter-semibold text-xs">
                   Change
                 </Text>
               </TouchableOpacity>

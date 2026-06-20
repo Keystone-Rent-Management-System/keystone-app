@@ -84,7 +84,7 @@ const Checklist = () => {
                   {r.done ? (
                     <StatusPill label="Done" tone="success" />
                   ) : (
-                    <Text className="text-keystone_gold font-inter-semibold text-xs">Log ›</Text>
+                    <Text className="text-gold_text font-inter-semibold text-xs">Log ›</Text>
                   )}
                 </TouchableOpacity>
               </View>
