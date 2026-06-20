@@ -95,10 +95,31 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            // Release signing reads the keystore path + passwords from environment
+            // variables — never hardcoded. The real keystore file and its passwords
+            // stay with Jake; the signed release build runs on his machine (or CI with
+            // secrets) where these are set:
+            //   KEYSTONE_RELEASE_STORE_FILE      absolute (or app-relative) path to the .jks/.keystore
+            //   KEYSTONE_RELEASE_STORE_PASSWORD  keystore password
+            //   KEYSTONE_RELEASE_KEY_ALIAS       signing key alias
+            //   KEYSTONE_RELEASE_KEY_PASSWORD    key password
+            // Cert SHA-256 (for assetlinks.json / App Links):
+            //   77:06:CC:71:50:88:B5:5D:24:60:34:7E:BB:A9:CA:08:A7:88:19:09:74:28:57:EA:66:8C:6D:F7:66:25:B8:C2
+            // When the env vars are absent (local/dev builds, CI without secrets) we fall
+            // back to the debug keystore so the project still assembles — the universal
+            // Android debug credentials are not a secret.
+            if (System.getenv("KEYSTONE_RELEASE_STORE_FILE")) {
+                storeFile file(System.getenv("KEYSTONE_RELEASE_STORE_FILE"))
+                storePassword System.getenv("KEYSTONE_RELEASE_STORE_PASSWORD")
+                keyAlias System.getenv("KEYSTONE_RELEASE_KEY_ALIAS")
+                keyPassword System.getenv("KEYSTONE_RELEASE_KEY_PASSWORD")
+            } else {
+                logger.warn("KEYSTONE_RELEASE_STORE_FILE not set — release build will be signed with the DEBUG keystore (not distributable).")
+                storeFile file('debug.keystore')
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
+            }
         }
     }
     buildTypes {
