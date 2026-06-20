@@ -28,12 +28,18 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- Tenant deep-links scoped to the /app/* path prefix on the dev host so they
+                 never collide with the landlord web app (/, /dashboard, /properties, /tenants)
+                 served on the same host. autoVerify needs assetlinks.json (RELEASE keystore
+                 SHA-256, keystone-app #158) at https://dev.keystonerent.app/.well-known/assetlinks.json
+                 — final app-link verification lands after release signing. -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="https"/>
-                <data android:host="keystonerent.app"/>
+                <data android:host="dev.keystonerent.app"/>
+                <data android:pathPrefix="/app"/>
         </intent-filter>
       </activity>
         <meta-data
