@@ -64,4 +64,61 @@ const COLORS = {
   likeRed: '#A61606',
 };
 
+// ── Contrast-checked role tokens ───────────────────────────────────
+// Every pairing below is a verified WCAG 2.1 ratio (computed, not
+// eyeballed). Reference a ROLE, never a raw hex, so a button can't be
+// assembled into a failing combo. This is what ends the one-at-a-time
+// "unreadable button" fixes.
+//
+// The core fact about the gold: #A89977 is a mid-luminance bronze. It
+// FAILS as white-on-gold (2.80) and as gold-text-on-light (2.2–2.8),
+// and there is no single gold that carries BOTH white and navy text.
+// So gold is only ever paired with navy: navy-on-gold (5.56 AA) or
+// gold-on-navy (5.56 AA). Never white on gold; never gold on a light
+// surface (darken to GOLD_TEXT #5C5234 = 7.74 AAA for that).
+const GOLD_TEXT = '#5C5234'; // gold-as-text on light → 7.74 AAA on white
+const TEXT_MUTED_STRONG = '#5F5F5F'; // small-copy muted; #7C7C7C is large-only
+
+const ROLES = {
+  surface: {
+    canvas: KEYSTONE_CANVAS, // page background
+    card: '#FFFFFF', // standard card
+    cream: KEYSTONE_CREAM, // quiet/raised panel
+    navy: KEYSTONE_NAVY, // hero/feature (dark)
+    hairline: KEYSTONE_HAIRLINE,
+  },
+  // Button = {fill, label} pairs, contrast-guaranteed.
+  btn: {
+    primary: {fill: KEYSTONE_GOLD, label: KEYSTONE_NAVY}, // 5.56 AA — the precious CTA (navy label, never white)
+    strong: {fill: KEYSTONE_NAVY, label: KEYSTONE_CREAM}, // 15.58 AAA — solid primary on light surfaces
+    secondary: {fill: KEYSTONE_CREAM, label: KEYSTONE_NAVY}, // 12.33 AAA — quiet action
+  },
+  text: {
+    primary: KEYSTONE_NAVY, // on canvas/white/cream → 12–15 AAA
+    secondary: KEYSTONE_SLATE, // 6.35–8.03 AA–AAA
+    muted: TEXT_MUTED, // large text only (4.17 on white)
+    mutedStrong: TEXT_MUTED_STRONG, // small body copy
+    onNavy: KEYSTONE_CREAM, // 12.33 AAA label on navy
+    goldAccent: KEYSTONE_GOLD, // 5.56 AA — gold accent on navy ONLY
+    goldText: GOLD_TEXT, // gold-colored text on light surfaces
+  },
+  // Bright hues = dots/badges/fills only. Use the *_text variants for
+  // status TEXT on light (the bright set fails as text: pending 2.44).
+  status: {
+    successDot: C_SUCCESS,
+    dangerDot: C_DANGER,
+    pendingDot: C_PENDING,
+    successText: '#057A48',
+    dangerText: '#C62828', // 5.62 AA on white
+    pendingText: '#8A6D00', // 4.92 AA on white
+  },
+};
+
+COLORS.gold_text = GOLD_TEXT;
+COLORS.text_muted_strong = TEXT_MUTED_STRONG;
+COLORS.c_success_text = ROLES.status.successText;
+COLORS.c_danger_text = ROLES.status.dangerText;
+COLORS.c_pending_text = ROLES.status.pendingText;
+COLORS.ROLES = ROLES;
+
 module.exports = COLORS;

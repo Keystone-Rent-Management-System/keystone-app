@@ -20,6 +20,14 @@ module.exports = {
         c_success: COLORS.c_success,
         c_danger: COLORS.c_danger,
         c_pending: COLORS.c_pending,
+        // Contrast-checked role tokens (see Theme.js ROLES). gold_text
+        // is gold-as-text on light; text_muted_strong is small-copy
+        // muted; the *_text status hues pass AA as text on light.
+        gold_text: COLORS.gold_text,
+        text_muted_strong: COLORS.text_muted_strong,
+        c_success_text: COLORS.c_success_text,
+        c_danger_text: COLORS.c_danger_text,
+        c_pending_text: COLORS.c_pending_text,
         // Legacy aliases — resolve to Keystone palette via Theme.js.
         primary: COLORS.primary,
         primaryBg: COLORS.primary_bg,
