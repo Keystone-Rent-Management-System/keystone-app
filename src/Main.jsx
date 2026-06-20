@@ -13,13 +13,18 @@ const Main = () => {
     SplashScreen.hide();
   }, []);
 
+  // Tenant deep-links are scoped to the /app/* path prefix on the dev host so they never
+  // collide with the landlord web app (/, /dashboard, ...) served on the same host. The
+  // backend tenant emails must emit dev.keystonerent.app/app/... (keystone-backend #159).
+  // assetlinks.json (release-key SHA, keystone-app #158) at /.well-known/ finalizes app-link
+  // verification. Full per-screen path map + on-device verification tracked in #157.
   const linking = {
-    prefixes: ['https://keystonerent.app'],
+    prefixes: ['https://dev.keystonerent.app/app'],
     config: {
       screens: {
-        agreements_current: {
-          path: 'current-agreements',
-        },
+        auth__claim: 'claim', // /app/claim?code=KS-XXXXXX (tenant invite)
+        invoice_view: 'invoices/:id', // /app/invoices/:id
+        agreements_current: 'agreements', // /app/agreements
       },
     },
   };
