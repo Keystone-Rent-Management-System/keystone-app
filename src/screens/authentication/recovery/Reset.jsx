@@ -1,75 +1,119 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
+import {Text, TouchableOpacity, View} from 'react-native';
 
-import {CButton, Layout} from '../../../components';
-import {LockSvg} from '../../../assets/icons';
-import {yupResolver} from '@hookform/resolvers/yup';
-import {object, string} from 'yup';
-import {useForm} from 'react-hook-form';
-import ControlledPasswordInput from '../../../components/general/input/ControlledPasswordInput';
+import {FormField, PrimaryButton, Screen} from '../../../components/kit';
+import StepIndicator from '../registration/StepIndicator';
+import COLORS from '../../../constants/Theme';
 import {useResetPassword} from '../../../hooks';
 
-const Reset = () => {
-  const [passworType, setPasswordType] = useState('password');
-  const [confirmationPassworType, setConfirmationPasswordType] =
-    useState('password');
+// Password recovery step 3 (design 8b): reuses the 3c live
+// requirement checklist verbatim, retitled. CTA disabled until all
+// checks pass (K3).
 
-  const schema = object({
-    password: string().required().min(6),
-    confirmPassword: string().required().min(6),
-  });
-  const {handleSubmit, control} = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      password: '',
-      confirmPassword: '',
-    },
-  });
+const Requirement = ({met, children}) => (
+  <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
+    <Text
+      style={{
+        fontSize: 15,
+        color: met ? '#037147' : 'rgba(21,37,53,0.45)',
+        fontFamily: 'Inter-SemiBold',
+      }}>
+      {met ? '✓' : '○'}
+    </Text>
+    <Text
+      style={{
+        fontSize: 15,
+        fontFamily: 'Inter',
+        color: met ? '#037147' : 'rgba(21,37,53,0.45)',
+      }}>
+      {children}
+    </Text>
+  </View>
+);
+
+const Reset = () => {
+  const [password, setPassword] = useState('');
+  const [show, setShow] = useState(false);
 
   const {resetPasswordMutation, handlePasswordReset} = useResetPassword();
 
+  const checks = useMemo(
+    () => ({
+      length: password.length >= 8,
+      symbol: /[\d!@#$%^&*()_\-+=[\]{};:'",.<>/?\\|`~]/.test(password),
+    }),
+    [password],
+  );
+  const allMet = checks.length && checks.symbol;
+
   return (
-    <Layout ClassName={'px-4'}>
-      <ControlledPasswordInput
-        label={'New Password'}
-        icon={<LockSvg />}
-        placeholder={'Enter password'}
-        labelClassName={'text-primary text-13'}
-        ClassName={'border border-border_grey px-2'}
-        InputClassName={'text-xs px-2 text-gray-600 '}
-        containerClassName={'mt-4'}
-        required
-        name={'password'}
-        control={control}
-        type={passworType}
-        handleEyeClick={setPasswordType}
-      />
+    <Screen
+      title="Reset password"
+      back="Verify"
+      stickyFooter={
+        <PrimaryButton
+          label={
+            resetPasswordMutation.isPending ? 'Resetting…' : 'Reset password'
+          }
+          disabled={!allMet || resetPasswordMutation.isPending}
+          onPress={() =>
+            handlePasswordReset({password, confirmPassword: password})
+          }
+        />
+      }>
+      <StepIndicator step={3} total={3} />
+      <Text
+        style={{
+          color: COLORS.keystone_navy,
+          fontFamily: 'Inter-Bold',
+          fontSize: 28,
+          letterSpacing: -0.3,
+          marginBottom: 6,
+        }}>
+        Set a new password
+      </Text>
+      <Text
+        style={{
+          color: COLORS.keystone_slate,
+          fontFamily: 'Inter',
+          fontSize: 15,
+          lineHeight: 22,
+          marginBottom: 20,
+        }}>
+        You'll be signed in right after this.
+      </Text>
 
-      <ControlledPasswordInput
-        label={'Confirm Password'}
-        icon={<LockSvg />}
-        placeholder={'Confirm password'}
-        labelClassName={'text-primary text-13'}
-        ClassName={'border border-border_grey px-2'}
-        InputClassName={'text-xs px-2 text-gray-600 '}
-        containerClassName={'mt-4'}
-        name={'confirmPassword'}
-        control={control}
-        type={confirmationPassworType}
-        handleEyeClick={setConfirmationPasswordType}
-      />
+      <View>
+        <FormField
+          label="New password"
+          icon="lock"
+          placeholder="At least 8 characters"
+          secureTextEntry={!show}
+          autoCapitalize="none"
+          autoFocus
+          value={password}
+          onChangeText={setPassword}
+        />
+        <TouchableOpacity
+          onPress={() => setShow(v => !v)}
+          hitSlop={{top: 12, bottom: 12, left: 12, right: 12}}
+          style={{position: 'absolute', right: 14, top: 33}}>
+          <Text
+            style={{
+              color: COLORS.keystone_slate,
+              fontFamily: 'Inter-SemiBold',
+              fontSize: 15,
+            }}>
+            {show ? 'Hide' : 'Show'}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-      <CButton
-        ClassName={
-          'bg-primary text-white py-3.5 mb-3 absolute bottom-5 inset-x-0 mx-4'
-        }
-        isLoading={resetPasswordMutation.isPending}
-        onPress={handleSubmit(handlePasswordReset)}
-        textClassName={'text-white font'}
-        text={
-          resetPasswordMutation.isPending ? 'Reseting...' : 'Complete Reset'
-        }
-      />
-    </Layout>
+      <View style={{gap: 6, marginTop: 14}}>
+        <Requirement met={checks.length}>At least 8 characters</Requirement>
+        <Requirement met={checks.symbol}>A number or symbol</Requirement>
+      </View>
+    </Screen>
   );
 };
 

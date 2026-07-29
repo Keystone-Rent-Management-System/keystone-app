@@ -2,9 +2,8 @@ import React from 'react';
 import {SafeAreaView, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {
-  KeystoneLogo,
+  KSTile,
   Icon,
-  IconChip,
   FadeScaleIn,
   useCountUp,
 } from '../../components/premium';
@@ -44,10 +43,8 @@ const Welcome = () => {
       <StatusBar barStyle="light-content" backgroundColor={COLORS.keystone_navy} />
       <SafeAreaView className="flex-1">
         <View className="flex-1 px-7 pt-8 pb-7 justify-between">
-          {/* Brand */}
-          <View className="self-start bg-keystone_cream rounded-2xl px-3 py-2">
-            <KeystoneLogo height={34} />
-          </View>
+          {/* Brand — flat cream KS tile (2a: no raster artifacts on navy) */}
+          <KSTile size={56} onDark style={{alignSelf: 'flex-start'}} />
 
           {/* Hero */}
           <View>
@@ -61,7 +58,7 @@ const Welcome = () => {
 
             <FadeScaleIn delay={180}>
               <View className="mt-5">
-                <Benefit who="Landlords" text="rent in your own bank in seconds — protected." />
+                <Benefit who="Landlords" text="rent in your own bank in seconds, protected." />
                 <Benefit who="Renters" text="pay in two taps, and build credit doing it." />
               </View>
             </FadeScaleIn>
@@ -75,28 +72,47 @@ const Welcome = () => {
                   borderWidth: 1,
                   borderColor: 'rgba(255,255,255,0.10)',
                 }}>
-                <View className="flex-row items-center">
-                  <IconChip size={42} onDark>
-                    <Icon name="bank" size={19} color={COLORS.keystone_gold} />
-                  </IconChip>
-                  <View className="flex-1 ml-3">
-                    <Text className="text-white/55 font-inter text-xs">Rent received</Text>
-                    <Text
-                      className="text-white font-inter-bold text-2xl"
-                      style={{fontVariant: ['tabular-nums'], letterSpacing: -0.5}}>
-                      {usd(landed)}
-                    </Text>
-                  </View>
+                {/* H3: label column flex:1 min-width:0; chip bounded
+                    at 45% with ellipsis — cannot exit the card. */}
+                <View className="flex-row items-center" style={{minWidth: 0}}>
+                  <Text
+                    numberOfLines={1}
+                    className="flex-1 font-inter-semibold text-2xs uppercase"
+                    style={{color: 'rgba(231,229,218,0.72)', letterSpacing: 0.9, minWidth: 0}}>
+                    Rent received
+                  </Text>
                   <View
-                    className="px-2.5 py-1 rounded-full"
-                    style={{backgroundColor: 'rgba(168,153,119,0.28)'}}>
-                    <Text className="text-keystone_cream font-inter-semibold text-2xs uppercase tracking-wider">
+                    className="px-2.5 py-1 rounded-full flex-row items-center"
+                    style={{backgroundColor: 'rgba(231,229,218,0.10)', maxWidth: '45%', flexShrink: 0}}>
+                    <View
+                      style={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: 999,
+                        backgroundColor: COLORS.c_success,
+                        marginRight: 6,
+                      }}
+                    />
+                    <Text
+                      numberOfLines={1}
+                      className="text-keystone_cream font-inter-semibold text-2xs uppercase tracking-wider">
                       Instant
                     </Text>
                   </View>
                 </View>
+                <Text
+                  className="text-white font-inter-bold"
+                  style={{
+                    fontSize: 34,
+                    lineHeight: 40,
+                    marginTop: 8,
+                    fontVariant: ['tabular-nums'],
+                    letterSpacing: -0.5,
+                  }}>
+                  {usd(landed)}
+                </Text>
                 <View className="h-px bg-white/10 my-3" />
-                <Text className="text-white/50 font-inter text-xs">
+                <Text className="font-inter text-xs" style={{color: 'rgba(231,229,218,0.72)'}}>
                   Landed in your bank · just now
                 </Text>
               </View>
@@ -106,9 +122,13 @@ const Welcome = () => {
           {/* Trust + doors */}
           <FadeScaleIn delay={460}>
             <View>
+              {/* F4: trust line at cream 72% — the AA floor on navy.
+                  Retires the invisible dark-on-navy pattern. */}
               <View className="flex-row items-center justify-center mb-5">
-                <Icon name="shield" size={13} color="rgba(255,255,255,0.65)" />
-                <Text className="text-white/65 font-inter text-xs ml-1.5">
+                <Icon name="shield" size={13} color="rgba(231,229,218,0.72)" />
+                <Text
+                  className="font-inter text-xs ml-1.5"
+                  style={{color: 'rgba(231,229,218,0.72)'}}>
                   Bank-level encryption · Powered by Dwolla & Plaid
                 </Text>
               </View>
@@ -136,9 +156,11 @@ const Welcome = () => {
                 activeOpacity={0.7}
                 onPress={() => nav.navigate('auth__login')}
                 className="mt-4 items-center">
-                <Text className="text-white/55 font-inter text-sm">
+                <Text className="font-inter text-sm" style={{color: 'rgba(231,229,218,0.72)'}}>
                   Already have an account?{' '}
-                  <Text className="text-white font-inter-semibold underline">Sign in</Text>
+                  <Text className="text-keystone_cream font-inter-semibold underline">
+                    Sign in
+                  </Text>
                 </Text>
               </TouchableOpacity>
             </View>

@@ -7,7 +7,7 @@ import {useCountUp, useSweep} from './motion';
 export {default as Icon} from './icons';
 export {Donut, Ring, Sparkline, AreaTrend} from './charts';
 export {FadeScaleIn, useCountUp} from './motion';
-export {KeystoneMark, BrandLockup, KeystoneLogo} from './brand';
+export {KeystoneMark, BrandLockup, KeystoneLogo, KSTile} from './brand';
 export {DraftBadge, ConsentRow, LegalLink} from './consent';
 
 // ── Keystone command-center kit (light, brand-matched) ─────────────
@@ -31,18 +31,16 @@ const tabular = {fontVariant: ['tabular-nums']};
 /** White card — the workhorse surface. `feature` = navy hero card. */
 export const Card = ({children, feature, style, className}) => {
   if (feature) {
-    // Navy hero card: a subtle diagonal gradient for depth plus a
-    // hairline gold top edge — reads as a precious "panel", not a
-    // flat block.
+    // Navy hero card — FLAT fill per the kit (F3: flat colors only).
+    // The old LinearGradient mis-laid-out children under the RN 0.76
+    // new architecture (padding ignored → the systemic right/bottom
+    // clipping on ~10 screens, brief P0-1). A plain View makes the
+    // H1 padding contract actually hold.
     return (
-      <LinearGradient
-        colors={['#1B3047', '#152535', '#0F1E2C']}
-        start={{x: 0, y: 0}}
-        end={{x: 1, y: 1}}
-        style={[styles.feature, style]}>
+      <View style={[styles.feature, style]}>
         <View style={styles.goldEdge} />
         {children}
-      </LinearGradient>
+      </View>
     );
   }
   return (
@@ -69,8 +67,14 @@ export const IconChip = ({children, size = 40, onDark, style}) => (
 );
 
 /** Initials avatar circle (web NameAvatar). */
-export const Avatar = ({initials, size = 40, style}) => (
-  <View style={[styles.avatar, {width: size, height: size}, style]}>
+export const Avatar = ({initials, size = 40, onDark, style}) => (
+  <View
+    style={[
+      styles.avatar,
+      {width: size, height: size},
+      onDark && {backgroundColor: COLORS.keystone_cream, borderWidth: 0},
+      style,
+    ]}>
     <Text style={styles.avatarText}>{initials}</Text>
   </View>
 );
@@ -172,18 +176,26 @@ export const StatusPill = ({label, tone = 'neutral', style}) => {
 };
 
 /** Label-over-value stat cell (web Card stat pattern). */
-export const Stat = ({label, value, sub, valueColor, onDark, align = 'left', style}) => (
+export const Stat = ({label, value, sub, unit, valueColor, onDark, align = 'left', style}) => (
   <View style={[{flex: 1, alignItems: align === 'right' ? 'flex-end' : 'flex-start'}, style]}>
     <Text style={[styles.statLabel, onDark && {color: 'rgba(255,255,255,0.6)'}]}>
       {label}
     </Text>
     <Text
+      numberOfLines={1}
       style={[
         styles.statValue,
         tabular,
         {color: valueColor ?? (onDark ? '#FFFFFF' : NAVY)},
       ]}>
       {value}
+      {/* inline unit rides the number's baseline ("2 units") */}
+      {unit ? (
+        <Text style={[styles.statUnit, onDark && {color: 'rgba(255,255,255,0.55)'}]}>
+          {' '}
+          {unit}
+        </Text>
+      ) : null}
     </Text>
     {sub ? (
       <Text style={[styles.statSub, onDark && {color: 'rgba(255,255,255,0.55)'}]}>
@@ -236,6 +248,7 @@ const styles = StyleSheet.create({
     ...cardShadow,
   },
   feature: {
+    backgroundColor: COLORS.keystone_navy,
     borderRadius: 20,
     padding: 20,
     overflow: 'hidden',
@@ -308,6 +321,7 @@ const styles = StyleSheet.create({
   },
   statValue: {fontFamily: 'Inter-Bold', fontSize: 17},
   statSub: {color: MUTED, fontFamily: 'Inter', fontSize: 11, marginTop: 2},
+  statUnit: {color: MUTED, fontFamily: 'Inter', fontSize: 15},
   row: {
     flexDirection: 'row',
     alignItems: 'center',

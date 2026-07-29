@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 
 import {useTenantHome} from '../../hooks/useTenantHome';
-import {Card, Label, Divider, Icon, IconChip} from '../../components/premium';
+import {Card, Divider, Icon, IconChip} from '../../components/premium';
+import {Screen, SectionLabel, SegmentedChoice} from '../../components/kit';
 import COLORS from '../../constants/Theme';
 
 // Notification preferences — what the tenant hears about and how. Saving is
@@ -63,19 +64,16 @@ const NotificationPrefs = () => {
   };
 
   return (
-    <View className="flex-1 bg-keystone_canvas">
+    <Screen
+      title="Notifications"
+      back="Account"
+      refreshControl={
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={COLORS.keystone_gold} />
+      }>
       <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
-      <ScrollView
-        contentContainerStyle={{paddingBottom: 28}}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={COLORS.keystone_gold} />
-        }>
         {/* Channels */}
-        <View className="px-4 pt-5">
-          <Text className="text-text_muted font-inter-semibold text-xs uppercase tracking-widest ml-1 mb-3">
-            How we reach you
-          </Text>
+        <View>
+          <SectionLabel>How we reach you</SectionLabel>
           <Card style={{paddingVertical: 6}}>
             {[
               {key: 'push', title: 'Push notifications', sub: 'On this device'},
@@ -92,7 +90,7 @@ const NotificationPrefs = () => {
                   <Switch
                     value={!!channels[c.key]}
                     onValueChange={() => toggleChannel(c.key)}
-                    trackColor={{true: COLORS.keystone_gold, false: '#CBD2D9'}}
+                    trackColor={{true: COLORS.keystone_navy, false: '#CBD2D9'}}
                     thumbColor="#FFFFFF"
                   />
                 </View>
@@ -102,10 +100,8 @@ const NotificationPrefs = () => {
         </View>
 
         {/* Topics */}
-        <View className="px-4 mt-5">
-          <Text className="text-text_muted font-inter-semibold text-xs uppercase tracking-widest ml-1 mb-3">
-            What you hear about
-          </Text>
+        <View className="mt-5">
+          <SectionLabel>What you hear about</SectionLabel>
           <Card style={{paddingVertical: 6}}>
             {TOPICS.map((t, i) => (
               <View key={t.key}>
@@ -121,7 +117,7 @@ const NotificationPrefs = () => {
                   <Switch
                     value={!!topics[t.key]}
                     onValueChange={() => toggleTopic(t.key)}
-                    trackColor={{true: COLORS.keystone_gold, false: '#CBD2D9'}}
+                    trackColor={{true: COLORS.keystone_navy, false: '#CBD2D9'}}
                     thumbColor="#FFFFFF"
                   />
                 </View>
@@ -130,29 +126,18 @@ const NotificationPrefs = () => {
           </Card>
         </View>
 
-        {/* Rent reminder timing */}
+        {/* Rent reminder timing — standard segment control (6i) */}
         {topics.rentReminders && (
-          <View className="px-4 mt-5">
-            <Text className="text-text_muted font-inter-semibold text-xs uppercase tracking-widest ml-1 mb-3">
-              Remind me before rent is due
-            </Text>
-            <View className="flex-row gap-2">
-              {REMIND_DAYS.map(d => {
-                const on = reminderDays === d;
-                return (
-                  <TouchableOpacity
-                    key={d}
-                    onPress={() => pickDays(d)}
-                    activeOpacity={0.85}
-                    style={on ? {backgroundColor: COLORS.keystone_navy} : null}
-                    className={`flex-1 py-3 rounded-xl items-center ${on ? '' : 'bg-white border border-keystone_hairline'}`}>
-                    <Text className={`font-inter-semibold text-sm ${on ? 'text-white' : 'text-keystone_navy'}`}>
-                      {d} {d > 1 ? 'days' : 'day'}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
+          <View className="mt-5">
+            <SectionLabel>Remind me before rent is due</SectionLabel>
+            <SegmentedChoice
+              options={REMIND_DAYS.map(d => ({
+                value: d,
+                label: `${d} ${d > 1 ? 'days' : 'day'}`,
+              }))}
+              value={reminderDays}
+              onChange={pickDays}
+            />
           </View>
         )}
 
@@ -160,8 +145,7 @@ const NotificationPrefs = () => {
           You’ll always get critical notices about your tenancy, even with these
           off.
         </Text>
-      </ScrollView>
-    </View>
+    </Screen>
   );
 };
 

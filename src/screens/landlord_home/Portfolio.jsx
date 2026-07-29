@@ -2,25 +2,53 @@ import React from 'react';
 import {
   ActivityIndicator,
   RefreshControl,
-  ScrollView,
   StatusBar,
   Text,
   ToastAndroid,
-  TouchableOpacity,
   View,
 } from 'react-native';
-import {usd, pct} from '../../utils/money';
+import {pct} from '../../utils/money';
 import {useExportPortfolioPdf, usePortfolio} from '../../hooks/usePortfolio';
-import {Card, IconChip, Label, Amount, AnimatedAmount, Divider, Row, Delta, Stat, Icon} from '../../components/premium';
+import {useDashboard} from '../../hooks';
+import {mockPortfolioByProperty} from '../../services/mocks';
+import {Card, Divider, Row, Delta} from '../../components/premium';
+import {
+  HeroCard,
+  PrimaryButton,
+  Screen,
+  SectionLabel,
+  usd,
+} from '../../components/kit';
 import COLORS from '../../constants/Theme';
 
-// Portfolio Performance — the screen that replaces the landlord's
-// Excel-to-owner workflow. Hero net-collected number, an income
-// statement, health metrics, period deltas, one-tap PDF.
+// Portfolio performance (design 7a). Hero = gross rent (the owner's
+// number); occupancy folds into the sub-line rather than a second
+// card. Per-property rows use collection % as the health signal with
+// AA semantic text colors — the weakest property is findable at a
+// glance (exception-first, applied to reporting). Income statement +
+// one-tap PDF export preserved.
+
+const rateColor = r =>
+  r >= 95 ? '#037147' : r >= 90 ? '#7A6100' : '#B32020';
 
 const Portfolio = () => {
   const {performance, isPending, isRefetching, refetch} = usePortfolio();
+  const {dashboard} = useDashboard();
   const exportMut = useExportPortfolioPdf();
+
+  const portfolio = dashboard?.portfolio ?? {};
+  // Monthly totals sit within ~10% of each other, so bars are scaled
+  // across the range (not from zero) or the chart reads as flat.
+  const trend = dashboard?.trend ?? [];
+  const trendMax = Math.max(...trend.map(t => t.collected), 1);
+  const trendMin = Math.min(...trend.map(t => t.collected), trendMax);
+  const barPct = v =>
+    trendMax === trendMin
+      ? 100
+      : 45 + Math.round(((v - trendMin) / (trendMax - trendMin)) * 55);
+  const monthLabel = new Date()
+    .toLocaleDateString('en-US', {month: 'long'})
+    .toUpperCase();
 
   const handleExport = async () => {
     ToastAndroid.show('Preparing PDF…', ToastAndroid.SHORT);
@@ -32,97 +60,167 @@ const Portfolio = () => {
   };
 
   return (
-    <View className="flex-1 bg-keystone_canvas">
+    <Screen
+      title="Portfolio"
+      back="Reports"
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefetching}
+          onRefresh={refetch}
+          tintColor={COLORS.keystone_gold}
+        />
+      }>
       <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
-      <ScrollView
-        contentContainerStyle={{paddingBottom: 28}}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={COLORS.keystone_gold} />
-        }>
-        {/* Hero net collected (navy feature) */}
-        <View className="px-4 pt-4">
-          <Card feature>
-            <View className="flex-row items-center justify-between">
-              <Label onDark>Net Collected · {performance?.period ?? 'This period'}</Label>
-              {performance?.vsLastMonth != null && <Delta value={performance.vsLastMonth} />}
-            </View>
-            <AnimatedAmount
-              value={performance?.netCollected ?? 0}
-              format={usd}
-              size="xl"
-              onDark
-              style={{marginTop: 12}}
-            />
-            <View className="flex-row mt-4">
-              <Stat label="Occupancy" value={pct(performance?.occupancyRate, {decimals: 1})} onDark />
-              <View className="w-px bg-white/12" />
-              <Stat label="On-time" value={pct(performance?.onTimeRate, {decimals: 1})} onDark align="left" style={{paddingLeft: 14}} />
-              <View className="w-px bg-white/12" />
-              <Stat label="Avg days to pay" value={`${performance?.averageDaysToPay ?? '—'}`} onDark align="right" />
-            </View>
-          </Card>
-        </View>
 
-        {/* Income statement */}
-        <View className="px-4 mt-4">
+      <HeroCard
+        label={`Gross rent · ${monthLabel}`}
+        badge={{text: `${portfolio.properties ?? mockPortfolioByProperty.length} properties`}}
+        amount={usd(performance?.grossRentIncome ?? 0)}
+        amountSize={34}
+        sub={`${portfolio.occupancyRate ?? Math.round(performance?.occupancyRate ?? 0)}% occupied · ${
+          portfolio.occupied ?? '—'
+        } of ${portfolio.units ?? '—'} units`}
+      />
+
+      {/* 6-month collected — gold marks the current month (F5) */}
+      {trend.length > 0 && (
+        <View className="mt-5">
+          <SectionLabel>6-month collected</SectionLabel>
           <Card>
-            <View className="flex-row items-center gap-3 mb-2">
-              <IconChip><Icon name="trending" size={19} /></IconChip>
-              <Label>Income statement</Label>
+            <View
+              className="flex-row items-end"
+              style={{height: 88, gap: 8}}>
+              {trend.map((t, i) => (
+                <View
+                  key={t.label}
+                  style={{
+                    flex: 1,
+                    height: `${barPct(t.collected)}%`,
+                    borderRadius: 6,
+                    backgroundColor:
+                      i === trend.length - 1
+                        ? COLORS.keystone_gold
+                        : 'rgba(21,37,53,0.08)',
+                  }}
+                />
+              ))}
             </View>
-            <Row label="Gross Rent Income" value={usd(performance?.grossRentIncome)} />
-            <Row label="Vacancy Loss" value={`-${usd(performance?.vacancyLoss ?? 0)}`} valueColor={COLORS.c_danger} />
-            <Row label="Late Fees" value={`+${usd(performance?.lateFees ?? 0)}`} valueColor={COLORS.c_success} />
-            <Row
-              label="Insurance Claims"
-              value={`-${usd(performance?.insuranceClaims ?? 0)}`}
-              valueColor={performance?.insuranceClaims ? COLORS.c_danger : undefined}
-            />
-            <Divider style={{marginVertical: 8}} />
-            <Row label="Net Collected" value={usd(performance?.netCollected)} bold />
+            <View className="flex-row mt-2" style={{gap: 8}}>
+              {trend.map((t, i) => (
+                <Text
+                  key={t.label}
+                  numberOfLines={1}
+                  className={`flex-1 text-center font-inter text-xs ${
+                    i === trend.length - 1
+                      ? 'text-keystone_navy font-inter-semibold'
+                      : 'text-keystone_slate'
+                  }`}>
+                  {t.label}
+                </Text>
+              ))}
+            </View>
           </Card>
         </View>
+      )}
 
-        {/* Trend */}
-        <View className="px-4 mt-4">
-          <Card>
-            <Label>Performance</Label>
-            <View className="flex-row items-center justify-between mt-3">
-              <Text className="text-text_muted font-inter text-sm">vs Last Month</Text>
-              <Delta value={performance?.vsLastMonth} />
+      {/* By property — collection % as the health signal */}
+      <View className="mt-5">
+        <SectionLabel>By property</SectionLabel>
+        <Card style={{paddingVertical: 0, paddingHorizontal: 16}}>
+          {mockPortfolioByProperty.map((p, i) => (
+            <View
+              key={p.id}
+              className="flex-row items-center py-3.5"
+              style={
+                i < mockPortfolioByProperty.length - 1 && {
+                  borderBottomWidth: 0.5,
+                  borderBottomColor: COLORS.keystone_hairline,
+                }
+              }>
+              <View className="flex-1" style={{minWidth: 0}}>
+                <Text
+                  numberOfLines={1}
+                  className="text-keystone_navy font-inter-semibold text-base">
+                  {p.name}
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  className="text-text_muted font-inter text-xs mt-0.5">
+                  {p.units} units · {p.occupancy}% occupied
+                </Text>
+              </View>
+              <View className="items-end" style={{flexShrink: 0}}>
+                <Text
+                  className="text-keystone_navy font-inter-bold text-base"
+                  style={{fontVariant: ['tabular-nums']}}>
+                  {usd(p.collected)}
+                </Text>
+                <Text
+                  className="font-inter-semibold text-xs mt-0.5"
+                  style={{color: rateColor(p.collectionRate)}}>
+                  {p.collectionRate}% collected
+                </Text>
+              </View>
             </View>
-            <View className="flex-row items-center justify-between mt-3">
-              <Text className="text-text_muted font-inter text-sm">vs Last Year</Text>
-              <Delta value={performance?.vsLastYear} />
-            </View>
-          </Card>
-        </View>
+          ))}
+        </Card>
+      </View>
 
-        {/* PDF export */}
-        <View className="px-4 mt-5">
-          <TouchableOpacity
-            onPress={handleExport}
-            disabled={exportMut.isPending}
-            activeOpacity={0.85}
-            className="bg-keystone_navy rounded-2xl p-4 items-center">
-            {exportMut.isPending ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text className="text-white font-inter-semibold text-base uppercase tracking-wider">
-                Export PDF
-              </Text>
-            )}
-          </TouchableOpacity>
-        </View>
+      {/* Income statement */}
+      <View className="mt-5">
+        <SectionLabel>Income statement</SectionLabel>
+        <Card>
+          <Row label="Gross rent income" value={usd(performance?.grossRentIncome)} />
+          <Row
+            label="Vacancy loss"
+            value={`-${usd(performance?.vacancyLoss ?? 0)}`}
+            valueColor={COLORS.c_danger}
+          />
+          <Row
+            label="Late fees"
+            value={`+${usd(performance?.lateFees ?? 0)}`}
+            valueColor={COLORS.c_success}
+          />
+          <Row
+            label="Insurance claims"
+            value={`-${usd(performance?.insuranceClaims ?? 0)}`}
+            valueColor={performance?.insuranceClaims ? COLORS.c_danger : undefined}
+          />
+          <Divider style={{marginVertical: 8}} />
+          <Row label="Net collected" value={usd(performance?.netCollected)} bold />
+        </Card>
+      </View>
 
-        {isPending && (
-          <View className="absolute inset-0 items-center justify-center">
+      {/* Deltas */}
+      <View className="mt-4">
+        <Card>
+          <View className="flex-row items-center justify-between">
+            <Text className="text-text_muted font-inter text-sm">vs last month</Text>
+            <Delta value={performance?.vsLastMonth} />
+          </View>
+          <View className="flex-row items-center justify-between mt-3">
+            <Text className="text-text_muted font-inter text-sm">vs last year</Text>
+            <Delta value={performance?.vsLastYear} />
+          </View>
+        </Card>
+      </View>
+
+      <View className="mt-5">
+        {exportMut.isPending ? (
+          <View style={{minHeight: 52, justifyContent: 'center'}}>
             <ActivityIndicator color={COLORS.keystone_navy} />
           </View>
+        ) : (
+          <PrimaryButton label="Export PDF" onPress={handleExport} />
         )}
-      </ScrollView>
-    </View>
+      </View>
+
+      {isPending && !performance && (
+        <View className="items-center py-8">
+          <ActivityIndicator color={COLORS.keystone_navy} />
+        </View>
+      )}
+    </Screen>
   );
 };
 

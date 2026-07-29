@@ -1,46 +1,48 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {
   ActivityIndicator,
-  ScrollView,
   StatusBar,
   Text,
-  TextInput,
   ToastAndroid,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import DatePicker from 'react-native-date-picker';
 
-import {Card, Label, Icon, IconChip, DraftBadge} from '../../components/premium';
+import {Card, Icon} from '../../components/premium';
+import {
+  FieldButton,
+  FormField,
+  HeroCard,
+  PrimaryButton,
+  Screen,
+  SectionLabel,
+} from '../../components/kit';
 import COLORS from '../../constants/Theme';
 import {KYC} from '../../constants/legalCopy';
 
-// JIT KYC / CIP — collected at "Add a payment method", AFTER the Dwolla ToS
-// gate and just before a funding source is created (not upfront at claim, so a
-// tenant can explore first). Submits to Dwolla customer verification. CEO
-// decision: KYC is just-in-time. POST /tenants/kyc — see BE_ASKS §T12.
+// KYC — verify identity (design 5d). The scariest ask in the app gets
+// the most reassurance: why (federal law), scope ("never a credit
+// pull"), storage ("Keystone never stores your SSN"), and a photo-ID
+// fallback. Numbered progress rows reuse the checklist pattern; one
+// field-group per step keeps the keyboard from burying context.
+// JIT KYC/CIP: collected AFTER the Dwolla ToS gate, just before the
+// funding source. POST /tenants/kyc — BE_ASKS §T12.
 
-const fmtDate = iso => {
-  if (!iso) return 'Select your date of birth';
-  const d = new Date(iso);
-  return d.toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
-};
+const STEPS = [
+  {key: 'name', label: 'Legal name & date of birth'},
+  {key: 'ssn', label: 'Last 4 of SSN', note: 'Identity check only — never a credit pull'},
+  {key: 'address', label: 'Home address'},
+];
 
-const Field = ({label, children}) => (
-  <View className="mb-2">
-    <Text className="text-text_muted font-inter-medium text-xs ml-1 mb-1">{label}</Text>
-    <View className="bg-white border border-keystone_hairline rounded-xl">{children}</View>
-  </View>
-);
-
-const input = {
-  className: 'text-keystone_navy font-inter text-sm px-3 py-2.5',
-  placeholderTextColor: COLORS.inactive_text,
-};
+const fmtDate = d =>
+  d
+    ? d.toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})
+    : null;
 
 const KycVerify = () => {
   const nav = useNavigation();
+  const [step, setStep] = useState(0);
   const [first, setFirst] = useState('');
   const [last, setLast] = useState('');
   const [dob, setDob] = useState(null);
@@ -52,14 +54,16 @@ const KycVerify = () => {
   const [zip, setZip] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const canSubmit =
-    first.trim() && last.trim() && dob && ssn.trim().length === 4 && street.trim() && zip.trim();
+  const stepDone = useMemo(
+    () => [
+      !!(first.trim() && last.trim() && dob),
+      ssn.trim().length === 4,
+      !!(street.trim() && city.trim() && stateCode.trim() && zip.trim().length === 5),
+    ],
+    [first, last, dob, ssn, street, city, stateCode, zip],
+  );
 
   const submit = async () => {
-    if (!canSubmit) {
-      ToastAndroid.show('Fill in the required fields', ToastAndroid.SHORT);
-      return;
-    }
     setBusy(true);
     // POST /tenants/kyc { firstName, lastName, dob, ssnLast4, address }
     // → Dwolla customer verification. Optimistic until BE ships §T12.
@@ -70,125 +74,191 @@ const KycVerify = () => {
     }
     setBusy(false);
     ToastAndroid.show('Identity submitted — connecting your bank next', ToastAndroid.LONG);
-    // Next step: Plaid bank-link (BE link-token). Stubbed until the SDK + token
-    // land; for now return to the methods list.
     nav.navigate('payment_methods');
   };
 
+  const next = () => {
+    if (step < 2) setStep(step + 1);
+    else submit();
+  };
+
   return (
-    <View className="flex-1 bg-keystone_canvas">
-      <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
-      <ScrollView contentContainerStyle={{paddingBottom: 28}} showsVerticalScrollIndicator={false}>
-        {/* Why */}
-        <View className="px-4 pt-5">
-          <Card>
-            <View className="flex-row items-center gap-3">
-              <IconChip>
-                <Icon name="shield" size={19} color={COLORS.keystone_gold} />
-              </IconChip>
-              <Text className="text-keystone_navy font-inter-semibold text-sm flex-1">
-                {KYC.title}
-              </Text>
-            </View>
-            <View className="mt-3">
-              <DraftBadge />
-            </View>
-            <Text className="text-text_muted font-inter text-xs leading-5">
-              {KYC.disclosure}
-            </Text>
-          </Card>
-        </View>
-
-        {/* Form */}
-        <View className="px-4 mt-4">
-          <Label>Legal name</Label>
-          <View className="flex-row gap-2 mt-2">
-            <View className="flex-1">
-              <Field label="First name">
-                <TextInput value={first} onChangeText={setFirst} placeholder="Sarah" {...input} />
-              </Field>
-            </View>
-            <View className="flex-1">
-              <Field label="Last name">
-                <TextInput value={last} onChangeText={setLast} placeholder="Chen" {...input} />
-              </Field>
-            </View>
+    <Screen
+      title="Verify identity"
+      back="Payment methods"
+      stickyFooter={
+        busy ? (
+          <View style={{minHeight: 52, justifyContent: 'center'}}>
+            <ActivityIndicator color={COLORS.keystone_navy} />
           </View>
+        ) : (
+          <PrimaryButton
+            label={step < 2 ? 'Continue' : KYC.submitCta}
+            disabled={!stepDone[step]}
+            onPress={next}
+          />
+        )
+      }>
+      <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
 
-          <Field label="Date of birth">
-            <TouchableOpacity onPress={() => setDobOpen(true)} className="px-3 py-2.5">
-              <Text className={`font-inter text-sm ${dob ? 'text-keystone_navy' : 'text-text_muted'}`}>
-                {fmtDate(dob?.toISOString())}
-              </Text>
-            </TouchableOpacity>
-          </Field>
+      <HeroCard
+        label="One-time check"
+        amount="Confirm it's you"
+        amountSize={24}
+        sub="Federal law requires payment providers to verify identity. Takes about a minute."
+      />
 
-          <Field label="SSN (last 4)">
-            <TextInput
+      {/* Numbered progress rows */}
+      <View className="mt-5">
+        <SectionLabel>What we need</SectionLabel>
+        <Card style={{paddingVertical: 6}}>
+          {STEPS.map((s, i) => {
+            const done = stepDone[i];
+            const current = i === step;
+            return (
+              <View
+                key={s.key}
+                className="flex-row items-center py-2.5"
+                style={
+                  i < STEPS.length - 1 && {
+                    borderBottomWidth: 0.5,
+                    borderBottomColor: COLORS.keystone_hairline,
+                  }
+                }>
+                <View
+                  className="w-7 h-7 rounded-full items-center justify-center mr-3"
+                  style={{
+                    backgroundColor: done
+                      ? 'rgba(5,166,96,0.12)'
+                      : current
+                        ? COLORS.keystone_navy
+                        : 'rgba(21,37,53,0.06)',
+                  }}>
+                  {done ? (
+                    <Text style={{color: '#037147', fontSize: 13}}>✓</Text>
+                  ) : (
+                    <Text
+                      style={{
+                        color: current ? COLORS.keystone_cream : COLORS.keystone_slate,
+                        fontFamily: 'Inter-SemiBold',
+                        fontSize: 13,
+                      }}>
+                      {i + 1}
+                    </Text>
+                  )}
+                </View>
+                <View className="flex-1">
+                  <Text
+                    className={`font-inter-${current || done ? 'semibold' : 'medium'} text-sm`}
+                    style={{
+                      color: current || done ? COLORS.keystone_navy : 'rgba(21,37,53,0.45)',
+                    }}>
+                    {s.label}
+                  </Text>
+                  {s.note && current ? (
+                    <Text className="text-keystone_slate font-inter text-xs mt-0.5">
+                      {s.note}
+                    </Text>
+                  ) : null}
+                </View>
+              </View>
+            );
+          })}
+        </Card>
+      </View>
+
+      {/* Step forms — one group at a time */}
+      <View className="mt-5">
+        {step === 0 && (
+          <>
+            <FormField
+              label="First name"
+              placeholder="Sarah"
+              autoComplete="given-name"
+              value={first}
+              onChangeText={setFirst}
+              style={{marginBottom: 14}}
+            />
+            <FormField
+              label="Last name"
+              placeholder="Chen"
+              autoComplete="family-name"
+              value={last}
+              onChangeText={setLast}
+              style={{marginBottom: 14}}
+            />
+            <FieldButton
+              label="Date of birth"
+              value={fmtDate(dob)}
+              placeholder="Select your date of birth"
+              onPress={() => setDobOpen(true)}
+            />
+          </>
+        )}
+
+        {step === 1 && (
+          <>
+            <FormField
+              label="Last 4 of SSN"
+              icon="lock"
+              placeholder="• • • •"
+              keyboardType="number-pad"
+              maxLength={4}
+              secureTextEntry
               value={ssn}
               onChangeText={t => setSsn(t.replace(/[^0-9]/g, '').slice(0, 4))}
-              keyboardType="number-pad"
-              placeholder="1234"
-              maxLength={4}
-              {...input}
             />
-          </Field>
+            <Text className="text-keystone_slate font-inter text-xs mt-3 leading-5">
+              Encrypted and sent only to Dwolla, our payment processor.
+              Keystone never stores your SSN.
+            </Text>
+          </>
+        )}
 
-          <Label style={{marginTop: 8}}>Home address</Label>
-          <View className="mt-2">
-            <Field label="Street">
-              <TextInput value={street} onChangeText={setStreet} placeholder="128 Magnolia Ave" {...input} />
-            </Field>
-            <View className="flex-row gap-2">
-              <View className="flex-1">
-                <Field label="City">
-                  <TextInput value={city} onChangeText={setCity} placeholder="Austin" {...input} />
-                </Field>
-              </View>
-              <View style={{width: 88}}>
-                <Field label="State">
-                  <TextInput
-                    value={stateCode}
-                    onChangeText={t => setStateCode(t.toUpperCase().slice(0, 2))}
-                    placeholder="TX"
-                    autoCapitalize="characters"
-                    maxLength={2}
-                    {...input}
-                  />
-                </Field>
-              </View>
-              <View style={{width: 96}}>
-                <Field label="ZIP">
-                  <TextInput
-                    value={zip}
-                    onChangeText={t => setZip(t.replace(/[^0-9]/g, '').slice(0, 5))}
-                    keyboardType="number-pad"
-                    placeholder="78701"
-                    maxLength={5}
-                    {...input}
-                  />
-                </Field>
-              </View>
+        {step === 2 && (
+          <>
+            <FormField
+              label="Street"
+              placeholder="128 Magnolia Ave"
+              autoComplete="street-address"
+              value={street}
+              onChangeText={setStreet}
+              style={{marginBottom: 14}}
+            />
+            <FormField
+              label="City"
+              placeholder="Austin"
+              value={city}
+              onChangeText={setCity}
+              style={{marginBottom: 14}}
+            />
+            <View className="flex-row gap-3">
+              <FormField
+                label="State"
+                placeholder="TX"
+                autoCapitalize="characters"
+                maxLength={2}
+                value={stateCode}
+                onChangeText={t => setStateCode(t.toUpperCase().slice(0, 2))}
+                style={{flex: 1}}
+              />
+              <FormField
+                label="ZIP"
+                placeholder="78701"
+                keyboardType="number-pad"
+                maxLength={5}
+                value={zip}
+                onChangeText={t => setZip(t.replace(/[^0-9]/g, '').slice(0, 5))}
+                style={{flex: 2}}
+              />
             </View>
-          </View>
-        </View>
-      </ScrollView>
-
-      {/* Submit */}
-      <View className="px-4 pb-6 pt-2 bg-keystone_canvas">
-        <TouchableOpacity
-          onPress={submit}
-          disabled={!canSubmit || busy}
-          activeOpacity={0.9}
-          style={{opacity: canSubmit && !busy ? 1 : 0.5}}
-          className="bg-keystone_navy rounded-2xl py-4 items-center">
-          {busy ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text className="text-white font-inter-bold text-base">{KYC.submitCta}</Text>
-          )}
-        </TouchableOpacity>
+          </>
+        )}
       </View>
+
+      <Text className="text-keystone_slate font-inter text-xs mt-5 leading-5">
+        If automatic verification fails, you can photograph your ID instead.
+      </Text>
 
       <DatePicker
         modal
@@ -202,7 +272,7 @@ const KycVerify = () => {
         }}
         onCancel={() => setDobOpen(false)}
       />
-    </View>
+    </Screen>
   );
 };
 

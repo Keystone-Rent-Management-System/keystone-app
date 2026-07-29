@@ -1,122 +1,119 @@
 import React from 'react';
-import {
-  ScrollView,
-  StatusBar,
-  Text,
-  ToastAndroid,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {StatusBar, Text, ToastAndroid, View} from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 
-import {usd} from '../../utils/money';
-import {Card, Label, Amount, Divider, Row} from '../../components/premium';
+import {Card, Divider, Row} from '../../components/premium';
+import {
+  HeroCard,
+  PrimaryButton,
+  Screen,
+  SecondaryButton,
+  eventDate,
+  usd,
+} from '../../components/kit';
 import COLORS from '../../constants/Theme';
+import {useTenantHome} from '../../hooks/useTenantHome';
 
-// Rent receipt — the calm confirmation after an instant payment.
-// Reads what the pay flow passed (the BE settlement response will carry
-// the same fields). Replaces the old hardcoded Mpesa receipt.
+// Receipt (design 5b; quality bar, structure kept). D3 applied: "For"
+// (period) and "Paid" (event) are separate rows — the one date/period
+// ambiguity the screen had. Buttons de-shouted to sentence case at K2
+// geometry; detail rows get min-width guards so long landlord names
+// ellipsize instead of wrapping.
 
-const fmtDateTime = iso => {
+const fmtTime = iso => {
   if (!iso) return '';
-  const d = new Date(iso);
-  return d.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
+  return new Date(iso).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
   });
 };
 
 const RentReceipt = () => {
   const nav = useNavigation();
   const {params = {}} = useRoute();
+  // Receipts opened from the Activity list carry only payment fields —
+  // fill landlord/property from the lease so 5b's rows never go blank.
+  const {home} = useTenantHome();
   const {
     amount = 0,
     method = 'Your bank',
     date,
     code = '—',
     period,
-    landlord,
-    property,
-    unit,
+    landlord = home?.lease?.landlord,
+    property = home?.lease?.property,
+    unit = home?.lease?.unit,
   } = params;
 
   return (
-    <View className="flex-1 bg-keystone_canvas">
+    <Screen title="Receipt" back="Pay">
       <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
-      <ScrollView
-        contentContainerStyle={{paddingBottom: 28}}
-        showsVerticalScrollIndicator={false}>
-        {/* Success */}
-        <View className="items-center pt-10 pb-2 px-6">
-          <View
-            style={{backgroundColor: 'rgba(5,166,96,0.12)'}}
-            className="w-16 h-16 rounded-full items-center justify-center">
-            <Text style={{color: COLORS.c_success, fontSize: 30}}>✓</Text>
-          </View>
-          <Text className="text-keystone_navy font-inter-bold text-2xl mt-4">
-            Rent paid
-          </Text>
-          <Text className="text-text_muted font-inter text-sm mt-1 text-center">
-            Sent instantly to {landlord ?? 'your landlord'}. You’re all set
-            {period ? ` for ${period}` : ''}.
-          </Text>
-        </View>
 
-        {/* Amount */}
-        <View className="px-4 mt-4">
-          <Card feature>
-            <Label onDark>Amount paid</Label>
-            <Amount size="xl" onDark style={{marginTop: 10}}>
-              {usd(amount)}
-            </Amount>
-            <Text className="text-white/55 font-inter text-xs mt-2">
-              Confirmation {code}
-            </Text>
-          </Card>
+      {/* Success */}
+      <View className="items-center pt-4 pb-2 px-6">
+        <View
+          style={{backgroundColor: 'rgba(5,166,96,0.12)'}}
+          className="w-16 h-16 rounded-full items-center justify-center">
+          <Text style={{color: COLORS.c_success, fontSize: 30}}>✓</Text>
         </View>
+        <Text className="text-keystone_navy font-inter-bold text-2xl mt-4">
+          Rent paid
+        </Text>
+        <Text className="text-keystone_slate font-inter text-[15px] mt-1 text-center leading-5">
+          Sent instantly to {landlord ?? 'your landlord'}. You're all set
+          {period ? ` for ${period.split(' ')[0]}` : ''}.
+        </Text>
+      </View>
 
-        {/* Details */}
-        <View className="px-4 mt-5">
-          <Card>
-            <Row label="Paid to" value={landlord ?? '—'} />
-            <Divider />
-            <Row
-              label="Property"
-              value={`${property ?? ''}${unit ? ` · ${unit}` : ''}`}
-            />
-            <Divider />
-            <Row label="Paid from" value={method} />
-            <Divider />
-            <Row label="Date" value={fmtDateTime(date)} />
-            <Divider />
-            <Row label="Confirmation" value={code} />
-          </Card>
-        </View>
+      <View className="mt-4">
+        <HeroCard
+          label={period ? `AMOUNT PAID · ${period.toUpperCase()}` : 'AMOUNT PAID'}
+          amount={usd(amount)}
+          amountSize={34}
+          sub={`Confirmation ${code}`}
+        />
+      </View>
 
-        {/* Actions */}
-        <View className="px-4 mt-5 flex-row gap-3">
-          <TouchableOpacity
-            onPress={() =>
-              ToastAndroid.show('Receipt saved to your device', ToastAndroid.SHORT)
+      {/* Details — D3: period ("For") and event ("Paid") separated */}
+      <View className="mt-5">
+        <Card>
+          <Row label="Paid to" value={landlord ?? '—'} />
+          <Divider />
+          <Row
+            label="Property"
+            value={`${property ?? ''}${unit ? ` · ${unit}` : ''}`}
+          />
+          <Divider />
+          <Row label="For" value={period ? `${period} rent` : 'Rent'} />
+          <Divider />
+          <Row label="Paid from" value={method} />
+          <Divider />
+          <Row
+            label="Paid"
+            value={
+              date ? `${eventDate('', date, true).trim()} · ${fmtTime(date)}` : '—'
             }
-            activeOpacity={0.85}
-            className="flex-1 border border-keystone_navy rounded-2xl p-4 items-center">
-            <Text className="text-keystone_navy font-inter-semibold text-sm uppercase tracking-wider">
-              Save PDF
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => nav.navigate('home')}
-            activeOpacity={0.85}
-            className="flex-1 bg-keystone_navy rounded-2xl p-4 items-center">
-            <Text className="text-white font-inter-semibold text-sm uppercase tracking-wider">
-              Done
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </View>
+          />
+          <Divider />
+          <Row label="Confirmation" value={code} />
+        </Card>
+      </View>
+
+      <View className="mt-5 flex-row gap-3">
+        <SecondaryButton
+          label="Save PDF"
+          style={{flex: 1}}
+          onPress={() =>
+            ToastAndroid.show('Receipt saved to your device', ToastAndroid.SHORT)
+          }
+        />
+        <PrimaryButton
+          label="Done"
+          style={{flex: 1}}
+          onPress={() => nav.navigate('home')}
+        />
+      </View>
+    </Screen>
   );
 };
 

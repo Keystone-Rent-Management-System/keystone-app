@@ -1,27 +1,29 @@
 import {yupResolver} from '@hookform/resolvers/yup';
 import React from 'react';
-import {useForm} from 'react-hook-form';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
-
+import {Controller, useForm} from 'react-hook-form';
+import {Text, View} from 'react-native';
 import {object, string} from 'yup';
-import {FlagSvg, UserSvg} from '../../../assets/icons';
-import {CButton, Layout} from '../../../components';
-import ControlledInput from '../../../components/general/input/ControlledInput';
+
+import {FormField, PrimaryButton, Screen} from '../../../components/kit';
+import COLORS from '../../../constants/Theme';
 import {useRegister} from '../../../hooks';
 import useGlobals from '../../../provider/store/useGlobals';
+import StepIndicator from './StepIndicator';
 
-export const phoneNumberSchema = string()
-  .required()
-  .matches(
-    /^(2547\d{8}|2541\d{8}|07\d{8}|01\d{8}|7\d{8}|1\d{8})$/,
-    'Phone number must be in the format 2547..., 2541..., +254..., 07..., or 01...',
-  );
+// Registration step 4 (design 3d): US-first phone input (L4) retires
+// the Kenya-flag default; footer sets the KYC + bank expectation
+// before the user hits it. BE contract preserved: firstName/lastName/
+// phoneNumber/identificationNumber via useRegister.
 
 const schema = object({
-  firstName: string().required().min(1),
-  lastName: string().required().min(1),
-  phoneNumber: phoneNumberSchema,
-  identificationNumber: string().required().min(6),
+  firstName: string().required('Enter your first name').min(1),
+  lastName: string().required('Enter your last name').min(1),
+  phoneNumber: string()
+    .required('Enter your phone number')
+    .matches(/^\+?\d{9,13}$/, 'Enter a valid phone number (digits only)'),
+  identificationNumber: string()
+    .required('Enter your government ID number')
+    .min(6, 'ID number looks too short'),
 });
 
 const Profile = () => {
@@ -41,94 +43,99 @@ const Profile = () => {
 
   const {registerTenantMutation, onSubmit} = useRegister();
 
+  const field = (name, props) => (
+    <Controller
+      name={name}
+      control={control}
+      render={({field: {onChange, onBlur, value}, fieldState: {error}}) => (
+        <FormField
+          value={value}
+          onChangeText={onChange}
+          onBlur={onBlur}
+          error={error?.message}
+          style={{marginBottom: 14}}
+          {...props}
+        />
+      )}
+    />
+  );
+
   return (
-    <Layout ClassName={'p-4'}>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        <View className={'flex-col '} style={styles.container}>
-          {/* <Uploader /> */}
-
-          <ControlledInput
-            label={'Enter First Name'}
-            icon={<UserSvg />}
-            placeholder={'Enter first name'}
-            labelClassName={'text-primary text-13'}
-            ClassName={'border border-border_grey px-2'}
-            InputClassName={'text-[13px] px-2 text-gray-600 '}
-            name={'firstName'}
-            control={control}
-          />
-
-          <ControlledInput
-            label={'Enter Last Name'}
-            icon={<UserSvg />}
-            placeholder={'Enter last name'}
-            labelClassName={'text-primary text-13'}
-            ClassName={'border border-border_grey px-2'}
-            InputClassName={'text-[13px] px-2 text-gray-600 '}
-            name={'lastName'}
-            control={control}
-          />
-
-          <ControlledInput
-            label={'Phone Number'}
-            icon={<PrePhone />}
-            placeholder={'Enter number'}
-            labelClassName={'text-primary text-13'}
-            ClassName={'border border-border_grey px-2'}
-            InputClassName={'text-[13px] px-2 text-gray-600 '}
-            name={'phoneNumber'}
-            keyboardType={'number-pad'}
-            control={control}
-          />
-
-          <ControlledInput
-            label={'ID Number'}
-            icon={<UserSvg />}
-            placeholder={'Enter ID Number'}
-            labelClassName={'text-primary text-13'}
-            ClassName={'border border-border_grey px-2'}
-            InputClassName={'text-[13px] px-2 text-gray-600 '}
-            name={'identificationNumber'}
-            keyboardType={'number-pad'}
-            control={control}
+    <Screen
+      title="Create account"
+      back="Password"
+      stickyFooter={
+        <View>
+          <Text
+            style={{
+              color: COLORS.keystone_slate,
+              fontFamily: 'Inter',
+              fontSize: 13,
+              lineHeight: 20,
+              marginBottom: 12,
+            }}>
+            Next: verify your identity and connect your bank — that's when
+            payouts unlock.
+          </Text>
+          <PrimaryButton
+            label={
+              registerTenantMutation.isPending
+                ? 'Creating account…'
+                : 'Create account'
+            }
+            disabled={registerTenantMutation.isPending}
+            onPress={handleSubmit(onSubmit)}
           />
         </View>
-      </ScrollView>
+      }>
+      <StepIndicator step={4} />
+      <Text
+        style={{
+          color: COLORS.keystone_navy,
+          fontFamily: 'Inter-Bold',
+          fontSize: 28,
+          letterSpacing: -0.3,
+          marginTop: 8,
+          marginBottom: 6,
+        }}>
+        Introduce yourself
+      </Text>
+      <Text
+        style={{
+          color: COLORS.keystone_slate,
+          fontFamily: 'Inter',
+          fontSize: 15,
+          lineHeight: 22,
+          marginBottom: 20,
+        }}>
+        This is how tenants will see you in the app.
+      </Text>
 
-      <CButton
-        ClassName={
-          'bg-primary text-white py-3.5 mb-3 absolute bottom-5 inset-x-0 mx-4'
-        }
-        onPress={handleSubmit(onSubmit)}
-        isLoading={registerTenantMutation.isPending}
-        textClassName={'text-white font'}
-        text={
-          registerTenantMutation.isPending
-            ? 'Creating profile...'
-            : 'Complete Profile'
-        }
-      />
-    </Layout>
+      {field('firstName', {
+        label: 'First name',
+        placeholder: 'Jane',
+        autoComplete: 'given-name',
+      })}
+      {field('lastName', {
+        label: 'Last name',
+        placeholder: 'Alvarez',
+        autoComplete: 'family-name',
+      })}
+      {field('phoneNumber', {
+        label: 'Phone',
+        prefix: '🇺🇸 +1',
+        placeholder: '(512) 555-0100',
+        keyboardType: 'phone-pad',
+        autoComplete: 'tel',
+      })}
+      {field('identificationNumber', {
+        label: 'Government ID number',
+        icon: 'id',
+        placeholder: 'Used once for identity verification',
+        keyboardType: 'number-pad',
+      })}
+    </Screen>
   );
 };
+
 export default Profile;
-
-const PrePhone = () => (
-  <View className={'flex-row items-center'} style={styles.prePhone}>
-    <FlagSvg />
-
-    <Text className={'text-neutral-500 font-open-sauce-sans text-[13px]'}>+254</Text>
-  </View>
-);
-
-const styles = StyleSheet.create({
-  container: {
-    gap: 15,
-  },
-  prePhone: {
-    gap: 3,
-  },
-  contentContainer: {
-    paddingBottom: 80,
-  },
-});

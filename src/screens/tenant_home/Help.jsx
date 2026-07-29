@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import {
   ActivityIndicator,
   Linking,
-  ScrollView,
   StatusBar,
   Text,
   TextInput,
@@ -10,20 +9,35 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
 import {useTenantHome} from '../../hooks/useTenantHome';
 import HelpServices from '../../services/help';
-import {Card, Label, Divider, Icon, IconChip} from '../../components/premium';
+import {Card, Divider} from '../../components/premium';
+import {
+  HeroCard,
+  ListRow,
+  PrimaryButton,
+  Screen,
+  SectionLabel,
+} from '../../components/kit';
 import COLORS from '../../constants/Theme';
 
-// Help & contact — reach the landlord, or tell Keystone what's wrong.
-// Reuses POST /complaints + /general-assistance.
+// Help & contact (design 6c). Call/Email no longer bleed outside the
+// hero card — inside padding per H1/H5, cream primary + outline
+// secondary on navy. Send holds the K3 disabled state until text is
+// entered; the repair redirect is a real link into My Home. P1-4
+// scope: every link here routes in-app — nothing opens
+// keystonerent.app. Past messages (8f) live one tap in.
 
 const Help = () => {
+  const nav = useNavigation();
   const {home} = useTenantHome();
   const lease = home?.lease ?? {};
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
+
+  const phone = lease.landlordPhone ?? '+18005551234';
 
   const send = async () => {
     if (msg.trim().length < 3) return;
@@ -39,78 +53,108 @@ const Help = () => {
   };
 
   return (
-    <View className="flex-1 bg-keystone_canvas">
+    <Screen title="Help & contact" back="More">
       <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
-      <ScrollView contentContainerStyle={{paddingBottom: 28}} showsVerticalScrollIndicator={false}>
-        {/* Landlord contact */}
-        <View className="px-4 pt-5">
-          <Card feature>
-            <Label onDark>Your landlord</Label>
-            <Text className="text-white font-inter-bold text-xl mt-2">
-              {lease.landlord ?? 'Keystone Property Group'}
-            </Text>
-            <Text className="text-white/55 font-inter text-xs mt-1 mb-4">
-              {lease.property}
-              {lease.unit ? ` · ${lease.unit}` : ''}
-            </Text>
-            <View className="flex-row gap-3">
-              <TouchableOpacity
-                onPress={() => Linking.openURL('tel:+18005551234').catch(() => {})}
-                activeOpacity={0.9}
-                className="flex-1 bg-keystone_cream rounded-2xl py-3 items-center">
-                <Text className="text-keystone_navy font-inter-bold text-sm">Call</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => Linking.openURL('mailto:support@keystone.com').catch(() => {})}
-                activeOpacity={0.85}
-                className="flex-1 border border-white/30 rounded-2xl py-3 items-center">
-                <Text className="text-white font-inter-semibold text-sm">Email</Text>
-              </TouchableOpacity>
-            </View>
-          </Card>
-        </View>
 
-        {/* Tell us */}
-        <View className="px-4 mt-5">
-          <View className="flex-row items-center gap-3 mb-3 ml-1">
-            <IconChip size={36}>
-              <Icon name="bell" size={16} color={COLORS.keystone_gold} />
-            </IconChip>
-            <Text className="text-keystone_navy font-inter-semibold text-sm">
-              Something’s wrong?
+      {/* Landlord hero — buttons inside padding (H1/H5) */}
+      <HeroCard
+        label="Your landlord"
+        amount={lease.landlord ?? 'Keystone Property Group'}
+        amountSize={24}
+        sub={`${lease.property ?? ''}${lease.unit ? ` · ${lease.unit}` : ''}`}>
+        <View className="flex-row gap-3 mt-4">
+          <TouchableOpacity
+            onPress={() => Linking.openURL(`tel:${phone}`).catch(() => {})}
+            activeOpacity={0.9}
+            style={{
+              flex: 1,
+              minHeight: 48,
+              borderRadius: 14,
+              backgroundColor: COLORS.keystone_cream,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Text className="text-keystone_navy font-inter-semibold text-[15px]">
+              Call
             </Text>
-          </View>
-          <Card style={{padding: 4}}>
-            <TextInput
-              value={msg}
-              onChangeText={setMsg}
-              placeholder="Tell us what’s going on and we’ll help…"
-              placeholderTextColor={COLORS.inactive_text}
-              multiline
-              className="text-keystone_navy font-inter text-sm px-3 py-3"
-              style={{minHeight: 96, textAlignVertical: 'top'}}
-            />
-            <Divider />
-            <TouchableOpacity
-              onPress={send}
-              disabled={busy || msg.trim().length < 3}
-              activeOpacity={0.85}
-              style={{opacity: !busy && msg.trim().length >= 3 ? 1 : 0.5}}
-              className="m-2 bg-keystone_navy rounded-xl py-3 items-center">
-              {busy ? (
-                <ActivityIndicator color="#FFFFFF" />
-              ) : (
-                <Text className="text-white font-inter-semibold text-sm">Send</Text>
-              )}
-            </TouchableOpacity>
-          </Card>
-          <Text className="text-text_muted font-inter text-xs mt-3 ml-1">
-            For a repair, use Repairs in My Home so your landlord can act on it
-            with a photo.
-          </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              Linking.openURL('mailto:support@keystonerent.app').catch(() => {})
+            }
+            activeOpacity={0.85}
+            style={{
+              flex: 1,
+              minHeight: 48,
+              borderRadius: 14,
+              borderWidth: 1,
+              borderColor: 'rgba(231,229,218,0.35)',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Text className="text-keystone_cream font-inter-semibold text-[15px]">
+              Email
+            </Text>
+          </TouchableOpacity>
         </View>
-      </ScrollView>
-    </View>
+      </HeroCard>
+
+      {/* Message Keystone */}
+      <View className="mt-5">
+        <SectionLabel>Something's wrong?</SectionLabel>
+        <Card style={{padding: 4}}>
+          <TextInput
+            value={msg}
+            onChangeText={setMsg}
+            placeholder="Tell us what's going on and we'll help…"
+            placeholderTextColor="rgba(21,37,53,0.35)"
+            multiline
+            className="text-keystone_navy font-inter text-[15px] px-3 py-3"
+            style={{minHeight: 96, textAlignVertical: 'top'}}
+          />
+          <Divider />
+          <View className="m-2">
+            {busy ? (
+              <View style={{minHeight: 48, justifyContent: 'center'}}>
+                <ActivityIndicator color={COLORS.keystone_navy} />
+              </View>
+            ) : (
+              <PrimaryButton
+                label="Send"
+                disabled={msg.trim().length < 3}
+                onPress={send}
+                style={{minHeight: 48}}
+              />
+            )}
+          </View>
+        </Card>
+
+        {/* Past messages (8f) */}
+        <Card style={{marginTop: 12, paddingVertical: 0, paddingHorizontal: 16}}>
+          <ListRow
+            icon="bell"
+            title="Your messages"
+            sub="Everything you've sent, with status"
+            chevron
+            last
+            onPress={() => nav.navigate('more__complains')}
+          />
+        </Card>
+
+        {/* Repair triage — a real link, not a dead-end note */}
+        <TouchableOpacity
+          onPress={() => nav.navigate('my_home_stack', {screen: 'repairs'})}
+          activeOpacity={0.7}>
+          <Text className="text-keystone_slate font-inter text-xs mt-3 ml-1 leading-5">
+            Something broken in your unit?{' '}
+            <Text className="text-keystone_navy font-inter-semibold underline">
+              Report a repair instead
+            </Text>{' '}
+            — it gets a vendor and a timeline.
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </Screen>
   );
 };
 

@@ -1,94 +1,131 @@
-import React, {useState} from 'react';
-import {Text} from 'react-native';
+import React, {useMemo, useState} from 'react';
+import {ActivityIndicator, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 
-import {CButton, Layout} from '@/components';
-import ControlledPasswordInput from '../../../components/general/input/ControlledPasswordInput';
-import {LockSvg} from '../../../assets/icons';
-import {yupResolver} from '@hookform/resolvers/yup';
-import {object, string} from 'yup';
-import {useForm} from 'react-hook-form';
+import {FormField, PrimaryButton, Screen} from '../../../components/kit';
+import COLORS from '../../../constants/Theme';
 import {useChangePassword} from '../../../hooks';
 
-const ChangePassword = () => {
-  const [currentPassworType, setCurrentPasswordType] = useState('password');
-  const [passworType, setPasswordType] = useState('password');
-  const [confirmationPassworType, setConfirmationPasswordType] =
-    useState('password');
+// Change password (design 8e). Reuses the 3c live requirement
+// checklist; the consequence line ("everywhere else signs out") is
+// stated before the action; CTA disabled until all checks pass (K3).
 
-  const schema = object({
-    currentPassword: string().required().min(6),
-    password: string().required().min(6),
-    confirmPassword: string().required().min(6),
-  });
-  const {handleSubmit, control} = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      currentPassword: '',
-      password: '',
-      confirmPassword: '',
-    },
-  });
+const Requirement = ({met, children}) => (
+  <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
+    <Text
+      style={{
+        fontSize: 15,
+        color: met ? '#037147' : 'rgba(21,37,53,0.45)',
+        fontFamily: 'Inter-SemiBold',
+      }}>
+      {met ? '✓' : '○'}
+    </Text>
+    <Text
+      style={{
+        fontSize: 15,
+        fontFamily: 'Inter',
+        color: met ? '#037147' : 'rgba(21,37,53,0.45)',
+      }}>
+      {children}
+    </Text>
+  </View>
+);
+
+const ChangePassword = () => {
+  const [current, setCurrent] = useState('');
+  const [next, setNext] = useState('');
+  const [show, setShow] = useState(false);
 
   const {changePasswordMutation, handleChangePassword} = useChangePassword();
 
+  const checks = useMemo(
+    () => ({
+      length: next.length >= 8,
+      symbol: /[\d!@#$%^&*()_\-+=[\]{};:'",.<>/?\\|`~]/.test(next),
+      different: next.length > 0 && next !== current,
+    }),
+    [next, current],
+  );
+  const allMet =
+    current.length >= 6 && checks.length && checks.symbol && checks.different;
+
+  const submit = () =>
+    handleChangePassword({
+      currentPassword: current,
+      password: next,
+      confirmPassword: next,
+    });
+
   return (
-    <Layout ClassName={'px-5 relative'}>
-      <ControlledPasswordInput
-        label={'Current Password'}
-        icon={<LockSvg />}
-        placeholder={'Enter current password'}
-        labelClassName={'text-primary text-13'}
-        ClassName={'border border-border_grey px-2'}
-        InputClassName={'text-xs px-2 text-gray-600 '}
-        containerClassName={'mt-4'}
-        required
-        name={'currentPassword'}
-        control={control}
-        type={currentPassworType}
-        handleEyeClick={setCurrentPasswordType}
+    <Screen
+      title="Change password"
+      back="Account"
+      stickyFooter={
+        changePasswordMutation.isPending ? (
+          <View style={{minHeight: 52, justifyContent: 'center'}}>
+            <ActivityIndicator color={COLORS.keystone_navy} />
+          </View>
+        ) : (
+          <PrimaryButton label="Update password" disabled={!allMet} onPress={submit} />
+        )
+      }>
+      <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
+
+      <FormField
+        label="Current password"
+        icon="lock"
+        placeholder="••••••••"
+        secureTextEntry
+        autoCapitalize="none"
+        value={current}
+        onChangeText={setCurrent}
+        style={{marginBottom: 14}}
       />
 
-      <ControlledPasswordInput
-        label={'New Password'}
-        icon={<LockSvg />}
-        placeholder={'Enter password'}
-        labelClassName={'text-primary text-13'}
-        ClassName={'border border-border_grey px-2'}
-        InputClassName={'text-xs px-2 text-gray-600 '}
-        containerClassName={'mt-4'}
-        required
-        name={'password'}
-        control={control}
-        type={passworType}
-        handleEyeClick={setPasswordType}
-      />
+      <View>
+        <FormField
+          label="New password"
+          icon="lock"
+          placeholder="At least 8 characters"
+          secureTextEntry={!show}
+          autoCapitalize="none"
+          value={next}
+          onChangeText={setNext}
+        />
+        <TouchableOpacity
+          onPress={() => setShow(v => !v)}
+          hitSlop={{top: 12, bottom: 12, left: 12, right: 12}}
+          style={{position: 'absolute', right: 14, top: 33}}>
+          <Text
+            style={{
+              color: COLORS.keystone_slate,
+              fontFamily: 'Inter-SemiBold',
+              fontSize: 15,
+            }}>
+            {show ? 'Hide' : 'Show'}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-      <ControlledPasswordInput
-        label={'Confirm New Password'}
-        icon={<LockSvg />}
-        placeholder={'Confirm password'}
-        labelClassName={'text-primary text-13'}
-        ClassName={'border border-border_grey px-2'}
-        InputClassName={'text-xs px-2 text-gray-600 '}
-        containerClassName={'mt-4'}
-        required
-        name={'confirmPassword'}
-        control={control}
-        type={confirmationPassworType}
-        handleEyeClick={setConfirmationPasswordType}
-      />
+      <View style={{gap: 6, marginTop: 14}}>
+        <Requirement met={checks.length}>At least 8 characters</Requirement>
+        <Requirement met={checks.symbol}>A number or symbol</Requirement>
+        <Requirement met={checks.different}>
+          Different from your current password
+        </Requirement>
+      </View>
 
-      <CButton
-        ClassName={
-          'bg-primary text-white py-3.5 mb-3 absolute bottom-0 inset-x-0 mx-4'
-        }
-        isLoading={changePasswordMutation.isPending}
-        onPress={handleSubmit(handleChangePassword)}>
-        <Text className={'text-white font-open-sauce-sans text-13 '}>
-          {changePasswordMutation.isPending ? 'Changing' : 'Change Password'}
-        </Text>
-      </CButton>
-    </Layout>
+      {/* Consequence stated before the action (8e) */}
+      <Text
+        style={{
+          color: COLORS.keystone_slate,
+          fontFamily: 'Inter',
+          fontSize: 13,
+          lineHeight: 20,
+          marginTop: 20,
+        }}>
+        You'll stay signed in on this device. Everywhere else signs out.
+      </Text>
+    </Screen>
   );
 };
 

@@ -4,10 +4,10 @@ import {
   DashboardSvg,
   LeasesSvg,
   MoreSvg,
-  PaymentsSvg,
   ReportsSvg,
 } from '@/assets/icons';
 import COLORS from '@/constants/Theme';
+import {Icon as KitIcon} from '@/components/premium';
 import DashboardStack from '@/navigation/landlord/DashboardStack';
 import PaymentsStack from '@/navigation/landlord/PaymentsStack';
 import LeasesStack from '@/navigation/landlord/LeasesStack';
@@ -38,8 +38,10 @@ const landlordScreens = [
     tab: {
       title: 'Payments',
       icon: isCurrent => (
-        <PaymentsSvg
-          strokeWidth={isCurrent ? '1.5' : '1.2'}
+        <KitIcon
+          name="card"
+          size={23}
+          strokeWidth={isCurrent ? 1.9 : 1.5}
           color={isCurrent ? COLORS.primary : COLORS.grey_1}
         />
       ),
