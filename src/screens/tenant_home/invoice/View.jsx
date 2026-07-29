@@ -1,311 +1,129 @@
-import React, {useCallback, useMemo, useRef} from 'react';
+import React from 'react';
 import {
   ActivityIndicator,
-  ScrollView,
-  StyleSheet,
+  StatusBar,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
+import Icon from '../../../components/premium/icons';
 import {
-  InvoiceBillItem,
-  InvoiceFooter,
-  InvoiceHeader,
-  Layout,
-} from '@/components';
-import {InvoiceConcernModal, InvoiceReceiptModal} from '@/components/modals';
-import moment from 'moment';
-import {ConsolidatedInvoicesModal} from '../../../components/modals';
-import PaymentInstructions from '../../../components/modals/PaymentInstructions';
+  HeroCard,
+  PrimaryButton,
+  SecondaryButton,
+  eventDate,
+  usd,
+} from '../../../components/kit';
 import COLORS from '../../../constants/Theme';
-import {
-  useGetConcerns,
-  useRaiseConcern,
-  useSpecificInvoice,
-} from '../../../hooks';
-import {formatToKES} from '../../../utils/Helper';
+import {useSpecificInvoice} from '../../../hooks';
 
-const InvoiceView = ({route: {params}}) => {
-  const concernModalRef = useRef();
-  const receiptModalRef = useRef();
-  const paymentInstrictionsRef = useRef();
-  const consolidatedInvoiceRef = useRef();
+// invoice_view — deep-link pass (design 5g). Legacy invoice routes
+// are cut; this modal survives only for old links (/app/invoices/:id):
+// hero + one CTA that routes into the checkout, plus an exit to
+// Activity. Modal presentation (✕, not a back label) because it
+// arrives from outside the nav stack.
 
-  const handleOpenConcernModal = useCallback(() => {
-    concernModalRef.current?.expand();
-  }, []);
+const InvoiceView = ({route: {params = {}}}) => {
+  const nav = useNavigation();
+  const insets = useSafeAreaInsets();
+  const {invoiceIsPending, invoice} = useSpecificInvoice(params.id);
 
-  const handleCloseConcernModal = useCallback(() => {
-    concernModalRef.current?.close();
-  }, []);
+  const amount = invoice?.totalAmount ?? invoice?.amount ?? 0;
+  const unpaid = (invoice?.status ?? 'UNPAID') !== 'PAID';
+  const code = invoice?.code ?? `KS-INV-${params.id ?? ''}`;
 
-  const handleOpenReceiptModal = useCallback(() => {
-    receiptModalRef.current?.expand();
-  }, []);
-
-  const handleCloseReceiptModal = useCallback(() => {
-    receiptModalRef.current?.close();
-  }, []);
-
-  const handleOpenPaymentInstrictionsModal = useCallback(() => {
-    paymentInstrictionsRef.current?.expand();
-  }, []);
-
-  const handleClosePaymentInstrictionsModal = useCallback(() => {
-    paymentInstrictionsRef.current?.close();
-  }, []);
-
-  const handleOpenConsolidatedInvoiceModal = useCallback(() => {
-    consolidatedInvoiceRef.current?.expand();
-  }, []);
-
-  const handleCloseConsolidatedInvoiceModal = useCallback(() => {
-    consolidatedInvoiceRef.current?.close();
-  }, []);
-
-  const {invoiceIsPending, invoice} = useSpecificInvoice(params?.id);
-
-  const {concernsIsPending, concerns, refetch} = useGetConcerns(params?.id);
-
-  const {onSubmit} = useRaiseConcern(
-    params?.id,
-    handleCloseConcernModal,
-    refetch,
-  );
-
-  const handleRaiseConcern = text => {
-    onSubmit(text);
-  };
-
-  const hasConcern = useMemo(
-    () => !concernsIsPending && concerns?.length > 0,
-    [concerns, concernsIsPending],
-  );
-  const isUnpaid = useMemo(
-    () => invoice?.paymentStatus?.toLowerCase() === 'unpaid',
-    [invoice?.paymentStatus],
-  );
-  const isPartiallyPaid = useMemo(
-    () => invoice?.paymentStatus?.toLowerCase() === 'paid_partially',
-    [invoice?.paymentStatus],
-  );
-
-  const isInactive = useMemo(() => {
-    if (!invoice?.currentStatus) {
-      return true;
-    }
-    return invoice?.currentStatus?.toLowerCase() === 'inactive';
-  }, [invoice?.currentStatus]);
-
-  const status = useMemo(
-    () =>
-      invoice?.paymentStatus?.toLowerCase() === 'unpaid'
-        ? 'unpaid'
-        : invoice?.paymentStatus?.toLowerCase() === 'paid_partially'
-        ? 'partiallyPaid'
-        : invoice?.paymentStatus?.toLowerCase() === 'paid' && 'paid',
-    [invoice?.paymentStatus],
-  );
-
-  if (invoiceIsPending) {
-    return (
-      <Layout ClassName={'px-3 flex-1 justify-center items-center'}>
-        <ActivityIndicator color={COLORS.primary} size={50} />
-        <Text className="text-primary mt-5 font-open-sauce-sans-medium">
-          Loading Invoice ...
-        </Text>
-      </Layout>
-    );
-  }
+  const goHome = () => nav.navigate('bottom-nav');
+  const goPay = () =>
+    nav.navigate('bottom-nav', {
+      screen: 'pay_stack',
+      params: {screen: 'pay_rent'},
+    });
+  const goActivity = () =>
+    nav.navigate('bottom-nav', {
+      screen: 'pay_stack',
+      params: {screen: 'receipts'},
+    });
 
   return (
-    <>
-      <Layout ClassName={'relative'}>
-        <InvoiceHeader
-          invoiceAmount={invoice?.dueAmount}
-          invoiceTitle={invoice?.propertyName?.split('-')[0]}
-          invoiceUnit={invoice?.propertyName?.split('-')[1]}
-          hasConcern={hasConcern}
-          isPartial={isPartiallyPaid}
-          invoiceNo={invoice?.invoiceNumber}
-          userInvoiced={invoice?.billedTo}
-          invoiceDate={moment(invoice?.updatedAt).format('Do MMM, YYYY')}
-        />
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: COLORS.keystone_canvas,
+        paddingTop: insets.top,
+      }}>
+      <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
+      {/* Modal bar — ✕, not a back label (arrives from outside the stack) */}
+      <View
+        style={{
+          minHeight: 48,
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingHorizontal: 12,
+        }}>
+        <TouchableOpacity
+          onPress={goHome}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+          style={{width: 44}}>
+          <Icon name="x" size={20} color={COLORS.keystone_navy} strokeWidth={2.2} />
+        </TouchableOpacity>
+        <Text
+          style={{
+            flex: 1,
+            textAlign: 'center',
+            color: COLORS.keystone_navy,
+            fontFamily: 'Inter-SemiBold',
+            fontSize: 17,
+          }}>
+          Invoice
+        </Text>
+        <View style={{width: 44}} />
+      </View>
 
-        {/*  Scroll section*/}
-        <ScrollView
-          contentContainerStyle={styles.contentContainer}
-          className={'pt-20 px-4 z-0'}>
-          <InvoiceBillItem
-            txtClassName={'font-open-sauce-sans text-inactive_text'}
-            title={'Bill'}
-            amt={'Total'}
-          />
-          <InvoiceBillItem
-            title={'Rent'}
-            amt={formatToKES(Number(invoice?.rentAmount)) ?? 0}
-          />
-          {invoice?.deposit ? (
-            <InvoiceBillItem
-              title={'Deposit'}
-              amt={formatToKES(Number(invoice?.deposit)) ?? 0}
-            />
-          ) : null}
-          <InvoiceBillItem
-            title={'Water'}
-            amt={formatToKES(Number(invoice?.waterFeeAmount)) ?? 0}
-          />
-          <InvoiceBillItem
-            title={'Garbage'}
-            amt={formatToKES(Number(invoice?.garbageFeeAmount)) ?? 0}
-          />
-          <InvoiceBillItem
-            title={'Security'}
-            amt={formatToKES(Number(invoice?.securityFeeAmount)) ?? 0}
-          />
-          <InvoiceBillItem
-            title={'Penalty'}
-            amt={formatToKES(Number(invoice?.penalizedAmount)) ?? 0}
-          />
-          <InvoiceBillItem
-            title={'Consolidated Invoices'}
-            customAmt={
-              <InvoiceSequenceLink
-                onPress={handleOpenConsolidatedInvoiceModal}
-              />
-            }
-          />
-          <InvoiceBillItem
-            containerClassName={'mt-3 border-t border-gray-200 py-3'}
-            txtClassName={'font-open-sauce-sans-semibold text-black text-sm'}
-            title={'Total Amount'}
-            amt={`${formatToKES(Number(invoice?.totalAmount))}`}
-          />
-          <InvoiceBillItem
-            containerClassName={'border-t border-gray-200 py-3'}
-            txtClassName={'font-open-sauce-sans-semibold text-black text-sm'}
-            title={'Paid Amount'}
-            amt={` ${formatToKES(Number(invoice?.paidAmount ?? 0))}`}
-          />
-          <InvoiceBillItem
-            containerClassName={'border-t border-gray-200 py-3'}
-            txtClassName={`font-open-sauce-sans-semibold text-sm
-              ${
-                parseInt(invoice?.dueAmount ?? 0, 9) > 0
-                  ? 'text-red-600'
-                  : 'text-green-600'
-              }
-              `}
-            title={
-              parseInt(invoice?.dueAmount ?? 0, 9) > 0 ? 'Arrears' : 'Balance'
-            }
-            amt={` ${formatToKES(Number(invoice?.dueAmount ?? 0))}`}
-          />
-
-          {isPartiallyPaid ? (
-            <InvoiceBillItem
-              containerClassName={'py-3 border-y border-border_grey'}
-              txtClassName={'font-open-sauce-sans'}
-              title={'Partially Paid'}
-              customAmt={
-                <View className={'items-center'}>
-                  <Text
-                    className={
-                      'text-11 font-open-sauce-sans text-inactive_text '
-                    }>
-                    {moment(invoice?.updatedAt).format('HH:MMa Do MMMM, YYYY')}
-                  </Text>
-                  <Text
-                    className={
-                      'text-13 font-open-sauce-sans-semibold text-black mt-2'
-                    }>
-                    {formatToKES(Number(invoice?.paidAmount))}
-                  </Text>
-                </View>
+      <View style={{flex: 1, padding: 20}}>
+        {invoiceIsPending && params.id ? (
+          <ActivityIndicator color={COLORS.keystone_navy} style={{marginTop: 40}} />
+        ) : (
+          <>
+            <HeroCard
+              label={`INVOICE ${code}`}
+              badge={{
+                text: unpaid ? 'Unpaid' : 'Paid',
+                dot: unpaid ? 'pending' : 'success',
+              }}
+              amount={usd(amount)}
+              amountSize={34}
+              sub={
+                invoice?.dueDate
+                  ? eventDate('Due', invoice.dueDate)
+                  : 'Rent invoice'
               }
             />
-          ) : null}
-
-          {!hasConcern && (isUnpaid || isPartiallyPaid) ? (
-            <View>
-              <Text
-                className={
-                  'text-sm font-open-sauce-sans-semibold text-black mt-4'
-                }>
-                Does this invoice have an issue?
-              </Text>
-
-              <Text
-                className={
-                  'font-open-sauce-sans text-xs leading-5 mt-1 text-grey_1'
-                }>
-                The invoice has a discrepancy to what you expected,{' '}
-                <TouchableOpacity onPress={handleOpenConcernModal}>
-                  <Text
-                    className={
-                      'underline text-xs text-primary font-open-sauce-sans-semibold'
-                    }>
-                    Raise Concern
-                  </Text>
-                </TouchableOpacity>
-              </Text>
+            <Text
+              style={{
+                color: COLORS.keystone_slate,
+                fontFamily: 'Inter',
+                fontSize: 15,
+                lineHeight: 22,
+                marginTop: 16,
+              }}>
+              You followed an invoice link. Invoices now live in Keystone — pay
+              here and the receipt lands in your Activity like any other
+              payment.
+            </Text>
+            <View style={{marginTop: 20, gap: 12}}>
+              {unpaid && (
+                <PrimaryButton label={`Pay ${usd(amount)} in Keystone`} onPress={goPay} />
+              )}
+              <SecondaryButton label="View in Activity instead" onPress={goActivity} />
             </View>
-          ) : null}
-          <View className={'h-20 w-full'} />
-        </ScrollView>
-
-        {!isInactive && status === 'unpaid' ? (
-          <InvoiceFooter
-            handlePrompt={handleOpenPaymentInstrictionsModal}
-            hasConcern={hasConcern}
-            status={status}
-            handleViewReceipt={handleOpenReceiptModal}
-          />
-        ) : null}
-      </Layout>
-
-      <InvoiceConcernModal
-        ref={concernModalRef}
-        handleCloseModal={handleCloseConcernModal}
-        handleRaiseConcern={handleRaiseConcern}
-      />
-      <InvoiceReceiptModal
-        receipt={invoice}
-        ref={receiptModalRef}
-        handleCloseModal={handleCloseReceiptModal}
-      />
-      {/* <InvoicePaymentInstrictionsModal
-        invoice={invoice}
-        ref={paymentInstrictionsRef}
-        handleCloseModal={handleClosePaymentInstrictionsModal}
-      /> */}
-      <PaymentInstructions
-        invoice={invoice}
-        ref={paymentInstrictionsRef}
-        handleCloseModal={handleClosePaymentInstrictionsModal}
-      />
-      <ConsolidatedInvoicesModal
-        ref={consolidatedInvoiceRef}
-        handleCloseFilter={handleCloseConsolidatedInvoiceModal}
-        invoice={invoice}
-      />
-    </>
+          </>
+        )}
+      </View>
+    </View>
   );
 };
 
 export default InvoiceView;
-
-const InvoiceSequenceLink = ({onPress, number}) => (
-  <TouchableOpacity onPress={onPress}>
-    <Text className="text-primary underline font-open-sauce-sans text-sm">
-      Invoice Sequence{number && `(${number})`}
-    </Text>
-  </TouchableOpacity>
-);
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    paddingBottom: 30,
-  },
-});

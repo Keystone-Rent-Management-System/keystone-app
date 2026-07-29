@@ -1,88 +1,96 @@
 import React from 'react';
-import {ScrollView, StatusBar, Text, View} from 'react-native';
+import {StatusBar, View} from 'react-native';
 import {useRoute} from '@react-navigation/native';
 
-import {Card, Label, Divider, Row, StatusPill} from '../../components/premium';
-import COLORS from '../../constants/Theme';
+import {Card} from '../../components/premium';
+import {
+  HeroCard,
+  PhotoThumbRow,
+  Screen,
+  SectionLabel,
+  Timeline,
+  eventDate,
+} from '../../components/kit';
 
-const TONE = {SUBMITTED: 'pending', IN_PROGRESS: 'pending', SCHEDULED: 'pending', RESOLVED: 'success'};
-const LABEL = {SUBMITTED: 'Submitted', IN_PROGRESS: 'In progress', SCHEDULED: 'Scheduled', RESOLVED: 'Resolved'};
+// Repair detail — with evidence (design 4j). The status chip no
+// longer clips (H3/C1); a reference code (KS-R-…) rides the label —
+// the same trust mechanic as payment receipts; the photo grid (P3)
+// travels with the request; timeline follows 1g exactly.
 
-const fmtDate = iso => {
-  if (!iso) return '';
-  const d = new Date(iso);
-  return d.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+const CHIP_TEXT = {
+  SUBMITTED: 'Submitted',
+  IN_PROGRESS: 'In progress',
+  SCHEDULED: 'Scheduled',
+  RESOLVED: 'Resolved',
 };
+
+const refCode = id =>
+  `KS-R-${String(id ?? '000').replace(/\D/g, '').padStart(3, '1').slice(-3)}`;
 
 const RepairDetail = () => {
   const {params = {}} = useRoute();
   const r = params.repair ?? {};
-  const timeline = r.timeline ?? [];
+  const rawTimeline = r.timeline ?? [];
+
+  // Map the BE shape ({label, date, done}) onto the 1g states: last
+  // done step = current, later steps upcoming.
+  const lastDone = rawTimeline.reduce((acc, t, i) => (t.done ? i : acc), -1);
+  const steps = rawTimeline.map((t, i) => ({
+    title: i === lastDone && r.status !== 'RESOLVED' ? `${t.label} — current` : t.label,
+    sub: t.done
+      ? [eventDate('', t.date).trim(), t.assignedTo].filter(Boolean).join(' · ')
+      : `Expected ${eventDate('', t.date).trim()}`,
+    state: t.done ? (i === lastDone && r.status !== 'RESOLVED' ? 'current' : 'done') : 'upcoming',
+  }));
+
+  // Thumbnails travel with the request (P3); until the BE serves photo
+  // URLs the row renders flat placeholder tiles from the count (P5).
+  const photos = Array.from({length: r.photos ?? 0}, (_, i) => ({
+    uri: r.photoUrls?.[i],
+  }));
+
+  // 4j: the hero sub looks forward (next visit), not backward.
+  const nextStep = rawTimeline.find(t => !t.done);
+  const heroSub =
+    r.status === 'RESOLVED'
+      ? `${r.assignedTo ?? 'Vendor'} · ${eventDate('resolved', r.updatedOn)}`
+      : !r.assignedTo
+        ? 'Waiting for a vendor to be assigned'
+        : nextStep
+          ? `${r.assignedTo} · ${
+              /visit/i.test(nextStep.label) ? 'visit scheduled' : nextStep.label.toLowerCase()
+            } ${eventDate('', nextStep.date).trim()}`
+          : `${r.assignedTo} · last update ${eventDate('', r.updatedOn).trim()}`;
 
   return (
-    <View className="flex-1 bg-keystone_canvas">
+    <Screen title="Repair" back="Repairs">
       <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
-      <ScrollView contentContainerStyle={{paddingBottom: 28}} showsVerticalScrollIndicator={false}>
-        {/* Hero */}
-        <View className="px-4 pt-5">
-          <Card feature>
-            <View className="flex-row items-center justify-between">
-              <Label onDark>{r.category}</Label>
-              <StatusPill label={LABEL[r.status] ?? r.status} tone={TONE[r.status] ?? 'neutral'} />
-            </View>
-            <Text className="text-white font-inter-bold text-xl mt-2">{r.title}</Text>
-            <Text className="text-white/55 font-inter text-xs mt-1">
-              Reported {fmtDate(r.submittedOn)}
-              {r.photos ? ` · ${r.photos} photo${r.photos > 1 ? 's' : ''}` : ''}
-            </Text>
-          </Card>
-        </View>
 
-        {/* Details */}
-        <View className="px-4 mt-4">
-          <Card>
-            <Row label="Assigned to" value={r.assignedTo ?? 'Pending'} />
-            <Divider />
-            <Row label="Last update" value={fmtDate(r.updatedOn)} />
-          </Card>
-        </View>
+      <HeroCard
+        label={`${(r.category ?? '').toUpperCase()} · ${refCode(r.id)}`}
+        badge={{
+          text: CHIP_TEXT[r.status] ?? r.status ?? '',
+          dot: r.status === 'RESOLVED' ? 'success' : 'pending',
+        }}
+        amount={r.title}
+        amountSize={24}
+        sub={heroSub}
+      />
 
-        {/* Timeline */}
-        <View className="px-4 mt-5">
-          <Text className="text-text_muted font-inter-semibold text-xs uppercase tracking-widest ml-1 mb-3">
-            Progress
-          </Text>
-          <Card>
-            {timeline.map((t, i) => (
-              <View key={i} className="flex-row">
-                {/* rail */}
-                <View className="items-center mr-3" style={{width: 18}}>
-                  <View
-                    className="w-3 h-3 rounded-full"
-                    style={{
-                      backgroundColor: t.done ? COLORS.c_success : '#CBD2D9',
-                      marginTop: 4,
-                    }}
-                  />
-                  {i < timeline.length - 1 && (
-                    <View className="flex-1 w-0.5" style={{backgroundColor: COLORS.keystone_hairline, marginVertical: 2}} />
-                  )}
-                </View>
-                <View className="flex-1 pb-4">
-                  <Text
-                    className={`font-inter-semibold text-sm ${t.done ? 'text-keystone_navy' : 'text-text_muted'}`}>
-                    {t.label}
-                  </Text>
-                  <Text className="text-text_muted font-inter text-xs mt-0.5">
-                    {fmtDate(t.date)}
-                  </Text>
-                </View>
-              </View>
-            ))}
-          </Card>
+      {photos.length > 0 && (
+        <View className="mt-5">
+          <SectionLabel>Your photos · {photos.length}</SectionLabel>
+          <PhotoThumbRow photos={photos} />
         </View>
-      </ScrollView>
-    </View>
+      )}
+
+      <View className="mt-5">
+        <SectionLabel>Progress</SectionLabel>
+        <Card>
+          <Timeline steps={steps} />
+        </Card>
+      </View>
+    </Screen>
   );
 };
 

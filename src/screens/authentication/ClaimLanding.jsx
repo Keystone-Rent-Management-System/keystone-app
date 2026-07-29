@@ -11,11 +11,18 @@ import {
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 
-import {KeystoneLogo, Icon, IconChip} from '../../components/premium';
+import {KSTile, Icon, IconChip} from '../../components/premium';
 import COLORS from '../../constants/Theme';
 import {mockInvite} from '../../services/mocks';
 
-// A single renter value prop — gold chip, title, one line of why.
+// Tenant claim — landing + code merged into one screen (design 8c).
+// The code field IS the primary action, so the extra hop disappears;
+// the deep link (?code=…) prefills it. Third value prop added: the
+// roommates differentiator, previously unsold at the front door. Code
+// field styled as a code (22px, tracked, tabular); raster logo → flat
+// vector tile; "Ask my landlord" demoted to a link — it's the
+// fallback, not a co-equal door.
+
 const ValueRow = ({icon, title, sub}) => (
   <View className="flex-row items-center mb-3.5">
     <IconChip size={40} onDark>
@@ -25,35 +32,27 @@ const ValueRow = ({icon, title, sub}) => (
       <Text className="text-white font-inter-semibold" style={{fontSize: 15}}>
         {title}
       </Text>
-      <Text className="text-white/55 font-inter text-xs mt-0.5">{sub}</Text>
+      <Text className="font-inter text-xs mt-0.5" style={{color: 'rgba(231,229,218,0.72)'}}>
+        {sub}
+      </Text>
     </View>
   </View>
 );
-
-// Tenant front door. Keystone is provisioned-only — a landlord adds the tenant
-// and an invite (deep-link token) brings them here. Two paths:
-//   • Has an invite  → claim it (resolve token → property/landlord → set up).
-//   • No invite      → their landlord isn't on Keystone yet, so let them ask
-//     the landlord to add them. That "ask your landlord" share is a
-//     supply-acquisition loop: a renter who wants Keystone pulls their
-//     landlord onto it.
 
 const SHARE_MESSAGE =
   "Hi! I'd love to pay my rent through Keystone — it's free for me, helps build " +
   'my credit, and pays you instantly and directly to your bank. Could you set me ' +
   'up as a tenant? Here’s how it works for landlords: ' +
-  'https://keystone.example/landlords';
+  'https://dev.keystonerent.app';
 
 const ClaimLanding = () => {
   const nav = useNavigation();
   const route = useRoute();
-  // A real deep link passes an invite via route params; otherwise start on the
-  // chooser. The mock invite stands in for a resolved token in the demo.
   const initialInvite = route.params?.invite ?? null;
 
   const [invite, setInvite] = useState(initialInvite);
-  const [showCode, setShowCode] = useState(false);
-  const [code, setCode] = useState('');
+  // Deep link /app/claim?code=… prefills the field.
+  const [code, setCode] = useState(route.params?.code ?? '');
 
   const resolveCode = () => {
     if (code.trim().length < 3) {
@@ -62,7 +61,6 @@ const ClaimLanding = () => {
     }
     // GET /tenants/claim?token=<code> → invite. Mock resolves any code.
     setInvite(mockInvite);
-    setShowCode(false);
   };
 
   const askLandlord = async () => {
@@ -79,9 +77,11 @@ const ClaimLanding = () => {
       <SafeAreaView className="flex-1">
         <View className="flex-1 px-6 pt-10 pb-6 justify-between">
           <View>
-            <View className="self-start bg-keystone_cream rounded-2xl px-3 py-2 mb-10">
-              <KeystoneLogo height={38} />
-            </View>
+            <KSTile
+              size={56}
+              onDark
+              style={{alignSelf: 'flex-start', marginBottom: 40}}
+            />
 
             {invite ? (
               /* ── Resolved invite ───────────────────────────────── */
@@ -99,22 +99,26 @@ const ClaimLanding = () => {
                     {invite.unit ? ` · ${invite.unit}` : ''}
                   </Text>
                   {invite.address ? (
-                    <Text className="text-white/60 font-inter text-sm mt-1">
+                    <Text
+                      className="font-inter text-sm mt-1"
+                      style={{color: 'rgba(231,229,218,0.72)'}}>
                       {invite.address}
                     </Text>
                   ) : null}
                   <View className="h-px bg-white/10 my-3" />
-                  <Text className="text-white/60 font-inter text-xs">
+                  <Text className="font-inter text-xs" style={{color: 'rgba(231,229,218,0.72)'}}>
                     Invited by {invite.landlord}
                   </Text>
                 </View>
-                <Text className="text-white/60 font-inter text-sm mt-5 leading-relaxed">
-                  Set up your account to review your lease, pay rent in two taps,
-                  and start building credit.
+                <Text
+                  className="font-inter text-sm mt-5 leading-relaxed"
+                  style={{color: 'rgba(231,229,218,0.72)'}}>
+                  Set up your account to review your lease, pay rent in two
+                  taps, and start building credit.
                 </Text>
               </View>
             ) : (
-              /* ── No invite yet ─────────────────────────────────── */
+              /* ── Landing + code, one screen (8c) ───────────────── */
               <View>
                 <Text className="text-keystone_gold font-inter-semibold text-xs uppercase tracking-widest mb-3">
                   For renters
@@ -126,39 +130,44 @@ const ClaimLanding = () => {
                   <Text className="text-keystone_gold">Build credit.</Text>
                 </Text>
 
-                {showCode ? (
-                  <View className="mt-8">
-                    <Text className="text-white/60 font-inter text-xs mb-2 ml-1">
-                      Enter the invite code from your landlord
-                    </Text>
-                    <TextInput
-                      value={code}
-                      onChangeText={setCode}
-                      autoCapitalize="characters"
-                      placeholder="e.g. KS-4B2A"
-                      placeholderTextColor="rgba(255,255,255,0.4)"
-                      className="bg-white/10 text-white font-inter text-base rounded-xl px-4 py-3"
-                    />
-                  </View>
-                ) : (
-                  <View className="mt-8">
-                    <ValueRow
-                      icon="card"
-                      title="Pay in two taps"
-                      sub="Instant — and free to you."
-                    />
-                    <ValueRow
-                      icon="trending"
-                      title="Build credit with rent"
-                      sub="Every on-time payment counts."
-                    />
-                    <ValueRow
-                      icon="shield"
-                      title="Renters insurance"
-                      sub="Protect your stuff, satisfy your lease."
-                    />
-                  </View>
-                )}
+                <View className="mt-7">
+                  <ValueRow
+                    icon="card"
+                    title="Pay in two taps"
+                    sub="Instant — and free to you."
+                  />
+                  <ValueRow
+                    icon="trending"
+                    title="Build credit with rent"
+                    sub="Every on-time payment counts."
+                  />
+                  <ValueRow
+                    icon="shield"
+                    title="Your lease is yours alone"
+                    sub="Own share, own credit — never joint."
+                  />
+                </View>
+
+                {/* Code field — the primary action */}
+                <Text
+                  className="font-inter text-xs mb-2 mt-6 ml-1"
+                  style={{color: 'rgba(231,229,218,0.72)'}}>
+                  Invite code from your landlord
+                </Text>
+                <TextInput
+                  value={code}
+                  onChangeText={t => setCode(t.toUpperCase())}
+                  autoCapitalize="characters"
+                  autoCorrect={false}
+                  placeholder="KS-4B2A"
+                  placeholderTextColor="rgba(231,229,218,0.35)"
+                  className="bg-white/10 text-white font-inter-bold rounded-xl px-4 py-3.5"
+                  style={{
+                    fontSize: 22,
+                    letterSpacing: 3,
+                    fontVariant: ['tabular-nums'],
+                  }}
+                />
               </View>
             )}
           </View>
@@ -179,49 +188,44 @@ const ClaimLanding = () => {
                   activeOpacity={0.7}
                   onPress={() => setInvite(null)}
                   className="mt-4 items-center">
-                  <Text className="text-white/55 font-inter text-sm">Not you?</Text>
-                </TouchableOpacity>
-              </>
-            ) : showCode ? (
-              <>
-                <TouchableOpacity
-                  activeOpacity={0.9}
-                  onPress={resolveCode}
-                  className="bg-keystone_cream rounded-2xl py-4 items-center">
-                  <Text className="text-keystone_navy font-inter-bold text-base">Continue</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => setShowCode(false)}
-                  className="mt-4 items-center">
-                  <Text className="text-white/55 font-inter text-sm">Back</Text>
+                  <Text className="font-inter text-sm" style={{color: 'rgba(231,229,218,0.72)'}}>
+                    Not you?
+                  </Text>
                 </TouchableOpacity>
               </>
             ) : (
               <>
                 <TouchableOpacity
                   activeOpacity={0.9}
-                  onPress={() => setShowCode(true)}
+                  onPress={resolveCode}
+                  disabled={code.trim().length < 3}
+                  style={{opacity: code.trim().length < 3 ? 0.5 : 1}}
                   className="bg-keystone_cream rounded-2xl py-4 items-center">
                   <Text className="text-keystone_navy font-inter-bold text-base">
-                    I have an invite code
+                    Claim my home
                   </Text>
                 </TouchableOpacity>
+                {/* Fallback demoted to a link (8c) */}
                 <TouchableOpacity
-                  activeOpacity={0.85}
+                  activeOpacity={0.7}
                   onPress={askLandlord}
-                  className="mt-3 border border-white/25 rounded-2xl py-4 items-center">
-                  <Text className="text-white font-inter-semibold text-base">
-                    Ask my landlord to add me
+                  className="mt-4 items-center">
+                  <Text className="font-inter text-sm" style={{color: 'rgba(231,229,218,0.72)'}}>
+                    No code?{' '}
+                    <Text className="text-keystone_cream font-inter-semibold underline">
+                      Ask my landlord to add me
+                    </Text>
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={() => nav.navigate('auth__login')}
-                  className="mt-5 items-center">
-                  <Text className="text-white/55 font-inter text-sm">
+                  className="mt-4 items-center">
+                  <Text className="font-inter text-sm" style={{color: 'rgba(231,229,218,0.72)'}}>
                     Already set up?{' '}
-                    <Text className="text-white font-inter-semibold underline">Sign in</Text>
+                    <Text className="text-keystone_cream font-inter-semibold underline">
+                      Sign in
+                    </Text>
                   </Text>
                 </TouchableOpacity>
               </>

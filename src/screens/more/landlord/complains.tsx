@@ -1,111 +1,122 @@
-import {FlashList} from '@shopify/flash-list';
 import moment from 'moment';
-import React, {useCallback} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import React from 'react';
+import {StatusBar, Text, TouchableOpacity, View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
-import {ComplainSvg} from '../../../assets/icons';
-import {EmptyInvoiceList, Layout} from '../../../components';
+import {Card, Icon, IconChip} from '../../../components/premium';
+import {PrimaryButton, Screen, StatusChip} from '../../../components/kit';
+import COLORS from '../../../constants/Theme';
 
-export default function Complaints() {
-  const renderComplaint = useCallback(
-    ({item}: {item: IComplain}) => <ComplaintItem complain={item} />,
-    [],
-  );
+// Your messages (design 8f). Route more__complains survives as the
+// message history under Help & contact — the standalone legacy-blue
+// Complaints screen is retired. Rows verb-date the lifecycle
+// (sent → resolved, D2) with standard chips; the repair-triage link
+// keeps plumbing issues out of free-text messages.
 
-  return (
-    <Layout ClassName={'p-2 py-0'}>
-      <FlashList
-        contentContainerStyle={styles.list}
-        data={complains}
-        renderItem={renderComplaint}
-        keyExtractor={(_, index) => index.toString()}
-        estimatedItemSize={20}
-        ListEmptyComponent={renderEmptyComplaints}
-      />
-    </Layout>
-  );
-}
-
-interface IComplain {
-  date: Date;
+interface IMessage {
+  sentOn: Date;
+  resolvedOn?: Date | null;
   title: string;
-  status: string;
+  status: 'IN_PROGRESS' | 'RESOLVED';
 }
-const complains: IComplain[] = [
+
+const messages: IMessage[] = [
   {
-    date: new Date(moment().subtract(3, 'days').toDate()),
+    sentOn: moment().subtract(3, 'days').toDate(),
     title:
       'The upstairs neighbors are too loud late at night. It’s hard to sleep with all the stomping and music.',
-    status: 'In-Progress',
+    status: 'IN_PROGRESS',
   },
   {
-    date: new Date(moment().subtract(50, 'days').toDate()),
-    title:
-      'The water heater is broken and needs to be fixed. It’s been out for a week now.',
-    status: 'Resolved',
-  },
-  {
-    date: new Date(moment().subtract(12, 'days').toDate()),
+    sentOn: moment().subtract(12, 'days').toDate(),
     title:
       'The air conditioning is not working properly. It’s too hot in the apartment.',
-    status: 'In-Progress',
+    status: 'IN_PROGRESS',
   },
   {
-    date: new Date(moment().subtract(100, 'days').toDate()),
+    sentOn: moment().subtract(50, 'days').toDate(),
+    resolvedOn: moment().subtract(43, 'days').toDate(),
+    title:
+      'The water heater is broken and needs to be fixed. It’s been out for a week now.',
+    status: 'RESOLVED',
+  },
+  {
+    sentOn: moment().subtract(100, 'days').toDate(),
+    resolvedOn: moment().subtract(93, 'days').toDate(),
     title:
       'The hallways haven’t been cleaned in weeks. There’s dirt and trash piling up',
-    status: 'Resolved',
+    status: 'RESOLVED',
   },
 ];
 
-export const styles = StyleSheet.create({
-  list: {
-    padding: 16,
-  },
-});
+const fmt = (d: Date) => moment(d).format('MMM D');
 
-const renderEmptyComplaints = () => (
-  <EmptyInvoiceList
-    icon={<ComplainSvg size="40" />}
-    title={'No Complains Found!'}
-    subTitle={'No complains have been made yet.'}
-  />
-);
+export default function Messages() {
+  const nav = useNavigation<any>();
 
-const ComplaintItem = ({complain}: {complain: IComplain}) => (
-  <View
-    className={'flex-row gap-x-2 rounded-xl mb-3 border py-2 border-gray-100'}>
-    {/* icon */}
-    <View>
-      <View className={'p-2 rounded-full border border-slate-200'}>
-        <ComplainSvg size="26" />
-      </View>
-    </View>
+  return (
+    <Screen title="Your messages" back="Help">
+      <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
 
-    <View className={'flex-1 flex-col gap-1.5 pr-3'}>
-      <Text className="text-[11px] text-gray-400 font-open-sauce-sans">
-        {moment(complain.date).format('Do MMM YYYY')}
-      </Text>
+      {/* One grouped card, hairline-separated rows; the chip rides the
+          top line beside the message (8f) */}
+      <Card style={{paddingVertical: 0, paddingHorizontal: 16}}>
+        {messages.map((m, i) => (
+          <View
+            key={i}
+            className="flex-row items-start gap-3"
+            style={{
+              paddingVertical: 14,
+              borderBottomWidth: i < messages.length - 1 ? 1 : 0,
+              borderBottomColor: 'rgba(21,37,53,0.08)',
+            }}>
+            <IconChip size={40}>
+              <Icon name="chat" size={18} color={COLORS.keystone_gold} />
+            </IconChip>
+            <View className="flex-1" style={{minWidth: 0}}>
+              <View className="flex-row items-start gap-2">
+                <Text
+                  className="flex-1 text-keystone_navy font-inter-semibold"
+                  style={{fontSize: 15, lineHeight: 21, minWidth: 0}}>
+                  {m.title}
+                </Text>
+                <View style={{flexShrink: 0, maxWidth: '42%'}}>
+                  <StatusChip
+                    label={m.status === 'RESOLVED' ? 'Resolved' : 'In progress'}
+                    tone={m.status === 'RESOLVED' ? 'success' : 'pending'}
+                  />
+                </View>
+              </View>
+              {/* D2: verb-dated lifecycle */}
+              <Text className="text-keystone_slate font-inter text-[13px] mt-1">
+                Sent {fmt(m.sentOn)}
+                {m.resolvedOn
+                  ? ` · resolved ${fmt(m.resolvedOn)}`
+                  : ' · to Keystone Property Group'}
+              </Text>
+            </View>
+          </View>
+        ))}
+      </Card>
 
-      <Text className="text-primary font-open-sauce-sans-medium text-[13px] leading-5">
-        {complain.title}
-      </Text>
-
-      <View
-        className={`rounded-full ${
-          complain.status?.toLocaleLowerCase() === 'resolved'
-            ? 'bg-green-100'
-            : 'bg-gray-100'
-        } p-1 px-3 mr-auto`}>
-        <Text
-          className={` ${
-            complain.status?.toLocaleLowerCase() === 'resolved'
-              ? 'text-green-700'
-              : 'text-gray-600'
-          } text-center font-open-sauce-sans-medium text-[11px]`}>
-          {complain.status}
+      {/* Repair triage — keeps plumbing out of free-text messages */}
+      <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={() => nav.navigate('my_home_stack', {screen: 'repairs'})}>
+        <Text className="text-keystone_slate font-inter text-xs mt-2 ml-1 leading-5">
+          Something broken in your unit?{' '}
+          <Text className="text-keystone_navy font-inter-semibold underline">
+            Report a repair instead
+          </Text>{' '}
+          — it gets a vendor and a timeline.
         </Text>
-      </View>
-    </View>
-  </View>
-);
+      </TouchableOpacity>
+
+      <PrimaryButton
+        label="New message"
+        style={{marginTop: 16}}
+        onPress={() => nav.navigate('help')}
+      />
+    </Screen>
+  );
+}

@@ -25,7 +25,8 @@ import {
   RegistrationVerification,
 } from '../screens/authentication/registration';
 import useGlobals from '../provider/store/useGlobals';
-import {DEV_FORCE_LANDLORD, DEV_FORCE_TENANT} from '../services/mocks';
+import {useDevRoleStore} from '../provider/store/devRole';
+import ScreeningConsent from '../screens/landlord_home/screening/ScreeningConsent';
 
 const Stack = createStackNavigator();
 const MainNav = () => {
@@ -40,10 +41,11 @@ const MainNav = () => {
   }, [auth]);
 
   const isAuthed = !!auth?.access_token;
-  // Dev-only: a DEV_FORCE_* role flag boots straight into the tab
-  // navigator (so the role screens are reachable without a real token),
-  // skipping the Welcome front door. __DEV__-gated; no effect in release.
-  const forceRole = __DEV__ && (DEV_FORCE_LANDLORD || DEV_FORCE_TENANT);
+  // Debug-only: a previewed role boots straight into the tab navigator
+  // (so role screens are reachable without a real token), skipping the
+  // Welcome front door. __DEV__-gated; no effect in release.
+  const devRole = useDevRoleStore(s => s.role);
+  const forceRole = __DEV__ && devRole !== 'auto';
 
   return (
     <Stack.Navigator
@@ -61,78 +63,55 @@ const MainNav = () => {
       {!auth?.access_token ? (
         <>
           {/*  Authentication screens*/}
-          <Stack.Screen
-            name={'auth__login'}
-            component={Login}
-            options={{
-              // Title now lives in the screen's branded header
-              // (KeystoneMark + "Welcome back"), so the nav bar stays
-              // empty for a cleaner, on-brand login.
-              ...NavOptions.emptyBarOptions,
-            }}
-          />
+          {/* Login draws its own kit Screen header (S2) */}
+          <Stack.Screen name={'auth__login'} component={Login} />
 
-          {/*  Registration screens   */}
+          {/* Registration screens — each draws its own kit Screen
+              header (S2: "‹ Welcome" etc.), so the stack header
+              stays hidden. */}
           <Stack.Screen
             name={'auth__registration_email'}
             component={RegistrationEmail}
-            options={{
-              ...NavOptions.withBackBarOptions,
-              title: 'Create an Account',
-            }}
           />
           <Stack.Screen
             name={'auth__registration_verification'}
             component={RegistrationVerification}
-            options={{
-              ...NavOptions.withBackBarOptions,
-              title: 'Verify Your Email.',
-            }}
           />
           <Stack.Screen
             name={'auth__registration_password'}
             component={RegistrationPassword}
-            options={{
-              ...NavOptions.withBackBarOptions,
-              title: 'Secure your account.',
-            }}
           />
           <Stack.Screen
             name={'auth__registration_profile'}
             component={RegistrationProfile}
-            options={{
-              ...NavOptions.withBackBarOptions,
-              title: 'Create Profile.',
-            }}
           />
 
-          {/* Auth > recover password screens */}
+          {/* Applicant-side screening consent (design 4d) — reached
+              from the screening-invite deep link once the BE emits it. */}
+          <Stack.Screen
+            name={'screening_consent'}
+            component={ScreeningConsent}
+          />
+
+          {/* Auth > recover password screens — kit Screen headers */}
           <Stack.Screen
             name={'auth__recovery_email'}
             component={RecoveryEmail}
-            options={{
-              ...NavOptions.withBackBarOptions,
-              title: 'Recovery Your Password.',
-            }}
           />
           <Stack.Screen
             name={'auth__recovery_verification'}
             component={RecoveryVerification}
-            options={{
-              ...NavOptions.withBackBarOptions,
-              title: 'Verify Your Email.',
-            }}
           />
           <Stack.Screen
             name={'auth__recovery_reset'}
             component={RecoveryReset}
-            options={{
-              ...NavOptions.withBackBarOptions,
-              title: 'Reset Your Password',
-            }}
           />
         </>
-      ) : (
+      ) : null}
+
+      {/* Private screens — also mounted under a previewed role so a
+          debug build can reach them without a real token. */}
+      {isAuthed || forceRole ? (
         <>
           {/*  private screens*/}
           <Stack.Screen name={'invoice_view'} component={InvoiceView} />
@@ -152,10 +131,6 @@ const MainNav = () => {
           <Stack.Screen
             name={'more__account_password'}
             component={AccountChangePassword}
-            options={{
-              ...NavOptions.withBackBarOptions,
-              title: 'Change Password',
-            }}
           />
           <Stack.Screen
             name={'my_units'}
@@ -173,7 +148,7 @@ const MainNav = () => {
             }}
           />
         </>
-      )}
+      ) : null}
     </Stack.Navigator>
   );
 };

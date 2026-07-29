@@ -5,6 +5,7 @@ import {
   KEYCLOAK_CLIENT_ID,
   getKeycloakBaseUrl,
 } from '../constants/general';
+import {USE_MOBILE_MOCKS, mockFallback, mockProfile} from './mocks';
 
 // Keystone uses Keycloak for OAuth. Mobile previously POSTed to
 // /profile/login which returned a Pallax-issued JWT; the Keystone BE
@@ -146,6 +147,7 @@ const resetPassword = async data => {
 
 /** Read the authenticated user's profile from the BE. */
 const getProfile = async token => {
+  if (USE_MOBILE_MOCKS) return mockFallback('auth.profile', mockProfile);
   setAuthToken(AxiosUtility);
   const headers = token ? {Authorization: `Bearer ${token}`} : {};
   const {data: res} = await AxiosUtility.get('/manage-profile/me', {headers});

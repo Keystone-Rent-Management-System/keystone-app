@@ -29,6 +29,36 @@ export const KeystoneMark = ({size = 28, color = COLORS.keystone_gold, inset = C
   </Svg>
 );
 
+/**
+ * Flat KS monogram tile (design 2a–2c) — the app-header brand mark.
+ * Navy tile with cream KS on light canvas; `onDark` flips to a cream
+ * tile with navy KS for navy screens. No raster artwork.
+ */
+export const KSTile = ({size = 40, onDark = false, style}) => (
+  <View
+    style={[
+      {
+        width: size,
+        height: size,
+        borderRadius: size >= 48 ? 16 : 12,
+        backgroundColor: onDark ? COLORS.keystone_cream : COLORS.keystone_navy,
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      style,
+    ]}>
+    <Text
+      style={{
+        color: onDark ? COLORS.keystone_navy : COLORS.keystone_cream,
+        fontFamily: 'Inter-Bold',
+        fontSize: size >= 48 ? 15 : 12,
+        letterSpacing: size >= 48 ? 0.6 : 0,
+      }}>
+      KS
+    </Text>
+  </View>
+);
+
 /** Horizontal brand lockup: mark + KEYSTONE wordmark. */
 export const BrandLockup = ({size = 24, color = COLORS.keystone_navy, markColor}) => (
   <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>

@@ -8,7 +8,7 @@ import {BottomTabBtn} from '@/components';
 import {BottomNavScreens, LandlordBottomNavScreens} from '@/constants';
 import useGlobals from '../provider/store/useGlobals';
 import {useAuth, useRefreshToken} from '../hooks';
-import {DEV_FORCE_LANDLORD, DEV_FORCE_TENANT} from '../services/mocks';
+import {useDevRole, useDevRoleStore} from '../provider/store/devRole';
 
 const Tab = createBottomTabNavigator();
 
@@ -33,10 +33,12 @@ const BottomNav = () => {
 
   useRefreshToken();
 
-  const realRole = !!profile?.access_types?.roles?.includes('ROLE_LANDLORD');
-  // DEV_FORCE_LANDLORD short-circuits the role check in debug builds.
-  // Gated by __DEV__ so release bundles always respect the real role.
-  const isLandlord = realRole || (__DEV__ && DEV_FORCE_LANDLORD);
+  const realLandlord = !!profile?.access_types?.roles?.includes('ROLE_LANDLORD');
+  const realTenant = !!profile?.access_types?.roles?.includes('ROLE_TENANT');
+  // Debug builds can preview either surface (Account → Preview as);
+  // useDevRole is __DEV__-gated, so release respects the real role.
+  const {isLandlord} = useDevRole(realTenant, realLandlord);
+  const devRole = useDevRoleStore(s => s.role);
   const screens = isLandlord ? LandlordBottomNavScreens : BottomNavScreens;
 
   return (
@@ -50,7 +52,7 @@ const BottomNav = () => {
             tabBarIcon: ({focused}) => renderTab({focused, scr}),
             ...scr.options,
             tabBarButton: props =>
-              renderTabButton({props}, auth, navigation, scr?.title),
+              renderTabButton({props}, auth, navigation, scr?.title, devRole),
           }}
         />
       ))}
@@ -60,13 +62,13 @@ const BottomNav = () => {
 
 export default BottomNav;
 
-const renderTabButton = ({props}, auth, navigation, title) => (
+const renderTabButton = ({props}, auth, navigation, title, devRole) => (
   <TouchableOpacity
     {...props}
     onPress={() => {
-      // DEV_FORCE_* bypasses the auth gate so role screens are
-      // reachable without a real token in dev builds.
-      const devBypass = __DEV__ && (DEV_FORCE_LANDLORD || DEV_FORCE_TENANT);
+      // A previewed role bypasses the auth gate so role screens are
+      // reachable without a real token in debug builds.
+      const devBypass = __DEV__ && devRole !== 'auto';
       if (
         !devBypass &&
         !auth?.access_token &&

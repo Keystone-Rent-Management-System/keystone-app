@@ -1,18 +1,20 @@
-import React, {useMemo, useRef, useState} from 'react';
-import {
-  Pressable,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  ToastAndroid,
-  View,
-} from 'react-native';
-import {CButton, Layout} from '../../../components';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
+import {Pressable, StyleSheet, Text, TextInput} from 'react-native';
+import {View} from 'react-native';
+
+import {PrimaryButton, Screen} from '../../../components/kit';
+import StepIndicator from '../registration/StepIndicator';
+import COLORS from '../../../constants/Theme';
 import useGlobals from '../../../provider/store/useGlobals';
 
-export default function Verification({navigation, route: {params}}) {
-  let otpInputRef = useRef();
+// Password recovery step 2 (design 8b): reuses the 3b code boxes
+// verbatim, retitled. K3-disabled CTA until 6 digits.
+
+const VERIFICATION_LENGTH = 6;
+const RESEND_COOLDOWN_S = 60;
+
+export default function Verification({navigation}) {
+  const otpInputRef = useRef();
 
   const {
     state: {reset_password},
@@ -20,184 +22,138 @@ export default function Verification({navigation, route: {params}}) {
   } = useGlobals(data => data);
 
   const [otp, setOtp] = useState([]);
-  const [inputIsFocused, setInputIsFocused] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [cooldown, setCooldown] = useState(RESEND_COOLDOWN_S);
 
-  const VERIFICATION_LENGTH = useMemo(() => 6, []);
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown(c => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
 
-  const codeArray = new Array(VERIFICATION_LENGTH).fill(0);
+  const codeArray = useMemo(() => new Array(VERIFICATION_LENGTH).fill(0), []);
+  const complete = otp.length === VERIFICATION_LENGTH;
 
-  const handleOtpChange = (index, value) => {
-    const updatedOtp = [...otp];
-    updatedOtp[index] = value;
-    setOtp(updatedOtp);
-  };
-
-  const handleContinue = async () => {
-    setIsLoading(true);
-    if (otp?.length < 6) {
-      setIsLoading(false);
-      return ToastAndroid.show('Invalid OTP', ToastAndroid.SHORT);
-    }
-    const code = parseInt(otp?.join(''), 10);
-
-    updateResetPassword({token: code});
-    setIsLoading(false);
+  const handleContinue = () => {
+    if (!complete) return;
+    updateResetPassword({token: parseInt(otp.join(''), 10)});
     navigation.navigate('auth__recovery_reset');
   };
-  const handleFocus = () => {
-    otpInputRef.current.focus();
 
-    setInputIsFocused(true);
-    // Keyboard?.emit;
+  const focusInput = () => {
+    otpInputRef.current?.focus();
+    setFocused(true);
   };
 
-  const fillCodeDigitInput = (value, index) => {
-    const emptyChar = '';
-    // const code = otp?.split('');
-    const digit = otp[index] || emptyChar;
-    const isCurrentDigit = index === otp?.length;
-    const isLastDigit = index === VERIFICATION_LENGTH;
-    const isCodeFull = otp.length === VERIFICATION_LENGTH;
-
-    const isDigitFocused = isCurrentDigit || (isLastDigit && isCodeFull);
-    const isCurrent = isDigitFocused && inputIsFocused;
+  const renderBox = (_, index) => {
+    const digit = otp[index] ?? '';
+    const isCursor =
+      focused &&
+      (index === otp.length || (complete && index === VERIFICATION_LENGTH - 1));
     return (
       <Pressable
-        className={`flex flex-1 items-center justify-center ${
-          isCurrent ? 'border border-primary ' : 'border border-gray-300'
-        }`}
-        onPress={handleFocus}
         key={index}
-        style={styles.otpBox}
-        onChangeText={val => handleOtpChange(0, val)}>
-        <Text className={'text-xl font-open-sauce-sans-semibold text-primary'}>
-          {digit}
-        </Text>
+        onPress={focusInput}
+        style={[styles.box, isCursor && styles.boxActive]}>
+        <Text style={styles.boxText}>{digit || (isCursor ? '|' : '')}</Text>
       </Pressable>
     );
   };
 
   return (
-    <Layout ClassName={'px-4'}>
-      {/*hidden input*/}
+    <Screen
+      title="Reset password"
+      back="Email"
+      stickyFooter={
+        <PrimaryButton label="Verify" disabled={!complete} onPress={handleContinue} />
+      }>
       <TextInput
         ref={otpInputRef}
         keyboardType="number-pad"
-        style={styles.otpInputStyle}
-        onChangeText={text => setOtp(text.split(''))}
+        style={styles.hidden}
         maxLength={VERIFICATION_LENGTH}
+        onChangeText={text => setOtp(text.replace(/\D/g, '').split(''))}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        autoFocus
       />
 
-      <View className={'flex-1'}>
-        <Text className={'font-open-sauce-sans text-xs text-neutral-500 my-3'}>
-          Enter the 6 digit PIN code sent to
-          <Text className={'text-black'}>
-            &nbsp;{reset_password?.email}&nbsp;
-          </Text>
+      <StepIndicator step={2} total={3} />
+      <Text style={styles.title}>Check your inbox</Text>
+      <Text style={styles.sub}>
+        We sent a 6-digit code to{' '}
+        <Text style={{color: COLORS.keystone_navy, fontFamily: 'Inter-SemiBold'}}>
+          {reset_password?.email ?? 'your email'}
         </Text>
+        .{' '}
+        <Text
+          style={styles.link}
+          onPress={() => navigation.navigate('auth__recovery_email')}>
+          Wrong email?
+        </Text>
+      </Text>
 
-        <View className={'flex-row justify-between my-3'}>
-          {codeArray?.map(fillCodeDigitInput)}
-        </View>
+      <View style={styles.boxRow}>{codeArray.map(renderBox)}</View>
 
-        <Text className={'font-open-sauce-sans text-xs text-neutral-500 my-3'}>
-          Didn’t get the PIN? Chek your email or
+      <Text style={styles.resend}>
+        Didn't get it?{' '}
+        {cooldown > 0 ? (
+          <Text style={{color: 'rgba(59,83,102,0.6)'}}>
+            Resend in 0:{String(cooldown).padStart(2, '0')}
+          </Text>
+        ) : (
           <Text
-            className={'text-primary font-open-sauce-sans-medium underline'}
+            style={styles.link}
             onPress={() => navigation.navigate('auth__recovery_email')}>
-            {' '}
-            Request Pin
+            Resend code
           </Text>
-        </Text>
-
-        <StatusBar style="auto" />
-      </View>
-
-      <CButton
-        ClassName={
-          'bg-primary text-white py-3.5 mb-3 absolute bottom-5 inset-x-0 mx-4'
-        }
-        isLoading={isLoading}
-        disabled={otp.length < VERIFICATION_LENGTH}
-        onPress={handleContinue}
-        textClassName={'text-white font'}
-        text={isLoading ? 'Verifing...' : 'Complete Verification'}
-      />
-    </Layout>
+        )}
+      </Text>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: '20%',
+  hidden: {position: 'absolute', opacity: 0, height: 1, width: 1},
+  step: {
+    color: COLORS.keystone_slate,
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 11,
+    letterSpacing: 0.9,
+    marginBottom: 8,
   },
-
-  tex: {
+  title: {
+    color: COLORS.keystone_navy,
+    fontFamily: 'Inter-Bold',
+    fontSize: 28,
+    letterSpacing: -0.3,
+    marginBottom: 6,
+  },
+  sub: {
+    color: COLORS.keystone_slate,
+    fontFamily: 'Inter',
     fontSize: 15,
-    marginBottom: 25,
-    color: '#888',
-    alignSelf: 'flex-start',
-    paddingLeft: 25,
+    lineHeight: 22,
+    marginBottom: 20,
   },
-  text: {
-    fontSize: 25,
-    marginBottom: 25,
-    color: '#283797',
-    fontWeight: 'bold',
-    alignSelf: 'flex-start',
-    paddingLeft: 25,
-  },
-  otpBox: {
-    width: 45,
-    height: 50,
+  link: {color: COLORS.keystone_slate, textDecorationLine: 'underline'},
+  boxRow: {flexDirection: 'row', gap: 8, marginBottom: 16},
+  box: {
+    flex: 1,
+    aspectRatio: 0.9,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    // borderColor: '#DBDBDB',
-    borderRadius: 5,
-    fontSize: 20,
-    textAlign: 'center',
-    marginRight: 10,
-    color: 'black',
-  },
-  otpInputStyle: {
-    backgroundColor: '#ddd',
-    bottom: -10,
-    right: 0,
-    opacity: 0,
-    position: 'absolute',
-    width: 5,
-    height: 5,
-  },
-  btn: {
-    backgroundColor: '#DA1E29',
-    width: 350,
-    height: 50,
-    borderRadius: 5,
-    justifyContent: 'center',
-    marginBottom: 30,
-    alignSelf: 'center',
-  },
-  btnText: {
-    color: '#fff',
-    fontSize: 18,
-    fontFamily: 'Roboto',
-    textAlign: 'center',
-    paddingBottom: 10,
-    paddingTop: 10,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    backgroundColor: '#f2f2f2',
-    paddingVertical: 10,
+    borderColor: 'rgba(21,37,53,0.16)',
+    borderRadius: 14,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  footerText: {
-    color: '#888',
-    fontSize: 12,
+  boxActive: {borderWidth: 2, borderColor: COLORS.keystone_navy},
+  boxText: {
+    color: COLORS.keystone_navy,
+    fontFamily: 'Inter-Bold',
+    fontSize: 24,
+    fontVariant: ['tabular-nums'],
   },
+  resend: {color: COLORS.keystone_slate, fontFamily: 'Inter', fontSize: 15},
 });

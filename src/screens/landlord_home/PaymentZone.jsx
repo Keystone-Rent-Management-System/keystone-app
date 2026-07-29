@@ -9,117 +9,154 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 import {PAYMENT_ZONES, usePaymentZones, useZoneTenants} from '../../hooks';
 import {pct} from '../../utils/money';
-import {Card, IconChip, Avatar, Label, Amount, AnimatedAmount, Divider, StatusPill, Donut, FadeScaleIn} from '../../components/premium';
+import {Card, Avatar, Divider} from '../../components/premium';
+import {
+  HeroCard,
+  Screen,
+  SectionLabel,
+  StatusChip,
+} from '../../components/kit';
 import COLORS from '../../constants/Theme';
 
-// Tenant rent-status buckets — the four-bucket table; tap a bucket →
-// drill-down sheet listing tenants + what Keystone has already
-// automated on their behalf. There is no "available to payout" strip:
-// rent is paid instantly + directly into the landlord's bank, so there
-// is no platform-held balance to pay out.
+// Landlord PaymentZone (design 5f). The Google-palette donut is
+// retired: a navy hero with a stacked distribution bar, and "180
+// paid" as the headline number — not "200 tenants". Status rows keep
+// the tappable-bucket pattern (do-not-lose) with brand hues: on-time
+// is slate, not blue; semantic color appears as dots (C2 logic on
+// light). Header owns the status zone (S1).
+
+// Brand hues for the buckets (replaces the zones' raw chart colors).
+const ZONE_HUES = {
+  early: COLORS.c_success,
+  onTime: COLORS.keystone_slate,
+  late: COLORS.c_pending,
+  notPaid: COLORS.c_danger,
+};
 
 const PaymentZone = () => {
   const {summary, total, isPending, refetch} = usePaymentZones();
   const [drilldown, setDrilldown] = useState(null);
-  const nav = useNavigation();
+
+  const zoneCount = key => summary.find(z => z.key === key)?.count ?? 0;
+  const paid = zoneCount('early') + zoneCount('onTime');
+  const paidPct = total > 0 ? Math.round((paid / total) * 100) : 0;
+  const monthLabel = new Date()
+    .toLocaleDateString('en-US', {month: 'long'})
+    .toUpperCase();
+
+  const distribution = summary
+    .map(z => `${z.count} ${z.label.toLowerCase()}`)
+    .join(' · ');
 
   return (
-    <View className="flex-1 bg-keystone_canvas">
+    <Screen
+      variant="hub"
+      refreshControl={
+        <RefreshControl
+          refreshing={isPending}
+          onRefresh={refetch}
+          tintColor={COLORS.keystone_gold}
+        />
+      }
+      contentStyle={{paddingTop: 16}}>
       <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
-      <ScrollView
-        contentContainerStyle={{paddingBottom: 28}}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={isPending} onRefresh={refetch} tintColor={COLORS.keystone_gold} />
-        }>
-        <View className="px-5 pt-6 pb-4">
-          <Text className="text-keystone_navy font-inter-bold text-2xl">
-            Payments
-          </Text>
-          <Text className="text-text_muted font-inter text-sm mt-1">
-            {total} tenant{total === 1 ? '' : 's'} tracked · tap a status to see who
-          </Text>
-        </View>
 
+      <Text className="text-keystone_navy font-inter-bold text-3xl">
+        Payments
+      </Text>
+      <Text className="text-keystone_slate font-inter text-base mt-1 mb-5">
+        {total} tenant{total === 1 ? '' : 's'} tracked · tap a status to see who.
+      </Text>
 
-        {/* Donut overview */}
+      {/* Hero — headline is who's PAID, with a stacked distribution bar */}
+      <HeroCard
+        label={`${monthLabel} · ${total} TENANTS`}
+        badge={{text: `${paidPct}% in`, dot: 'success'}}
+        amount={`${paid} paid`}
+        footnote={distribution}>
+        {/* Stacked distribution bar — sits between the headline and the
+            breakdown line (5f) */}
         {total > 0 && (
-          <View className="px-4 mb-4">
-            <Card>
-              <View className="flex-row items-center">
-                <FadeScaleIn>
-                  <Donut
-                    size={150}
-                    thickness={20}
-                    centerValue={total}
-                    centerLabel="tenants"
-                    data={summary.map(z => ({value: z.count, color: z.color}))}
-                  />
-                </FadeScaleIn>
-                <View className="flex-1 pl-4">
-                  {summary.map(z => (
-                    <View key={z.key} className="flex-row items-center justify-between py-1.5">
-                      <View className="flex-row items-center gap-2 flex-1">
-                        <View style={{backgroundColor: z.color}} className="w-2.5 h-2.5 rounded-full" />
-                        <Text className="text-keystone_navy font-inter-medium text-xs">
-                          {z.label}
-                        </Text>
-                      </View>
-                      <Text className="text-keystone_navy font-inter-bold text-sm">
-                        {z.count}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              </View>
-            </Card>
+          <View
+            style={{
+              flexDirection: 'row',
+              height: 8,
+              borderRadius: 999,
+              overflow: 'hidden',
+              marginTop: 12,
+              backgroundColor: 'rgba(231,229,218,0.14)',
+            }}>
+            {summary.map(z => (
+              <View
+                key={z.key}
+                style={{
+                  flex: Math.max(z.count, 0.001),
+                  backgroundColor: ZONE_HUES[z.key] ?? z.color,
+                }}
+              />
+            ))}
           </View>
         )}
+      </HeroCard>
 
-        {/* Bucket table */}
-        <View className="px-4">
-          <Card style={{padding: 6}}>
-            {summary.map((zone, idx) => (
-              <View key={zone.key}>
-                <TouchableOpacity
-                  onPress={() => setDrilldown(zone.key)}
-                  activeOpacity={0.6}
-                  className="flex-row items-center justify-between px-3 py-3.5">
-                  <View className="flex-row items-center gap-3 flex-1">
-                    <View style={{backgroundColor: zone.color}} className="w-2.5 h-2.5 rounded-full" />
-                    <View className="flex-1">
-                      <Text className="text-keystone_navy font-inter-semibold text-base">
-                        {zone.label}
-                      </Text>
-                      <Text className="text-text_muted font-inter text-xs">
-                        {zone.description}
-                      </Text>
-                    </View>
-                  </View>
-                  <View className="items-end flex-row gap-3">
-                    <View className="items-end">
-                      <Text className="text-keystone_navy font-inter-bold text-lg">
-                        {zone.count}
-                      </Text>
-                      <Text className="text-text_muted font-inter text-xs">
-                        {total > 0 ? pct((zone.count / total) * 100) : '0%'}
-                      </Text>
-                    </View>
-                    <Text className="text-text_muted font-inter-semibold">›</Text>
-                  </View>
-                </TouchableOpacity>
-                {idx < summary.length - 1 && <Divider style={{marginHorizontal: 12}} />}
+      {/* Bucket table */}
+      <View className="mt-5">
+        <SectionLabel>By status</SectionLabel>
+        <Card style={{paddingVertical: 0, paddingHorizontal: 16}}>
+          {summary.map((zone, idx) => (
+            <TouchableOpacity
+              key={zone.key}
+              onPress={() => setDrilldown(zone.key)}
+              activeOpacity={0.6}
+              className="flex-row items-center py-3.5"
+              style={
+                idx < summary.length - 1 && {
+                  borderBottomWidth: 0.5,
+                  borderBottomColor: COLORS.keystone_hairline,
+                }
+              }>
+              <View
+                style={{backgroundColor: ZONE_HUES[zone.key] ?? zone.color}}
+                className="w-2 h-2 rounded-full mr-3"
+              />
+              <View className="flex-1" style={{minWidth: 0}}>
+                <Text
+                  numberOfLines={1}
+                  className="text-keystone_navy font-inter-semibold text-base">
+                  {zone.label}
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  className="text-text_muted font-inter text-xs">
+                  {zone.description}
+                </Text>
               </View>
-            ))}
-          </Card>
-        </View>
-      </ScrollView>
+              {/* count · share · chevron, all on one line (5f) */}
+              <View className="flex-row items-center" style={{flexShrink: 0}}>
+                <Text
+                  className="font-inter-bold text-base"
+                  style={{
+                    fontVariant: ['tabular-nums'],
+                    color: zone.key === 'notPaid' ? '#B32020' : COLORS.keystone_navy,
+                  }}>
+                  {zone.count}
+                </Text>
+                <Text className="text-keystone_slate font-inter text-sm ml-1.5">
+                  · {total > 0 ? pct((zone.count / total) * 100) : '0%'}
+                </Text>
+                <Text className="text-keystone_slate font-inter-semibold ml-2">
+                  ›
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </Card>
+      </View>
 
       <TenantDrilldown bucketKey={drilldown} onClose={() => setDrilldown(null)} />
-    </View>
+    </Screen>
   );
 };
 
@@ -146,7 +183,10 @@ const TenantDrilldown = ({bucketKey, onClose}) => {
           </View>
           <View className="px-5 pb-3 flex-row items-center justify-between">
             <View className="flex-row items-center gap-3">
-              <View style={{backgroundColor: zone?.color}} className="w-3 h-3 rounded-full" />
+              <View
+                style={{backgroundColor: ZONE_HUES[bucketKey] ?? zone?.color}}
+                className="w-3 h-3 rounded-full"
+              />
               <Text className="text-keystone_navy font-inter-bold text-lg">
                 {zone?.label}
               </Text>
@@ -165,8 +205,10 @@ const TenantDrilldown = ({bucketKey, onClose}) => {
               <Card key={t.id} style={{marginBottom: 10, padding: 14}}>
                 <View className="flex-row items-center gap-3">
                   <Avatar initials={initials(t.name)} size={40} />
-                  <View className="flex-1">
-                    <Text className="text-keystone_navy font-inter-semibold text-base">
+                  <View className="flex-1" style={{minWidth: 0}}>
+                    <Text
+                      numberOfLines={1}
+                      className="text-keystone_navy font-inter-semibold text-base">
                       {t.name}
                     </Text>
                     <Text className="text-text_muted font-inter text-xs mt-0.5">
@@ -174,10 +216,10 @@ const TenantDrilldown = ({bucketKey, onClose}) => {
                     </Text>
                   </View>
                   {bucketKey === 'notPaid' && t.daysOverdue > 0 && (
-                    <StatusPill tone="danger" label={`${t.daysOverdue}d overdue`} />
+                    <StatusChip tone="danger" label={`${t.daysOverdue}d overdue`} />
                   )}
                   {bucketKey === 'late' && t.daysOverdue > 0 && (
-                    <StatusPill tone="pending" label={`${t.daysOverdue}d late`} />
+                    <StatusChip tone="pending" label={`${t.daysOverdue}d late`} />
                   )}
                 </View>
                 {t.lastAction && (

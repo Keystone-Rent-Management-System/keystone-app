@@ -20,7 +20,7 @@ import {View} from 'react-native';
 import {LoadingModal} from '../components/modals';
 import COLORS from '../constants/Theme';
 import {useAuth} from '../hooks';
-import {DEV_FORCE_TENANT} from '../services/mocks';
+import {useDevRoleStore} from '../provider/store/devRole';
 import PropertyStack from './PropertyStack';
 import StatementStack from './StatementStack';
 import TransactionTopTabNav from './TransactionTopTabNav';
@@ -33,8 +33,9 @@ const HomeStack = () => {
   const navigation = useNavigation();
   const {isPending, profile} = useAuth();
 
-  // Dev-only: tour the tenant experience without a real tenant token.
-  const forceTenant = __DEV__ && DEV_FORCE_TENANT;
+  // Debug-only: tour the tenant experience without a real tenant token.
+  const devRole = useDevRoleStore(s => s.role);
+  const forceTenant = __DEV__ && devRole === 'tenant';
 
   useEffect(() => {
     if (!auth?.access_token && !forceTenant) {
@@ -102,34 +103,8 @@ const HomeStack = () => {
         }}
         initialRouteName="home">
         <Stack.Screen name={'home'} component={TenantHome} />
-        <Stack.Screen
-          name={'pay_rent'}
-          component={PayRent}
-          options={{
-            headerShown: true,
-            title: 'Pay rent',
-            headerShadowVisible: false,
-            headerTitleStyle: {
-              color: COLORS.primary,
-              fontSize: 18,
-              fontFamily: 'Inter-SemiBold',
-            },
-          }}
-        />
-        <Stack.Screen
-          name={'rent_receipt'}
-          component={RentReceipt}
-          options={{
-            headerShown: true,
-            title: 'Receipt',
-            headerShadowVisible: false,
-            headerTitleStyle: {
-              color: COLORS.primary,
-              fontSize: 18,
-              fontFamily: 'Inter-SemiBold',
-            },
-          }}
-        />
+        <Stack.Screen name={'pay_rent'} component={PayRent} />
+        <Stack.Screen name={'rent_receipt'} component={RentReceipt} />
         <Stack.Screen
           name={'lease'}
           component={Lease}
@@ -144,34 +119,9 @@ const HomeStack = () => {
             },
           }}
         />
-        <Stack.Screen
-          name={'receipts'}
-          component={Receipts}
-          options={{
-            headerShown: true,
-            title: 'Receipts',
-            headerShadowVisible: false,
-            headerTitleStyle: {
-              color: COLORS.primary,
-              fontSize: 18,
-              fontFamily: 'Inter-SemiBold',
-            },
-          }}
-        />
-        <Stack.Screen
-          name={'credit'}
-          component={Credit}
-          options={{
-            headerShown: true,
-            title: 'Credit building',
-            headerShadowVisible: false,
-            headerTitleStyle: {
-              color: COLORS.primary,
-              fontSize: 18,
-              fontFamily: 'Inter-SemiBold',
-            },
-          }}
-        />
+        <Stack.Screen name={'receipts'} component={Receipts} />
+        {/* Credit draws its own kit Screen header (S2) */}
+        <Stack.Screen name={'credit'} component={Credit} />
         <Stack.Screen
           name={'invoices'}
           component={InvoiceAll}
@@ -205,19 +155,7 @@ const HomeStack = () => {
           name={'invoice_receipt'}
           component={InvoiceReceipt}
         />
-        <Stack.Screen
-          name={'statements'}
-          component={Statements}
-          options={{
-            headerShown: true,
-            title: 'Statements',
-            headerTitleStyle: {
-              color: COLORS.primary,
-              fontSize: 18,
-              fontFamily: 'Inter-SemiBold',
-            },
-          }}
-        />
+        <Stack.Screen name={'statements'} component={Statements} />
         <Stack.Screen
           name={'payments'}
           component={Payments}

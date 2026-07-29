@@ -32,14 +32,15 @@ const PayStack = () => (
   <Stack.Navigator
     screenOptions={{headerShown: false, animationEnabled: true}}
     initialRouteName="pay_hub">
-    <Stack.Screen name="pay_hub" component={PayHub} options={opts('Pay')} />
-    <Stack.Screen name="pay_rent" component={PayRent} options={opts('Pay rent')} />
-    <Stack.Screen name="rent_receipt" component={RentReceipt} options={opts('Receipt')} />
-    <Stack.Screen name="autopay" component={Autopay} options={opts('Autopay')} />
-    <Stack.Screen name="payment_methods" component={PaymentMethods} options={opts('Payment methods')} />
-    <Stack.Screen name="kyc_verify" component={KycVerify} options={opts('Verify identity')} />
-    <Stack.Screen name="receipts" component={Receipts} options={opts('Receipts')} />
-    <Stack.Screen name="statements" component={Statements} options={opts('Statement')} />
+    {/* Migrated screens draw their own kit Screen headers (S2). */}
+    <Stack.Screen name="pay_hub" component={PayHub} />
+    <Stack.Screen name="pay_rent" component={PayRent} />
+    <Stack.Screen name="rent_receipt" component={RentReceipt} />
+    <Stack.Screen name="autopay" component={Autopay} />
+    <Stack.Screen name="payment_methods" component={PaymentMethods} />
+    <Stack.Screen name="kyc_verify" component={KycVerify} />
+    <Stack.Screen name="receipts" component={Receipts} />
+    <Stack.Screen name="statements" component={Statements} />
   </Stack.Navigator>
 );
 

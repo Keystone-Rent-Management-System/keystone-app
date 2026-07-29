@@ -2,163 +2,188 @@ import React from 'react';
 import {
   ActivityIndicator,
   RefreshControl,
-  ScrollView,
   StatusBar,
   Text,
   View,
 } from 'react-native';
 import {useMaintenance} from '../../hooks/useMaintenance';
-import {Card, IconChip, Label, Amount, Divider, StatusPill, Icon} from '../../components/premium';
+import {Card, IconChip, Icon} from '../../components/premium';
+import {
+  PhotoCountChip,
+  Screen,
+  SectionLabel,
+  StatusChip,
+} from '../../components/kit';
 import COLORS from '../../constants/Theme';
 
-// Maintenance — supervision, not management. The landlord watches the
-// system work: a health hero (resolved / avg time / SLA), a status
-// pipeline, and an SLA-aware request board where anything breaching
-// its target turns red. He only acts on the red.
+// Landlord Maintenance — read-only supervision (design 4k).
+// Exceptions first: the NEEDS ATTENTION group with the reassurance
+// sub-line, then open items consuming tenant requests 1:1 — same
+// chips, same photo counts (P5). No action buttons: the landlord
+// watches the system work and only acts on the red.
 
 const STATUS = {
-  OPEN: {label: 'Open', icon: 'reports', tint: COLORS.keystone_slate},
-  IN_PROGRESS: {label: 'In progress', icon: 'wrench', tint: COLORS.keystone_navy},
-  AWAITING_PARTS: {label: 'Awaiting parts', icon: 'card', tint: COLORS.c_pending},
+  OPEN: {label: 'New', tone: 'neutral'},
+  IN_PROGRESS: {label: 'In progress', tone: 'pending'},
+  AWAITING_PARTS: {label: 'Awaiting parts', tone: 'pending'},
 };
-const CATEGORY_ICON = {Plumbing: 'wrench', HVAC: 'wrench', Appliance: 'card'};
 
 const Maintenance = () => {
   const {summary, isPending, isRefetching, refetch} = useMaintenance();
   const requests = summary?.requests ?? [];
+  const overdueReqs = requests.filter(r => r.ageDays > r.slaDays);
+  const activeReqs = requests.filter(r => r.ageDays <= r.slaDays);
 
   return (
-    <View className="flex-1 bg-keystone_canvas">
+    <Screen
+      title="Maintenance"
+      back="Reports"
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefetching}
+          onRefresh={refetch}
+          tintColor={COLORS.keystone_gold}
+        />
+      }>
       <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
-      <ScrollView
-        contentContainerStyle={{paddingBottom: 28}}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={COLORS.keystone_gold} />
-        }>
-        <View className="px-5 pt-6 pb-3">
-          <Text className="text-keystone_navy font-inter-bold text-2xl">Maintenance</Text>
-          <Text className="text-text_muted font-inter text-sm mt-1">
-            You supervise the system — your PM works the queue
-          </Text>
+
+      {/* Counts card — white, not navy: maintenance isn't money (F3) */}
+      <Card>
+        <View className="flex-row">
+          <CountStat value={`${requests.length}`} label="Open" />
+          <View style={{width: 1, backgroundColor: COLORS.keystone_hairline}} />
+          <CountStat
+            value={`${summary?.overdue ?? overdueReqs.length}`}
+            label="Overdue"
+            danger
+          />
+          <View style={{width: 1, backgroundColor: COLORS.keystone_hairline}} />
+          <CountStat
+            value={`${summary?.resolvedThisMonth ?? 0}`}
+            label="Resolved · 30d"
+          />
         </View>
+      </Card>
 
-        {/* Health hero (navy) */}
-        <View className="px-4">
-          <Card feature>
-            <View className="flex-row items-center justify-between">
-              <Label onDark>This month</Label>
-              <StatusPill
-                tone={(summary?.overdue ?? 0) > 0 ? 'danger' : 'success'}
-                label={(summary?.overdue ?? 0) > 0 ? `${summary.overdue} overdue` : 'On track'}
-              />
-            </View>
-            <View className="flex-row mt-4">
-              <HeroStat value={`${summary?.resolvedThisMonth ?? 0}`} label="Resolved" />
-              <View className="w-px bg-white/12" />
-              <HeroStat value={`${summary?.avgResolutionDays ?? '—'}d`} label="Avg time" center />
-              <View className="w-px bg-white/12" />
-              <HeroStat value={`${summary?.slaComplianceRate ?? 0}%`} label="On SLA" right gold />
-            </View>
-          </Card>
+      {/* NEEDS ATTENTION — exceptions first */}
+      {overdueReqs.length > 0 && (
+        <View className="mt-5">
+          <SectionLabel>Needs attention · {overdueReqs.length}</SectionLabel>
+          {overdueReqs.map(r => (
+            <Card key={r.id} style={{marginBottom: 12}}>
+              <View className="flex-row items-center" style={{minWidth: 0}}>
+                <View
+                  style={{backgroundColor: 'rgba(229,53,53,0.10)'}}
+                  className="w-10 h-10 rounded-xl items-center justify-center mr-3">
+                  <Icon name="wrench" size={18} color={COLORS.c_danger} />
+                </View>
+                <View className="flex-1" style={{minWidth: 0}}>
+                  <Text
+                    numberOfLines={1}
+                    className="text-keystone_navy font-inter-semibold text-base">
+                    {r.issue} — {r.unitName}
+                  </Text>
+                  <Text
+                    numberOfLines={1}
+                    className="text-text_muted font-inter text-xs mt-0.5">
+                    {r.assignedTo ?? 'Unassigned'} ·{' '}
+                    {r.ageDays - r.slaDays}d over SLA
+                  </Text>
+                </View>
+                <View style={{flexShrink: 0, maxWidth: '40%'}}>
+                  <StatusChip label="Overdue" tone="danger" />
+                </View>
+              </View>
+              {/* Reassurance — the system already escalated */}
+              <Text className="text-keystone_slate font-inter text-xs mt-3">
+                Your PM has been notified. Escalated automatically after{' '}
+                {r.slaDays} days.
+              </Text>
+            </Card>
+          ))}
         </View>
+      )}
 
-        {/* Pipeline */}
-        <View className="px-4 mt-4">
-          <Card>
-            <Label>Active pipeline</Label>
-            <View className="flex-row items-center justify-between mt-4">
-              <PipeStep count={summary?.openRequests ?? 0} label="Open" icon="reports" tint={COLORS.keystone_slate} />
-              <Connector />
-              <PipeStep count={summary?.inProgress ?? 0} label="In progress" icon="wrench" tint={COLORS.keystone_navy} />
-              <Connector />
-              <PipeStep count={summary?.awaitingParts ?? 0} label="Awaiting parts" icon="card" tint={COLORS.c_pending} />
-            </View>
-          </Card>
+      {/* Active pipeline */}
+      <View className="mt-4">
+        <SectionLabel>
+          Open · {activeReqs.length}
+        </SectionLabel>
+        <Card style={{paddingVertical: 0, paddingHorizontal: 16}}>
+          {activeReqs.map((r, i) => {
+            const st = STATUS[r.status] ?? STATUS.OPEN;
+            return (
+              <View
+                key={r.id}
+                className="flex-row items-center py-3.5"
+                style={
+                  i < activeReqs.length - 1 && {
+                    borderBottomWidth: 0.5,
+                    borderBottomColor: COLORS.keystone_hairline,
+                  }
+                }>
+                <IconChip size={40}>
+                  <Icon name="wrench" size={18} color={COLORS.keystone_gold} />
+                </IconChip>
+                <View className="flex-1 ml-3" style={{minWidth: 0}}>
+                  <Text
+                    numberOfLines={1}
+                    className="text-keystone_navy font-inter-semibold text-sm">
+                    {r.issue} — {r.unitName}
+                  </Text>
+                  <View className="flex-row items-center gap-2 mt-0.5">
+                    <Text
+                      numberOfLines={1}
+                      className="text-text_muted font-inter text-xs"
+                      style={{flexShrink: 1}}>
+                      {r.assignedTo ?? 'Assigning vendor'} · day {r.ageDays} of{' '}
+                      {r.slaDays}
+                    </Text>
+                    {r.photos ? <PhotoCountChip count={r.photos} /> : null}
+                  </View>
+                </View>
+                <View style={{flexShrink: 0, maxWidth: '40%'}}>
+                  <StatusChip label={st.label} tone={st.tone} />
+                </View>
+              </View>
+            );
+          })}
+          {activeReqs.length === 0 && !isPending && (
+            <Text className="text-c_success font-inter text-sm text-center py-6">
+              ✓ No active requests — nothing needs watching.
+            </Text>
+          )}
+        </Card>
+      </View>
+
+      {isPending && (
+        <View className="items-center justify-center py-8">
+          <ActivityIndicator color={COLORS.keystone_navy} />
         </View>
-
-        {/* Request board */}
-        <Text className="text-text_muted font-inter-semibold text-xs uppercase tracking-widest ml-5 mt-6 mb-3">
-          Request board
-        </Text>
-        {requests.map(r => (
-          <View key={r.id} className="px-4 mb-3">
-            <RequestCard r={r} />
-          </View>
-        ))}
-        {requests.length === 0 && !isPending && (
-          <Text className="text-c_success font-inter text-sm text-center py-8 px-4">
-            ✓ No active requests — nothing needs watching.
-          </Text>
-        )}
-
-        {isPending && (
-          <View className="items-center justify-center py-8">
-            <ActivityIndicator color={COLORS.keystone_navy} />
-          </View>
-        )}
-      </ScrollView>
-    </View>
+      )}
+    </Screen>
   );
 };
 
-const RequestCard = ({r}) => {
-  const st = STATUS[r.status] ?? STATUS.OPEN;
-  const overdue = r.ageDays > r.slaDays;
-  const frac = Math.min(1, r.ageDays / Math.max(1, r.slaDays));
-  const barColor = overdue ? COLORS.c_danger : frac > 0.7 ? COLORS.c_pending : COLORS.c_success;
-  return (
-    <Card style={overdue ? {borderLeftWidth: 3, borderLeftColor: COLORS.c_danger} : null}>
-      <View className="flex-row items-center">
-        <IconChip size={40}>
-          <Icon name={CATEGORY_ICON[r.category] ?? 'wrench'} size={18} />
-        </IconChip>
-        <View className="flex-1 ml-3">
-          <Text className="text-keystone_navy font-inter-semibold text-base">{r.unitName}</Text>
-          <Text className="text-text_muted font-inter text-xs mt-0.5">{r.issue}</Text>
-        </View>
-        <StatusPill tone={overdue ? 'danger' : r.status === 'AWAITING_PARTS' ? 'pending' : 'neutral'} label={st.label} />
-      </View>
-
-      {/* SLA age bar */}
-      <View className="mt-3">
-        <View className="flex-row items-center justify-between mb-1.5">
-          <Text className="text-text_muted font-inter text-2xs uppercase tracking-wider">
-            {r.assignedTo ?? 'Unassigned'}
-          </Text>
-          <Text style={{color: barColor}} className="font-inter-semibold text-2xs">
-            {overdue ? `${r.ageDays - r.slaDays}d over SLA` : `day ${r.ageDays} of ${r.slaDays}`}
-          </Text>
-        </View>
-        <View className="h-1.5 rounded-full overflow-hidden" style={{backgroundColor: 'rgba(21,37,53,0.07)'}}>
-          <View style={{width: `${frac * 100}%`, backgroundColor: barColor}} className="h-1.5 rounded-full" />
-        </View>
-      </View>
-    </Card>
-  );
-};
-
-const HeroStat = ({value, label, center, right, gold}) => (
-  <View style={{flex: 1, alignItems: right ? 'flex-end' : center ? 'center' : 'flex-start'}}>
-    <Text style={{color: gold ? COLORS.keystone_gold : '#FFFFFF'}} className="font-inter-bold text-2xl">
+// 4k counts row — label above the number; overdue carries the only
+// semantic color on the card.
+const CountStat = ({value, label, danger}) => (
+  <View style={{flex: 1, paddingHorizontal: 4}}>
+    <Text
+      numberOfLines={1}
+      className="font-inter-semibold text-2xs uppercase tracking-wider"
+      style={{color: danger ? COLORS.c_danger_text ?? '#B32020' : COLORS.keystone_slate}}>
+      {label}
+    </Text>
+    <Text
+      className="font-inter-bold text-2xl mt-1"
+      style={{
+        color: danger ? '#B32020' : COLORS.keystone_navy,
+        fontVariant: ['tabular-nums'],
+      }}>
       {value}
     </Text>
-    <Text className="text-white/55 font-inter-medium text-2xs uppercase tracking-wider mt-1">{label}</Text>
   </View>
-);
-
-const PipeStep = ({count, label, icon, tint}) => (
-  <View className="items-center" style={{flex: 1}}>
-    <View style={{backgroundColor: COLORS.keystone_chip}} className="w-12 h-12 rounded-2xl items-center justify-center">
-      <Icon name={icon} size={20} color={tint} />
-    </View>
-    <Text className="text-keystone_navy font-inter-bold text-lg mt-2">{count}</Text>
-    <Text className="text-text_muted font-inter text-2xs text-center">{label}</Text>
-  </View>
-);
-
-const Connector = () => (
-  <View style={{flex: 0.4, height: 1, backgroundColor: COLORS.keystone_hairline, marginTop: -22}} />
 );
 
 export default Maintenance;

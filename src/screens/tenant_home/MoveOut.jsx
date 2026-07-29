@@ -1,11 +1,9 @@
 import React, {useState} from 'react';
 import {
   ActivityIndicator,
-  ScrollView,
   StatusBar,
   Text,
   ToastAndroid,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
@@ -13,18 +11,33 @@ import DatePicker from 'react-native-date-picker';
 
 import {useTenantHome} from '../../hooks/useTenantHome';
 import AgreementServices from '../../services/AgreementServices';
-import {Card, Label, Divider, Row, Icon, IconChip} from '../../components/premium';
+import {Card, Divider, Row, Icon, IconChip} from '../../components/premium';
+import {
+  FieldButton,
+  HeroCard,
+  PrimaryButton,
+  Screen,
+  SecondaryButton,
+  SectionLabel,
+  eventDate,
+} from '../../components/kit';
 import COLORS from '../../constants/Theme';
 
-// Renew or move out — the tenant's end-of-lease decision. A notice to
-// vacate feeds the landlord's Lease Expiry + Compliance views; a renewal
-// response feeds renewals. POST /vacate-notice / POST /extensions.
+// Renew or move out (design 6b). Date field gets the calendar icon
+// (P2-7/L4 — was a folder); the renewal offer shows its terms before
+// asking for a decision ("Review & renew" — you can't accept unseen
+// terms); the hero adds the "no action needed until …" reassurance
+// line; the notice CTA stays K3-disabled until a date is picked.
+// POST /vacate-notice · POST /extensions.
 
-const fmtDate = iso => {
-  if (!iso) return 'Select a date';
-  const d = new Date(iso);
-  return d.toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
-};
+const fmtLong = d =>
+  d
+    ? new Date(d).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : null;
 
 const MoveOut = () => {
   const nav = useNavigation();
@@ -35,6 +48,11 @@ const MoveOut = () => {
 
   const minMoveOut = new Date();
   minMoveOut.setDate(minMoveOut.getDate() + noticeDays);
+
+  // Latest day with no action needed = lease end − notice window.
+  const decideBy = lease.endDate
+    ? new Date(new Date(lease.endDate).getTime() - noticeDays * 86400000)
+    : null;
 
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(null);
@@ -53,100 +71,107 @@ const MoveOut = () => {
     }
     ToastAndroid.show('Notice sent — your landlord has been notified', ToastAndroid.LONG);
     setBusy(false);
-    nav.navigate('home_stack', {screen: 'home'});
+    nav.navigate('my_home_hub');
   };
 
   return (
-    <View className="flex-1 bg-keystone_canvas">
-      <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
-      <ScrollView contentContainerStyle={{paddingBottom: 28}} showsVerticalScrollIndicator={false}>
-        {/* Lease end hero */}
-        <View className="px-4 pt-5">
-          <Card feature>
-            <Label onDark>Your lease ends</Label>
-            <Text className="text-white font-inter-bold text-2xl mt-2">
-              {fmtDate(lease.endDate)}
-            </Text>
-            <Text className="text-white/55 font-inter text-xs mt-1">
-              {lease.daysToEnd ? `in ${lease.daysToEnd} days` : ''} · {noticeDays}-day
-              notice required to move out
-            </Text>
-          </Card>
-        </View>
-
-        {/* Renewal offer */}
-        {renewal.status === 'OFFERED' && (
-          <View className="px-4 mt-4">
-            <Card style={{borderColor: COLORS.keystone_gold, borderWidth: 1}}>
-              <View className="flex-row items-center gap-3">
-                <IconChip>
-                  <Icon name="lease" size={19} color={COLORS.keystone_gold} />
-                </IconChip>
-                <Text className="text-keystone_navy font-inter-semibold text-sm flex-1">
-                  Your landlord offered a renewal
-                </Text>
-              </View>
-              <Divider style={{marginVertical: 12}} />
-              <View className="flex-row gap-3">
-                <TouchableOpacity
-                  onPress={() => {
-                    ToastAndroid.show('Renewal accepted', ToastAndroid.SHORT);
-                    nav.navigate('home_stack', {screen: 'home'});
-                  }}
-                  activeOpacity={0.9}
-                  className="flex-1 bg-keystone_navy rounded-2xl py-3.5 items-center">
-                  <Text className="text-white font-inter-semibold text-sm">Renew lease</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => ToastAndroid.show('Maybe later', ToastAndroid.SHORT)}
-                  activeOpacity={0.85}
-                  className="flex-1 border border-keystone_navy rounded-2xl py-3.5 items-center">
-                  <Text className="text-keystone_navy font-inter-semibold text-sm">Not now</Text>
-                </TouchableOpacity>
-              </View>
-            </Card>
+    <Screen
+      title="Renew or move out"
+      back="My Home"
+      stickyFooter={
+        busy ? (
+          <View style={{minHeight: 52, justifyContent: 'center'}}>
+            <ActivityIndicator color={COLORS.keystone_navy} />
           </View>
-        )}
+        ) : (
+          <PrimaryButton
+            label="Send notice to vacate"
+            disabled={!date}
+            onPress={submitNotice}
+          />
+        )
+      }>
+      <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
 
-        {/* Notice to vacate */}
-        <View className="px-4 mt-5">
-          <Text className="text-text_muted font-inter-semibold text-xs uppercase tracking-widest ml-1 mb-3">
-            Give notice to vacate
-          </Text>
-          <Card>
-            <Text className="text-text_muted font-inter text-xs leading-5 mb-3">
-              Planning to move out? Pick your move-out date. We’ll notify your
-              landlord and start your deposit-return clock.
-            </Text>
-            <TouchableOpacity
-              onPress={() => setOpen(true)}
-              activeOpacity={0.8}
-              className="flex-row items-center justify-between bg-white border border-keystone_hairline rounded-xl px-4 py-3.5">
-              <Text className={`font-inter-medium text-sm ${date ? 'text-keystone_navy' : 'text-text_muted'}`}>
-                {fmtDate(date?.toISOString())}
+      <HeroCard
+        label="Your lease ends"
+        amount={fmtLong(lease.endDate) ?? '—'}
+        amountSize={28}
+        sub={`${lease.daysToEnd ? `In ${lease.daysToEnd} days` : ''}${
+          decideBy ? ` · no action needed until ${eventDate('', decideBy).trim()}` : ''
+        }`}
+      />
+
+      {/* Renewal offer — terms shown before the decision */}
+      {renewal.status === 'OFFERED' && (
+        <Card
+          style={{
+            marginTop: 16,
+            borderColor: COLORS.keystone_gold,
+            borderWidth: 1,
+          }}>
+          <View className="flex-row items-center gap-3">
+            <IconChip>
+              <Icon name="lease" size={19} color={COLORS.keystone_gold} />
+            </IconChip>
+            <View className="flex-1" style={{minWidth: 0}}>
+              <Text className="text-keystone_navy font-inter-semibold text-[15px]">
+                Your landlord offered a renewal
               </Text>
-              <Icon name="reports" size={18} color={COLORS.keystone_gold} />
-            </TouchableOpacity>
-            <Divider style={{marginVertical: 14}} />
-            <Row label="Deposit refund" value={`within ${lease.refundDays ?? home?.deposit?.refundDays ?? 14} days`} />
-          </Card>
-        </View>
-      </ScrollView>
+              <Text className="text-text_muted font-inter text-xs mt-0.5">
+                {lease.term ?? '12 months'}
+                {renewal.newRent ? ` · $${renewal.newRent}/mo` : ''}
+                {lease.endDate
+                  ? ` · starts ${eventDate(
+                      '',
+                      new Date(new Date(lease.endDate).getTime() + 86400000),
+                    ).trim()}`
+                  : ''}
+              </Text>
+            </View>
+          </View>
+          <Divider style={{marginVertical: 12}} />
+          <View className="flex-row gap-3">
+            <PrimaryButton
+              label="Review & renew"
+              style={{flex: 1, minHeight: 44}}
+              onPress={() => {
+                ToastAndroid.show(
+                  'Renewal terms open for review with BE support',
+                  ToastAndroid.SHORT,
+                );
+              }}
+            />
+            <SecondaryButton
+              label="Not now"
+              style={{flex: 1, minHeight: 44}}
+              onPress={() => ToastAndroid.show('Maybe later', ToastAndroid.SHORT)}
+            />
+          </View>
+        </Card>
+      )}
 
-      {/* Submit */}
-      <View className="px-4 pb-6 pt-2 bg-keystone_canvas">
-        <TouchableOpacity
-          onPress={submitNotice}
-          disabled={!date || busy}
-          activeOpacity={0.9}
-          style={{opacity: date && !busy ? 1 : 0.5}}
-          className="bg-keystone_navy rounded-2xl py-4 items-center">
-          {busy ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text className="text-white font-inter-bold text-base">Send notice to vacate</Text>
-          )}
-        </TouchableOpacity>
+      {/* Notice to vacate */}
+      <View className="mt-5">
+        <SectionLabel>Give notice to vacate</SectionLabel>
+        <Card>
+          <Text className="text-keystone_slate font-inter text-[13px] leading-5 mb-3">
+            Planning to move out? Pick your date — we notify your landlord and
+            start your deposit-return clock.
+          </Text>
+          <FieldButton
+            label="Move-out date"
+            icon="calendar"
+            value={fmtLong(date)}
+            placeholder="Select a date"
+            onPress={() => setOpen(true)}
+          />
+          <Divider style={{marginVertical: 14}} />
+          <Row
+            label="Deposit refund"
+            value={`within ${lease.refundDays ?? home?.deposit?.refundDays ?? 14} days`}
+          />
+        </Card>
       </View>
 
       <DatePicker
@@ -161,7 +186,7 @@ const MoveOut = () => {
         }}
         onCancel={() => setOpen(false)}
       />
-    </View>
+    </Screen>
   );
 };
 

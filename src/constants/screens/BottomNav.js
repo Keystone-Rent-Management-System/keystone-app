@@ -6,11 +6,9 @@ import {
   LeasesSvg,
   MoreSvg,
   NotificationsSvg,
-  PaymentsSvg,
 } from '@/assets/icons';
 import COLORS from '@/constants/Theme';
-import NavOptions from '@/navigation/options';
-import {Text, View} from 'react-native';
+import {Icon as KitIcon} from '@/components/premium';
 import {HomeStack} from '@/navigation';
 import MoreStack from '../../navigation/MoreStack';
 import PayStack from '../../navigation/tenant/PayStack';
@@ -41,8 +39,10 @@ const screens = [
     tab: {
       title: 'Pay',
       icon: isCurrent => (
-        <PaymentsSvg
-          strokeWidth={isCurrent ? '1.5' : '1.2'}
+        <KitIcon
+          name="card"
+          size={23}
+          strokeWidth={isCurrent ? 1.9 : 1.5}
           color={isCurrent ? COLORS.primary : COLORS.grey_1}
         />
       ),
@@ -73,10 +73,9 @@ const screens = [
         />
       ),
     },
-    options: {
-      ...NavOptions.defaultOptions,
-      header: () => <CustomHeader title={'Notifications'} />,
-    },
+    // Inbox draws its own hub title under an owned status zone
+    // (kit Screen, S1/S2) — the old CustomHeader collided with the
+    // clock.
   },
   {
     title: 'more',
@@ -92,8 +91,3 @@ const screens = [
 
 export default screens;
 
-const CustomHeader = ({title}) => (
-  <View className={'shadow-xl p-4 bg-bg border-b border-slate-50'}>
-    <Text className={'font-open-sauce-sans-semibold text-lg text-black '}>{title}</Text>
-  </View>
-);

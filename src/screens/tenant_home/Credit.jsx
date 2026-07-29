@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {
   RefreshControl,
-  ScrollView,
   StatusBar,
   Text,
   ToastAndroid,
@@ -12,34 +11,50 @@ import {
 import {useTenantHome} from '../../hooks/useTenantHome';
 import {
   Card,
-  Label,
   Divider,
   Icon,
   IconChip,
-  Ring,
   Sparkline,
-  DraftBadge,
-  ConsentRow,
   LegalLink,
 } from '../../components/premium';
+import {
+  ConsentBlock,
+  HeroCard,
+  PrimaryButton,
+  Screen,
+  SectionLabel,
+  StatusChip,
+} from '../../components/kit';
 import COLORS from '../../constants/Theme';
 import {CREDIT_REPORTING} from '../../constants/legalCopy';
 
-// Credit building (FCRA — aggregator model). Keystone is NOT the furnisher;
-// a reporting partner is. Our job: capture the tenant's express opt-in
-// consent, disclose the downside truthfully (late/missed rent can lower the
-// score), and route disputes to the partner. Reporting defaults OFF until the
-// tenant opts in — the BE returns credit.enabled=false for an un-enrolled
-// tenant. Score 300–850 mapped onto the Ring (0–100%).
+// Credit building (design 2g). OFF state sells the outcome with the
+// streak the user already owns (T3: an empty card with no next step
+// is banned); full FCRA consent copy stays visible per L1–L2 and the
+// CTA holds the K3 disabled state until the box is checked. Keystone
+// is NOT the furnisher — a reporting partner is; disputes route to
+// the partner.
 
-const scoreToPct = s => Math.max(0, Math.min(100, Math.round(((s - 300) / 550) * 100)));
+const ValueLine = ({children}) => (
+  <View style={{flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginTop: 6}}>
+    <Text style={{color: '#037147', fontFamily: 'Inter-SemiBold', fontSize: 15}}>✓</Text>
+    <Text
+      style={{
+        flex: 1,
+        color: COLORS.keystone_navy,
+        fontFamily: 'Inter',
+        fontSize: 15,
+        lineHeight: 21,
+      }}>
+      {children}
+    </Text>
+  </View>
+);
 
 const Credit = () => {
-  const {home, isPending, isRefetching, refetch} = useTenantHome();
+  const {home, isRefetching, refetch} = useTenantHome();
   const credit = home?.credit ?? {};
 
-  // `enrolled` reflects the server's consent state. `consent` is the local
-  // checkbox the tenant must tick before we flip enrollment on.
   const [enrolled, setEnrolled] = useState(credit.enabled ?? false);
   const [consent, setConsent] = useState(false);
 
@@ -52,8 +67,8 @@ const Credit = () => {
       ToastAndroid.show('Please check the box to authorize reporting', ToastAndroid.SHORT);
       return;
     }
-    // PATCH /tenants/credit { enabled: true, consentAt: <now> } — the BE must
-    // persist the consent timestamp as the FCRA authorization record.
+    // PATCH /tenants/credit { enabled: true, consentAt: <now> } — the BE
+    // must persist the consent timestamp as the FCRA authorization record.
     setEnrolled(true);
     ToastAndroid.show('Rent reporting on', ToastAndroid.SHORT);
   };
@@ -64,155 +79,123 @@ const Credit = () => {
     ToastAndroid.show('Rent reporting paused', ToastAndroid.SHORT);
   };
 
-  return (
-    <View className="flex-1 bg-keystone_canvas">
-      <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
-      <ScrollView
-        contentContainerStyle={{paddingBottom: 28}}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={COLORS.keystone_gold} />
-        }>
-        {/* Hero — score when enrolled, the pitch when not */}
-        <View className="px-4 pt-5">
-          <Card feature>
-            {enrolled ? (
-              <>
-                <Label onDark>Your credit · {credit.band ?? '—'}</Label>
-                <View className="flex-row items-center mt-3">
-                  <Ring
-                    percent={scoreToPct(credit.score ?? 300)}
-                    size={120}
-                    thickness={11}
-                    color={COLORS.keystone_gold}
-                    trackColor="rgba(255,255,255,0.14)"
-                    centerValue={credit.score ?? '—'}
-                    centerLabel="score"
-                    centerColor="#FFFFFF"
-                  />
-                  <View className="flex-1 ml-4">
-                    <Text className="text-c_success font-inter-bold text-lg">
-                      ▲ {credit.delta ?? 0} pts
-                    </Text>
-                    <Text className="text-white/60 font-inter text-xs mt-0.5">
-                      since you joined Keystone
-                    </Text>
-                    <Text className="text-white font-inter-semibold text-sm mt-3">
-                      {credit.streakMonths ?? 0} months on time
-                    </Text>
-                    <Text className="text-white/55 font-inter text-xs mt-0.5">
-                      every payment counts
-                    </Text>
-                  </View>
-                </View>
-              </>
-            ) : (
-              <>
-                <Label onDark>Build credit with rent</Label>
-                <Text className="text-white font-inter-bold text-2xl mt-2">
-                  Make your rent count
-                </Text>
-                <Text className="text-white/60 font-inter text-sm mt-1 leading-5">
-                  Rent is most people’s biggest monthly payment — but it usually
-                  builds nothing. Turn on reporting and your rent can help build
-                  your credit.
-                </Text>
-              </>
-            )}
-          </Card>
-        </View>
+  const streak = credit.streakMonths ?? 0;
 
-        {/* Streak — only meaningful once enrolled with history */}
-        {enrolled && credit.history?.length > 1 && (
-          <View className="px-4 mt-4">
-            <Card>
-              <View className="flex-row items-center justify-between mb-3">
-                <Label>Your score trend</Label>
-                <Text className="text-text_muted font-inter text-xs">
-                  last {credit.history.length} months
-                </Text>
-              </View>
-              <View className="items-center">
-                <Sparkline
-                  data={credit.history}
-                  width={300}
-                  height={56}
-                  lastColor={COLORS.keystone_gold}
+  return (
+    <Screen
+      title="Credit building"
+      back="Account"
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefetching}
+          onRefresh={refetch}
+          tintColor={COLORS.keystone_gold}
+        />
+      }>
+      <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
+
+      {enrolled ? (
+        <>
+          {/* ON — hero rebuilt on the contract (6d): score ring →
+              headline number + delta (H3/H4); "every payment counts"
+              no longer clips at the card bottom. */}
+          <HeroCard
+            label={`Your credit · ${credit.band ?? '—'}`}
+            badge={{text: 'Reporting on', dot: 'success'}}
+            amount={`${credit.score ?? '—'}`}
+            amountSize={40}
+            sub={`▲ ${credit.delta ?? 0} pts since you joined Keystone · ${streak} months on time, every payment counts.`}
+          />
+
+          {credit.history?.length > 1 && (
+            <View className="mt-4">
+              <Card>
+                <View className="flex-row items-center justify-between mb-3">
+                  <Text className="text-keystone_slate font-inter-semibold text-xs uppercase tracking-widest">
+                    Score trend
+                  </Text>
+                  <Text className="text-text_muted font-inter text-xs">
+                    last {credit.history.length} months
+                  </Text>
+                </View>
+                <View className="items-center">
+                  <Sparkline
+                    data={credit.history}
+                    width={300}
+                    height={56}
+                    lastColor={COLORS.keystone_gold}
+                  />
+                </View>
+              </Card>
+            </View>
+          )}
+
+          <View className="mt-4">
+            <ConsentBlock copy={CREDIT_REPORTING.disclosure}>
+              <Divider style={{marginVertical: 12}} />
+              <Text className="text-text_muted font-inter text-xs leading-5">
+                {CREDIT_REPORTING.disputeText}
+              </Text>
+              <View className="mt-2">
+                <LegalLink
+                  label={CREDIT_REPORTING.disputeCta}
+                  url={CREDIT_REPORTING.disputeUrl}
                 />
               </View>
-            </Card>
-          </View>
-        )}
-
-        {/* Consent + disclosure (FCRA) */}
-        <View className="px-4 mt-4">
-          <Card>
-            <View className="flex-row items-center gap-3">
-              <IconChip>
-                <Icon name="trending" size={19} color={COLORS.keystone_gold} />
-              </IconChip>
-              <View className="flex-1">
+              <TouchableOpacity
+                onPress={pause}
+                activeOpacity={0.85}
+                className="border border-keystone_navy rounded-2xl py-3.5 items-center mt-4">
                 <Text className="text-keystone_navy font-inter-semibold text-sm">
-                  {enrolled ? CREDIT_REPORTING.enrolledLabel : CREDIT_REPORTING.consentTitle}
+                  {CREDIT_REPORTING.pauseCta}
                 </Text>
-                <Text className="text-text_muted font-inter text-xs mt-0.5">
-                  Reported to {(credit.reportedTo ?? ['TransUnion', 'Equifax']).join(' & ')} via{' '}
-                  {CREDIT_REPORTING.partnerName}
-                </Text>
-              </View>
-            </View>
-
-            <Divider style={{marginVertical: 12}} />
-            <DraftBadge />
-            <Text className="text-text_muted font-inter text-xs leading-5">
-              {CREDIT_REPORTING.disclosure}
-            </Text>
-
-            {enrolled ? (
-              <>
-                <Divider style={{marginVertical: 12}} />
-                <Text className="text-text_muted font-inter text-xs leading-5">
-                  {CREDIT_REPORTING.disputeText}
-                </Text>
-                <View className="mt-2">
-                  <LegalLink label={CREDIT_REPORTING.disputeCta} url={CREDIT_REPORTING.disputeUrl} />
-                </View>
-                <TouchableOpacity
-                  onPress={pause}
-                  activeOpacity={0.85}
-                  className="border border-keystone_navy rounded-2xl py-3.5 items-center mt-4">
-                  <Text className="text-keystone_navy font-inter-semibold text-sm">
-                    {CREDIT_REPORTING.pauseCta}
-                  </Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <>
-                <ConsentRow checked={consent} onToggle={() => setConsent(c => !c)}>
-                  {CREDIT_REPORTING.consentCheckbox}
-                </ConsentRow>
-                <TouchableOpacity
-                  onPress={enroll}
-                  disabled={!consent}
-                  activeOpacity={0.9}
-                  style={{opacity: consent ? 1 : 0.5}}
-                  className="bg-keystone_navy rounded-2xl py-4 items-center mt-4">
-                  <Text className="text-white font-inter-bold text-base">
-                    {CREDIT_REPORTING.enrollCta}
-                  </Text>
-                </TouchableOpacity>
-              </>
-            )}
-          </Card>
-        </View>
-
-        {isPending && !home && (
-          <View className="px-4 mt-4">
-            <Text className="text-text_muted font-inter text-sm ml-1">Loading…</Text>
+              </TouchableOpacity>
+            </ConsentBlock>
           </View>
-        )}
-      </ScrollView>
-    </View>
+        </>
+      ) : (
+        <>
+          {/* OFF — sell the outcome with the streak the user already
+              owns (2g). */}
+          <HeroCard
+            label="Build credit with rent"
+            badge={{text: 'Off'}}
+            amount={
+              streak > 0
+                ? "You're already paying on time. Make it count."
+                : 'Make your rent count.'
+            }
+            amountSize={24}
+            sub={`Renters like ${home?.tenant?.firstName ?? 'you'} gain +18 pts on average in the first 9 months.`}
+          />
+
+          <Card style={{marginTop: 16}}>
+            <ValueLine>
+              Reported to TransUnion & Equifax via our credit-reporting partner
+            </ValueLine>
+            <ValueLine>
+              Only payments made going forward — never your history
+            </ValueLine>
+            <ValueLine>Turn it off anytime</ValueLine>
+          </Card>
+
+          <View className="mt-4">
+            <ConsentBlock
+              copy={CREDIT_REPORTING.disclosure}
+              checked={consent}
+              onToggle={() => setConsent(c => !c)}
+              agreeText={CREDIT_REPORTING.consentCheckbox}>
+              <PrimaryButton
+                label={CREDIT_REPORTING.enrollCta}
+                disabled={!consent}
+                onPress={enroll}
+                style={{marginTop: 16}}
+              />
+            </ConsentBlock>
+          </View>
+        </>
+      )}
+    </Screen>
   );
 };
 

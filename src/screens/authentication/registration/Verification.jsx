@@ -1,18 +1,19 @@
-import React, {useMemo, useRef, useState} from 'react';
-import {
-  Pressable,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  ToastAndroid,
-  View,
-} from 'react-native';
-import {CButton, Layout} from '../../../components';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
+import {Pressable, StyleSheet, Text, TextInput, View} from 'react-native';
+import {PrimaryButton, Screen} from '../../../components/kit';
+import COLORS from '../../../constants/Theme';
 import useGlobals from '../../../provider/store/useGlobals';
+import StepIndicator from './StepIndicator';
 
-export default function Verification({navigation, route: {params}}) {
-  let otpInputRef = useRef();
+// Registration step 2 (design 3b): code boxes at form-field spec,
+// K3-disabled CTA until 6 digits, visible resend cooldown, honest
+// "Wrong email?" escape back to step 1.
+
+const VERIFICATION_LENGTH = 6;
+const RESEND_COOLDOWN_S = 60;
+
+export default function Verification({navigation}) {
+  const otpInputRef = useRef();
 
   const {
     state: {registering_user},
@@ -22,191 +23,138 @@ export default function Verification({navigation, route: {params}}) {
   const [otp, setOtp] = useState(
     registering_user?.token?.toString().split('') || [],
   );
-  const [inputIsFocused, setInputIsFocused] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [cooldown, setCooldown] = useState(RESEND_COOLDOWN_S);
 
-  const VERIFICATION_LENGTH = useMemo(() => 6, []);
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown(c => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
 
-  const codeArray = new Array(VERIFICATION_LENGTH).fill(0);
+  const codeArray = useMemo(() => new Array(VERIFICATION_LENGTH).fill(0), []);
+  const complete = otp.length === VERIFICATION_LENGTH;
 
-  const handleOtpChange = (index, value) => {
-    const updatedOtp = [...otp];
-    updatedOtp[index] = value;
-    setOtp(updatedOtp);
+  const handleContinue = () => {
+    if (!complete) return;
+    updateRegisteringUser({token: parseInt(otp.join(''), 10)});
+    // If a password already exists we came back here after a wrong
+    // token — skip straight to profile.
+    navigation.navigate(
+      registering_user?.password
+        ? 'auth__registration_profile'
+        : 'auth__registration_password',
+    );
   };
 
-  const handleContinue = async () => {
-    // Validate OTP
-    if (otp?.length < 6) {
-      return ToastAndroid.show('Invalid OTP', ToastAndroid.SHORT);
-    }
-    const code = parseInt(otp?.join(''), 10);
-
-    updateRegisteringUser({token: code});
-    /**
-     *  check if passwords are already populated
-     * This occurs if token was wrong and user is redirected back to this page
-     */
-    if (registering_user?.password) {
-      return navigation.navigate('auth__registration_profile');
-    } else {
-      navigation.navigate('auth__registration_password');
-    }
+  const focusInput = () => {
+    otpInputRef.current?.focus();
+    setFocused(true);
   };
 
-  const handleFocus = () => {
-    otpInputRef.current.focus();
-
-    setInputIsFocused(true);
-    // Keyboard?.emit;
-  };
-
-  const fillCodeDigitInput = (_, index) => {
-    const emptyChar = ' ';
-
-    const digit = otp[index] || emptyChar;
-    const isCurrentDigit = index === otp?.length;
-    const isLastDigit = index === VERIFICATION_LENGTH;
-    const isCodeFull = otp.length === VERIFICATION_LENGTH;
-
-    const isDigitFocused = isCurrentDigit || (isLastDigit && isCodeFull);
-    const isCurrent = isDigitFocused && inputIsFocused;
+  const renderBox = (_, index) => {
+    const digit = otp[index] ?? '';
+    const isCursor =
+      focused && (index === otp.length || (complete && index === VERIFICATION_LENGTH - 1));
     return (
       <Pressable
-        className={`flex flex-1 items-center justify-center ${
-          isCurrent ? 'border border-primary ' : 'border border-gray-300'
-        }`}
-        onPress={handleFocus}
         key={index}
-        style={styles.otpBox}
-        onChangeText={val => handleOtpChange(0, val)}>
-        <Text className={'text-xl font-open-sauce-sans-semibold text-primary'}>
-          {digit}
-        </Text>
+        onPress={focusInput}
+        style={[styles.box, isCursor && styles.boxActive]}>
+        <Text style={styles.boxText}>{digit || (isCursor ? '|' : '')}</Text>
       </Pressable>
     );
   };
 
   return (
-    <Layout ClassName={'px-4'}>
-      {/*hidden input*/}
-
+    <Screen
+      title="Create account"
+      back="Email"
+      stickyFooter={
+        <PrimaryButton label="Verify" disabled={!complete} onPress={handleContinue} />
+      }>
+      {/* Hidden input drives the boxes */}
       <TextInput
         ref={otpInputRef}
         keyboardType="number-pad"
-        style={styles.otpInputStyle}
-        onChangeText={text => setOtp(text.split(''))}
+        style={styles.hidden}
         maxLength={VERIFICATION_LENGTH}
+        onChangeText={text => setOtp(text.replace(/\D/g, '').split(''))}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        autoFocus
       />
 
-      <View className={'flex-1'}>
-        <Text className={'font-open-sauce-sans text-xs text-neutral-500 my-3'}>
-          Enter the 6 digit PIN code sent to
-          <Text className={'text-black'}>
-            &nbsp;{registering_user?.email}&nbsp;
-          </Text>
-          to verify your email
+      <StepIndicator step={2} />
+      <Text style={styles.title}>Check your inbox</Text>
+      <Text style={styles.sub}>
+        We sent a 6-digit code to{' '}
+        <Text style={{color: COLORS.keystone_navy, fontFamily: 'Inter-SemiBold'}}>
+          {registering_user?.email}
         </Text>
+        .{' '}
+        <Text
+          style={styles.link}
+          onPress={() => navigation.navigate('auth__registration_email')}>
+          Wrong email?
+        </Text>
+      </Text>
 
-        <View className={'flex-row justify-between my-3'}>
-          {codeArray?.map(fillCodeDigitInput)}
-        </View>
+      <View style={styles.boxRow}>{codeArray.map(renderBox)}</View>
 
-        <Text className={'font-open-sauce-sans text-xs text-neutral-500 my-3'}>
-          Didn’t get the PIN? Chek your email or
+      <Text style={styles.resend}>
+        Didn't get it?{' '}
+        {cooldown > 0 ? (
+          <Text style={{color: 'rgba(59,83,102,0.6)'}}>
+            Resend in 0:{String(cooldown).padStart(2, '0')}
+          </Text>
+        ) : (
           <Text
-            className={'text-primary font-open-sauce-sans-medium underline'}
+            style={styles.link}
             onPress={() => navigation.navigate('auth__registration_email')}>
-            {' '}
-            Request Pin
+            Resend code
           </Text>
-        </Text>
-
-        <StatusBar style="auto" />
-      </View>
-
-      <CButton
-        ClassName={
-          'bg-primary text-white py-3.5 mb-3 absolute bottom-5 inset-x-0 mx-4'
-        }
-        disabled={otp.length < VERIFICATION_LENGTH}
-        onPress={handleContinue}
-        textClassName={'text-white font'}
-        text={'Complete Verification'}
-      />
-    </Layout>
+        )}
+      </Text>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: '20%',
+  hidden: {position: 'absolute', opacity: 0, height: 1, width: 1},
+  title: {
+    color: COLORS.keystone_navy,
+    fontFamily: 'Inter-Bold',
+    fontSize: 28,
+    letterSpacing: -0.3,
+    marginTop: 8,
+    marginBottom: 6,
   },
-
-  tex: {
+  sub: {
+    color: COLORS.keystone_slate,
+    fontFamily: 'Inter',
     fontSize: 15,
-    marginBottom: 25,
-    color: '#888',
-    alignSelf: 'flex-start',
-    paddingLeft: 25,
+    lineHeight: 22,
+    marginBottom: 20,
   },
-  text: {
-    fontSize: 25,
-    marginBottom: 25,
-    color: '#283797',
-    fontWeight: 'bold',
-    alignSelf: 'flex-start',
-    paddingLeft: 25,
-  },
-  otpBox: {
-    width: 45,
-    height: 50,
+  link: {color: COLORS.keystone_slate, textDecorationLine: 'underline'},
+  boxRow: {flexDirection: 'row', gap: 8, marginBottom: 16},
+  box: {
+    flex: 1,
+    aspectRatio: 0.9,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    // borderColor: '#DBDBDB',
-    borderRadius: 5,
-    fontSize: 20,
-    textAlign: 'center',
-    marginRight: 10,
-    color: 'black',
-  },
-  btn: {
-    backgroundColor: '#DA1E29',
-    width: 350,
-    height: 50,
-    borderRadius: 5,
-    justifyContent: 'center',
-    marginBottom: 30,
-    alignSelf: 'center',
-  },
-  btnText: {
-    color: '#fff',
-    fontSize: 18,
-    fontFamily: 'Roboto',
-    textAlign: 'center',
-    paddingBottom: 10,
-    paddingTop: 10,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    backgroundColor: '#f2f2f2',
-    paddingVertical: 10,
+    borderColor: 'rgba(21,37,53,0.16)',
+    borderRadius: 14,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  footerText: {
-    color: '#888',
-    fontSize: 12,
+  boxActive: {borderWidth: 2, borderColor: COLORS.keystone_navy},
+  boxText: {
+    color: COLORS.keystone_navy,
+    fontFamily: 'Inter-Bold',
+    fontSize: 24,
+    fontVariant: ['tabular-nums'],
   },
-  otpInputStyle: {
-    backgroundColor: '#ddd',
-    bottom: -10,
-    right: 0,
-    opacity: 0,
-    position: 'absolute',
-    width: 5,
-    height: 5,
-  },
+  resend: {color: COLORS.keystone_slate, fontFamily: 'Inter', fontSize: 15},
 });

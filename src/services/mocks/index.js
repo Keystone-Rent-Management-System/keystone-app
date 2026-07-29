@@ -12,25 +12,16 @@
 // All fixture amounts are USD. Dates relative to "today" so a stale
 // fixture never shows a date in the past.
 
-// Global mock override. Flip to true to force every wired service
-// onto mock data regardless of BE health — useful for an offline
-// demo or rapid screen iteration. Default false so production users
-// always hit the real BE; per-service fallbacks still kick in when
-// individual endpoints 404/501.
-export const USE_MOBILE_MOCKS = false;
+// Global mock override. Debug builds serve fixtures so the redesigned
+// screens can be reviewed end-to-end while the Phase-3 endpoints are
+// still being built; release builds ALWAYS hit the real BE. Per-service
+// 404/501 fallbacks still apply in both.
+// Set to false locally if you are integrating against a live endpoint.
+export const USE_MOBILE_MOCKS = __DEV__;
 
-// Dev-only role override so the landlord command center is reachable
-// before BE auth is wired against a real landlord test account.
-// Gated by __DEV__ at the consumer (BottomNav.jsx) so release builds
-// are unaffected. Flip to true alongside USE_MOBILE_MOCKS=true for
-// an offline tour of every new screen on a debug build.
-export const DEV_FORCE_LANDLORD = false;
-
-// Dev-only role override for the tenant experience — same idea as
-// DEV_FORCE_LANDLORD, for touring the tenant rent command center on a
-// debug build without a real tenant token. Gated by __DEV__ at the
-// consumer. Must be false in any committed/release build.
-export const DEV_FORCE_TENANT = false;
+// Role preview (tenant ⇄ landlord) moved to a persisted, __DEV__-gated
+// store so it flips at runtime from Account → "Preview as" instead of
+// needing a source edit + rebuild. See provider/store/devRole.ts.
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const daysFromNow = n => {
@@ -189,6 +180,28 @@ export const mockPortfolioPerformance = {
   vsLastYear: 8.4,
 };
 
+// Per-property breakdown for Portfolio performance (design 7a).
+// Collection % is the health signal — exception-first reporting.
+export const mockPortfolioByProperty = [
+  {id: 'p1', name: 'Magnolia Court', units: 64, occupancy: 96, collected: 68200, collectionRate: 100},
+  {id: 'p2', name: 'Riverside East', units: 72, occupancy: 92, collected: 71800, collectionRate: 91},
+  {id: 'p3', name: 'Oak Commons', units: 48, occupancy: 94, collected: 44600, collectionRate: 97},
+  {id: 'p4', name: 'Cedar Row', units: 16, occupancy: 81, collected: 14000, collectionRate: 84},
+];
+
+// Landlord rent-insurance claims (design 7c) — verb-dated lifecycle.
+export const mockInsuranceClaims = [
+  {id: 'cl1', unitName: 'Unit 9D · Riverside E', filedOn: daysFromNow(-24), payout: 4800, paidOn: daysFromNow(-9), status: 'PAID_OUT'},
+  {id: 'cl2', unitName: 'Unit 3F · Cedar Row', filedOn: daysFromNow(-5), payout: null, paidOn: null, status: 'IN_REVIEW'},
+];
+
+// Monthly owner statements (design 7b) — accountant-ready.
+export const mockOwnerStatements = [
+  {id: 's-cur', period: monthYearLabel(0), open: true, closesOn: daysFromNow(5), collected: null},
+  {id: 's-1', period: monthYearLabel(-1), open: false, issuedOn: daysFromNow(-26), collected: 191300},
+  {id: 's-2', period: monthYearLabel(-2), open: false, issuedOn: daysFromNow(-57), collected: 189900},
+];
+
 // ── #6 Maintenance visibility (Phase 3) ────────────────────────────
 export const mockMaintenanceSummary = {
   openRequests: 7,
@@ -241,7 +254,8 @@ export const mockMaintenanceSummary = {
 
 // ── #8 Rent Insurance (Phase 4) ────────────────────────────────────
 export const mockRentInsurance = {
-  insuredUnits: 186,
+  insuredUnits: 142,
+  occupiedUnits: 186,
   totalUnits: 200,
   coveragePercent: 93,
   monthlyPremium: 2790,
@@ -268,7 +282,7 @@ export const mockComplianceAlerts = [
     regulation: 'HB 1217',
     title: 'Rent increase requires 90-day notice',
     unitName: 'Unit 3B',
-    deadline: daysFromNow(12),
+    deadline: daysFromNow(18),
     actionLabel: 'Send 90-day notice',
     status: 'NOT_SENT',
   },
@@ -278,11 +292,68 @@ export const mockComplianceAlerts = [
     regulation: 'HB 1217',
     title: 'Rent increase requires 90-day notice',
     unitName: 'Unit 11A',
-    deadline: daysFromNow(12),
+    deadline: daysFromNow(35),
     actionLabel: 'Send 90-day notice',
     status: 'NOT_SENT',
   },
 ];
+
+// ── Tenant screening (Group A 4b–4d — NEW feature) ────────────────
+// Landlord invites an applicant to screen for a vacant/expiring unit;
+// the applicant completes identity + income docs + FCRA consent; one
+// report comes back (applicant pays the fee). BE endpoints TBD:
+// GET /screening/applications · GET /screening/report/:id ·
+// POST /screening/invite. Report shows a credit BAND, not a raw
+// score, and the adverse-action (FCRA) note rides the decision row.
+export const mockScreening = {
+  unit: {
+    unitId: 'u-7c',
+    unitName: 'Unit 7C',
+    vacantLabel: 'VACANT AUG 18',
+    applicantCount: 3,
+  },
+  applications: [
+    {
+      id: 'app-1',
+      name: 'Devon Torres',
+      initials: 'DT',
+      status: 'REPORT_READY', // INVITED | IN_PROGRESS | REPORT_READY
+      appliedOn: daysFromNow(-3),
+      reportReadyOn: daysFromNow(-1),
+    },
+    {
+      id: 'app-2',
+      name: 'Maya Kim',
+      initials: 'MK',
+      status: 'IN_PROGRESS',
+      appliedOn: daysFromNow(-2),
+      pendingItem: 'income docs pending',
+    },
+    {
+      id: 'app-3',
+      name: 'Ray Bauer',
+      initials: 'RB',
+      status: 'INVITED',
+      invitedOn: daysFromNow(-1),
+    },
+  ],
+  reports: {
+    'app-1': {
+      applicant: 'Devon Torres',
+      unitName: 'Unit 7C',
+      completedOn: daysFromNow(-1),
+      verdict: 'Strong applicant',
+      verdictLine: 'Verified identity, 3.1× income-to-rent, no flags found.',
+      checks: [
+        {key: 'identity', label: 'Identity', sub: 'Government ID + selfie match', value: 'VERIFIED', tone: 'success'},
+        {key: 'credit', label: 'Credit band', sub: 'Reported range, not a raw score', value: '680–739 GOOD', measure: true},
+        {key: 'income', label: 'Income to rent', sub: 'Verified from uploaded docs', value: '3.1×', measure: true},
+        {key: 'evictions', label: 'Evictions', sub: '7-year national search', value: 'NONE FOUND', tone: 'success'},
+        {key: 'background', label: 'Background', sub: 'Criminal records search', value: 'NONE FOUND', tone: 'success'},
+      ],
+    },
+  },
+};
 
 // Compliance audit trail — every dispatched notice, timestamped and
 // logged. This is the "proof it happened" record the landlord can
@@ -322,6 +393,7 @@ export const mockTenantHome = {
     agreementId: 'agr-4b-2025',
     unit: '4B',
     property: 'Magnolia Court',
+    landlord: 'Keystone Property Group',
     address: '128 Magnolia Ave, Austin, TX',
     monthlyRent: 1800,
     deposit: 1800,
@@ -427,9 +499,9 @@ export const mockTenantHome = {
     rentReminderDays: 5, // days before due to remind: 1 | 3 | 5
   },
   recentPayments: [
-    {id: 'r1', amount: 1800, date: daysFromNow(-4), method: 'Bank · Chase ••8821', code: 'KS-9F2A', status: 'PAID', period: monthYearLabel(-1)},
-    {id: 'r2', amount: 1800, date: daysFromNow(-34), method: 'Bank · Chase ••8821', code: 'KS-7C1B', status: 'PAID', period: monthYearLabel(-2)},
-    {id: 'r3', amount: 1800, date: daysFromNow(-64), method: 'Bank · Chase ••8821', code: 'KS-4D8E', status: 'PAID', period: monthYearLabel(-3)},
+    {id: 'r1', amount: 1800, date: daysFromNow(-4), method: 'Chase ••8821', code: 'KS-9F2A', status: 'PAID', period: monthYearLabel(-1)},
+    {id: 'r2', amount: 1800, date: daysFromNow(-34), method: 'Chase ••8821', code: 'KS-7C1B', status: 'PAID', period: monthYearLabel(-2)},
+    {id: 'r3', amount: 1800, date: daysFromNow(-64), method: 'Chase ••8821', code: 'KS-4D8E', status: 'PAID', period: monthYearLabel(-3)},
   ],
 };
 
@@ -448,12 +520,12 @@ export const mockInvite = {
 
 // Tenant payment history (receipts). Newest first. GET /tenants/payments
 export const mockTenantPayments = [
-  {id: 'r1', amount: 1800, date: daysFromNow(-4), method: 'Bank · Chase ••8821', code: 'KS-9F2A', status: 'PAID', period: monthYearLabel(-1)},
-  {id: 'r2', amount: 1800, date: daysFromNow(-34), method: 'Bank · Chase ••8821', code: 'KS-7C1B', status: 'PAID', period: monthYearLabel(-2)},
-  {id: 'r3', amount: 1800, date: daysFromNow(-64), method: 'Bank · Chase ••8821', code: 'KS-4D8E', status: 'PAID', period: monthYearLabel(-3)},
-  {id: 'r4', amount: 1800, date: daysFromNow(-95), method: 'Bank · Chase ••8821', code: 'KS-2A7F', status: 'PAID', period: monthYearLabel(-4)},
-  {id: 'r5', amount: 1800, date: daysFromNow(-125), method: 'Bank · Chase ••8821', code: 'KS-8B3C', status: 'PAID', period: monthYearLabel(-5)},
-  {id: 'r6', amount: 1800, date: daysFromNow(-156), method: 'Bank · Chase ••8821', code: 'KS-1E9D', status: 'PAID', period: monthYearLabel(-6)},
+  {id: 'r1', amount: 1800, date: daysFromNow(-4), method: 'Chase ••8821', code: 'KS-9F2A', status: 'PAID', period: monthYearLabel(-1)},
+  {id: 'r2', amount: 1800, date: daysFromNow(-34), method: 'Chase ••8821', code: 'KS-7C1B', status: 'PAID', period: monthYearLabel(-2)},
+  {id: 'r3', amount: 1800, date: daysFromNow(-64), method: 'Chase ••8821', code: 'KS-4D8E', status: 'PAID', period: monthYearLabel(-3)},
+  {id: 'r4', amount: 1800, date: daysFromNow(-95), method: 'Chase ••8821', code: 'KS-2A7F', status: 'PAID', period: monthYearLabel(-4)},
+  {id: 'r5', amount: 1800, date: daysFromNow(-125), method: 'Chase ••8821', code: 'KS-8B3C', status: 'PAID', period: monthYearLabel(-5)},
+  {id: 'r6', amount: 1800, date: daysFromNow(-156), method: 'Chase ••8821', code: 'KS-1E9D', status: 'PAID', period: monthYearLabel(-6)},
 ];
 
 // Tenant notifications — rent-centric. GET /notifications
@@ -569,6 +641,18 @@ export const mockTenantInsurance = {
     expiresOn: null,
     documentName: null,
   },
+};
+
+// Demo profile for the offline walkthrough — matches the tenant-home
+// fixture identity (Sarah Chen). Served by AuthServices.getProfile only
+// when USE_MOBILE_MOCKS is on.
+export const mockProfile = {
+  userId: 'demo-user',
+  id: 'demo-user',
+  name: 'Sarah Chen',
+  username: 'sarah.chen@example.com',
+  phoneNumber: '+15125550148',
+  access_types: {roles: ['ROLE_TENANT']},
 };
 
 export const mockFallback = (key, value) => {

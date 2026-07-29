@@ -12,16 +12,8 @@ const PaymentsStack = () => (
       animationEnabled: true,
     }}
     initialRouteName="payment_zone">
-    <Stack.Screen
-      name="payment_zone"
-      component={PaymentZone}
-      options={{
-        headerShown: true,
-        title: 'Payments',
-        headerShadowVisible: false,
-        headerTitleStyle: titleStyling,
-      }}
-    />
+    {/* Hub draws its own kit Screen title (S2) */}
+    <Stack.Screen name="payment_zone" component={PaymentZone} />
   </Stack.Navigator>
 );
 

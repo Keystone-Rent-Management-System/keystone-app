@@ -93,3 +93,7 @@ package-lock.json
 !.yarn/versions
 
 **/*junk*/
+
+# local tooling / review scratch
+.pnpm-store/
+review-artifacts/

@@ -12,7 +12,8 @@ import {useNavigation} from '@react-navigation/native';
 
 import {useTenantHome} from '../../hooks/useTenantHome';
 import {usd} from '../../utils/money';
-import {Card, IconChip, Label, Amount, Divider, Row, Icon} from '../../components/premium';
+import {Card, IconChip, Label, Divider, Row, Icon} from '../../components/premium';
+import {PrimaryButton, Screen, SectionLabel, StatusChip} from '../../components/kit';
 import COLORS from '../../constants/Theme';
 
 // The tenant's lease — everything about where they live, in one calm
@@ -50,13 +51,23 @@ const Lease = () => {
   }
 
   return (
-    <View className="flex-1 bg-keystone_canvas">
+    <Screen
+      title="My lease"
+      back="My Home"
+      stickyFooter={
+        isPendingAccept ? (
+          accepting ? (
+            <View style={{minHeight: 52, justifyContent: 'center'}}>
+              <ActivityIndicator color={COLORS.keystone_navy} />
+            </View>
+          ) : (
+            <PrimaryButton label="Accept lease" onPress={onAccept} />
+          )
+        ) : null
+      }>
       <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
-      <ScrollView
-        contentContainerStyle={{paddingBottom: 28}}
-        showsVerticalScrollIndicator={false}>
-        {/* Property hero */}
-        <View className="px-4 pt-5">
+      {/* Property hero */}
+      <View>
           <Card feature>
             <Label onDark>{isPendingAccept ? 'Lease offered' : 'Your home'}</Label>
             <Text className="text-white font-inter-bold text-2xl mt-2">
@@ -66,21 +77,20 @@ const Lease = () => {
             <Text className="text-white/60 font-inter text-sm mt-1">
               {lease.address}
             </Text>
-            <View className="flex-row items-center gap-2 mt-3">
-              <View
-                className="w-1.5 h-1.5 rounded-full"
-                style={{backgroundColor: isPendingAccept ? COLORS.keystone_gold : COLORS.c_success}}
+            <View className="mt-3" style={{alignSelf: 'flex-start', maxWidth: '70%'}}>
+              <StatusChip
+                onDark
+                dot
+                tone={isPendingAccept ? 'pending' : 'success'}
+                label={isPendingAccept ? 'Awaiting your signature' : 'Active lease'}
               />
-              <Text className="text-white/70 font-inter-medium text-2xs uppercase tracking-wider">
-                {isPendingAccept ? 'Awaiting your signature' : 'Active lease'}
-              </Text>
             </View>
           </Card>
         </View>
 
         {/* Accept banner */}
         {isPendingAccept && (
-          <View className="px-4 mt-3">
+          <View className="mt-3">
             <Card style={{padding: 14, borderColor: COLORS.keystone_gold, borderWidth: 1}}>
               <Text className="text-keystone_navy font-inter-semibold text-sm">
                 Review and accept your lease
@@ -94,10 +104,8 @@ const Lease = () => {
         )}
 
         {/* Terms */}
-        <View className="px-4 mt-4">
-          <Text className="text-text_muted font-inter-semibold text-xs uppercase tracking-widest ml-1 mb-3">
-            Lease terms
-          </Text>
+        <View className="mt-4">
+          <SectionLabel>Lease terms</SectionLabel>
           <Card>
             <Row label="Monthly rent" value={usd(lease.monthlyRent)} bold />
             <Divider />
@@ -105,10 +113,10 @@ const Lease = () => {
             <Divider />
             <Row label="Term" value={lease.term ?? '—'} />
             <Divider />
-            <Row label="Start date" value={fmtDate(lease.startDate)} />
+            <Row label="Started" value={fmtDate(lease.startDate)} />
             <Divider />
             <Row
-              label="End date"
+              label="Ends"
               value={fmtDate(lease.endDate)}
               sub={lease.daysToEnd ? `in ${lease.daysToEnd} days` : null}
             />
@@ -119,10 +127,8 @@ const Lease = () => {
 
         {/* Documents */}
         {docs.length > 0 && (
-          <View className="px-4 mt-5">
-            <Text className="text-text_muted font-inter-semibold text-xs uppercase tracking-widest ml-1 mb-3">
-              Documents
-            </Text>
+          <View className="mt-5">
+            <SectionLabel>Documents</SectionLabel>
             <Card style={{paddingVertical: 6}}>
               {docs.map((d, i) => (
                 <View key={d.id}>
@@ -134,7 +140,11 @@ const Lease = () => {
                     }
                     className="flex-row items-center px-3 py-3">
                     <IconChip size={36}>
-                      <Icon name="reports" size={17} color={COLORS.keystone_gold} />
+                      <Icon
+                        name={d.kind === 'Signed' ? 'lease' : 'reports'}
+                        size={17}
+                        color={COLORS.keystone_gold}
+                      />
                     </IconChip>
                     <View className="flex-1 ml-3">
                       <Text className="text-keystone_navy font-inter-semibold text-sm">
@@ -153,27 +163,7 @@ const Lease = () => {
             </Card>
           </View>
         )}
-      </ScrollView>
-
-      {/* Accept CTA */}
-      {isPendingAccept && (
-        <View className="px-4 pb-6 pt-2 bg-keystone_canvas">
-          <TouchableOpacity
-            onPress={onAccept}
-            disabled={accepting}
-            activeOpacity={0.9}
-            className="bg-keystone_navy rounded-2xl py-4 items-center">
-            {accepting ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text className="text-white font-inter-bold text-base">
-                Accept lease
-              </Text>
-            )}
-          </TouchableOpacity>
-        </View>
-      )}
-    </View>
+    </Screen>
   );
 };
 

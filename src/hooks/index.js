@@ -33,9 +33,12 @@ import {
   useZoneTenants,
 } from './usePaymentZone';
 import {useLeaseExpiry} from './useLeaseExpiry';
+import {useComplianceAlerts, useComplianceAudit} from './useCompliance';
 
 export {
   useDashboard,
+  useComplianceAlerts,
+  useComplianceAudit,
   PAYMENT_ZONES,
   usePaymentZones,
   useZoneTenants,

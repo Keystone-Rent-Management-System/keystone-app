@@ -1,24 +1,31 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useMemo} from 'react';
-import {useForm} from 'react-hook-form';
-import {Text, ToastAndroid, TouchableOpacity, View} from 'react-native';
+import {Controller, useForm} from 'react-hook-form';
+import {Text, ToastAndroid, View} from 'react-native';
 import {object, z} from 'zod';
 
 import {useMutation} from '@tanstack/react-query';
 import {
-  EditSvg,
-  EmailSvg,
-  FlagSvg,
-  LockSvg,
-  RightArrowSvg,
-} from '../../../assets/icons';
-import {DetailsHeader, Layout} from '../../../components';
-import {LabelledCInput} from '../../../components/general/input/CInput';
-import ControlledInput from '../../../components/general/input/ControlledInput';
+  Card,
+} from '../../../components/premium';
+import {
+  FormField,
+  ListRow,
+  PrimaryButton,
+  Screen,
+  StatusChip,
+} from '../../../components/kit';
+import COLORS from '../../../constants/Theme';
 import {useAuth} from '../../../hooks';
 import ProfileServices from '../../../services/ProfileServices';
 import {getError} from '../../../utils/getError';
+
+// Account details, both roles (design 3e): identity header with role
+// sub-line, real prefilled values (L5), read-only email with VERIFIED
+// chip + consequence note, Save pinned and K3-disabled until dirty.
+// One role-agnostic component — the landlord variant differs only in
+// the sub-line.
 
 export type AccountFormData = {
   phoneNumber: string;
@@ -27,15 +34,22 @@ export type AccountFormData = {
 const schema = object({
   phoneNumber: z
     .string()
-    .regex(
-      /^(2547\d{8}|2541\d{8}|07\d{8}|01\d{8}|7\d{8}|1\d{8})$/,
-      'Phone number must be in one of the following formats: 2547XXXXXXXX, 2541XXXXXXXX, 07XXXXXXXX, 01XXXXXXXX, 7XXXXXXXX, or 1XXXXXXXX',
-    ),
+    .regex(/^\+?\d{9,13}$/, 'Enter a valid phone number (digits only)'),
 });
+
+const initials = (name?: string) =>
+  (name ?? '')
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(p => p.charAt(0).toUpperCase())
+    .join('');
 
 const Details = () => {
   const navigation = useNavigation<any>();
   const {isPending, profile, refetch} = useAuth();
+
+  const isLandlord = !!profile?.access_types?.roles?.includes('ROLE_LANDLORD');
 
   const {handleSubmit, control, watch} = useForm<AccountFormData>({
     resolver: zodResolver(schema),
@@ -45,25 +59,17 @@ const Details = () => {
   });
 
   const newPhoneNumber = watch('phoneNumber');
-
   const hasPhoneChanged = useMemo(
     () => newPhoneNumber !== profile?.phoneNumber,
     [profile?.phoneNumber, newPhoneNumber],
   );
 
-  const handleChangePassword = () => {
-    navigation.navigate('more__account_password');
-  };
-
   const updateProfileMutation = useMutation({
     mutationKey: ['updateProfile', profile?.id],
     mutationFn: async (data: any) => {
-      if (hasPhoneChanged) {
-        await ProfileServices.updatePhoneNumber(data.phoneNumber);
-        await refetch();
-      } else {
-        return;
-      }
+      if (!hasPhoneChanged) return;
+      await ProfileServices.updatePhoneNumber(data.phoneNumber);
+      await refetch();
     },
     onSuccess: () => {
       ToastAndroid.show('Profile updated successfully', ToastAndroid.SHORT);
@@ -85,96 +91,149 @@ const Details = () => {
   );
 
   return (
-    // @ts-ignore
-    <Layout>
-      <DetailsHeader
-        showSave={hasPhoneChanged}
-        handleSave={handleSubmit(onSubmit)}
-        isLoading={updateProfileMutation.isPending}
-        loadingMessage={updateProfileMutation.isPending && 'updating...'}
+    <Screen
+      title="Account"
+      back="More"
+      stickyFooter={
+        <PrimaryButton
+          label={updateProfileMutation.isPending ? 'Saving…' : 'Save changes'}
+          disabled={!hasPhoneChanged || updateProfileMutation.isPending}
+          onPress={handleSubmit(onSubmit)}
+        />
+      }>
+      {/* Identity header — avatar + name + role sub-line */}
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 14,
+          marginBottom: 20,
+        }}>
+        <View
+          style={{
+            width: 56,
+            height: 56,
+            borderRadius: 999,
+            backgroundColor: COLORS.keystone_navy,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}>
+          <Text
+            style={{
+              color: COLORS.keystone_cream,
+              fontFamily: 'Inter-SemiBold',
+              fontSize: 17,
+            }}>
+            {initials(profile?.name)}
+          </Text>
+        </View>
+        <View style={{minWidth: 0, flex: 1}}>
+          <Text
+            numberOfLines={1}
+            style={{
+              color: COLORS.keystone_navy,
+              fontFamily: 'Inter-Bold',
+              fontSize: 22,
+            }}>
+            {isPending ? '—' : profile?.name}
+          </Text>
+          <Text
+            numberOfLines={1}
+            style={{
+              color: COLORS.keystone_slate,
+              fontFamily: 'Inter',
+              fontSize: 13,
+              marginTop: 2,
+            }}>
+            {isLandlord ? 'Landlord' : 'Tenant'}
+          </Text>
+        </View>
+      </View>
+
+      {/* Full name — read-only until BE supports name updates */}
+      <FormField
+        label="Full name"
+        value={isPending ? '' : profile?.name ?? ''}
+        editable={false}
+        style={{marginBottom: 14}}
       />
 
-      {/* body */}
-      {!isPending && <AvatarSection data={profile} />}
+      <Controller
+        name="phoneNumber"
+        control={control}
+        render={({field: {onChange, onBlur, value}, fieldState: {error}}) => (
+          <FormField
+            label="Phone"
+            prefix="🇺🇸 +1"
+            placeholder="(512) 555-0100"
+            keyboardType="phone-pad"
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            error={error?.message}
+            style={{marginBottom: 14}}
+          />
+        )}
+      />
 
-      <View className="px-5">
-        {/* name input */}
-        <LabelledCInput
-          label={'Name'}
-          labelClassName={'text-gray-600 text-13'}
-          ClassName={'border border-border_grey px-2'}
-          InputClassName={'px-2 text-gray-600 text-xs'}
-          value={!isPending && profile?.name}
-        />
-        <ControlledInput
-          label={'Phone Number'}
-          icon={
-            <View className={'items-center justify-center'}>
-              <FlagSvg />
-            </View>
-          }
-          labelClassName={'text-gray-600 text-13'}
-          ClassName={'border border-border_grey px-2'}
-          InputClassName={'text-xs px-2 text-gray-600 '}
-          containerClassName={'mt-4'}
-          name={'phoneNumber'}
-          keyboardType={'number-pad'}
-          control={control}
-          type={'number'}
-          rules={[]}
-        />
-
-        {/* phone input */}
-        <LabelledCInput
-          label={'Email'}
-          icon={
-            <View className={'items-center justify-center'}>
-              <EmailSvg />
-            </View>
-          }
-          labelClassName={'text-gray-600 text-13'}
-          ClassName={'border border-border_grey px-2'}
-          InputClassName={'text-xs px-2 text-gray-600 '}
-          containerClassName={'my-4'}
-          value={!isPending && profile?.username}
-          // @ts-ignore
-          type={'email'}
-        />
-        <TouchableOpacity
-          className={'flex-row space-x-3 mt-2'}
-          onPress={handleChangePassword}>
-          <LockSvg />
-
-          <View className={'flex-1'}>
-            <Text className={'text-xs font-open-sauce-sans text-primary'}>
-              Change Password
-            </Text>
-          </View>
-
-          <RightArrowSvg size="20" />
-        </TouchableOpacity>
+      {/* Email — read-only with VERIFIED chip + consequence note */}
+      <Text
+        style={{
+          color: COLORS.keystone_slate,
+          fontFamily: 'Inter-Medium',
+          fontSize: 13,
+          marginBottom: 6,
+        }}>
+        Email
+      </Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 10,
+          backgroundColor: '#FFFFFF',
+          borderRadius: 14,
+          minHeight: 52,
+          paddingHorizontal: 14,
+          borderWidth: 1,
+          borderColor: 'rgba(21,37,53,0.16)',
+        }}>
+        <Text
+          numberOfLines={1}
+          style={{
+            flex: 1,
+            minWidth: 0,
+            color: COLORS.keystone_navy,
+            fontFamily: 'Inter',
+            fontSize: 17,
+          }}>
+          {isPending ? '' : profile?.username}
+        </Text>
+        <StatusChip label="Verified" tone="success" />
       </View>
-    </Layout>
+      <Text
+        style={{
+          color: COLORS.keystone_slate,
+          fontFamily: 'Inter',
+          fontSize: 13,
+          marginTop: 4,
+          marginBottom: 16,
+        }}>
+        Changing your email re-runs verification.
+      </Text>
+
+      <Card style={{paddingVertical: 0, paddingHorizontal: 16}}>
+        <ListRow
+          icon="lock"
+          title="Change password"
+          chevron
+          last
+          onPress={() => navigation.navigate('more__account_password')}
+        />
+      </Card>
+    </Screen>
   );
 };
 
-const AvatarSection = ({data}: any) => (
-  <View className={'flex-row justify-center py-5 '}>
-    {/* profile */}
-    <View
-      className={
-        'h-16 w-16 bg-primary rounded-full justify-center items-center relative'
-      }>
-      <Text className={'text-white font-open-sauce-sans-semibold text-lg'}>{`${data?.name
-        ?.split(' ')[0]
-        ?.charAt(0)}${data?.name?.split(' ')[1]?.charAt(0)}`}</Text>
-      <TouchableOpacity
-        className={
-          'bg-bg_pale h-5 w-5 flex-row justify-center items-center rounded-full absolute bottom-1 -right-1'
-        }>
-        <EditSvg />
-      </TouchableOpacity>
-    </View>
-  </View>
-);
 export default Details;
