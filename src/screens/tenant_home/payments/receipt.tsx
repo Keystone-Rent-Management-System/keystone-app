@@ -64,7 +64,7 @@ const Receipt = ({route: {params}}: {route: any}) => {
             />
             <TextRow
               ClassName={'mb-2'}
-              label={'Mpesa Paybill'}
+              label={'Reference'}
               value={'522522'}
             />
             <TextRow label={'Account Number'} value={'7776542'} />

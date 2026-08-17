@@ -4,7 +4,7 @@ import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useMutation} from '@tanstack/react-query';
 import {Controller, useForm} from 'react-hook-form';
-import {Text, TextInput, ToastAndroid, View} from 'react-native';
+import {Text, TextInput, View} from 'react-native';
 import {CloseSvg} from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
 import {useActiveAgrement} from '../../../hooks';
@@ -17,6 +17,7 @@ import {
   RequestHelpFormSchema,
   textInputStyles,
 } from './MakeComplaint';
+import {toast} from '../../../utils/toast';
 
 const GeneralRepairsModal = forwardRef<BottomSheetModal, IMakeComplainProps>(
   (props: IMakeComplainProps, ref) => {
@@ -39,26 +40,26 @@ const GeneralRepairsModal = forwardRef<BottomSheetModal, IMakeComplainProps>(
       mutationFn: (data: {agreementId: string; message: string}) =>
         HelpServices.generalAssistance(data.message),
       onSuccess: () => {
-        ToastAndroid.show(
+        toast.show(
           'Assistance requested successfully',
-          ToastAndroid.SHORT,
+          toast.SHORT,
         );
         reset();
         props.handleCloseModal();
       },
       onError: error => {
-        ToastAndroid.show(
+        toast.show(
           'An error occurred requesting assistance ' + error?.message,
-          ToastAndroid.LONG,
+          toast.LONG,
         );
       },
     });
 
     const handleRequestAssistance = (data: RequestHelpFormData) => {
       if (!agreement) {
-        return ToastAndroid.show(
+        return toast.show(
           'Error: No active agreement found',
-          ToastAndroid.SHORT,
+          toast.SHORT,
         );
       }
 

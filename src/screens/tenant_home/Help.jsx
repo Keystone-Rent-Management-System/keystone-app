@@ -1,14 +1,5 @@
 import React, {useState} from 'react';
-import {
-  ActivityIndicator,
-  Linking,
-  StatusBar,
-  Text,
-  TextInput,
-  ToastAndroid,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {ActivityIndicator, Linking, StatusBar, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
 import {useTenantHome} from '../../hooks/useTenantHome';
@@ -22,6 +13,8 @@ import {
   SectionLabel,
 } from '../../components/kit';
 import COLORS from '../../constants/Theme';
+import {toast} from '../../utils/toast';
+import {getError} from '../../utils/getError';
 
 // Help & contact (design 6c). Call/Email no longer bleed outside the
 // hero card — inside padding per H1/H5, cream primary + outline
@@ -42,14 +35,23 @@ const Help = () => {
   const send = async () => {
     if (msg.trim().length < 3) return;
     setBusy(true);
+    // Don't clear the message or claim delivery unless it actually sent
+    // — the previous version discarded what the user wrote and said
+    // "Sent" even when the request failed, losing their words and their
+    // support request together.
     try {
       await HelpServices.makeComplain(msg.trim());
-    } catch (e) {
-      // optimistic — BE offline / mock
+    } catch (err) {
+      setBusy(false);
+      toast.show(
+        `We couldn’t send that — ${getError(err)}. Your message is still here; please try again.`,
+        toast.LONG,
+      );
+      return;
     }
     setMsg('');
     setBusy(false);
-    ToastAndroid.show('Sent — we’ll get back to you', ToastAndroid.LONG);
+    toast.show('Sent — we’ll get back to you', toast.LONG);
   };
 
   return (

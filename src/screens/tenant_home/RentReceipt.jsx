@@ -1,5 +1,5 @@
 import React from 'react';
-import {StatusBar, Text, ToastAndroid, View} from 'react-native';
+import {StatusBar, Text, View} from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 
 import {Card, Divider, Row} from '../../components/premium';
@@ -13,6 +13,7 @@ import {
 } from '../../components/kit';
 import COLORS from '../../constants/Theme';
 import {useTenantHome} from '../../hooks/useTenantHome';
+import {toast} from '../../utils/toast';
 
 // Receipt (design 5b; quality bar, structure kept). D3 applied: "For"
 // (period) and "Paid" (event) are separate rows — the one date/period
@@ -60,7 +61,7 @@ const RentReceipt = () => {
           Rent paid
         </Text>
         <Text className="text-keystone_slate font-inter text-[15px] mt-1 text-center leading-5">
-          Sent instantly to {landlord ?? 'your landlord'}. You're all set
+          Sent to {landlord ?? 'your landlord'}. You're all set
           {period ? ` for ${period.split(' ')[0]}` : ''}.
         </Text>
       </View>
@@ -103,8 +104,12 @@ const RentReceipt = () => {
         <SecondaryButton
           label="Save PDF"
           style={{flex: 1}}
+          // Claimed the receipt was saved; no file was ever written.
           onPress={() =>
-            ToastAndroid.show('Receipt saved to your device', ToastAndroid.SHORT)
+            toast.show(
+              'Saving a copy isn’t available yet — take a screenshot if you need a record.',
+              toast.LONG,
+            )
           }
         />
         <PrimaryButton

@@ -15,7 +15,7 @@ import {FormField, PrimaryButton, Screen} from '../../components/kit';
 import {KSTile} from '../../components/premium';
 import COLORS from '../../constants/Theme';
 import {useLogin} from '../../hooks';
-import {getError} from '../../utils/getError';
+import {describeAuthFailure} from '../../utils/authError';
 
 // Sign in (design 8a/8g): registration scaffold — S2 header, L4
 // fields, pinned CTA. One account for both roles, stated up front;
@@ -36,9 +36,14 @@ const Login = () => {
   const {loginMutation, handleSignin} = useLogin();
   const submit = handleSubmit(handleSignin);
 
+  // Neutral by design. This used to surface the backend/axios string —
+  // "Request failed with status code 401" — and its fallback,
+  // "That password doesn't match this email.", asserted that the EMAIL
+  // was right and only the password was wrong. Both are answers we
+  // cannot stand behind: the first is protocol noise, the second is an
+  // account-enumeration oracle.
   const apiError = loginMutation.isError
-    ? getError(loginMutation.error) ||
-      "That password doesn't match this email."
+    ? describeAuthFailure(loginMutation.error)
     : null;
 
   return (
@@ -61,14 +66,10 @@ const Login = () => {
               marginTop: 12,
             }}>
             New here?{' '}
-            <Text
-              style={{
-                fontFamily: 'Inter-SemiBold',
-                color: COLORS.keystone_navy,
-                textDecorationLine: 'underline',
-              }}
-              onPress={() => navigation.navigate('auth__registration_email')}>
-              Create an account
+            {/* "Create an account" led to the removed
+                self-registration journey. */}
+            <Text style={{fontFamily: 'Inter-SemiBold', color: COLORS.keystone_navy}}>
+              ask your landlord for an invite
             </Text>
           </Text>
         </View>

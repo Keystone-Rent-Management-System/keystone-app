@@ -1,15 +1,9 @@
 import React, {useEffect} from 'react';
-import {
-  ActivityIndicator,
-  Dimensions,
-  StyleSheet,
-  Text,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import {ActivityIndicator, Dimensions, StyleSheet, Text, View} from 'react-native';
 import Pdf from 'react-native-pdf';
 import AgreementServices from '../../../services/AgreementServices';
 import {useQuery} from '@tanstack/react-query';
+import {toast} from '../../../utils/toast';
 
 interface IPdfViewerProps {
   agreementId?: string;
@@ -29,7 +23,7 @@ const PdfViewer = ({
 
   useEffect(() => {
     if (isError) {
-      ToastAndroid.show('Error while fetching pdf', ToastAndroid.LONG);
+      toast.show('Error while fetching pdf', toast.LONG);
     }
   }, [isError]);
   const source = {

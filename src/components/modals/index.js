@@ -1,10 +1,11 @@
+// The Pallax-era M-Pesa modals (receipt with an Mpesa Paybill row,
+// "Pay through Mpesa / Bank", and the "Lipa na M-PESA" instructions)
+// are removed. They described a Kenyan payment rail on a US product with
+// no settlement path, and were reachable only through this barrel.
 import CustomBottomSheet from './CustomBottomSheet';
 import ExplorerFilterModal from './FilterModal';
 import VirtualTourModal from './VirtualTour';
 import InvoiceConcernModal from './InvoiceConcernModal';
-import InvoiceReceiptModal from './InvoiceReceiptModal';
-import InvoicePaymentMethodModal from './PaymentMethod';
-import InvoicePaymentInstructionsModal from './PaymentInstructions';
 import InvoicePartialPaymentModal from './PartialPayment';
 import ExportStatementModal from './ExportStatement';
 import RequestExtensionModal from './RequestExtension';
@@ -19,9 +20,6 @@ export {
   ExplorerFilterModal,
   VirtualTourModal,
   InvoiceConcernModal,
-  InvoiceReceiptModal,
-  InvoicePaymentMethodModal,
-  InvoicePaymentInstructionsModal,
   InvoicePartialPaymentModal,
   ExportStatementModal,
   RequestExtensionModal,

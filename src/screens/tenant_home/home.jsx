@@ -31,6 +31,7 @@ import {
   usd,
 } from '../../components/kit';
 import COLORS from '../../constants/Theme';
+import {can} from '../../constants/capabilities';
 
 // Tenant Home — rent center hub (design 2c). Home keeps only what
 // needs action: rent hero on top (1b contract, D1/D2 labels), white
@@ -39,11 +40,16 @@ import COLORS from '../../constants/Theme';
 // history lives in Pay → Activity.
 
 const TenantHome = () => {
-  const {home, isPending, isRefetching, refetch} = useTenantHome();
+  const {home, isPending, isRefetching, error, refetch} = useTenantHome();
   const nav = useNavigation();
 
   const tenant = home?.tenant ?? {};
   const rent = home?.rent ?? {};
+  // An account with no tenancy has no rent obligation. Defaulting to an
+  // empty object and formatting it produced a current-month "$0 rent due"
+  // — an obligation invented out of missing data. Absence must render as
+  // absence, not as a zero.
+  const hasTenancy = rent.amount != null && rent.dueDate != null;
   const lease = home?.lease ?? {};
   const credit = home?.credit ?? {};
   const checklist = home?.checklist ?? {};
@@ -81,7 +87,7 @@ const TenantHome = () => {
       icon: 'reports',
       tone: 'pending',
       text: 'Finish your move-in checklist',
-      hint: `${checklist.completed}/${checklist.total} rooms · protects your deposit`,
+      hint: `${checklist.completed}/${checklist.total} rooms · your move-out record`,
       onPress: () => nav.navigate('my_home_stack', {screen: 'checklist'}),
     },
     openRepairs > 0 && {
@@ -109,13 +115,26 @@ const TenantHome = () => {
   const goStep = step =>
     step.tab ? nav.navigate(step.tab, {screen: step.screen}) : nav.navigate(step.screen);
 
-  const feel = isPaid
-    ? "You're all caught up — nothing to do but live here."
-    : isOverdue
-      ? 'Your rent is past due. A quick tap clears it.'
-      : rent.daysUntilDue <= 3
-        ? 'Rent is due soon — two taps and it’s handled.'
-        : 'Everything looks good. Rent’s the only thing on your plate.';
+  // The greeting is a CONCLUSION about the tenant's money, so it may only
+  // be drawn from data that actually loaded. It used to fall through to
+  // "Everything looks good. Rent's the only thing on your plate." whenever
+  // `rent` was an empty object — which is exactly the shape a failed
+  // request produces. The screen then showed all three at once: "We
+  // couldn't load this", "Everything looks good", and "No active tenancy".
+  //
+  // ("A quick tap clears it" / "two taps and it's handled" also promised
+  // in-app payment here, above a hero that can no longer take one.)
+  const feel = error
+    ? 'We couldn’t load your rent just now.'
+    : !hasTenancy
+      ? 'Your landlord hasn’t set up your lease yet.'
+      : isPaid
+        ? "You're all caught up — nothing to do but live here."
+        : isOverdue
+          ? 'Your rent is past due.'
+          : rent.daysUntilDue <= 3
+            ? 'Rent is due soon.'
+            : 'Everything looks good. Rent’s the only thing on your plate.';
 
   const goPay = () => nav.navigate('pay_rent');
 
@@ -131,6 +150,8 @@ const TenantHome = () => {
 
   return (
     <Screen
+      loadError={error}
+      onRetry={refetch}
       variant="hub"
       logoRow={
         <View className="flex-row items-center justify-between">
@@ -160,31 +181,35 @@ const TenantHome = () => {
         {feel}
       </Text>
 
-      {/* RENT HERO — top slot (2c), 1b contract, D1/D2 labels */}
-      <HeroCard
-        label={
-          isPaid
-            ? `${periodLabel(rent.dueDate ?? now)} · PAID`
-            : periodLabel(rent.dueDate ?? now)
-        }
-        badge={{text: 'Instant · Direct', dot: 'success'}}
-        amount={usd(rent.amount)}
-        sub={
-          isPaid
-            ? 'Your last payment went straight to your landlord’s bank — instantly.'
-            : dueLine(rent.dueDate)
-        }
-        cta={
-          !isPaid
-            ? {label: `Pay rent — ${usd(rent.amount)}`, onPress: goPay}
-            : undefined
-        }
-        footnote={
-          !isPaid
-            ? 'Paid the moment you tap — straight to your landlord’s bank.'
-            : undefined
-        }
-      />
+      {/* RENT HERO — top slot (2c), 1b contract, D1/D2 labels.
+          The "Instant · Direct" badge, the "Pay rent — $X" CTA and the
+          "Paid the moment you tap" footnote all described settlement that
+          does not run. The CTA's destination now says payment is
+          unavailable, so the promise was made here and broken one tap
+          later. Restore all three with BE §T2. */}
+      {hasTenancy ? (
+        <HeroCard
+          label={
+            isPaid
+              ? `${periodLabel(rent.dueDate)} · PAID`
+              : periodLabel(rent.dueDate)
+          }
+          amount={usd(rent.amount)}
+          sub={isPaid ? 'Your landlord recorded this as paid.' : dueLine(rent.dueDate)}
+          cta={
+            !isPaid
+              ? {label: 'View rent details', onPress: goPay}
+              : undefined
+          }
+        />
+      ) : (
+        <HeroCard
+          label="Your rent"
+          amount="No active tenancy"
+          amountSize={22}
+          sub="When your landlord sets up your lease, your rent shows up here."
+        />
+      )}
 
       {/* FINISH SETTING UP — white card, gold progress (2c: navy is
           reserved for money) */}
@@ -258,13 +283,16 @@ const TenantHome = () => {
       )}
 
       {/* CREDIT — K1 row with score + delta in the right slot */}
-      {credit.score ? (
+      {/* Rendered a score and a "▲ N pts" delta straight from the
+          payload. Stale or unexpected backend data could therefore
+          resurrect credit results for a capability that does not exist. */}
+      {can('creditReporting') && credit.score ? (
         <View className="mt-4">
           <Card style={{paddingVertical: 0, paddingHorizontal: 16}}>
             <ListRow
               icon="trending"
-              title="Your rent is building credit"
-              sub={`${credit.streakMonths} months on time · reported to the bureaus`}
+              title="Rent reporting"
+              sub={`${credit.streakMonths} months paid on time`}
               last
               onPress={() => nav.navigate('credit')}
               right={

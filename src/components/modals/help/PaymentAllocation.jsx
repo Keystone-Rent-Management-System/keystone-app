@@ -2,14 +2,7 @@ import React, {forwardRef, useState} from 'react';
 
 import {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {useMutation} from '@tanstack/react-query';
-import {
-  Image,
-  Text,
-  TextInput,
-  ToastAndroid,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Image, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {CameraSvg, CloseSvg} from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
@@ -18,6 +11,7 @@ import {getError} from '../../../utils/getError';
 import {compressImage} from '../../../utils/payment';
 import {CButton} from '../../general';
 import {CustomBottomSheet} from '../index';
+import {toast} from '../../../utils/toast';
 
 const PaymentAllocation = forwardRef((props, ref) => {
   const [image, setImage] = useState(null);
@@ -88,16 +82,16 @@ const PaymentAllocation = forwardRef((props, ref) => {
       );
     },
     onSuccess: () => {
-      ToastAndroid.show(
+      toast.show(
         'Payment allocation request sent successfully',
-        ToastAndroid.LONG,
+        toast.LONG,
       );
       props?.handleCloseModal();
     },
     onError: _err => {
-      ToastAndroid.show(
+      toast.show(
         'Error: Failed to verify payment ' + getError(_err),
-        ToastAndroid.LONG,
+        toast.LONG,
       );
     },
   });
@@ -105,15 +99,15 @@ const PaymentAllocation = forwardRef((props, ref) => {
   const handleSubmit = () => {
     //     validate
     if (!code) {
-      return ToastAndroid.show(
+      return toast.show(
         'Please enter a transaction code',
-        ToastAndroid.LONG,
+        toast.LONG,
       );
     }
     if (!image) {
-      return ToastAndroid.show(
+      return toast.show(
         'Please upload a proof of payment',
-        ToastAndroid.LONG,
+        toast.LONG,
       );
     }
 

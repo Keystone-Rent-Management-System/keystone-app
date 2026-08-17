@@ -1,14 +1,5 @@
 import React, {useState} from 'react';
-import {
-  ActivityIndicator,
-  Linking,
-  StatusBar,
-  Text,
-  TextInput,
-  ToastAndroid,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {ActivityIndicator, Linking, StatusBar, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
 import HelpServices from '../../services/help';
@@ -25,6 +16,8 @@ import {
   pickPhoto,
 } from '../../components/kit';
 import COLORS from '../../constants/Theme';
+import {toast} from '../../utils/toast';
+import {getError} from '../../utils/getError';
 
 // Report a repair (design 4i): category chips + urgency segments keep
 // it three taps + one sentence; photos via the 4a primitive (matching
@@ -67,6 +60,12 @@ const ReportRepair = () => {
     setBusy(true);
     const urgent = urgency === 'emergency';
     const fd = new FormData();
+    // The `[URGENT]`/`[THIS WEEK]` prefix is LOAD-BEARING, not decoration.
+    // BE confirmed (§T7, 2026-07-29) that `repair_requests` has no priority
+    // column, so the `priority` field below is accepted and dropped — it
+    // does not round-trip, and the landlord's maintenance queue cannot
+    // triage on it. The prefix is the only way urgency reaches a human
+    // today. Don't remove it until BE ships a real priority column.
     fd.append(
       'message',
       `${urgent ? '[URGENT] ' : urgency === 'week' ? '[THIS WEEK] ' : ''}${category}: ${desc.trim()}`,
@@ -79,17 +78,27 @@ const ReportRepair = () => {
         name: photo.fileName ?? `repair-${i + 1}.jpg`,
       });
     });
+    // Never confirm a repair that did not reach the landlord. This
+    // previously swallowed the error and said "your landlord is
+    // notified" — for an emergency (no heat, a leak) that is the
+    // difference between a tenant escalating and a tenant waiting.
     try {
       await HelpServices.requestRepair(fd);
-    } catch (e) {
-      // BE offline / mock — the capture UI still confirms; the request
-      // is queued the same way it will post against a live BE.
+    } catch (err) {
+      setBusy(false);
+      toast.show(
+        `We couldn’t send this repair — ${getError(err)}. Nothing was sent.${
+          urgent ? ' If this is an emergency, call instead.' : ''
+        }`,
+        toast.LONG,
+      );
+      return;
     }
-    ToastAndroid.show(
+    toast.show(
       urgent
         ? 'Sent as urgent — your landlord is notified'
         : 'Sent to your landlord — they’re notified',
-      ToastAndroid.LONG,
+      toast.LONG,
     );
     setBusy(false);
     nav.navigate('repairs');

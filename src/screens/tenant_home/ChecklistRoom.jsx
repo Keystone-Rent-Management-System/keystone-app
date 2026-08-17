@@ -4,6 +4,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 
 import {Card} from '../../components/premium';
 import {
+  HeroCard,
   PhotoCaptureTile,
   PhotoThumbRow,
   PrimaryButton,
@@ -12,14 +13,27 @@ import {
   SegmentedChoice,
   pickPhoto,
 } from '../../components/kit';
-import COLORS from '../../constants/Theme';
+import {can} from '../../constants/capabilities';
 
-// Checklist — log a room (design 4f). Exactly the data model in the
-// code: condition (Good/Fair/Poor) + photos + optional note — nothing
-// invented. Photo tiles are the 4a primitive at the 88px capture
-// size; the guidance line tells the user what makes good evidence;
-// the CTA counts progress so saving feels like advancing the
-// walkthrough.
+// Condition checklist — room log (design 4f).
+//
+// TWO PRESENTATIONS, decided by `can('conditionRecords')`:
+//
+// · Capability ON (today that means DEMO mode only): the full logging
+//   form — condition (Good/Fair/Poor) + photos + optional note. The
+//   parent list merges the result via route params; nothing claims to be
+//   stored anywhere else. The demo capability table promises
+//   `conditionRecords`, and a promised step that renders only an apology
+//   is a broken journey — the move-in inspection must be walkable.
+//
+// · Capability OFF (every real build until BE §T8 ships): the COLLECTION
+//   is removed, not just the save. Disabling "Save room" would leave the
+//   funnel intact: a tenant could still pick a condition, write a note
+//   and take photos, and none of it would go anywhere — capturing
+//   evidence into nothing is worse at move-out than never having offered
+//   to. Until a real multipart write with a server-confirmed response
+//   exists, the honest thing is to tell the tenant to keep their own
+//   photos.
 
 const CONDITIONS = ['Good', 'Fair', 'Poor'];
 
@@ -33,6 +47,29 @@ const ChecklistRoom = () => {
   const [photos, setPhotos] = useState([]);
   const [note, setNote] = useState(room.note ?? '');
 
+  if (!can('conditionRecords')) {
+    return (
+      <Screen title={room.room ?? 'Log room'} back="Checklist">
+        <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
+
+        <HeroCard
+          label="Condition record"
+          amount="Not available yet"
+          amountSize={22}
+          sub="Keystone can’t store room conditions or photos yet."
+        />
+
+        <Card style={{marginTop: 20}}>
+          <Text className="text-keystone_slate font-inter text-[15px] leading-6">
+            Photograph {room.room ? `the ${room.room.toLowerCase()}` : 'each room'}{' '}
+            with your own camera and keep the photos somewhere safe. They’re your
+            evidence at move-out, so it matters that you hold them.
+          </Text>
+        </Card>
+      </Screen>
+    );
+  }
+
   const addPhoto = async () => {
     const asset = await pickPhoto();
     if (asset?.uri) setPhotos(p => [...p, asset]);
@@ -42,8 +79,8 @@ const ChecklistRoom = () => {
   const canSave = !!condition;
 
   const save = () => {
-    // PATCH /tenants/checklist/:roomId lands with the BE; until then
-    // the parent list merges this via route params.
+    // PATCH /tenants/checklist/:roomId lands with BE §T8; until then the
+    // parent list merges this via route params.
     nav.navigate('checklist', {
       loggedRoom: {
         id: room.id,
@@ -106,6 +143,7 @@ const ChecklistRoom = () => {
           style={{minHeight: 72, textAlignVertical: 'top'}}
         />
       </Card>
+      <View style={{height: 24}} />
     </Screen>
   );
 };

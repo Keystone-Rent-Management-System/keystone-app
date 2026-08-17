@@ -29,13 +29,19 @@ const STATUS = {
 };
 
 const Maintenance = () => {
-  const {summary, isPending, isRefetching, refetch} = useMaintenance();
+  const {summary, isPending, isRefetching, refetch, error, loaded} =
+    useMaintenance();
+  // Only a successful load may say the queue is clear; a failed request
+  // also produces an empty list.
+  const canReassure = loaded && !error;
   const requests = summary?.requests ?? [];
   const overdueReqs = requests.filter(r => r.ageDays > r.slaDays);
   const activeReqs = requests.filter(r => r.ageDays <= r.slaDays);
 
   return (
     <Screen
+      loadError={!isPending && error}
+      onRetry={refetch}
       title="Maintenance"
       back="Reports"
       refreshControl={
@@ -47,19 +53,21 @@ const Maintenance = () => {
       }>
       <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
 
-      {/* Counts card — white, not navy: maintenance isn't money (F3) */}
+      {/* Counts card — white, not navy: maintenance isn't money (F3).
+          During a failure every count resolved to 0, which reads as a
+          clear queue rather than an unknown one. Show em dashes. */}
       <Card>
         <View className="flex-row">
-          <CountStat value={`${requests.length}`} label="Open" />
+          <CountStat value={canReassure ? `${requests.length}` : '—'} label="Open" />
           <View style={{width: 1, backgroundColor: COLORS.keystone_hairline}} />
           <CountStat
-            value={`${summary?.overdue ?? overdueReqs.length}`}
+            value={canReassure ? `${summary?.overdue ?? overdueReqs.length}` : '—'}
             label="Overdue"
             danger
           />
           <View style={{width: 1, backgroundColor: COLORS.keystone_hairline}} />
           <CountStat
-            value={`${summary?.resolvedThisMonth ?? 0}`}
+            value={canReassure ? `${summary?.resolvedThisMonth ?? 0}` : '—'}
             label="Resolved · 30d"
           />
         </View>
@@ -107,7 +115,9 @@ const Maintenance = () => {
       {/* Active pipeline */}
       <View className="mt-4">
         <SectionLabel>
-          Open · {activeReqs.length}
+          {/* Also a count: "Open · 0" during a failure reads as a clear
+              queue. */}
+          Open · {canReassure ? activeReqs.length : '—'}
         </SectionLabel>
         <Card style={{paddingVertical: 0, paddingHorizontal: 16}}>
           {activeReqs.map((r, i) => {
@@ -149,8 +159,13 @@ const Maintenance = () => {
             );
           })}
           {activeReqs.length === 0 && !isPending && (
-            <Text className="text-c_success font-inter text-sm text-center py-6">
-              ✓ No active requests — nothing needs watching.
+            <Text
+              className={`font-inter text-sm text-center py-6 ${
+                canReassure ? 'text-c_success' : 'text-keystone_slate'
+              }`}>
+              {canReassure
+                ? '✓ No active requests — nothing needs watching.'
+                : 'We couldn’t load your maintenance queue. Don’t treat this as clear.'}
             </Text>
           )}
         </Card>

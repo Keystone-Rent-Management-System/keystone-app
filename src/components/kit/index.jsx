@@ -35,7 +35,7 @@ const HAIRLINE = COLORS.keystone_hairline;
 const tabular = {fontVariant: ['tabular-nums']};
 
 export * from './money';
-export {PhotoCaptureTile, PhotoThumbRow, PhotoCountChip} from './photo';
+export {PhotoCaptureTile, PhotoThumbRow, PhotoCountChip, pickPhoto} from './photo';
 
 // ── HeroCard — the navy hero, contract H1–H7 ───────────────────────
 // H1 padding 20, nothing outside it. H2 content-driven height.
@@ -174,6 +174,29 @@ const h = StyleSheet.create({
 // S2 hub vs child header variants. S3 hairline only after scroll.
 // S4 sticky CTA on opaque strip above the home indicator.
 // S5 title/back labels are real nouns — never "default".
+// Shown when a screen's data could not be loaded. This exists because
+// release builds no longer substitute fixtures for a failed request
+// (see services/unavailable.js): without a visible signal, a hero that
+// renders "$0" from an empty object reads as fact — "your rent is $0",
+// "you collected nothing" — when the truth is that we don't know.
+// Naming the failure and offering a retry is the honest version.
+const LoadErrorStrip = ({onRetry}) => (
+  <View style={s.errStrip}>
+    <View style={{flex: 1, minWidth: 0}}>
+      <Text style={s.errTitle}>We couldn’t load this</Text>
+      <Text style={s.errBody}>
+        The numbers below may be incomplete. Check your connection and try
+        again.
+      </Text>
+    </View>
+    {onRetry ? (
+      <TouchableOpacity onPress={onRetry} hitSlop={8} style={s.errBtn}>
+        <Text style={s.errBtnText}>Retry</Text>
+      </TouchableOpacity>
+    ) : null}
+  </View>
+);
+
 export const Screen = ({
   variant = 'child', // 'hub' | 'child'
   title, // child: centered 17 SemiBold
@@ -183,6 +206,8 @@ export const Screen = ({
   scroll = true,
   stickyFooter = null, // rendered on opaque canvas strip (S4)
   refreshControl,
+  loadError = null, // truthy → "couldn't load" strip above the content
+  onRetry,
   children,
   contentStyle,
 }) => {
@@ -224,10 +249,14 @@ export const Screen = ({
       onScroll={e => setScrolled(e.nativeEvent.contentOffset.y > 0)}
       refreshControl={refreshControl}
       showsVerticalScrollIndicator={false}>
+      {loadError ? <LoadErrorStrip onRetry={onRetry} /> : null}
       {children}
     </ScrollView>
   ) : (
-    <View style={[{flex: 1, padding: 20}, contentStyle]}>{children}</View>
+    <View style={[{flex: 1, padding: 20}, contentStyle]}>
+      {loadError ? <LoadErrorStrip onRetry={onRetry} /> : null}
+      {children}
+    </View>
   );
 
   return (
@@ -248,6 +277,32 @@ export const Screen = ({
 
 const s = StyleSheet.create({
   root: {flex: 1, backgroundColor: CANVAS},
+  errStrip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: 'rgba(179,32,32,0.08)',
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    marginBottom: 16,
+  },
+  errTitle: {color: '#B32020', fontFamily: 'Inter-SemiBold', fontSize: 15},
+  errBody: {
+    color: '#B32020',
+    fontFamily: 'Inter',
+    fontSize: 13,
+    lineHeight: 18,
+    marginTop: 2,
+    opacity: 0.9,
+  },
+  errBtn: {
+    backgroundColor: '#B32020',
+    borderRadius: 999,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+  },
+  errBtnText: {color: '#FFFFFF', fontFamily: 'Inter-SemiBold', fontSize: 13},
   childBar: {
     minHeight: 48,
     flexDirection: 'row',
@@ -803,3 +858,6 @@ export const SegmentedChoice = ({options, value, onChange, style}) => (
     })}
   </View>
 );
+
+// Demo walkthrough driver — renders nothing outside __DEV__ + Fixtures.
+export {DemoBar} from './DemoBar';

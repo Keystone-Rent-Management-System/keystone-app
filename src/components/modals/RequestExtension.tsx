@@ -1,5 +1,5 @@
 import React, {forwardRef, useMemo} from 'react';
-import {Text, TextInput, ToastAndroid, View} from 'react-native';
+import {Text, TextInput, View} from 'react-native';
 
 import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {useMutation} from '@tanstack/react-query';
@@ -9,6 +9,7 @@ import ExtensionRequestServices from '../../services/extension-request-services.
 import Helper from '../../utils/Helper';
 import {CButton} from '../general';
 import {CustomBottomSheet} from './index';
+import {toast} from '../../utils/toast';
 
 interface IRequestExtension {
   handleCloseModal: () => void;
@@ -37,13 +38,13 @@ const RequestExtension = forwardRef<BottomSheet, IRequestExtension>(
       mutationKey: ['request-extension'],
       mutationFn: () => ExtensionRequestServices.requestExtension(selectedDays),
       onSuccess: () => {
-        ToastAndroid.show('Extension request sent', ToastAndroid.SHORT);
+        toast.show('Extension request sent', toast.SHORT);
         props.handleCloseModal();
       },
       onError: () => {
-        ToastAndroid.show(
+        toast.show(
           'Error sending extension request',
-          ToastAndroid.SHORT,
+          toast.SHORT,
         );
       },
     });

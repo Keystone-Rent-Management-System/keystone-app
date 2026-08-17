@@ -1,12 +1,20 @@
-import {useQuery} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React from 'react';
-import {RefreshControl, StatusBar, Text, View} from 'react-native';
+import {
+  RefreshControl,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import {Icon} from '../../components/premium';
 import {Screen, SectionLabel, eventDate} from '../../components/kit';
 import COLORS from '../../constants/Theme';
 import NotificationService from '../../services/Notification';
+import {getError} from '../../utils/getError';
+import {toast} from '../../utils/toast';
 
 // Inbox (design 2f): hub title under an owned status zone (S1/S2 —
 // retires the title/clock collision), grouped NEW / EARLIER with gold
@@ -31,7 +39,15 @@ const tileStyle = (item: any) => {
   return {bg: 'rgba(205,160,0,0.12)', fg: '#7A6100'};
 };
 
-const NotificationRow = ({item, last}: {item: any; last?: boolean}) => {
+const NotificationRow = ({
+  item,
+  last,
+  onPress,
+}: {
+  item: any;
+  last?: boolean;
+  onPress?: () => void;
+}) => {
   const read = !!item.read;
   const when = item.createdAt ?? item.time;
   const meta = [
@@ -42,8 +58,13 @@ const NotificationRow = ({item, last}: {item: any; last?: boolean}) => {
     .join(' · ');
   const tile = tileStyle(item);
 
+  // Unread rows are tappable to mark read; read rows have no action, so
+  // they stay a plain View rather than a button that does nothing.
+  const Row: any = read ? View : TouchableOpacity;
+
   return (
-    <View
+    <Row
+      {...(read ? {} : {onPress, activeOpacity: 0.7})}
       className="flex-row items-start gap-3"
       style={{
         paddingVertical: 14,
@@ -79,14 +100,30 @@ const NotificationRow = ({item, last}: {item: any; last?: boolean}) => {
           {meta}
         </Text>
       </View>
-    </View>
+    </Row>
   );
 };
 
 const Notifications = () => {
+  const queryClient = useQueryClient();
   const {data, isPending, isFetching, refetch} = useQuery({
     queryKey: ['notifications'],
     queryFn: () => NotificationService.getNotifications(),
+  });
+
+  // Tapping an unread row marks it read (PATCH /notifications/{id}/read).
+  // The list already groups on `item.read`, so the row moves NEW → EARLIER
+  // on the refetch. Optimism is deliberately skipped: a failed PATCH that
+  // had already moved the row would read as "handled" when it wasn't.
+  const markRead = useMutation({
+    mutationFn: (id: string) => NotificationService.markNotificationRead(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['notifications']});
+      queryClient.invalidateQueries({queryKey: ['notifications', 'unread']});
+    },
+    onError: err => {
+      toast.show("Couldn't mark that as read — " + getError(err), toast.SHORT);
+    },
   });
 
   const items: any[] = (data as any)?.content ?? [];
@@ -133,6 +170,7 @@ const Notifications = () => {
                     key={item.id ?? `n${i}`}
                     item={item}
                     last={i === fresh.length - 1}
+                    onPress={() => item.id && markRead.mutate(item.id)}
                   />
                 ))}
               </View>

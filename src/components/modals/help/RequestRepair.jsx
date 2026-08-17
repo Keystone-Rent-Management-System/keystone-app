@@ -3,21 +3,14 @@ import React, {forwardRef, useCallback, useRef, useState} from 'react';
 import {CloseSvg} from '@/assets/icons';
 import {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {useMutation} from '@tanstack/react-query';
-import {
-  Image,
-  StyleSheet,
-  Text,
-  TextInput,
-  ToastAndroid,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Image, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {CameraSvg} from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
 import HelpServices from '../../../services/help';
 import {CButton} from '../../general';
 import {CustomBottomSheet} from '../index';
 import SelectPhotoOptions from '../select-photo-options';
+import {toast} from '../../../utils/toast';
 
 const RequestRepair = forwardRef((props, ref) => {
   // saves image
@@ -78,18 +71,18 @@ const RequestRepair = forwardRef((props, ref) => {
       return await HelpServices.requestRepair(formData);
     },
     onSuccess: () => {
-      ToastAndroid.show('Repair request sent successfully', ToastAndroid.LONG);
+      toast.show('Repair request sent successfully', toast.LONG);
       props?.handleCloseModal();
     },
     onError: () => {
-      ToastAndroid.show('Error: Failed to request repair', ToastAndroid.LONG);
+      toast.show('Error: Failed to request repair', toast.LONG);
     },
   });
 
   const handleRequestRepair = () => {
     //   validate values
     if (!image?.uri) {
-      return ToastAndroid.show('A photo is required.', ToastAndroid.LONG);
+      return toast.show('A photo is required.', toast.LONG);
     }
     requestRepairMutation.mutate();
   };

@@ -7,10 +7,13 @@ import {Card, ProgressBar} from '../../components/premium';
 import {
   HeroCard,
   ListRow,
+  PrimaryButton,
   Screen,
   SectionLabel,
 } from '../../components/kit';
 import COLORS from '../../constants/Theme';
+import {can} from '../../constants/capabilities';
+import {toast} from '../../utils/toast';
 
 // Condition checklist (design 4e / move-out 4g). The hero footnote no
 // longer clips (H2/H4); the photo total surfaces as the hero chip.
@@ -72,10 +75,15 @@ const Checklist = () => {
         badge={photoTotal > 0 ? {text: `${photoTotal} photos`} : undefined}
         amount={`${done} of ${rooms.length} rooms`}
         amountSize={28}
+        // Copy states what the product actually does today. BE (§T8,
+        // 2026-07-29) ships item completion only — there is no locked,
+        // diffable move-in baseline yet, so we must not promise the
+        // record shields a deposit dispute. Restore the stronger claim
+        // when the baseline schema lands.
         sub={
           isMoveOut
-            ? 'Each room is compared to your move-in photos — that’s what makes deductions fair.'
-            : 'Your photo record protects your deposit.'
+            ? 'Log each room now so you have your own record alongside your move-in photos.'
+            : 'Your photo record — keep it for move-out.'
         }>
         <View style={{marginTop: 12}}>
           <ProgressBar percent={pct} onDark />
@@ -106,6 +114,8 @@ const Checklist = () => {
                   : {label: isMoveOut ? 'Matches' : 'Done', tone: 'success'}
                 : {label: 'Done', tone: 'success'}
               : undefined;
+            // The "Log ›" affordance is gone — it advertised a capability
+            // that does not exist. The row still opens the explanation.
             return (
               <ListRow
                 key={r.id}
@@ -114,13 +124,6 @@ const Checklist = () => {
                 title={r.room}
                 sub={sub}
                 chip={chip}
-                right={
-                  !r.done ? (
-                    <Text className="text-keystone_gold font-inter-semibold text-sm">
-                      Log ›
-                    </Text>
-                  ) : undefined
-                }
                 last={i === rooms.length - 1}
                 onPress={() => goLog(r)}
               />
@@ -132,10 +135,33 @@ const Checklist = () => {
             Loading…
           </Text>
         )}
+        {/* Sign-off closes the pre-move-in walkthrough: every room logged,
+            record acknowledged, on to living here. Gated on the same
+            capability as room logging — a real build that cannot store
+            the record must not offer to sign one off. */}
+        {!isMoveOut &&
+        can('conditionRecords') &&
+        rooms.length > 0 &&
+        done === rooms.length ? (
+          <PrimaryButton
+            label="Sign off move-in record"
+            style={{marginTop: 16}}
+            onPress={() => {
+              toast.show(
+                `Move-in record signed off — ${rooms.length} rooms, ${photoTotal} photos. Keep it for move-out.`,
+                toast.LONG,
+              );
+              nav.navigate('my_home_hub');
+            }}
+          />
+        ) : null}
+        {/* Told the tenant that finishing produces a shared side-by-side
+            record. Nothing is stored — see the note in ChecklistRoom — so
+            the record does not exist for either party. */}
         {isMoveOut && (
           <Text className="text-keystone_slate font-inter text-xs mt-3 leading-5">
-            When you finish, both you and your landlord get the side-by-side
-            record — your deposit clock starts from your notice date.
+            Your deposit clock starts from your notice date. Keep your own
+            photos — Keystone can’t store this record yet.
           </Text>
         )}
       </View>

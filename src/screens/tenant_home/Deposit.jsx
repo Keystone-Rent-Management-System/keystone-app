@@ -32,44 +32,78 @@ const fmtDate = iso => {
 };
 
 const Deposit = () => {
-  const {home} = useTenantHome();
+  const {home, error} = useTenantHome();
   const deposit = home?.deposit ?? {};
   const lease = home?.lease ?? {};
-  const ret = deposit.return ?? {status: 'HELD'};
-  const activeIdx = Math.max(
-    0,
-    RETURN_STEPS.findIndex(s => s.key === ret.status),
-  );
 
+  // MISSING DATA IS NOT PROOF THAT MONEY IS HELD.
+  //
+  // `deposit.return ?? {status: 'HELD'}` defaulted an absent return state
+  // to HELD, and the screen then displayed "Security deposit held", a
+  // green "Protected" badge and a return timeline. A tenant with no
+  // deposit record — or a failed request — was shown their money as
+  // safely held by a party that had never confirmed holding it.
+  const amount = deposit.held ?? lease.deposit;
+  const known = !error && amount != null && deposit.return?.status != null;
+  const ret = deposit.return ?? {};
+  // findIndex returns -1 for an unknown status, and Math.max(0, -1) made
+  // that 0 — so the timeline confidently marked "Held — current" and
+  // "in progress" for a deposit whose state nobody knows.
+  const foundIdx = RETURN_STEPS.findIndex(s => s.key === ret.status);
+  const activeIdx = foundIdx;
+
+  // With an unknown status every step is 'upcoming' — nothing is claimed
+  // as done or in progress.
   const steps = RETURN_STEPS.map((step, i) => ({
     title: i === activeIdx ? `${step.label} — current` : step.label,
     sub:
       step.key === 'REFUNDED'
         ? `Sent to your bank within ${deposit.refundDays ?? 14} days`
         : step.sub,
-    state: i < activeIdx ? 'done' : i === activeIdx ? 'current' : 'upcoming',
+    state:
+      activeIdx < 0
+        ? 'upcoming'
+        : i < activeIdx
+          ? 'done'
+          : i === activeIdx
+            ? 'current'
+            : 'upcoming',
   }));
 
   return (
     <Screen title="Security deposit" back="My Home">
       <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
 
-      <HeroCard
-        label="Security deposit held"
-        badge={{text: 'Protected', dot: 'success'}}
-        amount={usd(deposit.held ?? lease.deposit)}
-        amountSize={34}
-        sub={`Condition at move-in: ${deposit.condition ?? '—'}${
-          deposit.moveInLogged ? ' · checklist logged' : ''
-        }`}
-      />
+      {known ? (
+        <HeroCard
+          label="Security deposit held"
+          badge={{text: 'Protected', dot: 'success'}}
+          amount={usd(amount)}
+          amountSize={34}
+          sub={`Condition at move-in: ${deposit.condition ?? '—'}${
+            deposit.moveInLogged ? ' · checklist logged' : ''
+          }`}
+        />
+      ) : (
+        <HeroCard
+          label="Security deposit"
+          amount={amount != null ? usd(amount) : 'Not confirmed'}
+          amountSize={amount != null ? 34 : 22}
+          sub="Keystone can’t confirm your deposit status. Ask your landlord who holds it and where."
+        />
+      )}
 
       {/* Return tracker */}
       <View className="mt-5">
         <SectionLabel
           right={
             <Text className="text-text_muted font-inter text-xs">
-              {ret.status === 'HELD' ? 'starts when you give notice' : 'in progress'}
+              {/* "in progress" was the fallback for an unknown status. */}
+              {!known
+                ? 'status unknown'
+                : ret.status === 'HELD'
+                  ? 'starts when you give notice'
+                  : 'in progress'}
             </Text>
           }>
           Your deposit return
@@ -77,7 +111,7 @@ const Deposit = () => {
         <Card>
           <Timeline steps={steps} />
 
-          {ret.status !== 'HELD' && (
+          {known && ret.status !== 'HELD' && (
             <>
               <Divider style={{marginVertical: 12}} />
               {fmtDate(ret.moveOutDate) && (
@@ -108,11 +142,12 @@ const Deposit = () => {
             </Text>
           </View>
           <Divider style={{marginVertical: 12}} />
+          {/* Promised a stored baseline, fairer deductions and a faster
+              refund. Condition records cannot be stored at all
+              (capability `conditionRecords`), so none of it follows. */}
           <Text className="text-text_muted font-inter text-xs leading-5">
-            Your photo checklist from move-in is your proof of condition. Keep
-            it complete, report repairs through the app, and your move-out is
-            compared against the baseline — so deductions are fair and your
-            refund is faster.
+            Photos you take at move-in are your own proof of condition — keep
+            them somewhere safe. Keystone can’t store them for you yet.
           </Text>
         </Card>
       </View>

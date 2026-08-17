@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import React, {useEffect} from 'react';
-import useGlobals from '../provider/store/useGlobals';
+import useAuthSession, {AUTHENTICATED} from '../provider/store/authSession';
 
 import {
   Credit,
@@ -21,6 +21,7 @@ import {LoadingModal} from '../components/modals';
 import COLORS from '../constants/Theme';
 import {useAuth} from '../hooks';
 import {useDevRoleStore} from '../provider/store/devRole';
+import {isLandlordProfile, isTenantProfile} from '../utils/roles';
 import PropertyStack from './PropertyStack';
 import StatementStack from './StatementStack';
 import TransactionTopTabNav from './TransactionTopTabNav';
@@ -29,7 +30,10 @@ import {InvoiceAll, PaymentReceipt} from '../screens';
 const Stack = createStackNavigator();
 
 const HomeStack = () => {
-  const {auth} = useGlobals(state => state.state);
+  // Read the gate, not the token mirror. The mirror is updated as a side
+  // effect of teardown and can briefly disagree with the session's real
+  // state; the gate is the one authority.
+  const isAuthed = useAuthSession(s => s.status) === AUTHENTICATED;
   const navigation = useNavigation();
   const {isPending, profile} = useAuth();
 
@@ -38,16 +42,16 @@ const HomeStack = () => {
   const forceTenant = __DEV__ && devRole === 'tenant';
 
   useEffect(() => {
-    if (!auth?.access_token && !forceTenant) {
+    if (!isAuthed && !forceTenant) {
       navigation.navigate('auth__login');
     }
-  }, [auth?.access_token, navigation, forceTenant]);
+  }, [isAuthed, navigation, forceTenant]);
 
   if (isPending && !forceTenant) {
     return <LoadingModal />;
   } else if (
     !forceTenant &&
-    profile?.access_types?.roles?.includes('ROLE_LANDLORD')
+    isLandlordProfile(profile)
   ) {
     return (
       <Stack.Navigator
@@ -92,7 +96,7 @@ const HomeStack = () => {
     );
   } else if (
     forceTenant ||
-    profile?.access_types?.roles?.includes('ROLE_TENANT')
+    isTenantProfile(profile)
   ) {
     return (
       <Stack.Navigator

@@ -2,7 +2,7 @@ import React, {useMemo, useState} from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
 
 import {FormField, PrimaryButton, Screen} from '../../../components/kit';
-import StepIndicator from '../registration/StepIndicator';
+import StepIndicator from '../StepIndicator';
 import COLORS from '../../../constants/Theme';
 import {useResetPassword} from '../../../hooks';
 

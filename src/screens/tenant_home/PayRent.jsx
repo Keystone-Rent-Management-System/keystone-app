@@ -1,96 +1,110 @@
-import React, {useState} from 'react';
-import {
-  ActivityIndicator,
-  StatusBar,
-  Text,
-  ToastAndroid,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React from 'react';
+import {StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
 import {useTenantHome} from '../../hooks/useTenantHome';
 import {Card, Divider, Row, Icon, IconChip} from '../../components/premium';
 import {
-  ConsentBlock,
   HeroCard,
-  PrimaryButton,
   Screen,
   SectionLabel,
   eventDate,
   periodLabel,
+  shortDate,
   usd,
 } from '../../components/kit';
 import COLORS from '../../constants/Theme';
-import {ACH} from '../../constants/legalCopy';
 
-// Pay rent — checkout (design 5a; quality bar, structure kept 1:1).
-// Fixes only: full authorization copy above the fold (no clipping
-// under the sticky bar), CTA on an opaque S4 strip, hero label
-// follows D1 ("YOU'RE PAYING · JULY RENT" / "Due Aug 1 · paying
-// today"), ONE-TIME chip states scope. The redundant grey strip above
-// the CTA is gone — it duplicated the consent card.
+// Rent details (was: checkout, design 5a).
+//
+// This is a READ-ONLY screen until settlement exists. It is not a checkout
+// with a disabled button — that is a different and still-dishonest thing.
+//
+// What was removed and why:
+//   · The Pay CTA and its `Date.now()` receipt. There was never a
+//     settlement request; the screen minted a confirmation code and
+//     navigated to `rent_receipt`, so a tenant saw "Rent paid" while no
+//     money moved.
+//   · "YOU'RE PAYING · <MONTH>" and "paying today". Nobody is paying
+//     anything here.
+//   · The ACH/NACHA authorization block. Presenting an authorization for
+//     a debit that cannot be initiated asks the tenant to consent to
+//     nothing, and would leave no record of what they agreed to.
+//   · "Goes straight to your landlord — instantly" and the $0-fee
+//     settlement promise. Both describe a mechanism that does not run.
+//
+// The screen still answers the honest question a tenant has — what is
+// owed, for which period, when it is due, and which account is on file.
+//
+// Restoring it (BE §T2) means: idempotency key, button locked while
+// unresolved, `idle → submitting → confirmed | failed | unknown`, receipt
+// built ONLY from the server response, reconciliation by transaction id on
+// next launch, and the authorization re-introduced alongside a debit that
+// can actually be initiated.
 
 const PayRent = () => {
   const nav = useNavigation();
   const {home} = useTenantHome();
-  const [paying, setPaying] = useState(false);
 
   const rent = home?.rent ?? {};
   const method = home?.paymentMethod ?? {};
   const lease = home?.lease ?? {};
+  // NO TENANCY IS NOT A ZERO OBLIGATION.
+  //
+  // `rent.amount ?? 0` plus `periodLabel(rent.dueDate ?? new Date())`
+  // turned an account with no lease into a current-month "$0 rent due",
+  // and then told the person to "keep paying your landlord". Both facts
+  // were invented from absent data. Fixing the date formatting removed
+  // the visible "undefined NaN" but left the fabricated obligation.
+  const hasTenancy = rent.amount != null && rent.dueDate != null;
   const amount = rent.amount ?? 0;
+  // Server-supplied period is authoritative; the derived label is only a
+  // fallback for fixtures that predate the field. The same value is used
+  // on the Pay hub so the two can never name different months (P0-04).
+  const period = rent.periodLabel ?? periodLabel(rent.dueDate);
 
-  const onPay = () => {
-    setPaying(true);
-    ToastAndroid.show('Sending your rent…', ToastAndroid.SHORT);
-    // The BE settlement call lands here. Build the receipt the screen
-    // navigates to from its (eventual) response.
-    const code = `KS-${Date.now().toString(36).slice(-4).toUpperCase()}`;
-    nav.replace('rent_receipt', {
-      amount,
-      method: method.name ? `${method.name} ••${method.last4}` : 'Your bank',
-      date: new Date().toISOString(),
-      code,
-      period: rent.periodLabel,
-      landlord: lease.landlord,
-      property: lease.property,
-      unit: lease.unit,
-    });
-  };
+  if (!hasTenancy) {
+    return (
+      <Screen title="Rent details" back="Pay">
+        <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
+        <HeroCard
+          label="Your rent"
+          amount="No active tenancy"
+          amountSize={22}
+          sub="You don’t have a lease on this account yet."
+        />
+        <Card style={{marginTop: 20}}>
+          <Text className="text-keystone_slate font-inter text-[13px] leading-5">
+            When your landlord sets up your lease, your rent, due date and
+            payment history will appear here.
+          </Text>
+        </Card>
+      </Screen>
+    );
+  }
 
   return (
-    <Screen
-      title="Pay rent"
-      back="Pay"
-      stickyFooter={
-        paying ? (
-          <View style={{minHeight: 52, justifyContent: 'center'}}>
-            <ActivityIndicator color={COLORS.keystone_navy} />
-          </View>
-        ) : (
-          <PrimaryButton
-            label={`Pay ${usd(amount)} now`}
-            disabled={amount <= 0}
-            onPress={onPay}
-          />
-        )
-      }>
+    <Screen title="Rent details" back="Pay">
       <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
 
-      <Text className="text-keystone_slate font-inter text-[15px] mb-4">
-        Goes straight to {lease.landlord ?? 'your landlord'} — instantly.
-      </Text>
-
       <HeroCard
-        label={`YOU'RE PAYING · ${periodLabel(rent.dueDate ?? new Date())}`}
-        badge={{text: 'One-time'}}
+        label={`RENT DUE · ${period.toUpperCase()}`}
         amount={usd(amount)}
-        sub={`${eventDate('Due', rent.dueDate)} · paying today`}
+        sub={eventDate('Due', rent.dueDate)}
       />
 
+      <Card style={{marginTop: 20}}>
+        <Text className="text-keystone_navy font-inter-semibold text-[15px]">
+          Paying rent in the app isn’t available yet
+        </Text>
+        <Text className="text-keystone_slate font-inter text-[13px] leading-5 mt-1">
+          Keep paying {lease.landlord ?? 'your landlord'} the way you do today.
+          We’ll let you know the moment you can pay here.
+        </Text>
+      </Card>
+
       <View className="mt-5">
-        <SectionLabel>Paying from</SectionLabel>
+        <SectionLabel>Account on file</SectionLabel>
         <Card>
           <View className="flex-row items-center">
             <IconChip>
@@ -100,16 +114,16 @@ const PayRent = () => {
               <Text
                 numberOfLines={1}
                 className="text-keystone_navy font-inter-semibold text-base">
-                {method.name ?? 'Your bank'}
+                {method.name ?? 'No account added'}
                 {method.last4 ? ` ••${method.last4}` : ''}
               </Text>
               <Text className="text-text_muted font-inter text-xs mt-0.5">
-                Bank account · instant transfer
+                {method.name ? 'Bank account' : 'Nothing to pay from yet'}
               </Text>
             </View>
             <TouchableOpacity onPress={() => nav.navigate('payment_methods')}>
               <Text className="text-keystone_gold font-inter-semibold text-sm">
-                Change
+                Manage
               </Text>
             </TouchableOpacity>
           </View>
@@ -117,32 +131,14 @@ const PayRent = () => {
       </View>
 
       <View className="mt-5">
+        <SectionLabel>This period</SectionLabel>
         <Card>
           <Row label="Rent" value={usd(amount)} />
           <Divider />
-          <Row label="Service fee" value="$0" valueColor={COLORS.c_success} />
+          <Row label="Period" value={period} />
           <Divider />
-          <Row label="Total" value={usd(amount)} bold />
+          <Row label="Due" value={shortDate(rent.dueDate)} />
         </Card>
-        <Text className="text-keystone_slate font-inter text-xs mt-3 ml-1">
-          No fees to you. Keystone settles the transfer directly to your
-          landlord's bank.
-        </Text>
-      </View>
-
-      {/* ACH authorization (NACHA) + Reg E — full copy, above the fold */}
-      <View className="mt-5">
-        <ConsentBlock
-          copy={ACH.oneTimeMandate(
-            usd(amount),
-            method.name ? `${method.name} ••${method.last4}` : 'your bank',
-            rent.periodLabel ?? 'this period',
-          )}>
-          <Divider style={{marginVertical: 10}} />
-          <Text className="text-text_muted font-inter text-xs leading-5">
-            {ACH.regE}
-          </Text>
-        </ConsentBlock>
       </View>
     </Screen>
   );

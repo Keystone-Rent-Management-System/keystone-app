@@ -3,7 +3,7 @@ import {Pressable, StyleSheet, Text, TextInput} from 'react-native';
 import {View} from 'react-native';
 
 import {PrimaryButton, Screen} from '../../../components/kit';
-import StepIndicator from '../registration/StepIndicator';
+import StepIndicator from '../StepIndicator';
 import COLORS from '../../../constants/Theme';
 import useGlobals from '../../../provider/store/useGlobals';
 

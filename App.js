@@ -11,13 +11,17 @@ import {StyleSheet} from 'react-native';
 
 import Main from './src/Main';
 import * as Sentry from '@sentry/react-native';
+import {scrubEvent} from './src/utils/sentryScrub';
 
 Sentry.init({
   dsn: 'https://6d592da0b347029be2400ab07f106938@o4506602287595520.ingest.us.sentry.io/4508793734955008',
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
   integrations: [Sentry.mobileReplayIntegration()],
+  sendDefaultPii: false,
+  beforeSend: scrubEvent,
 });
+
 function App() {
   // RemoteNotification used to be mounted here, but it now reads the
   // react-query client (to invalidate dashboard/payment-zone caches

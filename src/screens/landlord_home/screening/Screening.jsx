@@ -1,14 +1,8 @@
 import React from 'react';
-import {
-  StatusBar,
-  Text,
-  ToastAndroid,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
-import {mockScreening} from '../../../services/mocks';
+import {demoOnly, mockScreening} from '../../../services/mocks';
 import {Card} from '../../../components/premium';
 import {
   HeroCard,
@@ -18,6 +12,8 @@ import {
   eventDate,
 } from '../../../components/kit';
 import COLORS from '../../../constants/Theme';
+import {toast} from '../../../utils/toast';
+import {can} from '../../../constants/capabilities';
 
 // Tenant screening — landlord applicants list (design 4b, NEW
 // feature). Lives in Leases (a vacant/expiring unit's natural next
@@ -33,7 +29,27 @@ const CHIP = {
 
 const Screening = () => {
   const nav = useNavigation();
-  const {unit, applications} = mockScreening;
+  // Read the fixture through demoOnly like every other fixture-backed
+  // screen. This imported `mockScreening` directly, so in a LIVE build a
+  // landlord saw invented applicants — real-looking names attached to a
+  // unit that isn't theirs — with no endpoint behind any of it.
+  const screening = can('tenantScreening') ? demoOnly(mockScreening) : null;
+  const unit = screening?.unit ?? {};
+  const applications = screening?.applications ?? [];
+
+  if (!screening) {
+    return (
+      <Screen title="Screening" back="Leases">
+        <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
+        <HeroCard
+          label="Screening"
+          amount="Not available yet"
+          amountSize={22}
+          sub="Keystone doesn’t screen applicants yet. Use your own process for now."
+        />
+      </Screen>
+    );
+  }
 
   return (
     <Screen title="Screening" back="Leases">
@@ -47,10 +63,12 @@ const Screening = () => {
         sub="Identity, credit, income and background — one report, applicant pays the fee."
         cta={{
           label: 'Invite an applicant',
+          // Claimed an invite was sent without collecting a name, email,
+          // phone, unit or expiry — and without any request.
           onPress: () =>
-            ToastAndroid.show(
-              'Invite sent — they get a KS code by email',
-              ToastAndroid.SHORT,
+            toast.show(
+              'Inviting applicants isn’t available yet.',
+              toast.SHORT,
             ),
         }}
       />

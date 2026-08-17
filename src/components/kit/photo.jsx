@@ -34,10 +34,17 @@ const PICKER_OPTS = {mediaType: 'photo', quality: 0.7};
 export const pickPhoto = () =>
   new Promise(resolve => {
     const run = async fromCamera => {
-      const res = fromCamera
-        ? await launchCamera(PICKER_OPTS)
-        : await launchImageLibrary(PICKER_OPTS);
-      resolve(res?.assets?.[0] ?? null);
+      // A rejected picker must still settle this promise — callers hold
+      // `capturing` flags open on it, and an unresolved pick freezes the
+      // capture tile for the rest of the screen's life.
+      try {
+        const res = fromCamera
+          ? await launchCamera(PICKER_OPTS)
+          : await launchImageLibrary(PICKER_OPTS);
+        resolve(res?.assets?.[0] ?? null);
+      } catch (err) {
+        resolve(null);
+      }
     };
     if (Platform.OS === 'ios') {
       ActionSheetIOS.showActionSheetWithOptions(

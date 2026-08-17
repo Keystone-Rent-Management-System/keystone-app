@@ -24,16 +24,23 @@ import COLORS from '../../constants/Theme';
 
 const PayHub = () => {
   const nav = useNavigation();
-  const {home, isRefetching, refetch} = useTenantHome();
+  const {home, isRefetching, error, refetch} = useTenantHome();
   const rent = home?.rent ?? {};
   const autopay = home?.autopay ?? {};
   const method = home?.paymentMethod ?? {};
   const lastPayment = (home?.recentPayments ?? [])[0];
   const isPaid = rent.status === 'PAID';
   const isOverdue = rent.status === 'OVERDUE';
+  // No lease → no obligation. See the note in PayRent: an absent rent
+  // must not be formatted into a current-month $0 due.
+  const hasTenancy = rent.amount != null && rent.dueDate != null;
+  // Server-supplied period is authoritative and must match checkout.
+  const period = rent.periodLabel ?? periodLabel(rent.dueDate);
 
   return (
     <Screen
+      loadError={error}
+      onRetry={refetch}
       variant="hub"
       refreshControl={
         <RefreshControl
@@ -51,25 +58,39 @@ const PayHub = () => {
         Pay
       </Text>
       <Text className="text-keystone_slate font-inter text-base mt-1 mb-5">
-        Instant, free, straight to your landlord's bank.
+        Rent, receipts and payment history in one place.
       </Text>
 
-      <HeroCard
-        label={isPaid ? `${periodLabel(rent.dueDate)} · PAID` : periodLabel(rent.dueDate)}
-        badge={{
-          text: isPaid ? 'Paid' : eventDate('Due', rent.dueDate).toUpperCase(),
-          dot: isPaid ? 'success' : isOverdue ? 'danger' : 'pending',
-        }}
-        amount={usd(rent.amount)}
-        cta={
-          !isPaid
-            ? {
-                label: `Pay rent — ${usd(rent.amount)}`,
-                onPress: () => nav.navigate('pay_rent'),
-              }
-            : undefined
-        }
-      />
+      {/* Same canonical period as checkout (P0-04). */}
+      {hasTenancy ? (
+        <HeroCard
+          label={isPaid ? `${period} · PAID` : period}
+          badge={{
+            text: isPaid ? 'Paid' : eventDate('Due', rent.dueDate).toUpperCase(),
+            dot: isPaid ? 'success' : isOverdue ? 'danger' : 'pending',
+          }}
+          amount={usd(rent.amount)}
+          cta={
+            !isPaid
+              ? {
+                  // Labelled "View payment details", not "Pay rent —
+                  // $1,800": paying is not available, and a CTA that reads
+                  // like a payment button is a promise the next screen
+                  // cannot keep.
+                  label: 'View payment details',
+                  onPress: () => nav.navigate('pay_rent'),
+                }
+              : undefined
+          }
+        />
+      ) : (
+        <HeroCard
+          label="Your rent"
+          amount="No active tenancy"
+          amountSize={22}
+          sub="When your landlord sets up your lease, your rent shows up here."
+        />
+      )}
 
       <View className="mt-5">
         <SectionLabel>Manage</SectionLabel>
@@ -80,7 +101,7 @@ const PayHub = () => {
             sub={
               autopay.enabled
                 ? `Pays on the ${ordinal(autopay.dayOfMonth)} · builds your streak`
-                : 'Turn on to never miss rent'
+                : 'Not available yet'
             }
             chip={{
               label: autopay.enabled ? 'On' : 'Off',
@@ -88,19 +109,21 @@ const PayHub = () => {
             }}
             onPress={() => nav.navigate('autopay')}
           />
-          <ListRow
-            icon="scale"
-            title="Need more time?"
-            sub="Split this month or pay part now"
-            chevron
-            onPress={() => nav.navigate('pay_rent', {flex: true})}
-          />
+          {/* "Need more time? · Split this month or pay part now" is
+              REMOVED until a real partial/split flow exists. It passed
+              `{flex: true}` to `pay_rent`, which never read the param, so
+              a tenant looking for relief landed on the ordinary full-rent
+              checkout — one tap from paying the entire balance, the
+              opposite of what the row offered. Restore only alongside a
+              flow with amount entry, min/max validation, what-remains-
+              after, late-fee consequences, and its own authorization
+              naming the chosen amount (§T13). */}
           <ListRow
             icon="bank"
             title="Payment methods"
             sub={
               method.name
-                ? `${method.name} ••${method.last4} default · instant`
+                ? `${method.name} ••${method.last4} · default`
                 : 'Banks & cards'
             }
             chevron

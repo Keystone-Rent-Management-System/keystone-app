@@ -10,7 +10,7 @@ import {useNavigation} from '@react-navigation/native';
 import {useDashboard, useAuth, usePaymentZones, useLeaseExpiry} from '../../hooks';
 import {useMaintenance} from '../../hooks/useMaintenance';
 import {useComplianceAlerts} from '../../hooks/useCompliance';
-import {mockScreening} from '../../services/mocks';
+import {demoOnly, mockScreening} from '../../services/mocks';
 import {pct} from '../../utils/money';
 import {normalizeDashboard} from '../../utils/dashboardShape';
 import {
@@ -42,7 +42,7 @@ import COLORS from '../../constants/Theme';
 // never disagree about the month.
 
 const Dashboard = () => {
-  const {dashboard, isPending, isRefetching, refetch} = useDashboard();
+  const {dashboard, isPending, isRefetching, error, refetch} = useDashboard();
   const {summary: maint} = useMaintenance();
   const {alerts: complianceAlerts} = useComplianceAlerts();
   const {summary: zones} = usePaymentZones();
@@ -114,8 +114,12 @@ const Dashboard = () => {
       onPress: () => nav.navigate('reports_stack', {screen: 'maintenance'}),
     },
     // Screening (4b): report-ready surfaces as a needs-you row, not a tab.
+    // Screening has no BE endpoint yet, so this row only exists in
+    // Fixtures mode — a landlord must never be told a report is ready
+    // for a unit that isn't theirs.
     ...(() => {
-      const ready = mockScreening.applications.filter(
+      const screening = demoOnly(mockScreening);
+      const ready = (screening?.applications ?? []).filter(
         a => a.status === 'REPORT_READY',
       ).length;
       return ready > 0
@@ -124,7 +128,7 @@ const Dashboard = () => {
               icon: 'users',
               tone: 'pending',
               text: `${ready} screening ${ready === 1 ? 'report is' : 'reports are'} ready`,
-              hint: `${mockScreening.unit.unitName} — review and decide`,
+              hint: `${screening.unit.unitName} — review and decide`,
               onPress: () =>
                 nav.navigate('leases_stack', {screen: 'screening'}),
             },
@@ -145,6 +149,8 @@ const Dashboard = () => {
 
   return (
     <Screen
+      loadError={error}
+      onRetry={refetch}
       variant="hub"
       logoRow={
         <View className="flex-row items-center justify-between">
@@ -197,7 +203,7 @@ const Dashboard = () => {
       <View className="mt-4">
         <HeroCard
           label={collectionLabel(now)}
-          badge={{text: 'Instant · Direct', dot: 'success'}}
+          badge={{text: collectionLabel(now), dot: 'success'}}
           amount={usd(monthReceived)}
           sub={`collected of ${usd(monthExpected)} expected · ${pct(monthPercent)}`}>
           <View style={{marginTop: 12}}>
@@ -228,8 +234,7 @@ const Dashboard = () => {
             numberOfLines={2}
             className="font-inter text-xs mt-4"
             style={{color: 'rgba(231,229,218,0.72)'}}>
-            Paid straight to your bank the moment a tenant pays — no holding
-            account.
+            Rent your tenants have paid this month.
           </Text>
         </HeroCard>
       </View>

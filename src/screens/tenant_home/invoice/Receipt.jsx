@@ -32,7 +32,7 @@ const Receipt = () => {
 
         <InvoiceBillItem
           txtClassName={'font-sometypemono text-13'}
-          title={'Mpesa Paybill'}
+          title={'Reference'}
           amt={`3245632`}
         />
       </ReceiptTemplate>

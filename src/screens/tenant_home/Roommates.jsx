@@ -72,8 +72,7 @@ const Roommates = () => {
           <Divider style={{marginVertical: 12}} />
           <Text className="text-text_muted font-inter text-xs leading-5">
             You only owe your share. If a roommate pays late or moves out, it's
-            never on you — and your credit reflects only the payments you make.
-            Each roommate has their own agreement.
+            never on you. Each roommate has their own agreement.
           </Text>
         </Card>
       </View>
@@ -122,8 +121,7 @@ const Roommates = () => {
           ))}
         </Card>
         <Text className="text-text_muted font-inter text-xs mt-3 ml-1 leading-5">
-          Everyone pays their own share through Keystone and builds their own
-          credit. You only ever see and owe yours.
+          Everyone owes their own share. You only ever see and owe yours.
         </Text>
       </View>
     </Screen>

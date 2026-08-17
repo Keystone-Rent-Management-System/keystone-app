@@ -5,7 +5,6 @@ import {
   StatusBar,
   Text,
   TextInput,
-  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -13,7 +12,9 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 
 import {KSTile, Icon, IconChip} from '../../components/premium';
 import COLORS from '../../constants/Theme';
-import {mockInvite} from '../../services/mocks';
+import AuthServices from '../../services/AuthServices';
+import {getError} from '../../utils/getError';
+import {toast} from '../../utils/toast';
 
 // Tenant claim — landing + code merged into one screen (design 8c).
 // The code field IS the primary action, so the extra hop disappears;
@@ -39,11 +40,13 @@ const ValueRow = ({icon, title, sub}) => (
   </View>
 );
 
+// Repeated the instant-settlement and credit-building claims to a
+// LANDLORD, in a message the renter sends under their own name. Neither
+// capability exists, so the renter was made to vouch for them.
 const SHARE_MESSAGE =
-  "Hi! I'd love to pay my rent through Keystone — it's free for me, helps build " +
-  'my credit, and pays you instantly and directly to your bank. Could you set me ' +
-  'up as a tenant? Here’s how it works for landlords: ' +
-  'https://dev.keystonerent.app';
+  'Hi! I’d like to handle my tenancy through Keystone — rent, receipts, ' +
+  'repairs and my lease in one place. Could you set me up as a tenant? ' +
+  'Here’s how it works for landlords: https://keystonerent.app';
 
 const ClaimLanding = () => {
   const nav = useNavigation();
@@ -54,13 +57,37 @@ const ClaimLanding = () => {
   // Deep link /app/claim?code=… prefills the field.
   const [code, setCode] = useState(route.params?.code ?? '');
 
-  const resolveCode = () => {
-    if (code.trim().length < 3) {
-      ToastAndroid.show('Enter the code from your landlord', ToastAndroid.SHORT);
+  const [resolving, setResolving] = useState(false);
+
+  // GET /tenants/claim?token=<code> (§T16). Live on api-dev and callable
+  // unauthenticated, which is what this screen needs — the tenant has no
+  // account until the claim completes.
+  const resolveCode = async () => {
+    const entered = code.trim();
+    if (entered.length < 3) {
+      toast.show('Enter the code from your landlord', toast.SHORT);
       return;
     }
-    // GET /tenants/claim?token=<code> → invite. Mock resolves any code.
-    setInvite(mockInvite);
+    setResolving(true);
+    try {
+      const found = await AuthServices.resolveInvite(entered);
+      if (!found) {
+        throw new Error('empty invite');
+      }
+      setInvite(found);
+    } catch (err) {
+      // 404 is BE's answer for a bad code, and it is by far the likely
+      // case here — name it plainly instead of leaking a status.
+      const status = err?.response?.status;
+      toast.show(
+        status === 404
+          ? "That code didn't match an invite. Check it with your landlord."
+          : `Couldn't check that code — ${getError(err)}`,
+        toast.LONG,
+      );
+    } finally {
+      setResolving(false);
+    }
   };
 
   const askLandlord = async () => {
@@ -113,8 +140,8 @@ const ClaimLanding = () => {
                 <Text
                   className="font-inter text-sm mt-5 leading-relaxed"
                   style={{color: 'rgba(231,229,218,0.72)'}}>
-                  Set up your account to review your lease, pay rent in two
-                  taps, and start building credit.
+                  Set up your account to see your lease, your rent and your
+                  home in one place.
                 </Text>
               </View>
             ) : (
@@ -126,25 +153,29 @@ const ClaimLanding = () => {
                 <Text
                   className="text-white font-inter-bold text-4xl leading-tight"
                   style={{letterSpacing: -0.5}}>
-                  Pay rent.{'\n'}
-                  <Text className="text-keystone_gold">Build credit.</Text>
+                  Your home,{'\n'}
+                  <Text className="text-keystone_gold">in one place.</Text>
                 </Text>
 
                 <View className="mt-7">
+                  {/* "Pay in two taps · Instant" and "Build credit with
+                      rent" both described capabilities that do not exist
+                      — on the screen an applicant sees before they have
+                      agreed to anything. */}
                   <ValueRow
-                    icon="card"
-                    title="Pay in two taps"
-                    sub="Instant — and free to you."
+                    icon="lease"
+                    title="Your lease and rent"
+                    sub="What you owe, when it’s due, and what you’ve paid."
                   />
                   <ValueRow
-                    icon="trending"
-                    title="Build credit with rent"
-                    sub="Every on-time payment counts."
+                    icon="wrench"
+                    title="Repairs and messages"
+                    sub="Ask for a fix, and follow what happens next."
                   />
                   <ValueRow
                     icon="shield"
                     title="Your lease is yours alone"
-                    sub="Own share, own credit — never joint."
+                    sub="Your own agreement — never joint."
                   />
                 </View>
 
@@ -176,9 +207,19 @@ const ClaimLanding = () => {
           <View>
             {invite ? (
               <>
+                {/* Sent the applicant to a generic Sign In, which
+                    discarded the invitation they had just resolved and
+                    asked them to log into an account they do not have.
+                    The invite is the start of the onboarding journey, so
+                    it opens the journey and carries the invite with it. */}
                 <TouchableOpacity
                   activeOpacity={0.9}
-                  onPress={() => nav.navigate('auth__login')}
+                  onPress={() =>
+                    nav.navigate('onboarding', {
+                      screen: 'onboarding__checklist',
+                      params: {invite},
+                    })
+                  }
                   className="bg-keystone_cream rounded-2xl py-4 items-center">
                   <Text className="text-keystone_navy font-inter-bold text-base">
                     Set up my account
@@ -198,11 +239,13 @@ const ClaimLanding = () => {
                 <TouchableOpacity
                   activeOpacity={0.9}
                   onPress={resolveCode}
-                  disabled={code.trim().length < 3}
-                  style={{opacity: code.trim().length < 3 ? 0.5 : 1}}
+                  disabled={code.trim().length < 3 || resolving}
+                  style={{
+                    opacity: code.trim().length < 3 || resolving ? 0.5 : 1,
+                  }}
                   className="bg-keystone_cream rounded-2xl py-4 items-center">
                   <Text className="text-keystone_navy font-inter-bold text-base">
-                    Claim my home
+                    {resolving ? 'Checking\u2026' : 'Claim my home'}
                   </Text>
                 </TouchableOpacity>
                 {/* Fallback demoted to a link (8c) */}

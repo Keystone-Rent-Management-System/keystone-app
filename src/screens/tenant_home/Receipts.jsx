@@ -14,6 +14,7 @@ import {
   SectionLabel,
   SegmentedChoice,
   eventDate,
+  sumUsd,
   usd,
 } from '../../components/kit';
 import COLORS from '../../constants/Theme';
@@ -33,11 +34,29 @@ const Activity = ({initialMode}) => {
     initialMode ?? route.params?.mode ?? 'receipts',
   );
 
-  const {payments, isPending: paymentsPending, isRefetching, refetch} =
-    useTenantPayments();
-  const {statement, isPending: stmtPending} = useTenantStatement();
+  const {
+    payments,
+    isPending: paymentsPending,
+    isRefetching,
+    refetch,
+    error: paymentsError,
+  } = useTenantPayments();
+  const {
+    statement,
+    isPending: stmtPending,
+    error: stmtError,
+  } = useTenantStatement();
 
-  const total = payments.reduce((s, p) => s + (p.amount ?? 0), 0);
+  // Rounded per row, THEN summed — the same precision the rows are
+  // rendered at. Summing raw floats and rounding once at the end let
+  // three $100.40 rows sit under a $301 header.
+  //
+  // NO `?? 0` HERE. It was there, and it defeated the whole point: an
+  // unknown row collapsed to zero before `sumUsd` could see it, so the
+  // total rendered $2,050.50 over rows reading "$1,800 · — · $250.50".
+  // The rows must add up to the total a reader can see, so if any amount
+  // is unknown the total is unknown too.
+  const total = sumUsd(payments.map(p => p.amount));
   const entries = statement?.entries ?? [];
   const balance = statement?.closingBalance ?? 0;
 
@@ -75,13 +94,29 @@ const Activity = ({initialMode}) => {
 
       {mode === 'receipts' ? (
         <>
-          <HeroCard
-            label="Paid through Keystone"
-            badge={{text: `${payments.length} payments`}}
-            amount={usd(total)}
-            amountSize={34}
-            sub="Every payment · on time · reported to the bureaus"
-          />
+          {/* A failed payment-history request produced an empty array,
+              which rendered as "0 payments · $0" — a factual claim about
+              someone's money made from a network error. */}
+          {paymentsError ? (
+            <HeroCard
+              label="Paid through Keystone"
+              amount="Not available"
+              amountSize={22}
+              sub="We couldn’t load your payment history. This isn’t a record of what you’ve paid."
+            />
+          ) : (
+            <HeroCard
+              label="Paid through Keystone"
+              badge={{text: `${payments.length} payments`}}
+              amount={usd(total)}
+              amountSize={34}
+              sub={
+                total === null
+                  ? 'One or more amounts are missing, so we can’t total these yet.'
+                  : 'Your payment history in one place'
+              }
+            />
+          )}
 
           <View className="mt-5">
             <SectionLabel>All payments</SectionLabel>
@@ -89,11 +124,21 @@ const Activity = ({initialMode}) => {
               <Text className="text-text_muted font-inter text-sm ml-1">
                 Loading…
               </Text>
+            ) : paymentsError ? (
+              /* Was "No payments yet" — an empty-list statement rendered
+                 directly beneath a hero that had just said the history
+                 could not be loaded. */
+              <Card>
+                <Text className="text-text_muted font-inter text-sm">
+                  We couldn’t load your payments. This isn’t a record that
+                  there are none.
+                </Text>
+              </Card>
             ) : payments.length === 0 ? (
               <Card>
                 <Text className="text-text_muted font-inter text-sm">
-                  No payments yet — every payment you make lands here,
-                  instantly and permanently.
+                  No payments yet. Payments made through Keystone will appear
+                  here.
                 </Text>
               </Card>
             ) : (
@@ -127,25 +172,51 @@ const Activity = ({initialMode}) => {
         </>
       ) : (
         <>
-          <HeroCard
-            label="Current balance"
-            amount={usd(balance)}
-            amountSize={34}
-            sub={
-              balance > 0
-                ? 'This is your current rent due.'
-                : 'You’re all settled — nothing owed.'
-            }
-          />
+          {/* Failed statement → balance 0 → "You're all settled —
+              nothing owed." A tenant could stop paying on the strength of
+              a request that never succeeded. */}
+          {stmtError || !statement ? (
+            <HeroCard
+              label="Current balance"
+              amount="Not available"
+              amountSize={22}
+              sub="We couldn’t load your statement. Don’t treat this as settled."
+            />
+          ) : (
+            <HeroCard
+              label="Current balance"
+              amount={usd(balance)}
+              amountSize={34}
+              sub={
+                balance > 0
+                  ? 'This is your current rent due.'
+                  : 'You’re all settled — nothing owed.'
+              }
+            />
+          )}
 
+          {/* `usd(undefined)` is "$0", so a failed statement rendered
+              Charges $0 and Payments $0 — two financial facts invented
+              from a missing response. */}
           <View className="mt-4">
             <Card>
               <View className="flex-row">
-                <Stat label="Charges" value={usd(statement?.totalCharges)} />
+                <Stat
+                  label="Charges"
+                  value={
+                    statement?.totalCharges != null
+                      ? usd(statement.totalCharges)
+                      : '—'
+                  }
+                />
                 <View className="w-px bg-keystone_hairline" />
                 <Stat
                   label="Payments"
-                  value={usd(statement?.totalCredits)}
+                  value={
+                    statement?.totalCredits != null
+                      ? usd(statement.totalCredits)
+                      : '—'
+                  }
                   valueColor={COLORS.c_success}
                   align="right"
                 />
@@ -159,6 +230,16 @@ const Activity = ({initialMode}) => {
               <Text className="text-text_muted font-inter text-sm ml-1">
                 Loading…
               </Text>
+            ) : stmtError || !statement ? (
+              /* An empty ledger is indistinguishable from a ledger we
+                 could not fetch, and an empty ledger reads as "nothing
+                 has happened on your account". */
+              <Card>
+                <Text className="text-text_muted font-inter text-sm">
+                  We couldn’t load your ledger. This isn’t a record that
+                  there are no charges or payments.
+                </Text>
+              </Card>
             ) : (
               <Card style={{paddingVertical: 0, paddingHorizontal: 16}}>
                 {entries.map((e, i) => {

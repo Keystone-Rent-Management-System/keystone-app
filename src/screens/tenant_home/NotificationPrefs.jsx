@@ -1,19 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import {
-  RefreshControl,
-  ScrollView,
-  StatusBar,
-  Switch,
-  Text,
-  ToastAndroid,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {RefreshControl, ScrollView, StatusBar, Switch, Text, TouchableOpacity, View} from 'react-native';
 
 import {useTenantHome} from '../../hooks/useTenantHome';
 import {Card, Divider, Icon, IconChip} from '../../components/premium';
 import {Screen, SectionLabel, SegmentedChoice} from '../../components/kit';
 import COLORS from '../../constants/Theme';
+import {toast} from '../../utils/toast';
+import {getError} from '../../utils/getError';
+import NotificationService from '../../services/Notification';
+import {can} from '../../constants/capabilities';
 
 // Notification preferences — what the tenant hears about and how. Saving is
 // optimistic; PATCH /tenants/notification-preferences persists it.
@@ -46,21 +41,61 @@ const NotificationPrefs = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [home?.notificationPrefs]);
 
-  // PATCH /tenants/notification-preferences — optimistic, silent.
-  const persist = () => {};
+  // `persist` used to be an EMPTY function. Every switch changed local
+  // state and nothing else, and the reminder picker toasted a
+  // confirmation on top — so a tenant could turn SMS off, watch it turn
+  // off, and keep receiving SMS, with the setting back on next launch.
+  //
+  // Now it writes for real. Optimistic with a REVERT: the switch moves
+  // immediately (settings should feel instant), but if the request fails
+  // it snaps back and says so, rather than leaving the UI asserting a
+  // preference the server never accepted.
+  const persist = async (next, revert) => {
+    if (!can('notificationPreferences')) {
+      revert();
+      toast.show('Changing notifications isn’t available yet.', toast.SHORT);
+      return false;
+    }
+    try {
+      await NotificationService.updateNotificationPrefs(next);
+    } catch (err) {
+      revert();
+      toast.show(
+        `We couldn’t save that — ${getError(err)}. Your settings are unchanged.`,
+        toast.LONG,
+      );
+      return false;
+    }
+    return true;
+  };
 
   const toggleChannel = key => {
-    setChannels(c => ({...c, [key]: !c[key]}));
-    persist();
+    const before = channels;
+    const next = {...channels, [key]: !channels[key]};
+    setChannels(next);
+    persist({channels: next, topics, rentReminderDays: reminderDays}, () =>
+      setChannels(before),
+    );
   };
   const toggleTopic = key => {
-    setTopics(t => ({...t, [key]: !t[key]}));
-    persist();
+    const before = topics;
+    const next = {...topics, [key]: !topics[key]};
+    setTopics(next);
+    persist({channels, topics: next, rentReminderDays: reminderDays}, () =>
+      setTopics(before),
+    );
   };
-  const pickDays = d => {
+  const pickDays = async d => {
+    const before = reminderDays;
     setReminderDays(d);
-    persist();
-    ToastAndroid.show(`Reminders ${d} day${d > 1 ? 's' : ''} before`, ToastAndroid.SHORT);
+    const ok = await persist(
+      {channels, topics, rentReminderDays: d},
+      () => setReminderDays(before),
+    );
+    // Only confirm once the server has it.
+    if (ok) {
+      toast.show(`Reminders ${d} day${d > 1 ? 's' : ''} before`, toast.SHORT);
+    }
   };
 
   return (

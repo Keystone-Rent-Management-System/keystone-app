@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react';
-import {Text, ToastAndroid, View} from 'react-native';
+import {Text, View} from 'react-native';
 
 import COLORS from '@/constants/Theme';
 import {CButton} from './index';
@@ -8,6 +8,7 @@ import {DownloadSvg} from '@/assets/icons/receipt';
 import numberWithCommas from '../../utils/numberWithCommas';
 import {renderHtmlTemplate} from '../../utils/htmlToPdf';
 import Helper from '../../utils/Helper';
+import {toast} from '../../utils/toast';
 
 const noOfEllipse = Array(35).fill('_');
 
@@ -25,9 +26,9 @@ const ReceiptTemplate = ({
     try {
       await Helper.generatePdf(renderHtmlTemplate(receipt), fileName);
 
-      ToastAndroid.show('Invoice saved to Downloads', ToastAndroid.LONG);
+      toast.show('Invoice saved to Downloads', toast.LONG);
     } catch (e) {
-      ToastAndroid.show('Invoice Download Error', ToastAndroid.LONG);
+      toast.show('Invoice Download Error', toast.LONG);
     }
   }, [receipt]);
 

@@ -18,6 +18,7 @@ import {
   usd,
 } from '../../../components/kit';
 import COLORS from '../../../constants/Theme';
+import {can} from '../../../constants/capabilities';
 import {useSpecificInvoice} from '../../../hooks';
 
 // invoice_view — deep-link pass (design 5g). Legacy invoice routes
@@ -109,15 +110,19 @@ const InvoiceView = ({route: {params = {}}}) => {
                 lineHeight: 22,
                 marginTop: 16,
               }}>
-              You followed an invoice link. Invoices now live in Keystone — pay
-              here and the receipt lands in your Activity like any other
-              payment.
+              You followed an invoice link. Paying in the app isn’t available
+              yet — keep paying your landlord the way you do today.
             </Text>
             <View style={{marginTop: 20, gap: 12}}>
-              {unpaid && (
+              {/* Was `Pay $X in Keystone`, which routed to the rent screen
+                  that says payment is unavailable, under copy promising a
+                  receipt would land in Activity. Another entry point into
+                  the same broken promise, reached from an emailed link. */}
+              {unpaid && can('rentPayments') && (
                 <PrimaryButton label={`Pay ${usd(amount)} in Keystone`} onPress={goPay} />
               )}
-              <SecondaryButton label="View in Activity instead" onPress={goActivity} />
+              <SecondaryButton label="View rent details" onPress={goPay} />
+              <SecondaryButton label="View in Activity" onPress={goActivity} />
             </View>
           </>
         )}

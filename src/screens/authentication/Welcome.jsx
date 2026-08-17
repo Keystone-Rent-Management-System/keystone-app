@@ -5,9 +5,10 @@ import {
   KSTile,
   Icon,
   FadeScaleIn,
-  useCountUp,
 } from '../../components/premium';
 import COLORS from '../../constants/Theme';
+import {can} from '../../constants/capabilities';
+import {useDevRoleStore} from '../../provider/store/devRole';
 
 // Front door — "quiet confidence", but now it SHOWS the product and earns
 // trust instead of only stating a promise:
@@ -19,8 +20,6 @@ import COLORS from '../../constants/Theme';
 // The illustrative $1,800 card replaces the old fabricated "$Xm protected"
 // stat — an honest product glimpse, not a claimed metric.
 
-const EXAMPLE_RENT = 1800;
-const usd = n => `$${Math.round(n).toLocaleString()}`;
 
 const Benefit = ({who, text}) => (
   <View className="flex-row items-start mb-2.5">
@@ -36,7 +35,7 @@ const Benefit = ({who, text}) => (
 
 const Welcome = () => {
   const nav = useNavigation();
-  const landed = useCountUp(EXAMPLE_RENT, 1400);
+  const setDevRole = useDevRoleStore(s => s.setRole);
 
   return (
     <View className="flex-1 bg-keystone_navy">
@@ -58,65 +57,22 @@ const Welcome = () => {
 
             <FadeScaleIn delay={180}>
               <View className="mt-5">
-                <Benefit who="Landlords" text="rent in your own bank in seconds, protected." />
-                <Benefit who="Renters" text="pay in two taps, and build credit doing it." />
+                {/* Promised settlement "in seconds", two-tap payments and
+                    credit building on the app's front door. None of the
+                    three works yet, and this is the first thing anyone
+                    sees. Restore each claim as its capability ships. */}
+                <Benefit who="Landlords" text="your properties, tenants and leases in one place." />
+                <Benefit who="Renters" text="your lease, rent and repairs, always to hand." />
               </View>
             </FadeScaleIn>
 
-            {/* Money-landed moment — the magic, shown */}
-            <FadeScaleIn delay={320}>
-              <View
-                className="mt-7 rounded-2xl p-4"
-                style={{
-                  backgroundColor: 'rgba(255,255,255,0.06)',
-                  borderWidth: 1,
-                  borderColor: 'rgba(255,255,255,0.10)',
-                }}>
-                {/* H3: label column flex:1 min-width:0; chip bounded
-                    at 45% with ellipsis — cannot exit the card. */}
-                <View className="flex-row items-center" style={{minWidth: 0}}>
-                  <Text
-                    numberOfLines={1}
-                    className="flex-1 font-inter-semibold text-2xs uppercase"
-                    style={{color: 'rgba(231,229,218,0.72)', letterSpacing: 0.9, minWidth: 0}}>
-                    Rent received
-                  </Text>
-                  <View
-                    className="px-2.5 py-1 rounded-full flex-row items-center"
-                    style={{backgroundColor: 'rgba(231,229,218,0.10)', maxWidth: '45%', flexShrink: 0}}>
-                    <View
-                      style={{
-                        width: 6,
-                        height: 6,
-                        borderRadius: 999,
-                        backgroundColor: COLORS.c_success,
-                        marginRight: 6,
-                      }}
-                    />
-                    <Text
-                      numberOfLines={1}
-                      className="text-keystone_cream font-inter-semibold text-2xs uppercase tracking-wider">
-                      Instant
-                    </Text>
-                  </View>
-                </View>
-                <Text
-                  className="text-white font-inter-bold"
-                  style={{
-                    fontSize: 34,
-                    lineHeight: 40,
-                    marginTop: 8,
-                    fontVariant: ['tabular-nums'],
-                    letterSpacing: -0.5,
-                  }}>
-                  {usd(landed)}
-                </Text>
-                <View className="h-px bg-white/10 my-3" />
-                <Text className="font-inter text-xs" style={{color: 'rgba(231,229,218,0.72)'}}>
-                  Landed in your bank · just now
-                </Text>
-              </View>
-            </FadeScaleIn>
+            {/* The "Rent received · $X · Landed in your bank · just now"
+                card is REMOVED. It count-up animated a specific amount
+                behind a live green "Instant" dot, which reads as a real
+                payment that had just settled — a fabricated money event on
+                the public front door, for a settlement path that does not
+                run. Restore it as an explicitly labelled illustration, or
+                with real data, once §T2 ships. */}
           </View>
 
           {/* Trust + doors */}
@@ -129,17 +85,28 @@ const Welcome = () => {
                 <Text
                   className="font-inter text-xs ml-1.5"
                   style={{color: 'rgba(231,229,218,0.72)'}}>
-                  Bank-level encryption · Powered by Dwolla & Plaid
+                  Your landlord, your lease, your rent
                 </Text>
               </View>
 
               {/* Cream (not the muddy bronze gold) so the dark label reads
                   with strong contrast on the navy front door. */}
+              {/* Opened the removed self-registration journey. Keystone
+                  is provisioned-only today, so the honest primary door is
+                  signing in; new landlords are set up by the team. */}
               <TouchableOpacity
                 activeOpacity={0.9}
-                onPress={() => nav.navigate('auth__registration_email')}
+                onPress={() =>
+                  nav.navigate(
+                    can('tenantSelfRegistration')
+                      ? 'auth__registration_email'
+                      : 'auth__login',
+                  )
+                }
                 className="bg-keystone_cream rounded-2xl py-4 flex-row items-center justify-center">
-                <Text className="text-keystone_navy font-inter-bold text-base">Get started</Text>
+                <Text className="text-keystone_navy font-inter-bold text-base">
+                  {can('tenantSelfRegistration') ? 'Get started' : 'Sign in'}
+                </Text>
                 <Text className="text-keystone_navy font-inter-bold text-base ml-2">→</Text>
               </TouchableOpacity>
 
@@ -163,6 +130,40 @@ const Welcome = () => {
                   </Text>
                 </Text>
               </TouchableOpacity>
+
+              {/* DEBUG-ONLY role preview, reachable WITHOUT a session.
+                  The equivalent control lives in Account → "Preview as",
+                  which is inside the tabs — so before this existed, the
+                  only way into preview was a default that forced every
+                  debug build into the protected tree from launch, and the
+                  only way out was a screen that default had put you in.
+                  Preview is now opt-in from here. Stripped from release
+                  by __DEV__, exactly like the store it writes to. */}
+              {__DEV__ ? (
+                <View className="mt-8 items-center">
+                  <Text
+                    className="font-inter text-xs mb-2"
+                    style={{color: 'rgba(231,229,218,0.4)'}}>
+                    PREVIEW AS · DEBUG ONLY
+                  </Text>
+                  <View className="flex-row">
+                    {['tenant', 'landlord'].map(r => (
+                      <TouchableOpacity
+                        key={r}
+                        activeOpacity={0.7}
+                        onPress={() => setDevRole(r)}
+                        className="px-4 py-2 mx-1 rounded-lg"
+                        style={{borderWidth: 1, borderColor: 'rgba(231,229,218,0.25)'}}>
+                        <Text
+                          className="font-inter text-xs"
+                          style={{color: 'rgba(231,229,218,0.72)'}}>
+                          {r}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+              ) : null}
             </View>
           </FadeScaleIn>
         </View>

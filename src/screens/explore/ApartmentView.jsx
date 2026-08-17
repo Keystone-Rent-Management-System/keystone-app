@@ -1,12 +1,5 @@
 import React, {useMemo, useRef, useState} from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  ToastAndroid,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 import LikeButton from '@/components/screens/property_view/like-button';
 import {useActiveAgrement} from '@/hooks';
@@ -40,6 +33,7 @@ import Helper from '../../utils/Helper';
 import numberWithCommas from '../../utils/numberWithCommas';
 import {getFullListingWebUrl} from '@/utils';
 import Share from 'react-native-share';
+import {toast} from '../../utils/toast';
 
 const ApartmentView = ({route: {params}}) => {
   const bottomSheetRef = useRef();
@@ -136,9 +130,9 @@ const ApartmentView = ({route: {params}}) => {
     } catch (error) {
       // Optionally handle user cancel or error
       if (error?.message !== 'User did not share') {
-        ToastAndroid.show(
+        toast.show(
           'Failed to share the listing. Please try again.',
-          ToastAndroid.LONG,
+          toast.LONG,
         );
       }
     }

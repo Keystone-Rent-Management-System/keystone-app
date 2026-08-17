@@ -4,7 +4,7 @@ import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useMutation} from '@tanstack/react-query';
 import {Controller, useForm} from 'react-hook-form';
-import {Text, TextInput, ToastAndroid, View} from 'react-native';
+import {Text, TextInput, View} from 'react-native';
 import {z, ZodType} from 'zod';
 import {CloseSvg} from '../../../assets/icons';
 import COLORS from '../../../constants/Theme';
@@ -42,26 +42,26 @@ const MakeComplaint = forwardRef<BottomSheetModal, IMakeComplainProps>(
       mutationFn: (data: {agreementId: string; message: string}) =>
         HelpServices.makeComplain(data.message),
       onSuccess: () => {
-        ToastAndroid.show(
+        toast.show(
           'Complain submitted successfully',
-          ToastAndroid.SHORT,
+          toast.SHORT,
         );
         reset();
         props.handleCloseModal();
       },
       onError: error => {
-        ToastAndroid.show(
+        toast.show(
           'An error occurred while submitting your complain ' + error?.message,
-          ToastAndroid.LONG,
+          toast.LONG,
         );
       },
     });
 
     const handleMakeComplain = (data: RequestHelpFormData) => {
       if (!agreement) {
-        return ToastAndroid.show(
+        return toast.show(
           'Error: No active agreement found',
-          ToastAndroid.SHORT,
+          toast.SHORT,
         );
       }
 
@@ -160,6 +160,7 @@ const renderSheetHeader = (handleClose: () => {}) => (
 
 export default MakeComplaint;
 import {StyleSheet} from 'react-native';
+import {toast} from '../../../utils/toast';
 
 export const textInputStyles = StyleSheet.create({
   textInput: {

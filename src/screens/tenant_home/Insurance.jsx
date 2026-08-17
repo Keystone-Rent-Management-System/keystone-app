@@ -1,86 +1,65 @@
-import React, {useState} from 'react';
-import {
-  ActivityIndicator,
-  RefreshControl,
-  StatusBar,
-  Text,
-  ToastAndroid,
-  View,
-} from 'react-native';
-import DatePicker from 'react-native-date-picker';
+import React from 'react';
+import {RefreshControl, StatusBar, Text, View} from 'react-native';
 
 import {useTenantInsurance} from '../../hooks/useTenantHome';
 import {Card, Divider, Row} from '../../components/premium';
 import {
-  FieldButton,
-  FormField,
   HeroCard,
-  PhotoCaptureTile,
-  PhotoThumbRow,
-  PrimaryButton,
   Screen,
   SecondaryButton,
   SectionLabel,
   StatusChip,
   eventDate,
-  pickPhoto,
   usd,
 } from '../../components/kit';
 import COLORS from '../../constants/Theme';
+import {can} from '../../constants/capabilities';
 
 // Renters insurance + proof form (design 6h). The COVERED chip no
 // longer clips (H3); the partner is named in the sub-line and the
-// headline is the coverage, not the brand string. Proof form: date
-// field gets the calendar icon (P2-7), the upload tile is the 4a
-// primitive, Submit stays K3-disabled until carrier + policy doc
-// exist — the policy-number field is dropped; the declarations photo
-// carries it. POST /tenants/insurance/proof (§T11).
-
-const fmtLong = d =>
-  d
-    ? new Date(d).toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-      })
-    : null;
+// headline is the coverage, not the brand string. The proof-of-policy
+// form is removed while §T11 is unavailable — see the note at the
+// proof card.
 
 const Insurance = () => {
-  const {insurance, isRefetching, refetch} = useTenantInsurance();
-  const covered = insurance?.status === 'COVERED';
+  const {insurance, isPending, isRefetching, refetch, error} =
+    useTenantInsurance();
+
+  // FOUR STATES, never fewer.
+  //
+  // "Not covered" is a factual claim about someone's insurance, and a
+  // tenant whose lease requires cover can act on it. It must be reached
+  // only by a successful response that actually said so — never by a
+  // disabled capability and never by a failed request, both of which
+  // previously collapsed into the same else-branch.
+  //
+  //   unavailable  Keystone doesn't offer this at all.
+  //   failed       We asked and could not find out.
+  //   covered      The server said COVERED.
+  //   notCovered   The server said something else.
+  const state = !can('rentInsurance')
+    ? 'unavailable'
+    : error
+      ? 'failed'
+      : insurance?.status == null
+        ? 'failed'
+        : insurance.status === 'COVERED'
+          ? 'covered'
+          : 'notCovered';
+
+  const covered = state === 'covered';
   const proof = insurance?.proof ?? {status: 'NONE'};
 
-  const [onFile, setOnFile] = useState(proof.status && proof.status !== 'NONE');
-  const [carrier, setCarrier] = useState('');
-  const [expiry, setExpiry] = useState(null);
-  const [dateOpen, setDateOpen] = useState(false);
-  const [doc, setDoc] = useState(null);
-  const [busy, setBusy] = useState(false);
+  const onFile = !!(proof.status && proof.status !== 'NONE');
 
-  const pickDoc = async () => {
-    const asset = await pickPhoto();
-    if (asset?.uri) setDoc(asset);
-  };
 
-  const canSubmit = carrier.trim() && doc;
 
-  const submitProof = async () => {
-    if (!canSubmit) return;
-    setBusy(true);
-    // POST /tenants/insurance/proof (multipart: carrier, expiresOn,
-    // document). Optimistic — wired when BE ships §T11.
-    try {
-      // BE call lands here
-    } catch (e) {
-      // offline / mock
-    }
-    setBusy(false);
-    setOnFile(true);
-    setCarrier('');
-    setDoc(null);
-    setExpiry(null);
-    ToastAndroid.show('Proof submitted — pending verification', ToastAndroid.LONG);
-  };
+  // PROOF SUBMISSION IS DISABLED — there is no endpoint behind it.
+  // The previous version ran an empty `try {}`, then set `onFile`, wiped
+  // the form and said "Proof submitted — pending verification". A tenant
+  // whose lease requires proof of renters insurance would believe they
+  // had complied, and could be in breach without knowing. BE returns 501
+  // for §T11 (no insurer partner), so this stays off until it ships.
 
   return (
     <Screen
@@ -95,28 +74,53 @@ const Insurance = () => {
       }>
       <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
 
-      <HeroCard
-        label="Renters insurance"
-        badge={{
-          text: covered ? 'Covered' : 'Not covered',
-          dot: covered ? 'success' : 'danger',
-        }}
-        amount={
-          covered
-            ? `${usd(insurance?.personalProperty ?? 0)} covered`
-            : 'Protect your stuff'
-        }
-        amountSize={28}
-        sub={
-          covered
-            ? `${insurance?.provider ?? 'Keystone Renters'} · ${usd(insurance?.monthlyPremium ?? 0)}/mo${
-                insurance?.renewsOn
-                  ? ` · ${eventDate('renews', insurance.renewsOn)}`
-                  : ''
-              }`
-            : 'Often required by your lease — get covered in minutes.'
-        }
-      />
+      {/* `known` was computed but the render only branched on `covered`,
+          so every error and every unavailable state fell into the else —
+          producing a definite "Not covered" badge, "Protect your stuff"
+          and "get covered in minutes" for a tenant whose status nobody
+          knows. Three states, not two. */}
+      {state === 'unavailable' ? (
+        <HeroCard
+          label="Renters insurance"
+          amount="Not available yet"
+          amountSize={24}
+          sub="Keystone doesn’t track renters insurance yet. Your lease may still require it."
+        />
+      ) : isPending ? (
+        <HeroCard
+          label="Renters insurance"
+          amount="Checking…"
+          amountSize={24}
+          sub="Looking up your cover."
+        />
+      ) : state === 'failed' ? (
+        <HeroCard
+          label="Renters insurance"
+          amount="Status unknown"
+          amountSize={24}
+          sub="We couldn’t check your renters insurance. Ask your insurer or your landlord."
+        />
+      ) : covered ? (
+        <HeroCard
+          label="Renters insurance"
+          badge={{text: 'Covered', dot: 'success'}}
+          amount={`${usd(insurance?.personalProperty)} covered`}
+          amountSize={28}
+          sub={`${insurance?.provider ?? '—'} · ${usd(insurance?.monthlyPremium)}/mo${
+            insurance?.renewsOn
+              ? ` · ${eventDate('renews', insurance.renewsOn)}`
+              : ''
+          }`}
+        />
+      ) : (
+        <HeroCard
+          label="Renters insurance"
+          badge={{text: 'Not covered', dot: 'danger'}}
+          amount="No policy on file"
+          amountSize={26}
+          sub="Your lease may require renters insurance. Arrange it with an insurer."
+        />
+      )}
 
       {covered && (
         <View className="mt-4">
@@ -127,16 +131,19 @@ const Insurance = () => {
             <Divider />
             <Row label="Deductible" value={usd(insurance?.deductible)} />
           </Card>
+          {/* Filing a claim has no handoff and no partner behind it; the
+              button only toasted. At the moment a renter has actually had
+              a loss, an interactive-looking claim button that does nothing
+              is the worst possible time to discover that. */}
           <SecondaryButton
             label="File a claim"
             style={{marginTop: 12}}
-            onPress={() =>
-              ToastAndroid.show(
-                'Claims open with the insurance partner',
-                ToastAndroid.SHORT,
-              )
-            }
+            disabled
           />
+          <Text className="text-keystone_slate font-inter text-xs leading-5 mt-3">
+            Claims aren’t handled in the app. Contact your insurer directly
+            using the details on your policy.
+          </Text>
         </View>
       )}
 
@@ -160,73 +167,26 @@ const Insurance = () => {
             </Text>
           </Card>
         ) : (
+          /* THE FORM IS GONE, not merely disabled. It asked for the
+             carrier, the expiry date and a photo of the declarations page
+             — then revealed at the very end that submission is
+             unavailable. That is the same PII funnel removed from KYC:
+             the gate has to precede the collection, so there is nothing
+             to collect. Restore with BE §T11 (501 today — no insurer
+             partner). */
           <Card>
-            <Text className="text-keystone_slate font-inter text-[13px] leading-5 mb-3">
-              Your lease may require proof of renters insurance. Already have a
-              policy? Add it here and we'll share it with your landlord.
+            <Text className="text-keystone_navy font-inter-semibold text-[15px]">
+              Sending proof isn’t available yet
             </Text>
-            <FormField
-              label="Insurance carrier"
-              placeholder="e.g. State Farm"
-              value={carrier}
-              onChangeText={setCarrier}
-              style={{marginBottom: 14}}
-            />
-            <FieldButton
-              label="Expires · optional"
-              icon="calendar"
-              value={fmtLong(expiry)}
-              placeholder="Select a date"
-              onPress={() => setDateOpen(true)}
-              style={{marginBottom: 14}}
-            />
-            <Text className="text-keystone_slate font-inter-medium text-[13px] mb-2">
-              Policy document
+            <Text className="text-keystone_slate font-inter text-[13px] leading-5 mt-1">
+              Your lease may still require renters insurance. Send your policy
+              to your landlord the way you normally would — we’re not asking
+              for it here, and nothing has been collected.
             </Text>
-            {doc ? (
-              <PhotoThumbRow
-                photos={[doc]}
-                onView={() => setDoc(null)}
-                onAdd={pickDoc}
-              />
-            ) : (
-              <PhotoCaptureTile
-                onPress={pickDoc}
-                label="Upload"
-                size={88}
-              />
-            )}
-            <Text className="text-keystone_slate font-inter text-xs mt-2 mb-4">
-              A photo or scan of your declarations page — it carries the policy
-              number for you.
-            </Text>
-            {busy ? (
-              <View style={{minHeight: 52, justifyContent: 'center'}}>
-                <ActivityIndicator color={COLORS.keystone_navy} />
-              </View>
-            ) : (
-              <PrimaryButton
-                label="Submit proof"
-                disabled={!canSubmit}
-                onPress={submitProof}
-              />
-            )}
           </Card>
         )}
       </View>
 
-      <DatePicker
-        modal
-        mode="date"
-        open={dateOpen}
-        date={expiry ?? new Date()}
-        minimumDate={new Date()}
-        onConfirm={d => {
-          setDateOpen(false);
-          setExpiry(d);
-        }}
-        onCancel={() => setDateOpen(false)}
-      />
     </Screen>
   );
 };

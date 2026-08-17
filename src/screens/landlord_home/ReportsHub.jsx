@@ -8,6 +8,7 @@ import {useComplianceAlerts} from '../../hooks/useCompliance';
 import {normalizeDashboard} from '../../utils/dashboardShape';
 import {Card, ProgressBar, Stat} from '../../components/premium';
 import {HeroCard, ListRow, Screen, SectionLabel} from '../../components/kit';
+import {usdCompact} from '../../components/kit/money';
 
 // Reports hub (design 2i): the Portfolio card moves here from the old
 // Dashboard as the hero — the tab answers "how's the portfolio?"
@@ -15,8 +16,9 @@ import {HeroCard, ListRow, Screen, SectionLabel} from '../../components/kit';
 // number is waiting inside (1 LATE, 2 DUE) so exceptions surface
 // without a tap. Donut dropped — one gold occupancy bar (F5).
 
-const kUsd = n =>
-  n >= 100000 ? `$${(n / 1000).toFixed(1)}k` : `$${Math.round(n ?? 0).toLocaleString('en-US')}`;
+// Was a third `usd` implementation. Delegates now, so it cannot drift
+// from the one every other surface uses.
+const kUsd = usdCompact;
 
 const ReportsHub = () => {
   const nav = useNavigation();

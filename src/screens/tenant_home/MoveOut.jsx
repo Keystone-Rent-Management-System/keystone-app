@@ -1,11 +1,5 @@
 import React, {useState} from 'react';
-import {
-  ActivityIndicator,
-  StatusBar,
-  Text,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import {ActivityIndicator, StatusBar, Text, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import DatePicker from 'react-native-date-picker';
 
@@ -22,6 +16,8 @@ import {
   eventDate,
 } from '../../components/kit';
 import COLORS from '../../constants/Theme';
+import {toast} from '../../utils/toast';
+import {getError} from '../../utils/getError';
 
 // Renew or move out (design 6b). Date field gets the calendar icon
 // (P2-7/L4 — was a folder); the renewal offer shows its terms before
@@ -61,15 +57,24 @@ const MoveOut = () => {
   const submitNotice = async () => {
     if (!date) return;
     setBusy(true);
+    // A notice to vacate is a legal act with a deadline. The previous
+    // version swallowed the error and said "your landlord has been
+    // notified" regardless — a tenant could miss their notice window
+    // believing they had served it. Only a resolved request may confirm.
     try {
       await AgreementServices.sendTerminationNotice({
         agreementId: lease.agreementId ?? lease.id,
         vacationDate: date.toISOString().slice(0, 10),
       });
-    } catch (e) {
-      // BE offline / mock — confirm optimistically.
+    } catch (err) {
+      setBusy(false);
+      toast.show(
+        `We couldn’t send your notice — ${getError(err)}. Nothing was sent; please try again.`,
+        toast.LONG,
+      );
+      return;
     }
-    ToastAndroid.show('Notice sent — your landlord has been notified', ToastAndroid.LONG);
+    toast.show('Notice sent — your landlord has been notified', toast.LONG);
     setBusy(false);
     nav.navigate('my_home_hub');
   };
@@ -132,20 +137,17 @@ const MoveOut = () => {
           </View>
           <Divider style={{marginVertical: 12}} />
           <View className="flex-row gap-3">
+            {/* Renewal has no flow behind it; the old handler leaked
+                "BE support" to the tenant. */}
             <PrimaryButton
               label="Review & renew"
               style={{flex: 1, minHeight: 44}}
-              onPress={() => {
-                ToastAndroid.show(
-                  'Renewal terms open for review with BE support',
-                  ToastAndroid.SHORT,
-                );
-              }}
+              disabled
             />
             <SecondaryButton
               label="Not now"
               style={{flex: 1, minHeight: 44}}
-              onPress={() => ToastAndroid.show('Maybe later', ToastAndroid.SHORT)}
+              disabled
             />
           </View>
         </Card>

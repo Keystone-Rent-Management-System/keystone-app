@@ -2,7 +2,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useMemo} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {Text, ToastAndroid, View} from 'react-native';
+import {Text, View} from 'react-native';
 import {object, z} from 'zod';
 
 import {useMutation} from '@tanstack/react-query';
@@ -20,6 +20,8 @@ import COLORS from '../../../constants/Theme';
 import {useAuth} from '../../../hooks';
 import ProfileServices from '../../../services/ProfileServices';
 import {getError} from '../../../utils/getError';
+import {isLandlordProfile} from '../../../utils/roles';
+import {toast} from '../../../utils/toast';
 
 // Account details, both roles (design 3e): identity header with role
 // sub-line, real prefilled values (L5), read-only email with VERIFIED
@@ -49,7 +51,7 @@ const Details = () => {
   const navigation = useNavigation<any>();
   const {isPending, profile, refetch} = useAuth();
 
-  const isLandlord = !!profile?.access_types?.roles?.includes('ROLE_LANDLORD');
+  const isLandlord = isLandlordProfile(profile);
 
   const {handleSubmit, control, watch} = useForm<AccountFormData>({
     resolver: zodResolver(schema),
@@ -72,13 +74,13 @@ const Details = () => {
       await refetch();
     },
     onSuccess: () => {
-      ToastAndroid.show('Profile updated successfully', ToastAndroid.SHORT);
+      toast.show('Profile updated successfully', toast.SHORT);
       navigation.goBack();
     },
     onError: error => {
-      ToastAndroid.show(
+      toast.show(
         'Failed to update phone number. ' + getError(error),
-        ToastAndroid.SHORT,
+        toast.SHORT,
       );
     },
   });

@@ -1,55 +1,25 @@
-import React, {useState} from 'react';
-import {
-  RefreshControl,
-  StatusBar,
-  Text,
-  ToastAndroid,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import React from 'react';
+import {RefreshControl, StatusBar, Text, View} from 'react-native';
 
 import {useTenantHome} from '../../hooks/useTenantHome';
 import {Card, Icon} from '../../components/premium';
 import {
-  ConsentBlock,
   ListRow,
-  PrimaryButton,
   Screen,
-  SecondaryButton,
-  SectionLabel,
 } from '../../components/kit';
 import COLORS from '../../constants/Theme';
-import {DWOLLA} from '../../constants/legalCopy';
+import {can} from '../../constants/capabilities';
 
 // Payment methods + Dwolla consent (design 5c). Resolves brief P1-6:
-// the concatenated Dwolla links are "·"-separated (L3, via the kit
-// ConsentBlock) and "(soon)" becomes an honest explanation line.
-// Agree & continue holds the K3 disabled state until checked; the add
-// tile borrows the P1 dashed affordance. Adding a method creates a
-// Dwolla funding source, so ToS acceptance (timestamped by the BE)
-// precedes KYC + Plaid.
+// The add-a-method funnel (Dwolla ToS acceptance → KYC → Plaid) is
+// removed while none of it exists; see the note at the add tile. What
+// remains is a truthful list of methods already on file.
 
 const PaymentMethods = () => {
-  const nav = useNavigation();
   const {home, isRefetching, refetch} = useTenantHome();
   const methods = home?.paymentMethods ?? [];
 
-  const [showTos, setShowTos] = useState(false);
-  const [agreed, setAgreed] = useState(false);
 
-  const proceedAdd = () => {
-    if (!agreed) {
-      ToastAndroid.show('Please accept the terms to continue', ToastAndroid.SHORT);
-      return;
-    }
-    setShowTos(false);
-    setAgreed(false);
-    nav.navigate('kyc_verify');
-  };
-
-  const openUrl = url => () =>
-    ToastAndroid.show('Opens in-app when legal links publish', ToastAndroid.SHORT);
 
   return (
     <Screen
@@ -64,8 +34,11 @@ const PaymentMethods = () => {
       }>
       <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
 
+      {/* Said transfers are "instant and free" and told the user to add
+          an account "below" — a settlement promise plus an instruction to
+          use a control that is disabled. */}
       <Text className="text-keystone_slate font-inter text-[15px] mb-4">
-        Bank transfers are instant and free. Add a backup card if you like.
+        Accounts you’ve added for rent.
       </Text>
 
       {methods.length > 0 ? (
@@ -75,7 +48,7 @@ const PaymentMethods = () => {
               key={m.id}
               icon={m.type === 'bank' ? 'bank' : 'card'}
               title={`${m.name} ••${m.last4}`}
-              sub={m.type === 'bank' ? 'Bank account · instant' : 'Debit card · backup'}
+              sub={m.type === 'bank' ? 'Bank account' : 'Debit card · backup'}
               chip={m.isDefault ? {label: 'Default', tone: 'success'} : undefined}
               chevron={!m.isDefault}
               last={i === methods.length - 1}
@@ -90,10 +63,15 @@ const PaymentMethods = () => {
         </Card>
       )}
 
-      {!showTos && (
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={() => setShowTos(true)}
+      {/* The unavailable gate sits HERE — before consent, not after it.
+          This tile opened a funnel that asked the tenant to accept Dwolla's
+          terms plus Keystone payment terms that are not published, and then
+          collected date of birth, SSN digits and home address on the KYC
+          screen, only to end with "this isn't available". Consent and PII
+          must never be solicited for a capability that does not exist, so
+          the entry point closes rather than the exit. */}
+      {(
+        <View
           className="mt-4"
           style={{
             borderRadius: 12,
@@ -101,52 +79,35 @@ const PaymentMethods = () => {
             borderStyle: 'dashed',
             borderColor: 'rgba(21,37,53,0.20)',
             paddingVertical: 18,
+            paddingHorizontal: 16,
             alignItems: 'center',
+            opacity: 0.6,
           }}>
           <View className="flex-row items-center gap-2">
-            <Icon name="bank" size={18} color={COLORS.keystone_gold} />
+            <Icon name="bank" size={18} color={COLORS.keystone_slate} />
             <Text className="text-keystone_navy font-inter-semibold text-[15px]">
               Add bank or card
             </Text>
           </View>
-        </TouchableOpacity>
+          <Text className="text-keystone_slate font-inter text-xs leading-5 mt-2 text-center">
+            {can('paymentMethods')
+              ? 'Add a bank account to pay rent.'
+              : 'Connecting a bank isn’t available yet. We’ll ask for your details when it is — not before.'}
+          </Text>
+        </View>
       )}
 
       {/* Dwolla ToS acceptance — before creating a funding source */}
-      {showTos && (
-        <View className="mt-4">
-          <SectionLabel>Before you add a payment method</SectionLabel>
-          <ConsentBlock
-            copy={DWOLLA.tosText}
-            links={[
-              {label: 'Dwolla Terms of Service', onPress: openUrl(DWOLLA.dwollaTosUrl)},
-              {label: 'Dwolla Privacy Policy', onPress: openUrl(DWOLLA.dwollaPrivacyUrl)},
-            ]}
-            checked={agreed}
-            onToggle={() => setAgreed(a => !a)}
-            agreeText={DWOLLA.tosCheckbox}>
-            <Text className="text-text_muted font-inter text-xs mt-2">
-              Keystone Payment Terms — published when legal review completes.
-            </Text>
-            <View className="flex-row gap-3 mt-4">
-              <SecondaryButton
-                label="Cancel"
-                style={{flex: 1}}
-                onPress={() => {
-                  setShowTos(false);
-                  setAgreed(false);
-                }}
-              />
-              <PrimaryButton
-                label={DWOLLA.continueCta}
-                style={{flex: 1}}
-                disabled={!agreed}
-                onPress={proceedAdd}
-              />
-            </View>
-          </ConsentBlock>
-        </View>
-      )}
+      {/* The Dwolla ToS / Keystone-payment-terms consent block and its
+          "Continue" into KYC are DELETED, not hidden. With the entry tile
+          closed above, `showTos` could never become true — leaving the
+          branch in place kept a funnel that asked a tenant to accept terms
+          that are not published ("Keystone Payment Terms — published when
+          legal review completes") in order to reach an identity check that
+          does not exist. Consent UI for an absent capability should not
+          survive as dead code waiting to be re-enabled. Restore it with
+          the published, versioned documents and a real funding-source
+          flow (BE §T12). */}
     </Screen>
   );
 };

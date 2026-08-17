@@ -1,58 +1,66 @@
-import React, {useState} from 'react';
-import {StatusBar, Text, ToastAndroid, View} from 'react-native';
+import React from 'react';
+import {StatusBar, Text, View} from 'react-native';
 
-import {
-  ConsentBlock,
-  PrimaryButton,
-  Screen,
-} from '../../../components/kit';
+import {Card} from '../../../components/premium';
+import {PrimaryButton, Screen} from '../../../components/kit';
 import COLORS from '../../../constants/Theme';
 
 // Screening — applicant side, FCRA consent step (design 4d, NEW
 // feature). Screening consent is FCRA-sensitive: the full copy stays
-// visible (never collapsed, L1) with the DRAFT badge until legal
-// sign-off (L2). Reached by the applicant from the screening invite
-// deep link (route registered in Main; email/link wiring lands with
-// the BE). This is a soft inquiry — stated plainly.
+// Screening is unavailable, so this route is informational only: it
+// explains what a background check would involve and what rights the
+// applicant would have. It takes no authorization and stores nothing.
 
-const CONSENT_COPY =
-  'By continuing, you authorize Keystone and its consumer-reporting ' +
-  'partner to obtain your credit report, eviction history, and criminal ' +
-  'background records to evaluate your rental application for this unit, ' +
-  "as permitted by the Fair Credit Reporting Act (FCRA). You'll get a " +
-  "copy of your report, and if the decision is adverse you'll receive " +
-  "the notice the law requires. This is a soft inquiry — it won't lower " +
-  'your credit score.';
-
-const StepDone = ({children}) => (
-  <View style={{flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 6}}>
-    <Text style={{color: '#037147', fontFamily: 'Inter-SemiBold', fontSize: 15}}>✓</Text>
-    <Text style={{color: COLORS.keystone_navy, fontFamily: 'Inter', fontSize: 15}}>
-      {children}
-    </Text>
-  </View>
-);
+// Was written as a live authorization — "By continuing, you authorize
+// Keystone and its consumer-reporting partner to obtain your credit
+// report…" — on a screen titled "Your consent". There is no continuation,
+// no partner, and nothing is stored, so the sentence asserted an
+// authorization that could not exist. Removing the checkbox left the
+// wording behind, which is arguably worse: it reads as consent already
+// given. Rewritten as forward-looking explanation until the real flow and
+// its counsel-reviewed wording exist.
+const INFO_COPY =
+  'If screening becomes available, you’ll be asked for your permission ' +
+  'before anything runs. A consumer-reporting agency would look at your ' +
+  'credit, eviction history and background records to help the landlord ' +
+  'decide. You would be able to get a copy of that report and dispute ' +
+  'anything wrong in it, and the landlord would have to tell you if their ' +
+  'decision went against you because of it.';
 
 const ScreeningConsent = ({route}) => {
   const unitLabel =
     route?.params?.unitLabel ?? 'Unit 7C · 128 Magnolia Ave, Austin, TX';
-  const [agreed, setAgreed] = useState(false);
 
   return (
     <Screen
-      title="Your consent"
+      title="Background checks"
       back="Application"
+      /* DISABLED. This collected an applicant's FCRA authorization to
+            pull consumer reports and then said "Screening started" from a
+            toast — no screening request, and no consent record persisted
+            anywhere. Consent that is solicited but never stored is worse
+            than no consent screen at all: the applicant believes they
+            authorised a specific permissible-purpose pull, and there is no
+            evidence of what they agreed to, when, or against which
+            disclosure version. Restore only with a real screening request,
+         a stored consent record (document version, timestamp, applicant,
+         permissible purpose) and the adverse-action workflow. */
       stickyFooter={
-        <PrimaryButton
-          label="Run my screening"
-          disabled={!agreed}
-          onPress={() =>
-            ToastAndroid.show(
-              'Screening started — report goes to you and the landlord',
-              ToastAndroid.LONG,
-            )
-          }
-        />
+        <View>
+          <PrimaryButton label="Run my screening" disabled />
+          <Text
+            style={{
+              color: COLORS.keystone_slate,
+              fontFamily: 'Inter',
+              fontSize: 12,
+              lineHeight: 18,
+              marginTop: 12,
+              textAlign: 'center',
+            }}>
+            Screening isn’t available yet. Nothing on this screen has been
+            submitted or recorded.
+          </Text>
+        </View>
       }>
       <StatusBar barStyle="dark-content" backgroundColor="#F4F2EC" />
 
@@ -74,7 +82,7 @@ const ScreeningConsent = ({route}) => {
           letterSpacing: -0.3,
           marginBottom: 6,
         }}>
-        Your consent
+        About background checks
       </Text>
       <Text
         style={{
@@ -87,24 +95,30 @@ const ScreeningConsent = ({route}) => {
         Applying for {unitLabel}
       </Text>
 
-      <View style={{marginBottom: 16}}>
-        <StepDone>Identity verified</StepDone>
-        <StepDone>Income documents · 2 uploads</StepDone>
-      </View>
-
-      <ConsentBlock
-        copy={CONSENT_COPY}
-        links={[
-          {
-            label: 'Summary of your FCRA rights',
-            onPress: () =>
-              ToastAndroid.show('Opens the CFPB FCRA summary', ToastAndroid.SHORT),
-          },
-        ]}
-        checked={agreed}
-        onToggle={() => setAgreed(a => !a)}
-        agreeText="I have read the above and authorize this screening for my rental application."
-      />
+      {/* The tickable FCRA authorization, the green completion
+          checkmarks and the "Summary of your FCRA rights" link are all
+          removed while screening is unavailable:
+            · the checkbox took an authorization to pull consumer reports
+              that was never transmitted or stored, so no acceptance
+              evidence existed for what the applicant agreed to;
+            · the checkmarks were hardcoded, asserting an identity check
+              and income documents that no applicant had completed;
+            · the link only toasted "Opens the CFPB FCRA summary" — a
+              disclosure the law expects to be readable, that opened
+              nothing.
+          The disclosure text stays visible as plain, non-actionable copy
+          so the screen still explains what screening would involve. */}
+      <Card>
+        <Text
+          style={{
+            color: COLORS.keystone_slate,
+            fontFamily: 'Inter',
+            fontSize: 13,
+            lineHeight: 20,
+          }}>
+          {INFO_COPY}
+        </Text>
+      </Card>
     </Screen>
   );
 };

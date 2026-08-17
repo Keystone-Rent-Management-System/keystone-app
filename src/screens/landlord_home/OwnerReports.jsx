@@ -1,14 +1,8 @@
 import React from 'react';
-import {
-  RefreshControl,
-  StatusBar,
-  Text,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import {RefreshControl, StatusBar, Text, View} from 'react-native';
 import {useGenerateOwnerReport, useEmailOwnerReport} from '../../hooks/useOwners';
 import {usePortfolio} from '../../hooks/usePortfolio';
-import {mockOwnerStatements} from '../../services/mocks';
+import {demoOnly, mockOwnerStatements} from '../../services/mocks';
 import {Card} from '../../components/premium';
 import {
   ListRow,
@@ -18,6 +12,7 @@ import {
   usd,
 } from '../../components/kit';
 import COLORS from '../../constants/Theme';
+import {toast} from '../../utils/toast';
 
 // Statements (design 7b). Accountant-ready: every figure traces to a
 // receipt code. Statement rows carry the collected total + issue date
@@ -26,18 +21,23 @@ import COLORS from '../../constants/Theme';
 // screen's job is handing numbers to an accountant, not charts.
 
 const OwnerReports = () => {
+  // No statements-list endpoint (BE ships POST /owners/{id}/reports to
+  // render one PDF, not a history). Fixtures mode only.
+  const statements = demoOnly(mockOwnerStatements, []);
   const {isRefetching, refetch} = usePortfolio();
   const generate = useGenerateOwnerReport();
   const sendEmail = useEmailOwnerReport();
 
   const exportMonth = async statement => {
-    ToastAndroid.show('Preparing your statement…', ToastAndroid.SHORT);
+    toast.show('Preparing your statement…', toast.SHORT);
     const res = await generate
       .mutateAsync({ownerId: 'portfolio', period: statement.period})
       .catch(() => null);
-    ToastAndroid.show(
-      res?.url ? 'Statement ready — opening' : res?.message ?? 'PDF export coming soon',
-      ToastAndroid.LONG,
+    toast.show(
+      res?.url
+        ? 'Statement ready — opening'
+        : res?.message ?? 'Statement downloads aren’t available yet.',
+      toast.LONG,
     );
   };
 
@@ -45,7 +45,7 @@ const OwnerReports = () => {
     const res = await sendEmail
       .mutateAsync({ownerId: 'portfolio', period: 'YTD'})
       .catch(() => null);
-    ToastAndroid.show(res?.message ?? 'Year-to-date summary exported', ToastAndroid.LONG);
+    toast.show(res?.message ?? 'Year-to-date summary exported', toast.LONG);
   };
 
   return (
@@ -67,7 +67,7 @@ const OwnerReports = () => {
 
       <SectionLabel>Monthly statements</SectionLabel>
       <Card style={{paddingVertical: 0, paddingHorizontal: 16}}>
-        {mockOwnerStatements.map((s, i) => (
+        {statements.map((s, i) => (
           <ListRow
             key={s.id}
             icon="reports"
@@ -85,7 +85,7 @@ const OwnerReports = () => {
                 </Text>
               ) : undefined
             }
-            last={i === mockOwnerStatements.length - 1}
+            last={i === statements.length - 1}
             onPress={s.open ? undefined : () => exportMonth(s)}
           />
         ))}

@@ -1,13 +1,5 @@
 import React, {useState} from 'react';
-import {
-  ActivityIndicator,
-  ScrollView,
-  StatusBar,
-  Text,
-  ToastAndroid,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {ActivityIndicator, ScrollView, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
 import {useTenantHome} from '../../hooks/useTenantHome';
@@ -15,6 +7,9 @@ import {usd} from '../../utils/money';
 import {Card, IconChip, Label, Divider, Row, Icon} from '../../components/premium';
 import {PrimaryButton, Screen, SectionLabel, StatusChip} from '../../components/kit';
 import COLORS from '../../constants/Theme';
+import {toast} from '../../utils/toast';
+import {getError} from '../../utils/getError';
+import AgreementServices from '../../services/AgreementServices';
 
 // The tenant's lease — everything about where they live, in one calm
 // view. When the lease is still PENDING (landlord sent it, tenant hasn't
@@ -28,18 +23,43 @@ const fmtDate = iso => {
 
 const Lease = () => {
   const nav = useNavigation();
-  const {home, isPending} = useTenantHome();
+  const {home, isPending, refetch} = useTenantHome();
   const [accepting, setAccepting] = useState(false);
 
   const lease = home?.lease ?? {};
   const isPendingAccept = lease.agreementStatus === 'PENDING';
   const docs = lease.documents ?? [];
 
-  const onAccept = () => {
+  // Accepting a lease is a binding act. This used to be a toast and a
+  // 600ms timer with no request at all — the tenant was told "Lease
+  // accepted", the agreement stayed PENDING on the server, and neither
+  // side had a record. `acceptAgreement` (PATCH /agreements/{id}/
+  // acceptance) exists and BE confirms it, so wire it and confirm only
+  // on a resolved response.
+  const onAccept = async () => {
+    const agreementId = lease.agreementId ?? lease.id;
+    if (!agreementId) {
+      toast.show(
+        'We couldn’t find your lease to accept. Please contact your landlord.',
+        toast.LONG,
+      );
+      return;
+    }
     setAccepting(true);
-    // PATCH /agreements/{id}/acceptance lands here.
-    ToastAndroid.show('Lease accepted — welcome home!', ToastAndroid.LONG);
-    setTimeout(() => nav.navigate('home'), 600);
+    try {
+      await AgreementServices.acceptAgreement(agreementId);
+    } catch (err) {
+      setAccepting(false);
+      toast.show(
+        `We couldn’t accept your lease — ${getError(err)}. It has not been accepted; please try again.`,
+        toast.LONG,
+      );
+      return;
+    }
+    await refetch?.();
+    setAccepting(false);
+    toast.show('Lease accepted — welcome home!', toast.LONG);
+    nav.navigate('home');
   };
 
   if (isPending) {
@@ -135,8 +155,12 @@ const Lease = () => {
                   {i > 0 && <Divider style={{marginHorizontal: 12}} />}
                   <TouchableOpacity
                     activeOpacity={0.7}
+                    // Said "Opening document…" and opened nothing.
                     onPress={() =>
-                      ToastAndroid.show('Opening document…', ToastAndroid.SHORT)
+                      toast.show(
+                        'Lease documents aren’t viewable in the app yet — ask your landlord for a copy.',
+                        toast.LONG,
+                      )
                     }
                     className="flex-row items-center px-3 py-3">
                     <IconChip size={36}>

@@ -1,14 +1,8 @@
 import React from 'react';
-import {
-  RefreshControl,
-  StatusBar,
-  Text,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import {RefreshControl, StatusBar, Text, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useLeaseExpiry} from '../../hooks';
-import {mockScreening} from '../../services/mocks';
+import {demoOnly, mockScreening} from '../../services/mocks';
 import {Card, IconChip, Stat, Divider, Icon} from '../../components/premium';
 import {
   ListRow,
@@ -20,6 +14,7 @@ import {
   eventDate,
 } from '../../components/kit';
 import COLORS from '../../constants/Theme';
+import {toast} from '../../utils/toast';
 
 // Leases — renewals pipeline (design 2h). The flat "expiring soon"
 // list re-grouped exception-first: NEEDS ACTION vs WAITING ON
@@ -31,7 +26,9 @@ import COLORS from '../../constants/Theme';
 const LeaseExpiry = () => {
   const nav = useNavigation();
   const {buckets, expiring, isPending, refetch} = useLeaseExpiry();
-  const screeningReady = mockScreening.applications.filter(
+  // No screening endpoint yet — Fixtures mode only.
+  const screening = demoOnly(mockScreening);
+  const screeningReady = (screening?.applications ?? []).filter(
     a => a.status === 'REPORT_READY',
   ).length;
 
@@ -79,14 +76,17 @@ const LeaseExpiry = () => {
         </View>
       </Card>
 
-      {/* Screening entry — a vacant/expiring unit's next step (4b) */}
+      {/* Screening entry — a vacant/expiring unit's next step (4b).
+          Hidden entirely without screening data: there is no BE endpoint,
+          so in a live build there is nothing truthful to show. */}
+      {screening ? (
       <View className="mt-4">
         <SectionLabel>Filling vacancies</SectionLabel>
         <Card style={{paddingVertical: 0, paddingHorizontal: 16}}>
           <ListRow
             icon="users"
             title="Screening"
-            sub={`${mockScreening.unit.unitName} · ${mockScreening.unit.applicantCount} applicants`}
+            sub={`${screening?.unit?.unitName} · ${screening?.unit?.applicantCount} applicants`}
             chip={
               screeningReady > 0
                 ? {label: `${screeningReady} report ready`, tone: 'success'}
@@ -98,6 +98,7 @@ const LeaseExpiry = () => {
           />
         </Card>
       </View>
+      ) : null}
 
       {expiring.length === 0 && !isPending && (
         <Text className="text-text_muted font-inter text-sm text-center py-10">
@@ -139,25 +140,19 @@ const LeaseExpiry = () => {
               </View>
               {/* Decision row — renewal is a two-way decision */}
               <View className="flex-row gap-3 mt-4">
+                {/* "Send renewal" claimed a renewal had been drafted and
+                    "Don't renew" leaked implementation language; neither
+                    made a request. Both are lease decisions with notice
+                    periods attached. */}
                 <PrimaryButton
                   label="Send renewal"
                   style={{flex: 1, minHeight: 44}}
-                  onPress={() =>
-                    ToastAndroid.show(
-                      `Renewal drafted for ${unit.unitName}`,
-                      ToastAndroid.SHORT,
-                    )
-                  }
+                  disabled
                 />
                 <SecondaryButton
                   label="Don't renew"
                   style={{flex: 1, minHeight: 44}}
-                  onPress={() =>
-                    ToastAndroid.show(
-                      'Non-renewal flow coming with BE support',
-                      ToastAndroid.SHORT,
-                    )
-                  }
+                  disabled
                 />
               </View>
             </Card>

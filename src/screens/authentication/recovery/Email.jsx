@@ -5,7 +5,7 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import {Controller, useForm} from 'react-hook-form';
 
 import {FormField, PrimaryButton, Screen} from '../../../components/kit';
-import StepIndicator from '../registration/StepIndicator';
+import StepIndicator from '../StepIndicator';
 import COLORS from '../../../constants/Theme';
 import {useRequestPasswordReset} from '../../../hooks';
 

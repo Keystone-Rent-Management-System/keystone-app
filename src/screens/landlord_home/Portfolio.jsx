@@ -1,16 +1,10 @@
 import React from 'react';
-import {
-  ActivityIndicator,
-  RefreshControl,
-  StatusBar,
-  Text,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import {ActivityIndicator, RefreshControl, StatusBar, Text, View} from 'react-native';
 import {pct} from '../../utils/money';
+import {NO_VALUE} from '../../components/kit/money';
 import {useExportPortfolioPdf, usePortfolio} from '../../hooks/usePortfolio';
 import {useDashboard} from '../../hooks';
-import {mockPortfolioByProperty} from '../../services/mocks';
+import {demoOnly, mockPortfolioByProperty} from '../../services/mocks';
 import {Card, Divider, Row, Delta} from '../../components/premium';
 import {
   HeroCard,
@@ -20,6 +14,7 @@ import {
   usd,
 } from '../../components/kit';
 import COLORS from '../../constants/Theme';
+import {toast} from '../../utils/toast';
 
 // Portfolio performance (design 7a). Hero = gross rent (the owner's
 // number); occupancy folds into the sub-line rather than a second
@@ -32,6 +27,10 @@ const rateColor = r =>
   r >= 95 ? '#037147' : r >= 90 ? '#7A6100' : '#B32020';
 
 const Portfolio = () => {
+  // Per-property breakdown has no BE endpoint — /portfolio/performance
+  // returns portfolio-wide totals only. Fixtures mode shows the intended
+  // design; a live build shows nothing rather than invented properties.
+  const byProperty = demoOnly(mockPortfolioByProperty, []);
   const {performance, isPending, isRefetching, refetch} = usePortfolio();
   const {dashboard} = useDashboard();
   const exportMut = useExportPortfolioPdf();
@@ -51,11 +50,13 @@ const Portfolio = () => {
     .toUpperCase();
 
   const handleExport = async () => {
-    ToastAndroid.show('Preparing PDF…', ToastAndroid.SHORT);
+    toast.show('Preparing PDF…', toast.SHORT);
     const res = await exportMut.mutateAsync(undefined).catch(() => null);
-    ToastAndroid.show(
-      res?.url ? 'PDF ready — opening' : res?.message ?? 'PDF export coming soon',
-      ToastAndroid.LONG,
+    toast.show(
+      res?.url
+        ? 'PDF ready — opening'
+        : res?.message ?? 'Report downloads aren’t available yet.',
+      toast.LONG,
     );
   };
 
@@ -74,8 +75,8 @@ const Portfolio = () => {
 
       <HeroCard
         label={`Gross rent · ${monthLabel}`}
-        badge={{text: `${portfolio.properties ?? mockPortfolioByProperty.length} properties`}}
-        amount={usd(performance?.grossRentIncome ?? 0)}
+        badge={{text: `${portfolio.properties ?? byProperty.length} properties`}}
+        amount={usd(performance?.grossRentIncome)}
         amountSize={34}
         sub={`${portfolio.occupancyRate ?? Math.round(performance?.occupancyRate ?? 0)}% occupied · ${
           portfolio.occupied ?? '—'
@@ -127,12 +128,12 @@ const Portfolio = () => {
       <View className="mt-5">
         <SectionLabel>By property</SectionLabel>
         <Card style={{paddingVertical: 0, paddingHorizontal: 16}}>
-          {mockPortfolioByProperty.map((p, i) => (
+          {byProperty.map((p, i) => (
             <View
               key={p.id}
               className="flex-row items-center py-3.5"
               style={
-                i < mockPortfolioByProperty.length - 1 && {
+                i < byProperty.length - 1 && {
                   borderBottomWidth: 0.5,
                   borderBottomColor: COLORS.keystone_hairline,
                 }
@@ -173,17 +174,29 @@ const Portfolio = () => {
           <Row label="Gross rent income" value={usd(performance?.grossRentIncome)} />
           <Row
             label="Vacancy loss"
-            value={`-${usd(performance?.vacancyLoss ?? 0)}`}
+            value={
+              performance?.vacancyLoss == null
+                ? NO_VALUE
+                : usd(-Math.abs(performance.vacancyLoss))
+            }
             valueColor={COLORS.c_danger}
           />
           <Row
             label="Late fees"
-            value={`+${usd(performance?.lateFees ?? 0)}`}
+            value={
+              performance?.lateFees == null
+                ? NO_VALUE
+                : `+${usd(performance.lateFees)}`
+            }
             valueColor={COLORS.c_success}
           />
           <Row
             label="Insurance claims"
-            value={`-${usd(performance?.insuranceClaims ?? 0)}`}
+            value={
+              performance?.insuranceClaims == null
+                ? NO_VALUE
+                : usd(-Math.abs(performance.insuranceClaims))
+            }
             valueColor={performance?.insuranceClaims ? COLORS.c_danger : undefined}
           />
           <Divider style={{marginVertical: 8}} />

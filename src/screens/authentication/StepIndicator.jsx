@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text, View} from 'react-native';
-import COLORS from '../../../constants/Theme';
+import COLORS from '../../constants/Theme';
 
 // Registration step indicator (design 3a–3d): "STEP N OF 4" + gold
 // progress segments (gold as progress fill only — F5).

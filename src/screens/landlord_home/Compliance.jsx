@@ -1,33 +1,25 @@
 import React from 'react';
-import {
-  ActivityIndicator,
-  RefreshControl,
-  StatusBar,
-  Text,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import {ActivityIndicator, RefreshControl, StatusBar, Text, View} from 'react-native';
 import {
   useComplianceAlerts,
   useComplianceAudit,
-  useSendComplianceNotice,
 } from '../../hooks/useCompliance';
 import {Card, Icon} from '../../components/premium';
 import {
   HeroCard,
-  PrimaryButton,
   Screen,
-  SecondaryButton,
   SectionLabel,
   StatusChip,
   Timeline,
   eventDate,
 } from '../../components/kit';
 import COLORS from '../../constants/Theme';
+import {can} from '../../constants/capabilities';
 
 // Compliance alerts (design 7d). Countdown chips escalate
-// pending → danger as deadlines near; the urgent item gets the
-// decision row (Review draft / Skip increase), quiet ones stay quiet.
+// pending → danger as deadlines near. The design's decision row
+// (Review draft / Skip increase) is intentionally absent — see the
+// note at the urgent branch below.
 // "We'll write them for you" reassurance carried from the Dashboard
 // needs-you row (do-not-lose); the education footer explains the
 // lawyer-reviewed-template mechanism. The audit trail stays — it's
@@ -39,9 +31,17 @@ const daysLeft = iso => {
 };
 
 const Compliance = () => {
-  const {alerts, isPending, isRefetching, refetch} = useComplianceAlerts();
-  const {audit} = useComplianceAudit();
-  const sendMut = useSendComplianceNotice();
+  const {alerts, isPending, isRefetching, refetch, error, loaded} =
+    useComplianceAlerts();
+  const {audit, loaded: auditLoaded} = useComplianceAudit();
+
+  // An all-clear may only come from a SUCCESSFUL load. A failed request
+  // yields an empty list, and "no alerts" and "we don't know" are the same
+  // shape — so the screen used to answer a 404 with "All notices handled ·
+  // Your audit trail is current." That is a legal reassurance invented from
+  // a network error, on the one screen where being wrong means a missed
+  // statutory deadline.
+  const canReassure = loaded && !error;
 
   const pending = alerts.filter(a => a.status === 'NOT_SENT');
   const jurisdiction = pending[0]?.jurisdiction === 'WA' ? 'Washington' : pending[0]?.jurisdiction;
@@ -61,6 +61,8 @@ const Compliance = () => {
     <Screen
       title="Compliance"
       back="Reports"
+      loadError={!isPending && error}
+      onRetry={refetch}
       refreshControl={
         <RefreshControl
           refreshing={isRefetching}
@@ -73,16 +75,29 @@ const Compliance = () => {
       <HeroCard
         label="Notices due"
         badge={jurisdiction ? {text: jurisdiction} : undefined}
+        // Three distinct states, never two. In flight is NOT the same as
+        // failed: showing "Status unavailable" while the request is still
+        // running told the landlord their compliance status was unknown
+        // every single cold open, which trains them to ignore the one
+        // message that matters when it is real.
         amount={
-          pending.length === 0
+          isPending
+            ? 'Checking…'
+            : !canReassure
+            ? 'Status unavailable'
+            : pending.length === 0
             ? 'All notices handled'
             : `${pending.length} notice${pending.length === 1 ? '' : 's'}`
         }
         amountSize={28}
         sub={
-          pending.length === 0
-            ? 'Nothing due. Your audit trail is current.'
-            : "HB 1217 requires 90-day notice for rent increases — we'll write them for you."
+          isPending
+            ? 'Looking up your notice requirements.'
+            : !canReassure
+            ? 'We couldn’t check your notice requirements. Don’t treat this as all-clear — verify any deadlines yourself.'
+            : pending.length === 0
+            ? 'Nothing due, based on the notices Keystone tracks.'
+            : 'HB 1217 requires 90-day notice for rent increases.'
         }
       />
 
@@ -127,26 +142,22 @@ const Compliance = () => {
                     />
                   </View>
                 </View>
-                {/* Decision row — only the urgent item gets it (7d) */}
-                {urgent && (
-                  <View className="flex-row gap-3 mt-4">
-                    <PrimaryButton
-                      label="Review draft"
-                      style={{flex: 1, minHeight: 44}}
-                      disabled={sendMut.isPending}
-                      onPress={() => sendMut.mutate(a.id)}
-                    />
-                    <SecondaryButton
-                      label="Skip increase"
-                      style={{flex: 1, minHeight: 44}}
-                      onPress={() =>
-                        ToastAndroid.show(
-                          'Increase skipped — no notice needed',
-                          ToastAndroid.SHORT,
-                        )
-                      }
-                    />
-                  </View>
+                {/* The decision row is REMOVED, not relabelled.
+                    "Review draft" called the send mutation directly — it
+                    dispatched a legally consequential notice while the
+                    label promised a preview — and "Skip increase" claimed
+                    a recorded decision from a local toast. Neither had a
+                    preview, recipient/address check, delivery method,
+                    separate Send step, confirmation, or server audit
+                    record. Restore this row only when all of those exist.
+                    The deadline above stays: the tracking is real and
+                    useful even while sending is not available in-app. */}
+                {urgent && !can('complianceNotices') && (
+                  <Text className="text-keystone_slate font-inter text-xs leading-5 mt-3">
+                    Sending notices from the app isn’t available yet. Send
+                    this notice through your usual process before the
+                    deadline.
+                  </Text>
                 )}
               </Card>
             );
@@ -154,14 +165,20 @@ const Compliance = () => {
         </View>
       )}
 
+      {/* Claimed nationwide coverage and "lawyer-reviewed" templates.
+          Neither is true today: only WA HB 1217 is modelled, the drafting
+          endpoint does not exist, and no counsel has reviewed the copy
+          (see the DRAFT banner in constants/legalCopy). Overstating legal
+          coverage on a compliance screen is the same class of defect as a
+          false all-clear. */}
       <Text className="text-keystone_slate font-inter text-xs leading-5 mt-1">
-        Keystone tracks notice requirements for every state your properties are
-        in. Drafts use the state's required language — a lawyer-reviewed
-        template, filled with your numbers.
+        Keystone tracks rent-increase notice deadlines for Washington
+        (HB 1217). Confirm your own obligations — Keystone doesn’t provide
+        legal advice, and doesn’t send notices for you.
       </Text>
 
       {/* Audit trail — proof it happened */}
-      {audit.length > 0 && (
+      {auditLoaded && audit.length > 0 && (
         <View className="mt-5">
           <SectionLabel>Audit trail · proof it happened</SectionLabel>
           <Card>

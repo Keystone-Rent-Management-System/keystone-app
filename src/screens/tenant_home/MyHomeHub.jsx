@@ -122,7 +122,7 @@ const MyHomeHub = () => {
             title="Condition checklist"
             sub={
               checklist.status === 'IN_PROGRESS'
-                ? `${checklist.completed} of ${checklist.total} rooms · protects your deposit`
+                ? `${checklist.completed} of ${checklist.total} rooms · your move-out record`
                 : 'Move-in / move-out walkthrough'
             }
             chip={
