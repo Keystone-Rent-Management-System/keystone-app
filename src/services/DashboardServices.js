@@ -1,4 +1,5 @@
 import AxiosUtility from './AxiosServices';
+import {isEndpointUnavailable} from './unavailable';
 import {
   USE_MOBILE_MOCKS,
   mockDailyCollection,
@@ -18,8 +19,7 @@ const getDailyCollection = async () => {
     // BE hasn't shipped this yet (BE_ASKS_MOBILE §1). Fall back to a
     // fixture so the dashboard still renders — landlord sees something
     // representative while BE catches up.
-    const status = err?.response?.status;
-    if (status === 404 || status === 501 || status === undefined) {
+    if (isEndpointUnavailable(err)) {
       return mockFallback('dashboard.daily-collection', mockDailyCollection);
     }
     throw err;

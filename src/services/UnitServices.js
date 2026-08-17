@@ -1,4 +1,4 @@
-import AxiosUtility, {setAuthToken} from './AxiosServices';
+import AxiosUtility from './AxiosServices';
 
 /**
  * fetches units
@@ -8,7 +8,6 @@ import AxiosUtility, {setAuthToken} from './AxiosServices';
  * @returns {Promise<Unit[]>}
  */
 const getUnits = async (page, size, searchQuery) => {
-  setAuthToken(AxiosUtility);
   const {data: res} = await AxiosUtility.get(
     `/search/propertyUnits?page=${page}&size=${size}${
       searchQuery ? `&searchParam=${searchQuery}` : ''
@@ -24,7 +23,6 @@ const getUnits = async (page, size, searchQuery) => {
  * @returns {Promise<Unit>}
  */
 const getUnit = async unitId => {
-  setAuthToken(AxiosUtility);
   const {data: res} = await AxiosUtility.get(`/property-units/${unitId}`);
 
   return res;

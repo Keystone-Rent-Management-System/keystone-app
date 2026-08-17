@@ -1,4 +1,6 @@
 import AxiosUtility from './AxiosServices';
+import {blockedInFixtureMode} from './fixtureGuard';
+import {isEndpointUnavailable} from './unavailable';
 import {USE_MOBILE_MOCKS, mockOwners, mockFallback} from './mocks';
 
 // Multi-owner reporting. BE today models one landlord = one entity;
@@ -11,8 +13,7 @@ const listOwners = async () => {
     const {data} = await AxiosUtility.get('/owners');
     return data;
   } catch (err) {
-    const status = err?.response?.status;
-    if (status === 404 || status === 501 || status === undefined) {
+    if (isEndpointUnavailable(err)) {
       return mockFallback('owners.list', mockOwners);
     }
     throw err;
@@ -20,6 +21,9 @@ const listOwners = async () => {
 };
 
 const generateReport = async ({ownerId, period}) => {
+  const blocked = blockedInFixtureMode('POST /owners/{id}/reports');
+  if (blocked) return blocked;
+
   try {
     const {data} = await AxiosUtility.post(
       `/owners/${ownerId}/reports`,
@@ -29,12 +33,15 @@ const generateReport = async ({ownerId, period}) => {
   } catch (err) {
     return mockFallback(`owners.${ownerId}.report`, {
       url: null,
-      message: 'Report export endpoint not yet shipped',
+      message: 'Statement downloads aren’t available yet.',
     });
   }
 };
 
 const emailReport = async ({ownerId, period}) => {
+  const blocked = blockedInFixtureMode('POST /owners/{id}/reports/email');
+  if (blocked) return blocked;
+
   try {
     const {data} = await AxiosUtility.post(
       `/owners/${ownerId}/reports/email`,
@@ -44,7 +51,7 @@ const emailReport = async ({ownerId, period}) => {
   } catch (err) {
     return mockFallback(`owners.${ownerId}.email`, {
       status: 'queued',
-      message: 'Email send endpoint not yet shipped',
+      message: 'Emailing statements isn’t available yet.',
     });
   }
 };

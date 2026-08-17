@@ -1,7 +1,24 @@
+import {asDate} from '../components/kit/money';
 import moment from 'moment';
 import {IFlattendenedStatement} from '../types/statement';
 import {IFromEndDate} from '../utils/statement';
-import AxiosUtility, {setAuthToken} from './AxiosServices';
+import AxiosUtility from './AxiosServices';
+
+
+// "June 2026" from a date-only string, parsed LOCALLY.
+//
+// `moment('2026-06-01')` is local, but `new Date('2026-06-01')` is not,
+// and this file mixes both. Route through the kit parser so a statement
+// month never disagrees with the same date rendered elsewhere.
+const MONTHS_LONG = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+const monthYearLabel = (value: any): string => {
+  const d = asDate(value);
+  if (!(d instanceof Date) || Number.isNaN(d.getTime())) return '';
+  return `${MONTHS_LONG[d.getMonth()]} ${d.getFullYear()}`;
+};
 
 // B70 — switched from the dead Pallax `/statements/*` POJO endpoints
 // to the GAAP-correct AR sub-ledger projection at
@@ -43,7 +60,6 @@ const fetchAgreementStatement = async (
   from?: string,
   to?: string,
 ): Promise<ARStatement> => {
-  setAuthToken(AxiosUtility);
   const params = new URLSearchParams();
   if (from) params.set('from', from);
   if (to) params.set('to', to);
@@ -86,7 +102,6 @@ async function getFilteredStatements(
   agreementId?: string,
 ): Promise<IFlattendenedStatement[] | []> {
   if (!agreementId) return [];
-  setAuthToken(AxiosUtility);
   const startDate = moment
     .min(moment(dateRange.from), moment(dateRange.to))
     .format('YYYY-MM-DD');
@@ -101,7 +116,12 @@ async function getFilteredStatements(
   return statement.entries.map(
     entry =>
       ({
-        timeOfDayLabel: moment(entry.entryDate).format('MMMM YYYY'),
+        // Grouped through the shared parser, not a bare moment(). A
+        // date-only entryDate ("2026-06-01") parsed as UTC lands in the
+        // PREVIOUS month west of UTC, so a ledger entry appeared under
+        // the wrong month heading — the same defect as money.js's asDate,
+        // in a different file.
+        timeOfDayLabel: monthYearLabel(entry.entryDate),
         // Stub legacy nested shapes so existing PDF + list rendering
         // keeps working; new screens should read the AR fields above.
         statement_date: entry.entryDate,

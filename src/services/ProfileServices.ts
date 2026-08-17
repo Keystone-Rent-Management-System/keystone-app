@@ -1,4 +1,5 @@
-import AxiosUtility, {setAuthToken} from './AxiosServices';
+import AxiosUtility from './AxiosServices';
+import {blockedInFixtureMode} from './fixtureGuard';
 
 /**
  * Updates user phone number
@@ -6,7 +7,9 @@ import AxiosUtility, {setAuthToken} from './AxiosServices';
  * @returns {Promise<any>}
  */
 const updatePhoneNumber = async (newPhoneNumber: string): Promise<any> => {
-  setAuthToken(AxiosUtility);
+  const blocked = blockedInFixtureMode('PUT /manage-profile/phone');
+  if (blocked) return blocked;
+
 
   const {data: res} = await AxiosUtility.put(
     `/profile/user/phoneNumber?phoneNumber=${newPhoneNumber}`,

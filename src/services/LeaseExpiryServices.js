@@ -1,4 +1,5 @@
 import AxiosUtility from './AxiosServices';
+import {isEndpointUnavailable} from './unavailable';
 import {USE_MOBILE_MOCKS, mockLeaseExpiries, mockFallback} from './mocks';
 
 // Lease-expiry timeline. BE today exposes agreements with endDate +
@@ -14,8 +15,7 @@ const getExpiringLeases = async () => {
     const {data} = await AxiosUtility.get('/agreements/expiring');
     return data;
   } catch (err) {
-    const status = err?.response?.status;
-    if (status === 404 || status === 501 || status === undefined) {
+    if (isEndpointUnavailable(err)) {
       // Fall back: pull the agreement list and roll up client-side.
       try {
         const {data: agreements} = await AxiosUtility.get(

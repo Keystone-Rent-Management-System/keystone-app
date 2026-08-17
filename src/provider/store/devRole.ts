@@ -23,9 +23,21 @@ interface IDevRoleStore {
 export const useDevRoleStore = create(
   persist<IDevRoleStore>(
     set => ({
-      // Debug builds open on the tenant side; 'auto' defers to the real
-      // roles on the signed-in profile.
-      role: 'tenant',
+      // DEFAULT IS 'auto' — the real path — and preview is opt-in.
+      //
+      // This defaulted to 'tenant', which made `forceRole` true on every
+      // fresh debug install. `navigation/Main.jsx` then registered
+      // `bottom-nav` and the private screens with NO session, so a debug
+      // build never showed the signed-out front door, never exercised the
+      // navigation gate, and did not evict the user when a session died.
+      // The bypass was doing real work that nobody had opted into.
+      //
+      // It was also self-trapping: "Preview as" lives in Account, inside
+      // the tabs, so the only way to leave the bypass was through a
+      // screen the bypass had put you in. Welcome now carries a
+      // __DEV__-only control so preview can be entered from outside a
+      // session — see screens/authentication/Welcome.jsx.
+      role: 'auto',
       setRole: role => set({role}),
     }),
     {

@@ -1,4 +1,5 @@
 import AxiosUtility from './AxiosServices';
+import {isEndpointUnavailable} from './unavailable';
 import {
   USE_MOBILE_MOCKS,
   mockPortfolioPerformance,
@@ -20,8 +21,7 @@ const getPerformance = async (period = null) => {
     const {data} = await AxiosUtility.get(`/portfolio/performance${qs}`);
     return data;
   } catch (err) {
-    const status = err?.response?.status;
-    if (status === 404 || status === 501 || status === undefined) {
+    if (isEndpointUnavailable(err)) {
       return mockFallback('portfolio.performance', mockPortfolioPerformance);
     }
     throw err;
@@ -40,7 +40,7 @@ const exportPerformancePdf = async (period = null) => {
   } catch (err) {
     return mockFallback('portfolio.performance.pdf', {
       url: null,
-      message: 'PDF export endpoint not yet shipped — coming soon',
+      message: 'Report downloads aren’t available yet.',
     });
   }
 };

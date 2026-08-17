@@ -22,7 +22,20 @@ export const DOMAINS: Domain = {
 
 const SCHEME = 'https';
 
-export const getBaseUrl = (env: Environment = Environment.Uat) => {
+// The environment every module resolves against. Change this in ONE
+// place — AxiosServices pins the gateway base URL from it at boot and
+// AuthServices derives the matching Keycloak realm host, so a split
+// brain (API on one env, auth on another) is not representable.
+//
+// Currently Dev, because it is the only environment that exists:
+//   api-dev.keystonerent.app   → resolves, gateway answers 401 (live)
+//   auth-dev.keystonerent.app  → resolves, `keystone` realm is up
+//   api-uat / api / auth-uat   → NXDOMAIN as of 2026-07-29
+// Move this to Uat/Production once ops has stood those hosts up; the
+// DOMAINS/KEYCLOAK_HOSTS entries below are already correct for them.
+export const ACTIVE_ENVIRONMENT: Environment = Environment.Dev;
+
+export const getBaseUrl = (env: Environment = ACTIVE_ENVIRONMENT) => {
   return `${SCHEME}://${DOMAINS[env]}/api/v1/rms`;
 };
 
@@ -38,7 +51,7 @@ export const KEYCLOAK_HOSTS: Domain = {
 export const KEYCLOAK_REALM = 'keystone';
 export const KEYCLOAK_CLIENT_ID = 'keystone-mobile';
 
-export const getKeycloakBaseUrl = (env: Environment = Environment.Uat) =>
+export const getKeycloakBaseUrl = (env: Environment = ACTIVE_ENVIRONMENT) =>
   `${SCHEME}://${KEYCLOAK_HOSTS[env]}/realms/${KEYCLOAK_REALM}`;
 
 export const queryRefetchIntervalOptions = {

@@ -1,4 +1,5 @@
-import AxiosUtility, {setAuthToken} from './AxiosServices';
+import AxiosUtility from './AxiosServices';
+import {blockedInFixtureMode} from './fixtureGuard';
 import {PAGINATION_LIMIT} from '../constants';
 
 /**
@@ -10,7 +11,6 @@ import {PAGINATION_LIMIT} from '../constants';
  * @returns {Promise<Invoice[]>}
  */
 const getInvoices = async (page, size = PAGINATION_LIMIT, status, userId) => {
-  setAuthToken(AxiosUtility);
   const {data: res} = await AxiosUtility.get(
     `/invoices/tenant-invoice?page=${page}&size=${size}&paymentStatus=${status}&tenantUserId=${userId}`,
   );
@@ -24,14 +24,15 @@ const getInvoices = async (page, size = PAGINATION_LIMIT, status, userId) => {
  * @returns {Promise<Invoice>}
  */
 const getInvoice = async id => {
-  setAuthToken(AxiosUtility);
   const {data: res} = await AxiosUtility.get(`/invoices/${id}`);
 
   return res;
 };
 
 const raiseConcern = async (id, data) => {
-  setAuthToken(AxiosUtility);
+  const blocked = blockedInFixtureMode('POST /invoices/{id}/concern');
+  if (blocked) return blocked;
+
   const {data: res} = await AxiosUtility.post(
     `/invoices/${id}/raise-concern`,
     data,
@@ -41,7 +42,6 @@ const raiseConcern = async (id, data) => {
 };
 
 const getConcerns = async (id, data) => {
-  setAuthToken(AxiosUtility);
   const {data: res} = await AxiosUtility.get(
     `/invoices/${id}/invoice-concerns`,
     data,
@@ -55,7 +55,6 @@ const getInvoiceAnalytics = async (
   size = PAGINATION_LIMIT,
   propertyUnitName,
 ) => {
-  setAuthToken(AxiosUtility);
   const queryParams = `?page=${page}&size=${size}`;
   let res;
 
@@ -71,7 +70,6 @@ const getInvoiceAnalytics = async (
 };
 
 const searchInvoices = async () => {
-  setAuthToken(AxiosUtility);
 
   const res = await AxiosUtility.get('/search/tenant/invoices');
 

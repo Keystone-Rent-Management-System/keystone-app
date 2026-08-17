@@ -5,19 +5,37 @@
 // Toggling:
 //   - Per-call: a service catches a 404/501 from the gateway and falls
 //     back to the fixture in this file.
-//   - Global: set USE_MOBILE_MOCKS = true below to force every wired
-//     service onto mock data, regardless of BE health. Useful for
+//   - Global: debug builds can force every wired service onto fixtures
+//     from Account → "Data source", regardless of BE health. Useful for
 //     demoing on a flight / off-network.
 //
 // All fixture amounts are USD. Dates relative to "today" so a stale
 // fixture never shows a date in the past.
 
-// Global mock override. Debug builds serve fixtures so the redesigned
-// screens can be reviewed end-to-end while the Phase-3 endpoints are
-// still being built; release builds ALWAYS hit the real BE. Per-service
-// 404/501 fallbacks still apply in both.
-// Set to false locally if you are integrating against a live endpoint.
-export const USE_MOBILE_MOCKS = __DEV__;
+import {
+  resolveDataSource,
+  useDataSourceStore,
+} from '../../provider/store/devDataSource';
+
+// Global mock override. The app hits the real BE by default in EVERY
+// build; a debug build can flip onto fixtures at runtime from Account →
+// "Data source" (persisted, see provider/store/devDataSource).
+//
+// This is a LIVE BINDING, not a constant: services read it inside their
+// request functions, so flipping the toggle takes effect on the next
+// call without a reload. Do not copy it into a module-level `const` at
+// a call site — that would freeze the value at import time.
+//
+// Per-service 404/501 fallbacks are independent of this flag and stay
+// active in both modes, so endpoints BE hasn't shipped still render.
+export let USE_MOBILE_MOCKS = resolveDataSource() === 'mock';
+
+useDataSourceStore.subscribe(({source}) => {
+  USE_MOBILE_MOCKS = __DEV__ && source === 'mock';
+  // A flip changes what every query would return; drop the log dedupe
+  // so the next live→mock fallback is visible in the console again.
+  logged.clear();
+});
 
 // Role preview (tenant ⇄ landlord) moved to a persisted, __DEV__-gated
 // store so it flips at runtime from Account → "Preview as" instead of
@@ -401,7 +419,6 @@ export const mockTenantHome = {
     endDate: daysFromNow(56),
     daysToEnd: 56,
     noticeDays: 30, // agreement.daysOfTerminationNotice
-    landlord: 'Keystone Property Group',
     landlordPhone: '+15125550148', // tel: for routine contact
     emergencyPhone: '+15125550199', // after-hours urgent maintenance line
 
@@ -421,15 +438,20 @@ export const mockTenantHome = {
     {id: 'pm2', type: 'card', name: 'Visa debit', last4: '4417', isDefault: false},
   ],
   autopay: {enabled: false, dayOfMonth: 1, methodId: 'pm1'},
-  // Credit building — on-time rent reported to the bureaus. The reason a
-  // renter chooses to pay through Keystone.
+  // Credit reporting. The fixture used to ship `enabled: true` with a
+  // score, a band and a nine-month history — demo data asserting that a
+  // capability which does not exist was switched on and had already
+  // moved someone's credit. Demo data is still shown to people, so it
+  // has to be as honest as the UI. Off, with no score.
   credit: {
-    enabled: true,
-    score: 712,
-    delta: 18, // points since enrolling
-    band: 'Good',
-    streakMonths: 9, // consecutive on-time payments
-    reportedTo: ['TransUnion', 'Equifax'],
+    enabled: false,
+    score: null,
+    delta: null,
+    band: null,
+    streakMonths: 9, // consecutive on-time payments (real: from receipts)
+    // `reportedTo: ['TransUnion', 'Equifax']` removed — naming real
+    // bureaus in a fixture asserts furnisher relationships that do not
+    // exist, and demo data is still shown to people.
     history: [684, 690, 690, 695, 701, 705, 708, 712, 712],
   },
   // Security deposit held + how fast it returns after move-out.
@@ -531,7 +553,7 @@ export const mockTenantPayments = [
 // Tenant notifications — rent-centric. GET /notifications
 export const mockTenantNotifications = {
   content: [
-    {id: 'n1', type: 'REMINDER', title: 'Rent due in 5 days', body: `Your ${monthYearLabel(0)} rent of $1,800 is due soon. Pay anytime in two taps.`, createdAt: daysFromNow(0), read: false},
+    {id: 'n1', type: 'REMINDER', title: 'Rent due in 5 days', body: `Your ${monthYearLabel(0)} rent of $1,800 is due soon.`, createdAt: daysFromNow(0), read: false},
     {id: 'n2', type: 'RECEIPT', title: 'Payment confirmed', body: `We sent $1,800 to your landlord for ${monthYearLabel(-1)}. Receipt KS-9F2A.`, createdAt: daysFromNow(-4), read: false},
     {id: 'n3', type: 'LEASE', title: 'Lease renewal window opens soon', body: 'Your lease ends in under 2 months. Your landlord may offer a renewal.', createdAt: daysFromNow(-10), read: true},
     {id: 'n4', type: 'RECEIPT', title: 'Payment confirmed', body: `We sent $1,800 to your landlord for ${monthYearLabel(-2)}. Receipt KS-7C1B.`, createdAt: daysFromNow(-34), read: true},
@@ -620,15 +642,18 @@ export const mockTenantChecklist = {
 };
 
 // Renters insurance — coverage status (partner-backed). GET /tenants/insurance
+// Invented a "Keystone Renters (Lemonade)" policy with a number, a
+// premium and cover limits. There is no insurer partner and BE answers
+// 501 — a demo must not show a renter a policy they do not hold.
 export const mockTenantInsurance = {
-  status: 'COVERED', // COVERED | NOT_COVERED | EXPIRING
-  provider: 'Keystone Renters (Lemonade)',
-  policyNumber: 'KR-48213',
-  monthlyPremium: 14,
-  personalProperty: 30000,
-  liability: 100000,
-  deductible: 250,
-  renewsOn: daysFromNow(212),
+  status: 'NOT_COVERED', // COVERED | NOT_COVERED | EXPIRING
+  provider: null,
+  policyNumber: null,
+  monthlyPremium: null,
+  personalProperty: null,
+  liability: null,
+  deductible: null,
+  renewsOn: null,
   requiredByLease: true,
   // Proof of an OUTSIDE policy the tenant already holds. Many leases require
   // proof of renters insurance; uploading it here feeds the landlord's
@@ -655,10 +680,33 @@ export const mockProfile = {
   access_types: {roles: ['ROLE_TENANT']},
 };
 
+/**
+ * For fixtures a SCREEN imports directly, where no endpoint exists at all
+ * (screening, per-property portfolio, owner statements, landlord
+ * insurance claims). Those bypass the service layer, so the gate in
+ * services/unavailable.js never sees them — they rendered invented rows
+ * in every build, production included. A landlord being told "1 screening
+ * report is ready — Unit 7C" about a unit they do not own is not a
+ * cosmetic bug.
+ *
+ * Returns the fixture only in explicit Fixtures mode; otherwise `empty`,
+ * so the screen renders its real empty state.
+ */
+export const demoOnly = (fixture, empty = null) =>
+  USE_MOBILE_MOCKS ? fixture : empty;
+
 export const mockFallback = (key, value) => {
   if (!logged.has(key)) {
+    // Say WHICH of the two reasons produced the fixture. Without this
+    // the log is ambiguous — a globally-mocked build and a live build
+    // whose endpoint 404s printed the identical line, so "is this
+    // screen actually talking to the backend?" was unanswerable.
     // eslint-disable-next-line no-console
-    console.warn(`[mock] serving fixture for "${key}" — BE endpoint not yet implemented`);
+    console.warn(
+      USE_MOBILE_MOCKS
+        ? `[mock] "${key}" — data source is set to Fixtures (no network call)`
+        : `[mock] "${key}" — live call failed, see the [live] line above`,
+    );
     logged.add(key);
   }
   return Promise.resolve(value);

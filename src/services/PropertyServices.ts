@@ -1,4 +1,4 @@
-import AxiosUtility, {setAuthToken} from './AxiosServices';
+import AxiosUtility from './AxiosServices';
 
 interface Property {
   id: string;
@@ -24,7 +24,6 @@ const getProperties = async (
   size: number,
   searchQuery?: string,
 ): Promise<Property[]> => {
-  setAuthToken(AxiosUtility);
   const {data: res} = await AxiosUtility.get(
     `/search/properties?page=${page}&size=${size}&searchParam=${searchQuery}`,
   );
@@ -43,7 +42,6 @@ const getPropertyUnits = async (
   page: number,
   size: number,
 ): Promise<Unit[]> => {
-  setAuthToken(AxiosUtility);
   const {data: res} = await AxiosUtility.get(
     `/properties/${propertyId}/units?page=${page}&size=${size}`,
   );

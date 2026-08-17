@@ -196,7 +196,7 @@ export const renderHtmlTemplate = (receiptDetails: IReceiptDetails) => {
 
         <div class="xstack">
           <div class="">
-            <span>Mpesa Paybill</span>
+            <span>Reference</span>
           </div>
 
           <div class="">

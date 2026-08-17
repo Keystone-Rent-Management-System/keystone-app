@@ -1,4 +1,5 @@
-import AxiosUtility, {setAuthToken} from './AxiosServices';
+import AxiosUtility from './AxiosServices';
+import {blockedInFixtureMode} from './fixtureGuard';
 import RNFetchBlob from 'rn-fetch-blob';
 
 /**
@@ -9,7 +10,6 @@ import RNFetchBlob from 'rn-fetch-blob';
  * @returns {Promise<{content:Agreement[],page:any}>}
  */
 const getAgreements = async (page, size, token = null) => {
-  setAuthToken(AxiosUtility);
 
   const headers = token ? {Authorization: `Bearer ${token}`} : {};
 
@@ -28,7 +28,6 @@ const getAgreements = async (page, size, token = null) => {
  * @returns {Promise<import('../types/agreement').IAgreement>}
  */
 const getActiveAgreement = async token => {
-  setAuthToken(AxiosUtility);
 
   const headers = token ? {Authorization: `Bearer ${token}`} : {};
 
@@ -48,7 +47,9 @@ const getActiveAgreement = async token => {
  * @returns {Promise<Agreement>}
  */
 const acceptAgreement = async id => {
-  setAuthToken(AxiosUtility);
+  const blocked = blockedInFixtureMode('PATCH /agreements/{id}/acceptance');
+  if (blocked) return blocked;
+
   const {data: res} = await AxiosUtility.patch(`/agreements/${id}/acceptance`);
 
   return res;
@@ -60,21 +61,24 @@ const acceptAgreement = async id => {
  * @returns {Promise<Agreement>}
  */
 const terminateAgreement = async id => {
-  setAuthToken(AxiosUtility);
+  const blocked = blockedInFixtureMode('PATCH /agreements/{id}/terminate');
+  if (blocked) return blocked;
+
   const {data: res} = await AxiosUtility.patch(`/agreements/${id}/terminate`);
 
   return res;
 };
 
 const sendTerminationNotice = async data => {
-  setAuthToken(AxiosUtility);
+  const blocked = blockedInFixtureMode('POST /vacate-notice');
+  if (blocked) return blocked;
+
   const {data: res} = await AxiosUtility.post('/vacate-notice', data);
 
   return res;
 };
 
 const fetchPDF = async agreementId => {
-  setAuthToken(AxiosUtility);
 
   const response = await AxiosUtility.get(
     `/agreements/${agreementId}/download`,

@@ -1,40 +1,37 @@
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {ToastAndroid} from 'react-native';
+import {useQuery} from '@tanstack/react-query';
+
 import ComplianceServices from '../services/ComplianceServices';
 
+// `error` is returned, not swallowed. These hooks used to collapse a
+// failed load into `[]`, and an empty list is indistinguishable from
+// "nothing is due" — so a 404 on the compliance endpoint rendered as
+// "All notices handled · Your audit trail is current." An unknown
+// compliance state must never be presented as a legal all-clear; the
+// screen needs the error in order to say "we couldn't check" instead.
+// `loaded` is the only thing that may unlock a reassuring message.
 export const useComplianceAlerts = () => {
-  const {isPending, data, refetch, isRefetching} = useQuery({
+  const {isPending, data, refetch, isRefetching, error, isSuccess} = useQuery({
     queryKey: ['compliance/alerts'],
     queryFn: () => ComplianceServices.listAlerts(),
   });
-  return {isPending, isRefetching, alerts: data ?? [], refetch};
+  return {
+    isPending,
+    isRefetching,
+    error,
+    loaded: isSuccess,
+    alerts: data ?? [],
+    refetch,
+  };
 };
 
 export const useComplianceAudit = () => {
-  const {isPending, data, refetch} = useQuery({
+  const {isPending, data, refetch, error, isSuccess} = useQuery({
     queryKey: ['compliance/audit'],
     queryFn: () => ComplianceServices.getAudit(),
   });
-  return {isPending, audit: data ?? [], refetch};
+  return {isPending, error, loaded: isSuccess, audit: data ?? [], refetch};
 };
 
-export const useSendComplianceNotice = () => {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationKey: ['compliance/send'],
-    mutationFn: alertId => ComplianceServices.sendNotice(alertId),
-    onSuccess: () => {
-      qc.invalidateQueries({queryKey: ['compliance/alerts']});
-      ToastAndroid.show(
-        'Notice sent, logged, and audit trail updated.',
-        ToastAndroid.LONG,
-      );
-    },
-    onError: () => {
-      ToastAndroid.show(
-        'Could not send notice. Try again.',
-        ToastAndroid.SHORT,
-      );
-    },
-  });
-};
+// `useSendComplianceNotice` REMOVED with the service function it wrapped —
+// its onSuccess announced "Notice sent, logged, and audit trail updated"
+// off the back of a simulated response.

@@ -8,7 +8,6 @@ import useAuth, {
   useResetPassword,
   useChangePassword,
 } from './useAuth';
-import {useRefreshToken} from './useRefreshToken';
 import {useAgrement, useActiveAgrement, useAcceptAgrement} from './useAgrement';
 import {useSpecificUnit} from './useUnit';
 import {
@@ -54,7 +53,6 @@ export {
   useRequestPasswordReset,
   useResetPassword,
   useChangePassword,
-  useRefreshToken,
   useAgrement,
   useActiveAgrement,
   useAcceptAgrement,

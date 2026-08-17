@@ -1,4 +1,5 @@
 import AxiosUtility from './AxiosServices';
+import {isEndpointUnavailable} from './unavailable';
 import {
   USE_MOBILE_MOCKS,
   mockComplianceAlerts,
@@ -23,27 +24,20 @@ const listAlerts = async () => {
     const {data} = await AxiosUtility.get('/compliance/alerts');
     return data;
   } catch (err) {
-    const status = err?.response?.status;
-    if (status === 404 || status === 501 || status === undefined) {
+    if (isEndpointUnavailable(err)) {
       return mockFallback('compliance.alerts', mockComplianceAlerts);
     }
     throw err;
   }
 };
 
-const sendNotice = async alertId => {
-  try {
-    const {data} = await AxiosUtility.post(
-      `/compliance/alerts/${alertId}/send`,
-    );
-    return data;
-  } catch (err) {
-    return mockFallback(`compliance.${alertId}.send`, {
-      status: 'simulated',
-      message: 'Compliance dispatch endpoint not yet shipped',
-    });
-  }
-};
+// `sendNotice` REMOVED. It caught every failure and resolved with
+// {status: 'simulated'}, so the mutation's onSuccess always fired and told
+// the landlord "Notice sent, logged, and audit trail updated." It had no
+// caller after the Compliance decision row was removed, but a swallow-and-
+// simulate helper sitting in the service layer is a loaded gun: the next
+// caller inherits a guaranteed false success on a legal notice. Rebuild it
+// only with a real endpoint, no catch-to-success, and a server audit id.
 
 const getAudit = async () => {
   if (USE_MOBILE_MOCKS)
@@ -52,8 +46,7 @@ const getAudit = async () => {
     const {data} = await AxiosUtility.get('/compliance/audit');
     return data;
   } catch (err) {
-    const status = err?.response?.status;
-    if (status === 404 || status === 501 || status === undefined) {
+    if (isEndpointUnavailable(err)) {
       return mockFallback('compliance.audit', mockComplianceAudit);
     }
     throw err;
@@ -62,7 +55,6 @@ const getAudit = async () => {
 
 const ComplianceServices = {
   listAlerts,
-  sendNotice,
   getAudit,
 };
 

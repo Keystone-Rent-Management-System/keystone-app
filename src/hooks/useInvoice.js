@@ -1,8 +1,9 @@
-import {ToastAndroid} from 'react-native';
+
 import {useMutation, useQuery} from '@tanstack/react-query';
 import InvoiceServices from '../services/InvoiceServices';
 import {useEffect, useState} from 'react';
 import useAuth from './useAuth';
+import {toast} from '../utils/toast';
 
 export const useUnPaidInvoice = size => {
   const {profile} = useAuth();
@@ -64,15 +65,15 @@ export const useRaiseConcern = (id, handleCloseConcernModal, refetch) => {
     onSuccess: () => {
       refetch();
       handleCloseConcernModal();
-      ToastAndroid.show(
+      toast.show(
         'Your concern has been sent successfully',
-        ToastAndroid.SHORT,
+        toast.SHORT,
       );
     },
     onError: err => {
-      ToastAndroid.show(
+      toast.show(
         'Raising concern failed!' + err.response.data?.message,
-        ToastAndroid.SHORT,
+        toast.SHORT,
       );
     },
   });

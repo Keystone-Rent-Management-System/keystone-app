@@ -1,30 +1,41 @@
-// USD money formatter for the landlord command center. The legacy
-// numberWithCommas only handles the integer side and has no currency
-// affixing — we ship money figures often enough now (dashboard,
-// portfolio, payouts) that one shared formatter is worth the file.
+// Money formatting for the landlord command center.
+//
+// THIS FILE NO LONGER IMPLEMENTS `usd`. It re-exports the one in
+// components/kit/money, which is now the single implementation.
+//
+// There used to be three, two of them called `usd`:
+//
+//   kit/money.js        Math.round + toLocaleString  ->  "$-1" for -1.5
+//   utils/money.js      Intl currency, 0dp           ->  "-$2"  for -1.5
+//   ReportsHub.jsx      a third, k-suffixed
+//
+// They disagreed on the value AND on where the minus goes, and the split
+// ran straight through the tenant surface: `Lease.jsx` imported this one
+// while every sibling tenant screen imported the kit one, so two screens
+// side by side could render the same number differently. `Portfolio.jsx`
+// also hand-prefixed a "-" onto a formatted amount, so a genuinely
+// negative input rendered "--$500".
+//
+// `usd` handles its own sign now. Callers must never prefix one.
 
-const fmt = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
+export {usd, usdCompact, sumUsd} from '../components/kit/money';
 
-const fmtCents = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
-export const usd = n => {
-  if (n === null || n === undefined || Number.isNaN(Number(n))) return '$0';
-  return fmt.format(Number(n));
-};
-
+/**
+ * Explicit two-decimal form, for the few places that want cents shown
+ * even on a whole amount — a statement reconciling against a bank line,
+ * where "$1,800" and "$1,800.00" are read differently.
+ *
+ * `usd` already keeps cents whenever they are non-zero, so this is the
+ * exception, not the default.
+ */
 export const usdCents = n => {
-  if (n === null || n === undefined || Number.isNaN(Number(n))) return '$0.00';
-  return fmtCents.format(Number(n));
+  const num = Number(n);
+  if (n === null || n === undefined || Number.isNaN(num)) return '$0.00';
+  const sign = num < 0 ? '-' : '';
+  return `${sign}$${Math.abs(num).toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 };
 
 export const pct = (n, opts = {}) => {

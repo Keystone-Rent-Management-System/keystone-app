@@ -1,4 +1,5 @@
 import AxiosUtility from './AxiosServices';
+import {isEndpointUnavailable} from './unavailable';
 import {USE_MOBILE_MOCKS, mockPaymentZones, mockFallback} from './mocks';
 
 // Mirrors the landlord SPA's PaymentZoneServices. BE doc §5.12 —
@@ -11,8 +12,7 @@ const getPaymentZones = async () => {
     const {data} = await AxiosUtility.get('/payment-zones');
     return data;
   } catch (err) {
-    const status = err?.response?.status;
-    if (status === 404 || status === 501 || status === undefined) {
+    if (isEndpointUnavailable(err)) {
       return mockFallback('payment-zones', mockPaymentZones);
     }
     throw err;

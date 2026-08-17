@@ -1,3 +1,5 @@
+import {SUPPORT_EMAIL} from './general';
+
 // ⚠️  DRAFT LEGAL COPY — NOT LEGAL ADVICE  ⚠️
 // ---------------------------------------------------------------------------
 // Every user-facing legal / consent / authorization string in the tenant app
@@ -96,5 +98,8 @@ export const ACH = {
     'For questions or errors about an electronic payment, contact Keystone within ' +
     '60 days of the transfer. See the Electronic Fund Transfer disclosure for your ' +
     'rights.',
-  supportContact: 'support@keystone.example', // TODO: real support contact
+  // Was 'support@keystone.example' — a reserved example-only domain that
+  // cannot receive mail, printed in legal copy telling users where to
+  // direct disputes. Points at the real address in constants/general.
+  supportContact: SUPPORT_EMAIL,
 };

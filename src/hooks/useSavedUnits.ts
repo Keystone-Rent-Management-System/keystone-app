@@ -1,6 +1,7 @@
 import {fetchUnits, ISavedUnit, removeUnit, saveUnit} from '../lib/sqlite.ts';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {ToastAndroid} from 'react-native';
+import {toast} from '../utils/toast';
+
 
 interface ISaveUnit {
   unitId: string;
@@ -57,13 +58,13 @@ const useSavedUnits = () => {
       return {previousData};
     },
     onSuccess: async () => {
-      ToastAndroid.show('Unit saved successfully', ToastAndroid.SHORT);
+      toast.show('Unit saved successfully', toast.SHORT);
       queryClient.refetchQueries({queryKey});
     },
     onError: async (_err, _vars, context) => {
       //   revert cache
       queryClient.setQueryData<ISavedUnit[]>(queryKey, context?.previousData);
-      ToastAndroid.show('An error occurred', ToastAndroid.SHORT);
+      toast.show('An error occurred', toast.SHORT);
     },
     onSettled: () => queryClient.refetchQueries({queryKey}),
   });
@@ -88,12 +89,12 @@ const useSavedUnits = () => {
       return {previousData};
     },
     onSuccess: async () => {
-      ToastAndroid.show('Unit removed successfully', ToastAndroid.SHORT);
+      toast.show('Unit removed successfully', toast.SHORT);
     },
     onError: async (_err, _vars, context) => {
       //   revert cache
       queryClient.setQueryData<ISavedUnit[]>(queryKey, context?.previousData);
-      ToastAndroid.show('An error occurred', ToastAndroid.SHORT);
+      toast.show('An error occurred', toast.SHORT);
     },
     onSettled: () => queryClient.invalidateQueries({queryKey}),
   });

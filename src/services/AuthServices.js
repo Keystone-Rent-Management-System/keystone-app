@@ -1,11 +1,18 @@
 import axios from 'axios';
-import AxiosUtility, {setAuthToken, BASE_URL} from './AxiosServices';
+import AxiosUtility, {BASE_URL} from './AxiosServices';
 import {
+  ACTIVE_ENVIRONMENT,
   Environment,
   KEYCLOAK_CLIENT_ID,
   getKeycloakBaseUrl,
 } from '../constants/general';
-import {USE_MOBILE_MOCKS, mockFallback, mockProfile} from './mocks';
+import {
+  USE_MOBILE_MOCKS,
+  mockFallback,
+  mockProfile,
+  mockInvite,
+} from './mocks';
+import {villaInvite} from './mocks/villa';
 
 // Keystone uses Keycloak for OAuth. Mobile previously POSTed to
 // /profile/login which returned a Pallax-issued JWT; the Keystone BE
@@ -17,10 +24,10 @@ import {USE_MOBILE_MOCKS, mockFallback, mockProfile} from './mocks';
 // "Direct Access Grants Enabled" = ON. Confirm with BE before
 // shipping to prod.
 
-const tokenEndpoint = (env = Environment.Uat) =>
+const tokenEndpoint = (env = ACTIVE_ENVIRONMENT) =>
   `${getKeycloakBaseUrl(env)}/protocol/openid-connect/token`;
 
-const logoutEndpoint = (env = Environment.Uat) =>
+const logoutEndpoint = (env = ACTIVE_ENVIRONMENT) =>
   `${getKeycloakBaseUrl(env)}/protocol/openid-connect/logout`;
 
 // The env the mobile app talks to is tied to the BASE_URL the
@@ -120,10 +127,17 @@ const verifyRegisteringEmail = async data => {
 };
 
 /**
- * Register a tenant. US identification types:
- *   DRIVERS_LICENSE | STATE_ID | PASSPORT | SSN_LAST_4
- * (replaces the Pallax NATIONAL_ID; mobile signup screen needs to
- * render the new dropdown — tracked in MIGRATION.md).
+ * Register a tenant. Live `identificationType` enum, confirmed by BE
+ * 2026-07-29 (an earlier version of this comment listed `SSN_LAST_4`,
+ * which has never existed):
+ *   ITIN | PASSPORT | PASSPORT_ID | STATE_ID | EIN | DRIVERS_LICENSE
+ *   | SSN | NATIONAL_ID
+ *
+ * NOTE: this endpoint returns 422 on api-dev for any input. Per §T16
+ * Keystone is provisioned-only — tenants claim a pre-created account
+ * rather than self-registering — so open tenant signup may be gone by
+ * design. See `resolveInvite` for the claim path. Pending a product
+ * decision on retiring these registration screens.
  */
 const registerTenant = async data => {
   const {data: res} = await AxiosUtility.post('/profile/tenant', data);
@@ -145,10 +159,39 @@ const resetPassword = async data => {
   return res;
 };
 
+/**
+ * Resolve a landlord's invite code so the claim landing can show who is
+ * being invited. GET /tenants/claim?token=<code> (§T16).
+ *
+ * Deliberately does NOT use `isEndpointUnavailable`. That helper treats
+ * 404 as "BE hasn't shipped this route" and serves a fixture — correct
+ * for a parameterless rollup, catastrophic here: this endpoint answers
+ * 404 "Invite code is not valid" for a WRONG CODE, so falling back would
+ * hand every typo a valid-looking invite to someone else's home.
+ * Verified live on api-dev 2026-07-29, including unauthenticated —
+ * a claiming tenant has no account yet, so no bearer is required.
+ */
+const resolveInvite = async code => {
+  if (USE_MOBILE_MOCKS) {
+    // Resolve the VILLA_5_TENANTS invite for its own code so the demo
+    // tells one story end to end (Amina → Bedroom 3 → Maya Patel);
+    // anything else falls back to the legacy fixture.
+    const wanted = String(code ?? '').trim().toUpperCase();
+    if (wanted === villaInvite.token || wanted === 'INV_DEMO_4B') {
+      return mockFallback('tenant.claim', villaInvite);
+    }
+    return mockFallback('tenant.claim', mockInvite);
+  }
+  const {data} = await axios.get(`${BASE_URL}/tenants/claim`, {
+    params: {token: code},
+    headers: {'Content-Type': 'application/json'},
+  });
+  return data;
+};
+
 /** Read the authenticated user's profile from the BE. */
 const getProfile = async token => {
   if (USE_MOBILE_MOCKS) return mockFallback('auth.profile', mockProfile);
-  setAuthToken(AxiosUtility);
   const headers = token ? {Authorization: `Bearer ${token}`} : {};
   const {data: res} = await AxiosUtility.get('/manage-profile/me', {headers});
   return res;
@@ -165,6 +208,7 @@ const updateUserPassword = async data => {
 
 const AuthServices = {
   verifyRegisteringEmail,
+  resolveInvite,
   registerTenant,
   login,
   logout,

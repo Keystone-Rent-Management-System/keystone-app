@@ -1,23 +1,32 @@
-import {Keyboard, ToastAndroid} from 'react-native';
+import {Alert, Keyboard} from 'react-native';
 import AuthServices from '../services/AuthServices';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {useNavigation} from '@react-navigation/native';
 import useGlobals from '../provider/store/useGlobals';
 import {getError} from '../utils/getError';
-import NotificationService from '../services/Notification';
 import {useProfileStore} from '../provider/store/profile';
+import useAuthSession, {AUTHENTICATED} from '../provider/store/authSession';
 import formatPhone from '../utils/formatPhone';
 import {useEffect} from 'react';
+import {toast} from '../utils/toast';
 
 export const profileQueryKey = ['user', 'profile'];
 
 const useAuth = () => {
   const {profile, saveProfile} = useProfileStore();
+  // `/manage-profile/me` is an AUTHENTICATED request. Gating it only on
+  // "no profile cached" meant it fired on the signed-out Welcome screen —
+  // `MainNav` calls `useAuth()` unconditionally, and a fresh install has
+  // no cached profile — producing a guaranteed 401 with no session to
+  // refresh, on the one screen that exists precisely because there is no
+  // session. Bootstrapping was gated; this is the other half, the
+  // requests that follow a `signedOut` conclusion.
+  const isAuthed = useAuthSession(s => s.status) === AUTHENTICATED;
 
   const {isLoading, error, data, refetch, isSuccess} = useQuery({
     queryKey: profileQueryKey,
     queryFn: () => AuthServices.getProfile(),
-    enabled: !profile?.userId, // fetch only if profile is not in store
+    enabled: isAuthed && !profile?.userId,
   });
 
   useEffect(() => {
@@ -49,9 +58,9 @@ export const useVerifyEmail = () => {
       navigation.navigate('auth__registration_verification');
     },
     onError: err => {
-      ToastAndroid.show(
+      toast.show(
         'Verifing email failed ' + getError(err),
-        ToastAndroid.SHORT,
+        toast.SHORT,
       );
     },
   });
@@ -75,27 +84,49 @@ export const useRegister = () => {
     mutationKey: ['register_tenant'],
     mutationFn: AuthServices.registerTenant,
     onSuccess: () => {
-      ToastAndroid.show(
+      toast.show(
         'Registration successful. Signin to the created account',
-        ToastAndroid.SHORT,
+        toast.SHORT,
       );
       navigation.navigate('auth__login');
       resetRegisteringUser();
-      NotificationService.registerDeviceToken().then();
+      // Push registration removed from here too — it follows the session
+      // status now. This path navigates to the LOGIN screen, so there is
+      // no authenticated session to register against at this point.
     },
     onError: err => {
-      ToastAndroid.show(
-        'Registration failed ' + getError(err),
-        ToastAndroid.SHORT,
-      );
-
       if (
         err.response?.data?.message
           ?.toLowerCase()
           ?.includes('invalid email or token')
       ) {
+        toast.show('Registration failed ' + getError(err), toast.SHORT);
         navigation.navigate('auth__registration_verification');
+        return;
       }
+
+      // BE returns 422 for every tenant self-signup on api-dev, because
+      // §T16 makes Keystone provisioned-only: a landlord creates the
+      // tenant and the tenant *claims* the account. Its raw message is
+      // "The request would violate a database constraint", which tells a
+      // renter nothing and offers no way forward. Name the real situation
+      // and hand them the path that works.
+      if (err.response?.status === 422) {
+        Alert.alert(
+          'Your landlord needs to add you first',
+          'Keystone accounts are created by your landlord. If they have already added you, enter the invite code they sent to finish setting up.',
+          [
+            {text: 'Not now', style: 'cancel'},
+            {
+              text: 'Enter invite code',
+              onPress: () => navigation.navigate('auth__claim'),
+            },
+          ],
+        );
+        return;
+      }
+
+      toast.show('Registration failed ' + getError(err), toast.SHORT);
     },
   });
 
@@ -128,16 +159,16 @@ export const useChangePassword = () => {
     mutationFn: AuthServices.updateUserPassword,
     onSuccess: () => {
       navigation.navigate('bottom-nav', {screen: 'more'});
-      ToastAndroid.show('Password updated successfully', ToastAndroid.LONG);
+      toast.show('Password updated successfully', toast.LONG);
     },
     onError: err => {
-      ToastAndroid.show('Updating password failed ' + getError(err), 4000);
+      toast.show('Updating password failed ' + getError(err), 4000);
     },
   });
 
   const handleChangePassword = props => {
     if (props.password !== props.confirmPassword) {
-      ToastAndroid.show('Passwords do not match', ToastAndroid.SHORT);
+      toast.show('Passwords do not match', toast.SHORT);
     } else {
       changePasswordMutation.mutate({
         currentPassword: props.currentPassword,
@@ -160,9 +191,9 @@ export const useRequestPasswordReset = () => {
       navigation.navigate('auth__recovery_verification');
     },
     onError: err => {
-      ToastAndroid.show(
+      toast.show(
         'Request password reset failed ' + getError(err),
-        ToastAndroid.SHORT,
+        toast.SHORT,
       );
     },
   });
@@ -187,16 +218,16 @@ export const useResetPassword = () => {
       navigation.navigate('auth__login');
     },
     onError: err => {
-      ToastAndroid.show(
+      toast.show(
         'Reset password failed ' + getError(err),
-        ToastAndroid.SHORT,
+        toast.SHORT,
       );
     },
   });
 
   const handlePasswordReset = props => {
     if (props.password !== props.confirmPassword) {
-      ToastAndroid.show('Passwords do not match', ToastAndroid.SHORT);
+      toast.show('Passwords do not match', toast.SHORT);
     } else {
       resetPasswordMutation.mutateAsync({
         ...reset_password,

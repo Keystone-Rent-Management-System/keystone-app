@@ -1,4 +1,5 @@
 import AxiosUtility from './AxiosServices';
+import {isEndpointUnavailable} from './unavailable';
 import {
   USE_MOBILE_MOCKS,
   mockMaintenanceSummary,
@@ -20,8 +21,7 @@ const getSummary = async () => {
     const {data} = await AxiosUtility.get('/maintenance/summary');
     return data;
   } catch (err) {
-    const status = err?.response?.status;
-    if (status === 404 || status === 501 || status === undefined) {
+    if (isEndpointUnavailable(err)) {
       return mockFallback('maintenance.summary', mockMaintenanceSummary);
     }
     throw err;

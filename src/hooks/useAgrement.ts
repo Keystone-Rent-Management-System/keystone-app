@@ -1,4 +1,4 @@
-import {ToastAndroid} from 'react-native';
+
 import {useMutation, useQuery} from '@tanstack/react-query';
 import AgreementServices from '../services/AgreementServices';
 import {getError} from '../utils/getError';
@@ -6,6 +6,7 @@ import {IAgreement, IAgreement2} from '../types/agreement';
 import {useActiveAgreement} from '../provider/store';
 import {useEffect, useMemo} from 'react';
 import {queryRefetchIntervalOptions} from '../constants/general';
+import {toast} from '../utils/toast';
 
 export const agreementsKey = ['agreements'];
 
@@ -67,7 +68,7 @@ export const useAcceptAgrement = (
       dismiss();
     },
     onError: err => {
-      ToastAndroid.show('Accepting agreement failed ' + getError(err), 4000);
+      toast.show('Accepting agreement failed ' + getError(err), 4000);
     },
   });
 
@@ -83,14 +84,14 @@ export const useSendTerminationNotice = (dismiss: any) => {
     mutationKey: ['send_termination_notice'],
     mutationFn: AgreementServices.sendTerminationNotice,
     onSuccess: () => {
-      ToastAndroid.show(
+      toast.show(
         'Termination notice sent successfully',
-        ToastAndroid.LONG,
+        toast.LONG,
       );
       dismiss();
     },
     onError: err => {
-      ToastAndroid.show('Moving out notice failed ' + getError(err), 4000);
+      toast.show('Moving out notice failed ' + getError(err), 4000);
     },
   });
 

@@ -1,4 +1,5 @@
 import AxiosUtility from './AxiosServices';
+import {isEndpointUnavailable} from './unavailable';
 import {
   USE_MOBILE_MOCKS,
   mockTenantHome,
@@ -10,15 +11,18 @@ import {
   mockFallback,
 } from './mocks';
 
-// Small helper: try a GET, fall back to a fixture on 404/501/offline.
+// Small helper: try a GET, fall back to a fixture when the gateway
+// can't serve the rollup (see ./unavailable for exactly which statuses
+// count, and why 401 is not one of them).
 const getOrMock = async (url, key, fixture) => {
-  if (USE_MOBILE_MOCKS) return mockFallback(key, fixture);
+  if (USE_MOBILE_MOCKS) {
+    return mockFallback(key, fixture);
+  }
   try {
     const {data} = await AxiosUtility.get(url);
     return data;
   } catch (err) {
-    const status = err?.response?.status;
-    if (status === 404 || status === 501 || status === undefined) {
+    if (isEndpointUnavailable(err)) {
       return mockFallback(key, fixture);
     }
     throw err;
@@ -38,8 +42,7 @@ const getRentSummary = async () => {
     const {data} = await AxiosUtility.get('/tenants/rent-summary');
     return data;
   } catch (err) {
-    const status = err?.response?.status;
-    if (status === 404 || status === 501 || status === undefined) {
+    if (isEndpointUnavailable(err)) {
       return mockFallback('tenant.rent-summary', mockTenantHome);
     }
     throw err;
@@ -55,8 +58,7 @@ const getPayments = async () => {
     const {data} = await AxiosUtility.get('/tenants/payments');
     return data;
   } catch (err) {
-    const status = err?.response?.status;
-    if (status === 404 || status === 501 || status === undefined) {
+    if (isEndpointUnavailable(err)) {
       return mockFallback('tenant.payments', mockTenantPayments);
     }
     throw err;
@@ -72,8 +74,7 @@ const getStatement = async () => {
     const {data} = await AxiosUtility.get('/tenants/statement');
     return data;
   } catch (err) {
-    const status = err?.response?.status;
-    if (status === 404 || status === 501 || status === undefined) {
+    if (isEndpointUnavailable(err)) {
       return mockFallback('tenant.statement', mockTenantStatement);
     }
     throw err;

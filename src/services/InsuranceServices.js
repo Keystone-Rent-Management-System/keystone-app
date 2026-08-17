@@ -1,4 +1,5 @@
 import AxiosUtility from './AxiosServices';
+import {isEndpointUnavailable} from './unavailable';
 import {USE_MOBILE_MOCKS, mockRentInsurance, mockFallback} from './mocks';
 
 // Rent insurance dashboard. The insurance product itself (underwriter,
@@ -13,8 +14,7 @@ const getSummary = async () => {
     const {data} = await AxiosUtility.get('/insurance/summary');
     return data;
   } catch (err) {
-    const status = err?.response?.status;
-    if (status === 404 || status === 501 || status === undefined) {
+    if (isEndpointUnavailable(err)) {
       return mockFallback('insurance.summary', mockRentInsurance);
     }
     throw err;
