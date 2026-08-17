@@ -101,3 +101,7 @@ review-artifacts/
 # Sentry build-time auth tokens — secrets, keep local (see *.example)
 ios/sentry.properties
 android/sentry.properties
+
+# local review snapshots / tarballs
+*.tgz
+.cowork/
