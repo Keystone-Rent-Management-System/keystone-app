@@ -1,0 +1,3 @@
+allowBuilds:
+  '@sentry/cli': set this to true or false
+  react-native-inappbrowser-reborn: set this to true or false
