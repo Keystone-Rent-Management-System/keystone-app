@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  Keychain access group.
+
+	  Context, stated precisely: this project previously had NO
+	  CODE_SIGN_ENTITLEMENTS and no entitlements file, and in that state
+	  every SecItem call failed with -34018 (errSecMissingEntitlement).
+	  react-native-keychain still linked and registered, which is what made
+	  it look installed — the JS module imported, the native methods were
+	  exposed, and every read and write failed. Sessions were memory-only
+	  on device: sign-in worked, relaunch did not, and sign-out could not
+	  erase a token it had never stored.
+
+	  -34018 does NOT universally mean "no entitlement". It means the app
+	  is not permitted to use the access group it attempted; a mismatched
+	  group or a profile that does not grant the group produces the same
+	  code. And `keychain-access-groups` is not strictly required for an
+	  app's own private items — with no explicit accessGroup the default
+	  group derives from the signed `application-identifier`. This file
+	  declares the group explicitly so the grant is intentional and
+	  reviewable rather than implicit in whatever profile happens to sign
+	  the build.
+
+	  `$(AppIdentifierPrefix)$(CFBundleIdentifier)` resolves at build time
+	  to team prefix + bundle id, so it needs no edit when either changes.
+	  NOTE: the bundle id is still the React Native placeholder
+	  (org.reactjs.native.example.keystone-app). A Debug device build
+	  therefore validates the PLACEHOLDER identity and a development
+	  profile — not the distribution identity. The release/CI check must
+	  assert the real values on the built product.
+	-->
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)$(CFBundleIdentifier)</string>
+	</array>
+</dict>
+</plist>

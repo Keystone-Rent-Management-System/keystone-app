@@ -1,0 +1,9 @@
+
+# Build-time secret. Do NOT commit. Export SENTRY_AUTH_TOKEN in CI,
+# or create this file locally from this template.
+auth.token=
+
+defaults.org=mevanlix
+defaults.project=react-native
+
+defaults.url=https://sentry.io/

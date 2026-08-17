@@ -31,8 +31,14 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true />
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Keystone uses the camera to photograph your ID for verification and to document your home’s condition for repairs and move-in records.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string />
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Keystone saves the photos you take for repairs and condition records to your photo library so you keep your own copy.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Keystone lets you attach photos from your library to repair requests, condition records, and ID verification.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
