@@ -5,11 +5,168 @@ that BE has not yet shipped. Each section gives the route, the
 request/response shape FE consumes, and the source spec ($ section
 of the user's command-center brief).
 
-FE behavior when an endpoint is missing: catch 404/501 → serve a
-mock fixture from `src/services/mocks/index.js` and log
-`[mock] serving fixture for "<key>"`. This keeps the UI renderable
-during the BE buildout. When BE ships an endpoint, FE will pick it
-up with no FE code change.
+FE behavior when an endpoint is missing: catch it → serve a mock
+fixture from `src/services/mocks/index.js` and log a `[live] <route>
+→ <status>` line followed by `[mock] "<key>"`. This keeps the UI
+renderable during the BE buildout. When BE ships an endpoint, FE
+will pick it up with no FE code change.
+
+---
+
+## ⚠️ FE re-measurement — 2026-07-29, after the BE response
+
+**The "Shipped in this pass" work is not deployed to `api-dev`.** FE
+re-probed every route with a fresh landlord token immediately after
+receiving the note below. The split is exact and leaves no doubt:
+
+- Everything BE lists as **"already existed"** answers with a *domain*
+  error, i.e. the route is registered:
+  `/tenants/credit`, `/tenants/autopay`, `/tenants/payment-methods` →
+  *"No tenant profile for the current user"*; `/tenants/claim` →
+  *"Invite code is required"*; `/notifications/unread-count` → `200
+  {"unread":0}`.
+- Everything BE lists as **"shipped in this pass"** is still
+  unregistered: `/tenants/rent-summary`, `/statement`, `/payments`,
+  `/repairs`, `/checklist`, `/deposit`,
+  `/notification-preferences` and `/agreements/expiring` all still fall
+  through to `/{id}` with *"Parameter 'id' must be a valid UUID"*;
+  `/portfolio/performance` and `/maintenance/summary` still 404;
+  `/transactional-reports` still 500s.
+
+Consistent with the note being written against branch
+`claude/adverse-action-dispatch-239mbi` — please merge + deploy to dev.
+FE needs no code change for those routes once deployed; we will re-run
+this probe to confirm.
+
+**What FE wired off the back of this response** (the live routes):
+`PATCH /notifications/{id}/read` + `GET /notifications/unread-count`,
+and `GET /tenants/claim?token=` — the claim screen previously accepted
+*any* code and rendered a fixture invite. Both verified against
+`api-dev`. Note `?token=` and `?code=` both work but `?inviteCode=`
+does not; FE sends `token`.
+
+---
+
+## BE response — 2026-07-29
+
+> Written by BE against commit `3606a592` on branch
+> `claude/adverse-action-dispatch-239mbi`. **Read this before the
+> `api-dev` table below it, which is now partly stale.**
+
+**The 400s were not a route collision.** There is no ordering bug in
+Spring — a literal path segment always outranks a `{template}` one. The
+endpoints simply did not exist at the paths the app calls, so the
+requests fell through to `GET /tenants/{id}` and failed UUID coercion.
+Several of them *did* exist, under different paths, and the app was
+never told:
+
+| App calls | Was already live at | Now also live at the app's path |
+|---|---|---|
+| `GET /portfolio/performance` | `GET /dashboard/portfolio-performance` | ✅ shipped |
+| `GET /agreements/expiring` | `GET /dashboard/lease-expiry-timeline` | ✅ shipped |
+| `GET /tenants/rent-summary` | `GET /tenant/me/rent-summary` | ✅ shipped |
+| `GET /tenants/statement` | `GET /tenant/me/statement` | ✅ shipped |
+| `GET /tenants/payments` | `GET /tenant/me/payments` | ✅ shipped |
+| `GET /tenants/repairs` | `GET /tenant/me/maintenance` | ✅ shipped |
+| `GET /tenants/checklist` | `GET /tenant/me/checklist` | ✅ shipped |
+
+The `/tenant/me/**` routes stay for the SPA and keep their internal DTO
+shapes. The new `/tenants/**` routes return **the shapes specified in
+this document**, field-for-field, because the mobile services hand the
+raw axios `data` to their screens with no normalizer. No FE change is
+needed for any of the above.
+
+Endpoints the app calls that **already existed and you have not wired**:
+`GET`/`PATCH /tenants/credit` (§T9 consent state, §T14-compliant),
+`GET`/`PATCH /tenants/autopay` (§T14 mandate),
+`GET`/`POST /tenants/payment-methods` (§T12 + ToS/KYC),
+`GET`/`POST /tenants/claim` (§T16),
+`PATCH /notifications/{id}/read` and `GET /notifications/unread-count` (§T5).
+
+### Shipped in this pass
+
+| § | Endpoint | Note |
+|---|---|---|
+| §5 | `GET /portfolio/performance?period=YYYY-MM` | `averageDaysToPay` is **null** — the invoice schema has no paid-at timestamp, so it cannot be computed. `lateFees` and `insuranceClaims` are `0` (no window-level penalty rollup; no insurer). `vsLastMonth`/`vsLastYear` are real percentage changes, `null` when the prior window is zero. |
+| §5 | `GET /portfolio/performance/pdf` | **501** — no server-side renderer or signed-URL pipeline for this report. Your "coming soon" toast path is correct. |
+| §6 | `GET /maintenance/summary` | `awaitingParts` is always `0`: the domain has no such status and folding another status into it would misreport the queue. `assignedTo` is `null` — no vendor column. Overdue = age > 7d and not resolved. |
+| §7 | `GET /agreements/expiring` | Buckets are **cumulative** windows (thisMonth ⊆ nextMonth ⊆ inSixtyDays), matching your example's increasing counts. `renewalStatus` reflects the *lease's* e-sign envelope; there is no separate renewal envelope model yet. |
+| §9 | `POST /owners/{id}/reports` | Renders the P&L PDF, stores it with **no public ACL**, returns a presigned URL expiring in 15 minutes. |
+| §9 | `POST /owners/{id}/reports/email` | **501** — Brevo has no attachment support, and mailing an owner's financials needs an attachment-vs-link and retention decision. Use `POST /owners/{id}/reports`. |
+| §T1 | `GET /tenants/rent-summary` | Full shape. `rent.dueDate` is the agreement's `rentDueDate` day applied to the invoice period — invoices carry no due-date column. `recentPayments` is `[]` (see §T3). |
+| §T3 | `GET /tenants/payments` | Bare array as specified. Empty until settlement (§T2) ships. |
+| §T4 | `GET /tenants/statement` | AR sub-ledger, same projection the SPA gets. |
+| §T7 | `GET /tenants/repairs` | `category` and `priority` are `null` — `repair_requests` has neither column, so **`priority` is not round-tripping from your submit**; see the tracker item. The timeline is projected from the single stored status, so "Scheduled" is never `done`. |
+| §T8 | `GET`/`POST /tenants/checklist` | Read + write. **`POST` takes `itemId` + `complete` + optional `photo`** (multipart), not the `{type, rooms[]}` body in §T8 — see the gap note below. |
+| §T10 | `GET /tenants/deposit` | Derived from the agreement + checklist. `condition` is `null` and `return.status` only reaches `NOTICE_GIVEN`; `REFUNDED` needs a deposit-refund ledger entry that does not exist. |
+| §T15 | `GET`/`PATCH /tenants/notification-preferences` | Unset reads as **on**, so no existing tenant's delivery changed. `sms` and `creditUpdates` default **off**. Critical tenancy notices (eviction/legal/statutory/termination) ignore these toggles entirely and always send. |
+| §8, §T11 | `GET /insurance/summary`, `GET /tenants/insurance`, `POST /tenants/insurance/proof` | **501** — no insurer partner, therefore no policy/premium/claims data source. Routes and gates are frozen; keep your fixtures. 501 is already in your `isEndpointUnavailable` list. |
+| — | `GET /transactional-reports` | **500 fixed.** Root cause: the COUNT query was rebuilt by scraping the page SQL for `" WHERE "`, and this method's Java text block puts `WHERE` and `1=1` on separate lines. Text blocks strip trailing whitespace, so the scrape stopped matching, the COUNT lost its filter, and every named parameter was still bound to it — and `userId` is always bound from the JWT. Binding a parameter absent from the SQL throws. `/reports/summary` escaped it only because its text block writes `where 1=1` on one line. |
+
+### Gaps you should plan around
+
+- **§T8 is half-delivered.** The write path completes checklist *items* on
+  the existing `move_in_tasks` table. The room-by-room condition log with a
+  photo set per room and a **locked, diffable baseline** is a schema change
+  and is not built — so nothing today actually shields a deposit dispute.
+  Do not tell renters it does.
+- **§T7 `priority` is dropped.** Your submit sends it; `repair_requests`
+  has no column for it, so it is neither stored nor echoed, and the
+  landlord's §6 queue cannot triage on urgency.
+- **§4 is still on the "Quick checklist for BE PM"** below even though the
+  section is marked WITHDRAWN. Please strike it — it reads as live scope.
+- **`POST /profile/tenant` 422 is arguably correct now.** §T16 says open
+  tenant self-signup is removed and Keystone is provisioned-only. The
+  table below calls this "the whole tenant door" being blocked; those two
+  statements contradict each other. If §T16 is the intent, the fix is for
+  the app to stop calling `/profile/tenant` and use the claim flow, which
+  is live. Confirm which you want.
+
+### Your two contract questions
+
+1. **`identificationType`** — your list is right; `SSN_LAST_4` does not
+   exist and was never a member.
+2. **Tenant role name** — the realm role is `TENANT`. The tenant surface
+   is gated on `hasRole('TENANT')`, i.e. the authority `ROLE_TENANT`
+   after Spring's prefix. Your substring match on `LANDLORD_OWNER` /
+   `TENANT` is correct; you do not need `ROLE_` in the raw claim.
+
+---
+
+## Verified against `api-dev` — 2026-07-29 *(FE-measured; see BE response above)*
+
+Measured with a real landlord token (Keycloak password grant,
+`client_id=keystone-mobile`). `auth-dev`/`api-dev` are the only
+environments that resolve; `api-uat`, `api`, and `auth-uat` are all
+NXDOMAIN, so the app now defaults to `Environment.Dev`.
+
+| Route | Status | Note |
+|---|---|---|
+| `GET /dashboard/daily-collection` | ✅ 200 | flat B79 shape; `normalizeDashboard` maps it |
+| `GET /payment-zones` | ✅ 200 | zone buckets, empty for a new landlord |
+| `GET /owners` | ✅ 200 | paged, empty |
+| `GET /notifications` | ✅ 200 | paged, empty |
+| `GET /analytics/invoice` | ✅ 200 | paged, empty |
+| `POST /profile/email-verification` | ✅ 200 | OTP email delivers (Brevo) |
+| `POST /profile/landlord` | ✅ 200 | returns `{landlord, session}` |
+| `GET /portfolio/performance` | 404 | not shipped → fixture |
+| `GET /maintenance/summary` | 404 | not shipped → fixture |
+| `GET /insurance/summary` | 404 | not shipped → fixture |
+| `GET /compliance/alerts` `/audit` | 404 | not shipped → fixture |
+| `GET /tenants/*` (5 routes) | ⚠️ 400 | **route collision** — swallowed by `/tenants/{id}`: *"Parameter 'id' must be a valid UUID (got 'rent-summary')"*. Needs a distinct path or a `/tenants/me/...` prefix. |
+| `GET /agreements/expiring` | ⚠️ 400 | same collision under `/agreements/{id}` |
+| `GET /transactional-reports` | 🔴 500 | endpoint exists but throws |
+| `POST /profile/tenant` | 🔴 422 | **tenant self-signup is broken** — "would violate a database constraint" with a fresh email, phone, and ID number. Blocks the whole tenant door. |
+
+Two contract notes:
+- `identificationType` accepts `[ITIN, PASSPORT, PASSPORT_ID, STATE_ID,
+  EIN, DRIVERS_LICENSE, SSN, NATIONAL_ID]`. `SSN_LAST_4` (named in an
+  `AuthServices` comment) does **not** exist.
+- `GET /manage-profile/me` returns raw Keycloak realm roles
+  (`LANDLORD_OWNER`), not the `ROLE_LANDLORD` / `ROLE_TENANT` the app
+  used to test for. FE now matches on substring (`src/utils/roles.ts`).
+  Please confirm the **tenant** role name — it could not be observed
+  because tenant signup 422s.
 
 CEO override recorded for WA HB 1217 (§10) — outside the TX/FL/GA
 Year-1 footprint in the Strategic Playbook. CEO acknowledged.
@@ -70,6 +227,123 @@ Single aggregate so the dashboard opens in one round-trip. Cached
 The mobile app already registers an FCM device token via
 `POST /notifications/deviceToken?deviceToken=<token>`. BE needs to
 push to that token on Dwolla `transfer_completed` webhook.
+
+### ⚠️ OPEN PRIVACY QUESTION — device DEREGISTRATION on sign-out
+
+**Unverified, and it needs an explicit answer before sign-out can be
+called private.** On sign-out the app clears the token locally and calls
+Keycloak logout. It does **not** tell the gateway to drop the
+device→user mapping, because there is no endpoint to call.
+
+If the backend does not remove that mapping during logout, a signed-out
+handset stays eligible for the previous user's notifications — rent
+amounts, payment confirmations, lease events — delivered to whoever is
+now holding the phone. On a shared or resold device that is a real
+disclosure, and the app cannot fix it from this side.
+
+We need ONE of:
+
+1. A confirmed guarantee that logout (or token revocation) already
+   removes the device mapping server-side, with the behaviour stated —
+   including what happens to a token registered by user A and later
+   re-registered by user B on the same handset; or
+2. `DELETE /notifications/deviceToken?deviceToken=<token>` (or
+   equivalent) that the app calls during sign-out, before the session is
+   torn down.
+
+FE will wire (2) as soon as it exists. Until one of these is answered,
+treat sign-out privacy as **unverified** rather than working.
+
+### ⚠️ AND: the push PAYLOAD must not carry account detail in its body
+
+Independent of deregistration, and **not fixable from the app**.
+
+The app now refuses to display an account notification when no session is
+active — the inbound handler returns early unless the auth gate says
+`authenticated`. That covers the case where the app is running.
+
+It cannot cover the **terminated-app** case. When the process is not
+running, iOS and Android render the notification payload themselves; no
+app code executes. So a payload whose `title`/`body` reads
+
+> `Rent Received — Unit 4B, James Otieno, $1,800.00`
+
+is displayed on the lock screen of a signed-out (or resold, or shared)
+handset, and there is nothing the client can do about it.
+
+**Required contract:** the visible `title`/`body` must carry no account,
+tenancy, amount or identity detail. Put the specifics in the `data`
+payload, which only the app can read, and keep the display copy generic:
+
+```jsonc
+{
+  "notification": { "title": "Keystone", "body": "You have a new update" },
+  "data": { "type": "PAYMENT_RECEIVED", "amount": 1800.00, "unitName": "Unit 4B", … }
+}
+```
+
+The app already re-renders a rich local notification from `data` once it
+is running and authenticated, so nothing is lost in the normal case —
+only in the case where showing it would be a disclosure.
+
+### ⚠️ AND: every push needs `data.recipientUserId`
+
+**Blocking rich rendering today.** "Someone is signed in" is not "this
+notification belongs to them", and nothing in the current payload says
+who it is for.
+
+The window is concrete and does not require any exotic timing. User A
+signs out and user B signs in on the same handset. Until B's device
+registration lands — or if it fails, or if A's mapping was never
+removed — the gateway can still deliver a push intended for A. The app's
+auth gate is satisfied, because B *is* authenticated, and A's rent,
+tenancy or maintenance detail renders in front of B.
+
+**Required:** every push carries the intended recipient's stable user id
+in the data payload, **plus the display copy**, since the top-level
+fields must stay generic (previous section):
+
+```jsonc
+{
+  "notification": { "title": "Keystone", "body": "You have a new update" },
+  "data": {
+    "recipientUserId": "<the user this is for>",
+    "type": "GENERAL",
+    "title": "Repair scheduled",                       // detail lives here
+    "body": "Your kitchen tap — plumber Thursday 9am", // detail lives here
+    …
+  }
+}
+```
+
+**`recipientUserId` namespace — exactly.** It must equal the `userId`
+returned by `GET /manage-profile/me`, byte for byte. **Not** a tenant
+record id, **not** a landlord id, **not** a different identity-provider
+subject. That is the only id the app holds for the signed-in user, and it
+is what the comparison uses. A near-miss fails in one of two ways: ids
+that never match send every notification down the generic path (merely
+disappointing), while ids that collide across different people are the
+disclosure itself.
+
+**Why `data.title` / `data.body` and not the top-level fields:** the
+top-level pair is what the OS renders on a locked screen with no app code
+running, so it has to stay generic. `data` is only ever read by the app,
+after it has checked the recipient — so that is where detail belongs.
+Without these two fields the app has nothing detailed it is allowed to
+show, and a compliant push renders only "You have a new update".
+
+The app's behaviour, already implemented against this contract:
+
+| payload | app does |
+|---|---|
+| `recipientUserId` matches the signed-in user | renders the notification from `data` |
+| `recipientUserId` is a different user | **drops it silently** |
+| `recipientUserId` absent (today) | shows only a generic "You have a new update" and refetches the signed-in user's authorised data |
+
+So until this field ships, **no push renders its own content** — the app
+degrades to a content-free nudge. That is deliberate: the alternative is
+showing one tenant's information to another. Adding the field restores
+rich notifications with no further mobile change.
 
 **Payload contract:**
 
@@ -785,3 +1059,52 @@ for, nor blocked by, another's.
 FE will switch off mocks for each section automatically once the BE
 endpoint returns 200 with the expected shape. No FE deploy required
 on BE delivery.
+
+---
+
+## §T17 — Embedded agreement signing (BoldSign), no email round-trip
+
+**UPDATE (2026-08-03 evening):** product says BoldSign is implemented
+end-to-end on the BE and tested. The app's side is now BUILT and waiting
+on the contract: `screens/onboarding/AgreementSign.jsx` renders the
+embedded link in a WebView, listens for BoldSign's page events and the
+redirect, and treats the WEBHOOK-updated server state as the only truth.
+To wire it we need from BE: **(a)** the exact endpoint that mints an
+embedded signing link for {agreement, current tenant} — the app currently
+calls `POST /agreements/{id}/sign-session` expecting
+`{embeddedSignLink, expiresAt}`, rename ours or yours; **(b)** the
+configured BoldSign `redirectUrl` (app matches
+`keystonerent.app/signed|esign-complete`); **(c)** confirmation the
+existing email-based flow is disabled for mobile-initiated sessions so
+tenants aren't signed twice; **(d)** whether
+`PATCH /agreements/{id}/acceptance` is still meaningful post-BoldSign or
+fully replaced by the webhook.
+
+**Ask (2026-08-03):** tenant signs the lease INSIDE the app instead of
+receiving an email and finishing in a browser. BoldSign supports this
+directly via **embedded signing links**, and the mobile side is already
+equipped (`react-native-webview` 13.12.2 is a dependency).
+
+Contract we need from BE:
+
+1. `POST /agreements/{id}/sign-session` → creates (or reuses) the
+   BoldSign document for that agreement and returns
+   `{embeddedSignLink, expiresAt}` for the CURRENT tenant as signer.
+   BoldSign API key stays server-side; the app never talks to BoldSign
+   with credentials.
+2. App renders `embeddedSignLink` in a WebView; BoldSign's
+   `redirectUrl` should be something the app can intercept (e.g.
+   `https://keystonerent.app/signed?agreement={id}`) so the WebView can
+   close itself on completion.
+3. **The webhook is the source of truth, not the redirect.** BE consumes
+   BoldSign's `Completed`/`Declined` webhooks and flips the agreement's
+   e-sign envelope state (the same envelope §7's `renewalStatus` reads).
+   The app refetches onboarding/agreement status after the redirect and
+   renders whatever the SERVER says — a hijacked or dropped redirect must
+   not be able to fake a signed lease.
+4. Declined / expired sessions surface as states, not errors, so the
+   FE can offer "start signing again".
+
+FE work when this ships: swap the demo "Agree and sign" mutation for the
+WebView step (screen already exists as the signature step of the
+onboarding journey; `AGREEMENT_SIGNATURE_PENDING` is its waiting state).
