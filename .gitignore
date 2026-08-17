@@ -97,3 +97,7 @@ package-lock.json
 # local tooling / review scratch
 .pnpm-store/
 review-artifacts/
+
+# Sentry build-time auth tokens — secrets, keep local (see *.example)
+ios/sentry.properties
+android/sentry.properties
